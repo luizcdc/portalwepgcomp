@@ -12,17 +12,17 @@ Este projeto é desenvolvido como parte da disciplina **IC045/MATE85 - Tópicos 
 ## Metodologia de Desenvolvimento
 A equipe está utilizando a metodologia **Kanban** com o auxílio da plataforma **Trello** para gerenciar as tarefas e acompanhar o progresso. O projeto segue um cronograma de entregas semanais.
 
-- Link para o Trello: [Trello Board](https://trello.com/b/PNFcAWjk/wepgcomp){:target="_blank"}
+- Link para o Trello: <a href="https://trello.com/b/PNFcAWjk/wepgcomp" target="_blank">Trello Board</a>
 
 ## Requisitos do Sistema
 Os requisitos completos do sistema estão documentados no link abaixo:
 
-- Link para os Requisitos: [Requisitos do Sistema](https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit){:target="_blank"}
+- Link para os Requisitos: <a href="https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit" target="_blank">Requisitos do Sistema</a>
 
 ## Protótipo
 O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as telas e fluxos do usuário estão disponíveis para visualização e feedback.
 
-- Link para o Figma: [Figma Design](https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0){:target="_blank"}
+- Link para o Figma: <a href="https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0" target="_blank">Figma Design</a>
 
 ## Cronograma de Entregas
 
@@ -44,11 +44,11 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
   - **Definição de Requisitos**: 
     - **Responsáveis**: Antonio Augusto, Alvaro Oliveira, Carlos Mosselman, Caio Nery, Gabriel Calheiros e Henrique.
     - **Prazo**: 03/09/2024 às 23:59.
-    - **Link**: [Requisitos do Sistema](https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit){:target="_blank"}
+    - **Link**: <a href="https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit" target="_blank">Requisitmos do Sistema</a>
   - **Prototipagem no Figma**:
     - **Responsáveis**: Felipe Rezende, Silas Nunes, Paloma, Juliana Ribeiro e Iuri.
     - **Prazo**: 06/09/2024 às 18:00.
-    - **Link**: [Figma](https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0){:target="_blank"}
+    - **Link**: <a href="https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0" target="_blank">Figma</a>
 
 ### **Semana 3: 14-Oct-2024**
 - **Tarefa**: Requisitos finais, Protótipo final, Ambiente e Instalação.
