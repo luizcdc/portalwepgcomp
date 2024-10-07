@@ -12,17 +12,17 @@ Este projeto é desenvolvido como parte da disciplina **IC045/MATE85 - Tópicos 
 ## Metodologia de Desenvolvimento
 A equipe está utilizando a metodologia **Kanban** com o auxílio da plataforma **Trello** para gerenciar as tarefas e acompanhar o progresso. O projeto segue um cronograma de entregas semanais.
 
-- Link para o Trello: [Trello Board](https://trello.com/b/PNFcAWjk/wepgcomp)
+- Link para o Trello: [Trello Board](https://trello.com/b/PNFcAWjk/wepgcomp){:target="_blank"}
 
 ## Requisitos do Sistema
 Os requisitos completos do sistema estão documentados no link abaixo:
 
-- Link para os Requisitos: [Requisitos do Sistema](https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit)
+- Link para os Requisitos: [Requisitos do Sistema](https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit){:target="_blank"}
 
 ## Protótipo
 O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as telas e fluxos do usuário estão disponíveis para visualização e feedback.
 
-- Link para o Figma: [Figma Design](https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0)
+- Link para o Figma: [Figma Design](https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0){:target="_blank"}
 
 ## Cronograma de Entregas
 
@@ -44,11 +44,11 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
   - **Definição de Requisitos**: 
     - **Responsáveis**: Antonio Augusto, Alvaro Oliveira, Carlos Mosselman, Caio Nery, Gabriel Calheiros e Henrique.
     - **Prazo**: 03/09/2024 às 23:59.
-    - **Link**: [Requisitos do Sistema](https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit)
+    - **Link**: [Requisitos do Sistema](https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit){:target="_blank"}
   - **Prototipagem no Figma**:
     - **Responsáveis**: Felipe Rezende, Silas Nunes, Paloma, Juliana Ribeiro e Iuri.
     - **Prazo**: 06/09/2024 às 18:00.
-    - **Link**: [Figma](https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0)
+    - **Link**: [Figma](https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0){:target="_blank"}
 
 ### **Semana 3: 14-Oct-2024**
 - **Tarefa**: Requisitos finais, Protótipo final, Ambiente e Instalação.
@@ -129,19 +129,19 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 
 ## Colaboradores
 
-- **Antonio Augusto** - [antonio.menezes@ufba.br](mailto:antonio.menezes@ufba.br)
-- **Alvaro Oliveira** - [alvaro.oliveira@ufba.br](mailto:alvaro.oliveira@ufba.br)
-- **Carlos Mosselman Cabral Neto** - [carlos.mosselman@ufba.br](mailto:carlos.mosselman@ufba.brr)
-- **Caio Nery** - [caionms@ufba.br](mailto:caionms@ufba.br)
-- **Gabriel Calheiros** - [gabrielcalheiros@ufba.br](mailto:gabrielcalheiros@ufba.br)
-- **Felipe Rezende** - [felipe.rezende@ufba.br](mailto:felipe.rezende@ufba.br)
-- **Silas Nunes** - [silasnunes105@gmail.com](mailto:silasnunes105@gmail.com)
-- **Paloma** - [palomabcp06@gmail.com](mailto:palomabcp06@gmail.com)
-- **Juliana Ribeiro** - [julianacrispina@gmail.com](mailto:julianacrispina@gmail.com)
-- **Marcos Vinícius Queiroz** - [kieroth29@gmail.com](mailto:kieroth29@gmail.com)
-- **Luiz Cavalcanti** - [luizdantas.cavalcanti@gmail.com](mailto:luizdantas.cavalcanti@gmail.com)
-- **Alexandre** - [alexandre.cury@ufba.br](mailto:alexandre.cury@ufba.br)
-- **Márcio** - [santosmarcio@ufba.br](mailto:santosmarcio@ufba.br)
+- **Antonio Augusto** - [antonio.menezes@ufba.br](mailto:antonio.menezes@ufba.br){:target="_blank"}
+- **Alvaro Oliveira** - [alvaro.oliveira@ufba.br](mailto:alvaro.oliveira@ufba.br){:target="_blank"}
+- **Carlos Mosselman Cabral Neto** - [carlos.mosselman@ufba.br](mailto:carlos.mosselman@ufba.brr){:target="_blank"}
+- **Caio Nery** - [caionms@ufba.br](mailto:caionms@ufba.br){:target="_blank"}
+- **Gabriel Calheiros** - [gabrielcalheiros@ufba.br](mailto:gabrielcalheiros@ufba.br){:target="_blank"}
+- **Felipe Rezende** - [felipe.rezende@ufba.br](mailto:felipe.rezende@ufba.br){:target="_blank"}
+- **Silas Nunes** - [silasnunes105@gmail.com](mailto:silasnunes105@gmail.com){:target="_blank"}
+- **Paloma** - [palomabcp06@gmail.com](mailto:palomabcp06@gmail.com){:target="_blank"}
+- **Juliana Ribeiro** - [julianacrispina@gmail.com](mailto:julianacrispina@gmail.com){:target="_blank"}
+- **Marcos Vinícius Queiroz** - [kieroth29@gmail.com](mailto:kieroth29@gmail.com){:target="_blank"}
+- **Luiz Cavalcanti** - [luizdantas.cavalcanti@gmail.com](mailto:luizdantas.cavalcanti@gmail.com){:target="_blank"}
+- **Alexandre** - [alexandre.cury@ufba.br](mailto:alexandre.cury@ufba.br){:target="_blank"}
+- **Márcio** - [santosmarcio@ufba.br](mailto:santosmarcio@ufba.br){:target="_blank"}
 
 ## Licença
 Este projeto está licenciado sob a [Licença MIT](LICENSE).
