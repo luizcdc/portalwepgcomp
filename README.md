@@ -137,7 +137,7 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 - **Felipe Rezende** - [felipe.rezende@ufba.br](mailto:felipe.rezende@ufba.br)
 - **Silas Nunes** - [silasnunes105@gmail.com](mailto:silasnunes105@gmail.com)
 - **Paloma** - [palomabcp06@gmail.com](mailto:palomabcp06@gmail.com)
-- **Juliana Crispina** - [julianacrispina@gmail.com](mailto:julianacrispina@gmail.com)
+- **Juliana Ribeiro** - [julianacrispina@gmail.com](mailto:julianacrispina@gmail.com)
 - **Marcos Vinícius Queiroz** - [kieroth29@gmail.com](mailto:kieroth29@gmail.com)
 - **Luiz Cavalcanti** - [luizdantas.cavalcanti@gmail.com](mailto:luizdantas.cavalcanti@gmail.com)
 - **Alexandre** - [alexandre.cury@ufba.br](mailto:alexandre.cury@ufba.br)
