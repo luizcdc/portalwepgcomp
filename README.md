@@ -46,7 +46,7 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
     - **Prazo**: 03/09/2024 às 23:59.
     - **Link**: [Requisitos do Sistema](https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit)
   - **Prototipagem no Figma**:
-    - **Responsáveis**: Felipe Rezende, Silas Nunes, Paloma, Juliana Crispina e Iuri.
+    - **Responsáveis**: Felipe Rezende, Silas Nunes, Paloma, Juliana Ribeiro e Iuri.
     - **Prazo**: 06/09/2024 às 18:00.
     - **Link**: [Figma](https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0)
 
