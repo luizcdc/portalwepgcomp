@@ -64,6 +64,7 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 - **Luiz Cavalcanti** - [luizdantas.cavalcanti@gmail.com](mailto:luizdantas.cavalcanti@gmail.com){:target="_blank"}
 - **Alexandre** - [alexandre.cury@ufba.br](mailto:alexandre.cury@ufba.br){:target="_blank"}
 - **Márcio** - [santosmarcio@ufba.br](mailto:santosmarcio@ufba.br){:target="_blank"}
+- **Thiago Seixas** - [thiago.seixas@ufba.br](mailto:thiago.seixas@ufba.br){:target="_blank"}
 
 ## Licença
 Este projeto está licenciado sob a [Licença MIT](LICENSE).
