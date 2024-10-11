@@ -10,9 +10,9 @@ Este projeto é desenvolvido como parte da disciplina **IC045/MATE85 - Tópicos 
 - **Cloud**: Vercel
 
 ## Metodologia de Desenvolvimento
-A equipe está utilizando a metodologia **Kanban** com o auxílio da plataforma **Trello** para gerenciar as tarefas e acompanhar o progresso. O projeto segue um cronograma de entregas semanais.
+A equipe está utilizando a metodologia **Kanban** com o auxílio da plataforma **Notion** para gerenciar as tarefas e acompanhar o progresso. O projeto segue um cronograma de entregas semanais.
 
-- Link para o Trello: <a href="https://trello.com/b/PNFcAWjk/wepgcomp" target="_blank">Trello Board</a>
+- Link para o Notion: <a href="https://www.notion.so/119c125c059980578b0eed38349acd82?v=119c125c059980bf8e95000c9a20dde6" target="_blank">Notion Board</a>
 
 ## Requisitos do Sistema
 Os requisitos completos do sistema estão documentados no link abaixo:
