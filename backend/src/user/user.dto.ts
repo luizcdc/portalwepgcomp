@@ -43,6 +43,9 @@ export class RegisterTeacherRequestDto {
     @IsEmail()
     email: string;
 
+    @IsOptional()
+    photo?: string;
+
     @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d{4,})(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
         message: 'A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, quatro números e um caractere especial.',
     })
@@ -71,6 +74,7 @@ export class RegisterTeacherResponseDto {
     surname?: string;
     registration: string;
     email: string;
+    photo?: string;
     status: string; // Pode ser 'Pendente' ou 'Ativo'
     createdAt: Date;
     updatedAt: Date;
