@@ -2,7 +2,7 @@ import { IsEmail, IsNotEmpty, Matches, IsOptional } from 'class-validator';
 
 // DTOs para Requests
 
-export class CreateStudentRequestDto {
+export class RegisterStudentRequestDto {
     @IsNotEmpty()
     name: string;
 
@@ -30,7 +30,7 @@ export class CreateStudentRequestDto {
     password: string;
 }
 
-export class CreateTeacherRequestDto {
+export class RegisterTeacherRequestDto {
     @IsNotEmpty()
     name: string;
 
@@ -51,7 +51,7 @@ export class CreateTeacherRequestDto {
 
 // DTOs para Responses
 
-export class CreateStudentResponseDto {
+export class RegisterStudentResponseDto {
     id: string;
     name: string;
     surname?: string;
@@ -65,7 +65,7 @@ export class CreateStudentResponseDto {
     updatedAt: Date;
 }
 
-export class CreateTeacherResponseDto {
+export class RegisterTeacherResponseDto {
     id: string;
     name: string;
     surname?: string;
