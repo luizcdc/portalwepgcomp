@@ -1,4 +1,4 @@
-import { UserStatus } from '@prisma/client';
+import { UserStatus, Teacher, Student } from '@prisma/client';
 import { IsEmail, IsNotEmpty, Matches, IsOptional } from 'class-validator';
 
 // DTOs para Requests
@@ -75,6 +75,20 @@ export class RegisterStudentResponseDto {
   status: UserStatus; // Pode ser 'Pendente' ou 'Ativo'
   createdAt: Date;
   updatedAt: Date;
+
+  constructor(user: Student) {
+    this.id = user.id;
+    this.name = user.name;
+    this.surname = user.surname;
+    this.registration = user.registration;
+    this.email = user.email;
+    this.advisor = user.advisor;
+    this.photo = user.photo;
+    this.program = user.program;
+    this.status = user.status;
+    this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
+  }
 }
 
 export class RegisterTeacherResponseDto {
@@ -87,4 +101,16 @@ export class RegisterTeacherResponseDto {
   status: UserStatus; // Pode ser 'Pendente' ou 'Ativo'
   createdAt: Date;
   updatedAt: Date;
+
+  constructor(user: Teacher) {
+    this.id = user.id;
+    this.name = user.name;
+    this.surname = user.surname;
+    this.registration = user.registration;
+    this.email = user.email;
+    this.photo = user.photo;
+    this.status = user.status;
+    this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
+  }
 }

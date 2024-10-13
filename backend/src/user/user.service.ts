@@ -24,7 +24,9 @@ export class UserService {
 
     const user = await this.prismaClient.student.create(newStudent);
 
-    return user;
+    const userResponseDto = new RegisterStudentResponseDto(user);
+
+    return userResponseDto;
   }
 
   async registerTeacher(
@@ -39,6 +41,8 @@ export class UserService {
 
     const user = await this.prismaClient.teacher.create(newTeacher);
 
-    return user;
+    const userResponseDto = new RegisterTeacherResponseDto(user);
+
+    return userResponseDto;
   }
 }
