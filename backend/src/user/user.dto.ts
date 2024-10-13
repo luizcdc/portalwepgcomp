@@ -1,3 +1,4 @@
+import { UserStatus } from '@prisma/client';
 import { IsEmail, IsNotEmpty, Matches, IsOptional } from 'class-validator';
 
 // DTOs para Requests
@@ -71,7 +72,7 @@ export class RegisterStudentResponseDto {
   advisor: string;
   photo?: string;
   program: string;
-  status: string; // Pode ser 'Pendente' ou 'Ativo'
+  status: UserStatus; // Pode ser 'Pendente' ou 'Ativo'
   createdAt: Date;
   updatedAt: Date;
 }
@@ -83,7 +84,7 @@ export class RegisterTeacherResponseDto {
   registration: string;
   email: string;
   photo?: string;
-  status: string; // Pode ser 'Pendente' ou 'Ativo'
+  status: UserStatus; // Pode ser 'Pendente' ou 'Ativo'
   createdAt: Date;
   updatedAt: Date;
 }
