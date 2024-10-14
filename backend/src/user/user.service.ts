@@ -7,6 +7,7 @@ import {
   RegisterTeacherResponseDto,
 } from './user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AppException } from 'src/exceptions/app.exception';
 
 @Injectable()
 export class UserService {
@@ -22,8 +23,16 @@ export class UserService {
       },
     };
 
-    const user = await this.prismaClient.student.create(newStudent);
+    const userExists = await this.prismaClient.student.findUnique({
+      where: {
+        email: createStudentDto.email,
+      },
+    });
+    if (userExists) {
+      throw new AppException('Um usuário com esse email já existe.', 400);
+    }
 
+    const user = await this.prismaClient.student.create(newStudent);
     const userResponseDto = new RegisterStudentResponseDto(user);
 
     return userResponseDto;
@@ -39,10 +48,18 @@ export class UserService {
       },
     };
 
+    const userExists = await this.prismaClient.teacher.findUnique({
+      where: {
+        email: createTeacherDto.email,
+      },
+    });
+    if (userExists) {
+      throw new AppException('Um usuário com esse email já existe.', 400);
+    }
+
     const user = await this.prismaClient.teacher.create(newTeacher);
 
     const userResponseDto = new RegisterTeacherResponseDto(user);
-
     return userResponseDto;
   }
 }
