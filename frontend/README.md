@@ -42,8 +42,7 @@ npm run lint
 
 **packacge.json** - Dependências do projeto
 **jest.config.ts** - Teste unitário
-**tsconfig.json** - Compilação do json
-**tailwind.config.ts** - React
+**tsconfig.json** - Compilação do JSON
 **next.config.mjs.ts** - Next
 **sonar-project.properties** - Sonar
 
