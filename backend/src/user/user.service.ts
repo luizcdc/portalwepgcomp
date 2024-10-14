@@ -6,8 +6,8 @@ import {
   RegisterTeacherRequestDto,
   RegisterTeacherResponseDto,
 } from './user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { AppException } from 'src/exceptions/app.exception';
+import { PrismaService } from '../prisma/prisma.service';
+import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
