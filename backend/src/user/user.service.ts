@@ -8,6 +8,7 @@ import {
 } from './user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AppException } from 'src/exceptions/app.exception';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -16,13 +17,6 @@ export class UserService {
   async registerStudent(
     createStudentDto: RegisterStudentRequestDto,
   ): Promise<RegisterStudentResponseDto> {
-    const newStudent = {
-      data: {
-        ...createStudentDto,
-        status: UserStatus.ATIVO,
-      },
-    };
-
     const userExists = await this.prismaClient.student.findUnique({
       where: {
         email: createStudentDto.email,
@@ -31,6 +25,15 @@ export class UserService {
     if (userExists) {
       throw new AppException('Um usuário com esse email já existe.', 400);
     }
+    const hashedPassword = await bcrypt.hash(createStudentDto.password, 10);
+
+    const newStudent = {
+      data: {
+        ...createStudentDto,
+        status: UserStatus.ATIVO,
+        password: hashedPassword,
+      },
+    };
 
     const user = await this.prismaClient.student.create(newStudent);
     const userResponseDto = new RegisterStudentResponseDto(user);
@@ -41,13 +44,6 @@ export class UserService {
   async registerTeacher(
     createTeacherDto: RegisterTeacherRequestDto,
   ): Promise<RegisterTeacherResponseDto> {
-    const newTeacher = {
-      data: {
-        ...createTeacherDto,
-        status: UserStatus.PENDENTE,
-      },
-    };
-
     const userExists = await this.prismaClient.teacher.findUnique({
       where: {
         email: createTeacherDto.email,
@@ -56,6 +52,16 @@ export class UserService {
     if (userExists) {
       throw new AppException('Um usuário com esse email já existe.', 400);
     }
+
+    const hashedPassword = await bcrypt.hash(createTeacherDto.password, 10);
+
+    const newTeacher = {
+      data: {
+        ...createTeacherDto,
+        status: UserStatus.PENDENTE,
+        password: hashedPassword,
+      },
+    };
 
     const user = await this.prismaClient.teacher.create(newTeacher);
 
