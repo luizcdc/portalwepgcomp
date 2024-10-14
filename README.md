@@ -51,20 +51,20 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 
 ## Colaboradores
 
-- **Antonio Augusto** - [antonio.menezes@ufba.br](mailto:antonio.menezes@ufba.br){:target="_blank"}
-- **Alvaro Oliveira** - [alvaro.oliveira@ufba.br](mailto:alvaro.oliveira@ufba.br){:target="_blank"}
+- **Antonio de Sousa Cruz Neto** - [antonio.menezes@ufba.br](mailto:antonio.menezes@ufba.br){:target="_blank"}
+- **Álvaro Souza Olivera** - [alvaro.oliveira@ufba.br](mailto:alvaro.oliveira@ufba.br){:target="_blank"}
 - **Carlos Mosselman Cabral Neto** - [carlos.mosselman@ufba.br](mailto:carlos.mosselman@ufba.brr){:target="_blank"}
-- **Caio Nery** - [caionms@ufba.br](mailto:caionms@ufba.br){:target="_blank"}
-- **Gabriel Calheiros** - [gabrielcalheiros@ufba.br](mailto:gabrielcalheiros@ufba.br){:target="_blank"}
+- **Caio Nery Matos Santos** - [caionms@ufba.br](mailto:caionms@ufba.br){:target="_blank"}
+- **Gabriel Borges Calheiros** - [gabrielcalheiros@ufba.br](mailto:gabrielcalheiros@ufba.br){:target="_blank"}
 - **Felipe Rezende** - [felipe.rezende@ufba.br](mailto:felipe.rezende@ufba.br){:target="_blank"}
 - **Silas Nunes** - [silasnunes105@gmail.com](mailto:silasnunes105@gmail.com){:target="_blank"}
-- **Paloma** - [palomabcp06@gmail.com](mailto:palomabcp06@gmail.com){:target="_blank"}
-- **Juliana Ribeiro** - [julianacrispina@gmail.com](mailto:julianacrispina@gmail.com){:target="_blank"}
+- **Paloma Batista Calmon de Passos** - [palomabcp06@gmail.com](mailto:palomabcp06@gmail.com){:target="_blank"}
+- **Juliana Gomes Ribeiro** - [julianacrispina@gmail.com](mailto:julianacrispina@gmail.com){:target="_blank"}
 - **Marcos Vinícius Queiroz** - [kieroth29@gmail.com](mailto:kieroth29@gmail.com){:target="_blank"}
-- **Luiz Cavalcanti** - [luizdantas.cavalcanti@gmail.com](mailto:luizdantas.cavalcanti@gmail.com){:target="_blank"}
-- **Alexandre** - [alexandre.cury@ufba.br](mailto:alexandre.cury@ufba.br){:target="_blank"}
-- **Márcio** - [santosmarcio@ufba.br](mailto:santosmarcio@ufba.br){:target="_blank"}
-- **Thiago Seixas** - [thiago.seixas@ufba.br](mailto:thiago.seixas@ufba.br){:target="_blank"}
+- **Luiz Cláudio Dantas Cavalcanti** - [luizdantas.cavalcanti@gmail.com](mailto:luizdantas.cavalcanti@gmail.com){:target="_blank"}
+- **Alexandre Cury Lima** - [alexandre.cury@ufba.br](mailto:alexandre.cury@ufba.br){:target="_blank"}
+- **Márcio dos Santos Junior** - [santosmarcio@ufba.br](mailto:santosmarcio@ufba.br){:target="_blank"}
+- **Thiago Luiz Antunes Seixas** - [thiago.seixas@ufba.br](mailto:thiago.seixas@ufba.br){:target="_blank"}
 
 ## Licença
 Este projeto está licenciado sob a [Licença MIT](LICENSE).
