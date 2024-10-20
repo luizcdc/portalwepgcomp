@@ -1,29 +1,35 @@
-import { UserStatus, Teacher, Student } from '@prisma/client';
-import { IsEmail, IsNotEmpty, Matches, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  Matches,
+  IsOptional,
+  IsString,
+  IsEnum,
+} from 'class-validator';
 
 // DTOs para Requests
+export enum Perfil {
+  STUDENT = 'STUDENT',
+  TEACHER = 'TEACHER',
+}
 
-export class RegisterStudentRequestDto {
+enum Level {
+  MESTRADO = 'MESTRADO',
+  DOUTORADO = 'DOUTORADO',
+}
+
+export class CreateUserRequestDto {
   @IsNotEmpty()
+  @IsString()
   name: string;
 
-  @IsOptional()
-  surname?: string;
-
   @IsNotEmpty()
-  registration: string;
-
   @IsEmail()
   email: string;
 
   @IsNotEmpty()
-  advisor: string;
-
-  @IsOptional()
-  photo?: string;
-
-  @IsNotEmpty()
-  program: string; // Exemplos: 'mestrado', 'doutorado', 'ic', 'graduação'
+  @IsString()
+  cpf: string;
 
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d{4,})(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
@@ -32,85 +38,34 @@ export class RegisterStudentRequestDto {
         'A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, quatro números e um caractere especial.',
     },
   )
-  password: string;
-}
-
-export class RegisterTeacherRequestDto {
   @IsNotEmpty()
-  name: string;
+  @IsString()
+  password: string;
 
   @IsOptional()
-  surname?: string;
+  @IsString()
+  photo?: string;
 
   @IsNotEmpty()
-  registration: string;
+  @IsEnum(Perfil)
+  perfil: Perfil;
 
-  @IsEmail()
-  email: string;
+  // Campos específicos para Professor
+  @IsOptional()
+  @IsString()
+  expertiseArea?: string;
+
+  // Campos específicos para Student
+  @IsOptional()
+  @IsEnum(Level)
+  level?: Level;
 
   @IsOptional()
-  photo?: string;
+  @IsString()
+  biography?: string;
 
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d{4,})(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    {
-      message:
-        'A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, quatro números e um caractere especial.',
-    },
-  )
-  password: string;
-}
-
-// DTOs para Responses
-
-export class RegisterStudentResponseDto {
-  id: string;
-  name: string;
-  surname?: string;
-  registration: string;
-  email: string;
-  advisor: string;
-  photo?: string;
-  program: string;
-  status: UserStatus; // Pode ser 'Pendente' ou 'Ativo'
-  createdAt: Date;
-  updatedAt: Date;
-
-  constructor(user: Student) {
-    this.id = user.id;
-    this.name = user.name;
-    this.surname = user.surname;
-    this.registration = user.registration;
-    this.email = user.email;
-    this.advisor = user.advisor;
-    this.photo = user.photo;
-    this.program = user.program;
-    this.status = user.status;
-    this.createdAt = user.createdAt;
-    this.updatedAt = user.updatedAt;
-  }
-}
-
-export class RegisterTeacherResponseDto {
-  id: string;
-  name: string;
-  surname?: string;
-  registration: string;
-  email: string;
-  photo?: string;
-  status: UserStatus; // Pode ser 'Pendente' ou 'Ativo'
-  createdAt: Date;
-  updatedAt: Date;
-
-  constructor(user: Teacher) {
-    this.id = user.id;
-    this.name = user.name;
-    this.surname = user.surname;
-    this.registration = user.registration;
-    this.email = user.email;
-    this.photo = user.photo;
-    this.status = user.status;
-    this.createdAt = user.createdAt;
-    this.updatedAt = user.updatedAt;
-  }
+  // Campos que tem nos dois mas potencialmente em formatos diferentes
+  @IsOptional()
+  @IsString()
+  registration?: string;
 }
