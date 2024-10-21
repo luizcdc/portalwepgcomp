@@ -4,30 +4,28 @@ import {
   RegisterStudentResponseDto,
 } from './student.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Perfil, UserStatus } from '@prisma/client';
+import { Profile } from '@prisma/client';
 
 @Injectable()
 export class StudentService {
   constructor(private prismaClient: PrismaService) {}
 
   async create(createStudentDto: RegisterStudentRequestDto) {
-    const { registration, level, biography, ...userData } = createStudentDto;
+    const { registration, biography, ...userData } = createStudentDto;
 
     const createdStudent = await this.prismaClient.user.create({
       data: {
         ...userData,
-        perfil: Perfil.STUDENT,
-        status: UserStatus.ACTIVE,
-        student: {
+        profile: Profile.DoctoralStudent,
+        doctoralStudent: {
           create: {
             registration,
-            level,
             biography,
           },
         },
       },
       include: {
-        student: true,
+        doctoralStudent: true,
       },
     });
 

@@ -1,27 +1,11 @@
 import { User } from '@prisma/client';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { CreateUserRequestDto } from 'src/user/user.dto';
 
-export class RegisterStudentRequestDto {
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  cpf: string;
-
-  @IsNotEmpty()
-  @IsString()
-  password: string;
-
-  @IsOptional()
-  @IsString()
-  photo?: string;
-
+export class RegisterStudentRequestDto extends CreateUserRequestDto {
   @IsOptional()
   @IsString()
   biography?: string;
@@ -33,20 +17,18 @@ export class RegisterStudentRequestDto {
 export class RegisterStudentResponseDto {
   id: string;
   name: string;
-  surname?: string;
   registration: string;
   email: string;
-  advisor: string;
-  photo?: string;
-  program: string;
+  photoFilePath?: string;
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(user: User & { student: { registration: string } }) {
-    this.id = String(user.id);
+  constructor(user: User & { doctoralStudent: { registration: string } }) {
+    this.id = user.id.toString();
     this.name = user.name;
-    this.registration = user.student.registration;
+    this.registration = user.doctoralStudent.registration;
     this.email = user.email;
+    this.photoFilePath = user.photoFilePath;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
   }
