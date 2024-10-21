@@ -8,14 +8,9 @@ import {
 } from 'class-validator';
 
 // DTOs para Requests
-export enum Perfil {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-}
-
-enum Level {
-  MESTRADO = 'MESTRADO',
-  DOUTORADO = 'DOUTORADO',
+export enum Profile {
+  Professor = 'Professor',
+  DoctoralStudent = 'DoctoralStudent',
 }
 
 export class CreateUserRequestDto {
@@ -44,11 +39,11 @@ export class CreateUserRequestDto {
 
   @IsOptional()
   @IsString()
-  photo?: string;
+  photoFilePath?: string;
 
   @IsNotEmpty()
-  @IsEnum(Perfil)
-  perfil: Perfil;
+  @IsEnum(Profile)
+  profile: Profile;
 
   // Campos específicos para Professor
   @IsOptional()
@@ -57,14 +52,9 @@ export class CreateUserRequestDto {
 
   // Campos específicos para Student
   @IsOptional()
-  @IsEnum(Level)
-  level?: Level;
-
-  @IsOptional()
   @IsString()
   biography?: string;
 
-  // Campos que tem nos dois mas potencialmente em formatos diferentes
   @IsOptional()
   @IsString()
   registration?: string;

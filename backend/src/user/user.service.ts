@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserRequestDto, Perfil } from './user.dto';
+import { CreateUserRequestDto, Profile } from './user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
@@ -15,50 +15,33 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserRequestDto) {
-    if (!createUserDto.registration) {
-      throw new AppException('Matrícula é obrigatório', 400);
-    }
-
-    const userExists = await this.prismaClient.user.findUnique({
+    const existingUser = await this.prismaClient.user.findFirst({
       where: {
-        email: createUserDto.email,
+        OR: [{ email: createUserDto.email }, { cpf: createUserDto.cpf }],
       },
     });
-    if (userExists) {
-      throw new AppException('Um usuário com esse email já existe.', 400);
-    }
 
-    const cpfExists = await this.prismaClient.user.findUnique({
-      where: {
-        cpf: createUserDto.cpf,
-      },
-    });
-    if (cpfExists) {
-      throw new AppException('Um usuário com esse cpf já existe.', 400);
+    if (existingUser) {
+      if (existingUser.email === createUserDto.email) {
+        throw new AppException('Um usuário com esse email já existe.', 400);
+      }
+
+      if (existingUser.cpf === createUserDto.cpf) {
+        throw new AppException('Um usuário com esse CPF já existe.', 400);
+      }
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     let user = null;
 
-    if (createUserDto.perfil === Perfil.STUDENT) {
-      if (!createUserDto.level) {
-        throw new AppException('Nível é obrigatório para estudantes.', 400);
-      }
-
+    if (createUserDto.profile === Profile.DoctoralStudent) {
       user = await this.studentService.create({
         ...createUserDto,
         password: hashedPassword,
-        level: createUserDto.level,
         registration: createUserDto.registration,
       });
-    } else if (createUserDto.perfil === Perfil.TEACHER) {
-      if (!createUserDto.expertiseArea) {
-        throw new AppException(
-          'Área de expertise é obrigatório para professores.',
-          400,
-        );
-      }
+    } else if (createUserDto.profile === Profile.Professor) {
       user = await this.teacherService.create({
         ...createUserDto,
         password: hashedPassword,
