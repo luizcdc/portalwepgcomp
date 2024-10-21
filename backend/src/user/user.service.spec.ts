@@ -22,7 +22,7 @@ describe('UserService', () => {
               findUnique: jest.fn(),
               create: jest.fn(),
             },
-            teacher: {
+            professor: {
               findUnique: jest.fn(),
               create: jest.fn(),
             },
@@ -107,27 +107,27 @@ describe('UserService', () => {
     });
   });
 
-  describe('registerTeacher', () => {
-    it('should throw an AppException if the teacher already exists', async () => {
-      prismaService.teacher.findUnique = jest.fn().mockResolvedValue(true);
+  describe('registerProfessor', () => {
+    it('should throw an AppException if the professor already exists', async () => {
+      prismaService.professor.findUnique = jest.fn().mockResolvedValue(true);
 
-      const createTeacherDto = {
-        email: 'teacher@example.com',
+      const createProfessorDto = {
+        email: 'professor@example.com',
         password: 'password123',
         name: 'Jane',
         registration: 'T2021001',
       };
 
-      await expect(service.registerTeacher(createTeacherDto)).rejects.toThrow(
+      await expect(service.registerProfessor(createProfessorDto)).rejects.toThrow(
         new AppException('Um usuário com esse email já existe.', 400),
       );
     });
 
-    it('should hash the password and create a new teacher', async () => {
-      prismaService.teacher.findUnique = jest.fn().mockResolvedValue(null);
-      prismaService.teacher.create = jest.fn().mockResolvedValue({
+    it('should hash the password and create a new professor', async () => {
+      prismaService.professor.findUnique = jest.fn().mockResolvedValue(null);
+      prismaService.professor.create = jest.fn().mockResolvedValue({
         id: '456',
-        email: 'teacher@example.com',
+        email: 'professor@example.com',
         name: 'Jane',
         surname: null,
         registration: 'T2021001',
@@ -141,19 +141,19 @@ describe('UserService', () => {
       const hashedPassword = 'hashedPassword';
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
-      const createTeacherDto = {
-        email: 'teacher@example.com',
+      const createProfessorDto = {
+        email: 'professor@example.com',
         password: 'password123',
         name: 'Jane',
         registration: 'T2021001',
       };
 
-      const result = await service.registerTeacher(createTeacherDto);
+      const result = await service.registerProfessor(createProfessorDto);
 
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
-      expect(prismaService.teacher.create).toHaveBeenCalledWith({
+      expect(prismaService.professor.create).toHaveBeenCalledWith({
         data: {
-          ...createTeacherDto,
+          ...createProfessorDto,
           password: hashedPassword,
           status: UserStatus.PENDENTE,
         },
@@ -161,7 +161,7 @@ describe('UserService', () => {
       expect(result).toEqual(
         expect.objectContaining({
           id: '456',
-          email: 'teacher@example.com',
+          email: 'professor@example.com',
           name: 'Jane',
           status: UserStatus.PENDENTE,
         }),

@@ -48,7 +48,7 @@ export class CreateUserRequestDto {
   // Campos específicos para Professor
   @IsOptional()
   @IsString()
-  expertiseArea?: string;
+  areaExpertise?: string;
 
   // Campos específicos para Student
   @IsOptional()

@@ -4,14 +4,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
 import { StudentService } from 'src/student/student.service';
-import { TeacherService } from 'src/teacher/teacher.service';
+import { ProfessorService } from 'src/professor/professor.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private prismaClient: PrismaService,
     private studentService: StudentService,
-    private teacherService: TeacherService,
+    private professorService: ProfessorService,
   ) {}
 
   async create(createUserDto: CreateUserRequestDto) {
@@ -42,10 +42,10 @@ export class UserService {
         registration: createUserDto.registration,
       });
     } else if (createUserDto.profile === Profile.Professor) {
-      user = await this.teacherService.create({
+      user = await this.professorService.create({
         ...createUserDto,
         password: hashedPassword,
-        expertiseArea: createUserDto.expertiseArea,
+        areaExpertise: createUserDto.areaExpertise,
         registration: createUserDto.registration,
       });
     }

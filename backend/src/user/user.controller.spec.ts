@@ -4,8 +4,8 @@ import { UserService } from './user.service';
 import {
   RegisterStudentRequestDto,
   RegisterStudentResponseDto,
-  RegisterTeacherRequestDto,
-  RegisterTeacherResponseDto,
+  RegisterProfessorRequestDto,
+  RegisterProfessorResponseDto,
 } from './user.dto';
 import { UserStatus } from '@prisma/client';
 
@@ -21,7 +21,7 @@ describe('UserController', () => {
           provide: UserService,
           useValue: {
             registerStudent: jest.fn(),
-            registerTeacher: jest.fn(),
+            registerProfessor: jest.fn(),
           },
         },
       ],
@@ -75,39 +75,39 @@ describe('UserController', () => {
     });
   });
 
-  describe('registerTeacher', () => {
-    it('should register a teacher and return a RegisterTeacherResponseDto', async () => {
-      const registerTeacherDto: RegisterTeacherRequestDto = {
+  describe('registerProfessor', () => {
+    it('should register a professor and return a RegisterProfessorResponseDto', async () => {
+      const registerProfessorDto: RegisterProfessorRequestDto = {
         name: 'Jane',
         surname: 'Smith',
         registration: 'T2021001',
-        email: 'teacher@example.com',
-        photo: 'teacher-photo-url',
+        email: 'professor@example.com',
+        photo: 'professor-photo-url',
         password: 'Password@1234',
       };
 
-      const teacherResponse: RegisterTeacherResponseDto = {
+      const professorResponse: RegisterProfessorResponseDto = {
         id: '2',
         name: 'Jane',
         surname: 'Smith',
         registration: 'T2021001',
-        email: 'teacher@example.com',
-        photo: 'teacher-photo-url',
+        email: 'professor@example.com',
+        photo: 'professor-photo-url',
         status: UserStatus.PENDENTE,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
       jest
-        .spyOn(userService, 'registerTeacher')
-        .mockResolvedValue(teacherResponse);
+        .spyOn(userService, 'registerProfessor')
+        .mockResolvedValue(professorResponse);
 
-      const result = await controller.registerTeacher(registerTeacherDto);
+      const result = await controller.registerProfessor(registerProfessorDto);
 
-      expect(userService.registerTeacher).toHaveBeenCalledWith(
-        registerTeacherDto,
+      expect(userService.registerProfessor).toHaveBeenCalledWith(
+        registerProfessorDto,
       );
-      expect(result).toEqual(teacherResponse);
+      expect(result).toEqual(professorResponse);
     });
   });
 });
