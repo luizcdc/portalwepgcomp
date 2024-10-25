@@ -34,7 +34,7 @@ export default function Login() {
                     <hr className="border border-warning border-2"></hr>
                 </form>
             </div>
-            <div className="container d-flex justify-content-center mb-2">
+            <div className="text-center mb-4">
                 <h6>Ainda não tem conta?
                     <a href="#" className="link-underline link-underline-opacity-0 ms-1">Cadastre-se</a>
                 </h6>
