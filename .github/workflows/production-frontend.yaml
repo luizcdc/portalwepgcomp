@@ -6,6 +6,11 @@ on:
   push:
     branches:
       - main
+
+defaults:
+  run:
+    working-directory: frontend
+    
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
