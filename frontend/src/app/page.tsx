@@ -1,13 +1,14 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import LandingContainer from "@/pages/Landing/LandingContainer";
+import Cadastro from "@/pages/Cadastro/Cadastro";
+import Login from "@/pages/Login/Login";
 
 export default function Home() {
   return (
-      <main>
-        <Header />
-        <LandingContainer></LandingContainer>
-        <Footer />
-      </main>
+    <main>
+      <Header />
+      <Login />
+      <Footer />
+    </main>
   );
 }
