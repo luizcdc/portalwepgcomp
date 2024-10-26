@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "clean": "rm -rf package-lock.json node_modules && npm cache clean --force"
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
