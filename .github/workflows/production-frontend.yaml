@@ -5,7 +5,7 @@ env:
 on:
   push:
     branches:
-      - main
+      - master
 
 defaults:
   run:
@@ -24,8 +24,6 @@ jobs:
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
-      - name: Open aplication source code
-        run: cd frontend
       - name: Clean modules
         run: npm run clean
       - name: Build Project Artifacts

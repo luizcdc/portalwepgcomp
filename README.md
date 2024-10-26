@@ -19,14 +19,15 @@ Os requisitos completos do sistema estão documentados no link abaixo:
 
 - Link para os Requisitos: <a href="https://docs.google.com/document/d/199d8fJW4-9MX11Lvd4mdy-Vo0Pyx4ZHa53IuHKbWSn0/edit" target="_blank">Requisitos do Sistema</a>
 
+## Arquitetura
+- Diagrama de classe: <a href="https://cdn.discordapp.com/attachments/1293365993137115136/1296668731837120514/DER-WEPGCOMP.drawio.png?ex=6717bd9c&is=67166c1c&hm=9f53e124314a9a84b6f20d8cc89607a0221fe3bfc9968fb3381e2910bb5d6ca5&" target="_blank">Banco</a>
+- Arquitetura do sistema: <a href="https://drive.google.com/file/d/10DCdoz47Gm00mArdla0npXITgNYR1KtJ/view" target="_blank">Arquitetura</a>
+
 ## Protótipo
 O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as telas e fluxos do usuário estão disponíveis para visualização e feedback.
 
 - Link para o Figma: <a href="https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0" target="_blank">Figma Design</a>
 
-## Reuniões Importantes
-
-- **Reunião 01/10** às 20:30: Discussão das tecnologias e decisões iniciais.
 
 ## Como Executar o Projeto (Exemplo)
 
@@ -53,7 +54,6 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 
 - **Antonio de Sousa Cruz Neto** - [antonio.menezes@ufba.br](mailto:antonio.menezes@ufba.br){:target="_blank"}
 - **Álvaro Souza Olivera** - [alvaro.oliveira@ufba.br](mailto:alvaro.oliveira@ufba.br){:target="_blank"}
-- **Carlos Mosselman Cabral Neto** - [carlos.mosselman@ufba.br](mailto:carlos.mosselman@ufba.brr){:target="_blank"}
 - **Caio Nery Matos Santos** - [caionms@ufba.br](mailto:caionms@ufba.br){:target="_blank"}
 - **Gabriel Borges Calheiros** - [gabrielcalheiros@ufba.br](mailto:gabrielcalheiros@ufba.br){:target="_blank"}
 - **Felipe Rezende** - [felipe.rezende@ufba.br](mailto:felipe.rezende@ufba.br){:target="_blank"}
