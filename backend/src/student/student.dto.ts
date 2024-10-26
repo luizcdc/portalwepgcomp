@@ -1,8 +1,5 @@
 import { User } from '@prisma/client';
-import {
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { CreateUserRequestDto } from 'src/user/user.dto';
 
 export class RegisterStudentRequestDto extends CreateUserRequestDto {
