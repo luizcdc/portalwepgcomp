@@ -6,21 +6,26 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'frontend/**'
+
+defaults:
+  run:
+    working-directory: frontend
+    
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x]
-        # See supported Node.j
+        
     steps:
       - uses: actions/checkout@v2
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
+      - name: Open aplication source code
+        run: cd frontend
       - name: Clean modules
         run: npm run clean
       - name: Build Project Artifacts

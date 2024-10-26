@@ -4,17 +4,20 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_FRONTEND_ID_DSV }}
 on:
   push:
-    branches-ignore:
-      - main
-    paths:
-      - 'frontend/**'
+    branches:
+      - develop
+
+defaults:
+  run:
+    working-directory: frontend
+
 jobs:
   Deploy-Preview:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x]
-        # See supported Node.j
+        
     steps:
       - uses: actions/checkout@v2
       - name: Install Vercel CLI
