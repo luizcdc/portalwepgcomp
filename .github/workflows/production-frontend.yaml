@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
-        # See supported Node.j
+        
     steps:
       - uses: actions/checkout@v2
       - name: Install Vercel CLI
