@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Profile {
+  DoctoralStudent
+  Professor
+}
+
+enum Status {
+  Submitted
+  Accepted
+  Rejected
+  Pending
+  Confirmed
+  Cancelled
+  Completed
+}
+
+model User {
+  id              Int              @id @default(autoincrement())
+  name            String           @db.VarChar(255)
+  email           String           @unique @db.VarChar(255)
+  password        String           @db.VarChar(255)
+  photoFilePath   String?          @db.VarChar(255)
+  profile         Profile          @default(DoctoralStudent)
+  isAdmin         Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now())
+  professor       Professor?
+  doctoralStudent DoctoralStudent?
+}
+
+model Professor {
+  id            Int         @id @default(autoincrement())
+  userId        Int         @unique
+  areaExpertise String?     @db.VarChar(255)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
+  user          User        @relation(fields: [userId], references: [id])
+  committees    Committee[]
+  works         Work[]
+}
+
+model DoctoralStudent {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  registration String?  @unique @db.VarChar(20)
+  eligible     Boolean  @default(false)
+  biography    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  works        Work[]
+}
+
+model Event {
+  id             Int           @id @default(autoincrement())
+  name           String        @db.VarChar(255)
+  description    String?
+  url            String?       @db.VarChar(255)
+  location       String?       @db.VarChar(255)
+  startDate      DateTime?
+  endDate        DateTime?
+  submissionDate DateTime?
+  resultDate     DateTime?
+  awardDate      DateTime?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now())
+  committees     Committee[]
+  works          Work[]
+  certificates   Certificate[]
+}
+
+model Committee {
+  id          Int          @id @default(autoincrement())
+  eventId     Int
+  professorId Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
+  event       Event        @relation(fields: [eventId], references: [id])
+  professor   Professor    @relation(fields: [professorId], references: [id])
+  evaluations Evaluation[]
+
+  @@unique([eventId, professorId])
+}
+
+model Work {
+  id                Int             @id @default(autoincrement())
+  professorId       Int
+  doctoralStudentId Int
+  eventId           Int
+  title             String          @db.VarChar(255)
+  summary           String?
+  overallGrade      Float?
+  committeeGrade    Float?
+  pdfFilePath       String?         @db.VarChar(255)
+  submissionDate    DateTime?
+  status            Status
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @default(now())
+  professor         Professor       @relation(fields: [professorId], references: [id])
+  doctoralStudent   DoctoralStudent @relation(fields: [doctoralStudentId], references: [id])
+  event             Event           @relation(fields: [eventId], references: [id])
+  presentation      Presentation?
+  authors           Author[]
+  evaluations       Evaluation[]
+}
+
+model Evaluation {
+  id          Int       @id @default(autoincrement())
+  committeeId Int
+  workId      Int
+  grade       Float
+  comments    String?
+  name        String    @db.VarChar(255)
+  email       String    @db.VarChar(255)
+  expertise   String    @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  committee   Committee @relation(fields: [committeeId], references: [id])
+  work        Work      @relation(fields: [workId], references: [id])
+}
+
+model Certificate {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  name      String   @db.VarChar(255)
+  email     String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id])
+}
+
+model Presentation {
+  id        Int       @id @default(autoincrement())
+  workId    Int       @unique
+  startTime DateTime?
+  endTime   DateTime?
+  duration  String?
+  location  String?   @db.VarChar(255)
+  room      String?   @db.VarChar(255)
+  status    Status
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  work      Work      @relation(fields: [workId], references: [id])
+}
+
+model Author {
+  id          Int      @id @default(autoincrement())
+  workId      Int
+  name        String   @db.VarChar(255)
+  affiliation String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  work        Work     @relation(fields: [workId], references: [id])
+}
