@@ -22,10 +22,6 @@ export class CreateUserRequestDto {
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
-  @IsString()
-  cpf: string;
-
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d{4,})(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
     {

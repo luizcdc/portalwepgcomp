@@ -17,18 +17,12 @@ export class UserService {
   async create(createUserDto: CreateUserRequestDto) {
     const existingUser = await this.prismaClient.user.findFirst({
       where: {
-        OR: [{ email: createUserDto.email }, { cpf: createUserDto.cpf }],
+       email: createUserDto.email,
       },
     });
 
-    if (existingUser) {
-      if (existingUser.email === createUserDto.email) {
+    if (existingUser && existingUser.email === createUserDto.email) {
         throw new AppException('Um usuário com esse email já existe.', 400);
-      }
-
-      if (existingUser.cpf === createUserDto.cpf) {
-        throw new AppException('Um usuário com esse CPF já existe.', 400);
-      }
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
