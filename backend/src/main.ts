@@ -8,12 +8,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Documentação de Rotas PortalWEPGCOMP')
-    .setDescription('Descrição de teste')
+    .setTitle('Documentação de Rotas do PortalWEPGCOMP')
+    .setDescription(
+      'Especificação e descrição das rotas da API do projeto PortalWEPGCOMP.',
+    )
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('doc', app, documentFactory);
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
