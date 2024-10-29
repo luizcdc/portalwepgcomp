@@ -46,7 +46,7 @@ export default function Orientacao() {
         >
           <div className='fw-bold'>Datas Importantes:</div>
 
-          <div className='d-flex flex-diretcion-row align-items-center gap-2'>
+          <div className='d-flex flex-direction-row align-items-center gap-2'>
             <div
               style={{
                 width: "6px",
