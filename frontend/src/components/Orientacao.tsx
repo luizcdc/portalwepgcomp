@@ -1,5 +1,11 @@
 "use client";
 import backgroundOrientacao from "@/assets/images/background_orientacao.svg";
+import {Poppins} from "next/font/google"
+
+const poppins = Poppins({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+});
 
 export default function Orientacao() {
   return (
@@ -7,17 +13,20 @@ export default function Orientacao() {
       style={{
         backgroundImage: `url(${backgroundOrientacao.src})`,
         backgroundSize: "cover",
-        backgroundPosition: "center",
-        width: "1300px",
-        height: "500px",
+        width: "1270px",
+        height: "600px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        color: "white"
+        marginTop:"20px",
+        marginBottom:"20px",
+        marginLeft:"8px",
+        color: "white",
+        fontFamily:poppins.style.fontFamily,
       }}
     >
-      <div className='text-white text-align-center fs-2 fw-bold'>
+      <div className='text-white text-center fs-1 fw-bold'>
         Orientações
       </div>
 
@@ -27,14 +36,14 @@ export default function Orientacao() {
           flexDirection: "column",
           alignItems: "center",
           gap: "25px",
+          textAlign: "center",
+          fontSize: "18px"
         }}
       >
         <div>
-          Este evento é uma excelente oportunidade para estudantes apresentarem
-          e discutirem suas pesquisas, além de {"\n"} receberem feedback valioso
-          de colegas e professores.{"\n"} É também uma chance de se envolver com
-          a comunidade acadêmica e contribuir para o avanço do conhecimento na
-          área de Ciência da Computação.
+        Este evento é uma excelente oportunidade para estudantes apresentarem e 
+        discutirem suas pesquisas, além de <br />receberem feedback valioso de colegas e 
+        professores.<br /> Clique em Ver todas as orientações para ter mais informações sobre o evento.
         </div>
         
         <div
@@ -55,7 +64,7 @@ export default function Orientacao() {
                 backgroundColor: "white",
               }}
             ></div>
-            <div className='orientacaoTextDate'>
+            <div>
               Data limite para submissão: 27 de outubro de 2024.
             </div>
           </div>
@@ -69,7 +78,7 @@ export default function Orientacao() {
                 backgroundColor: "white",
               }}
             ></div>
-            <div className='orientacaoTextDate'>
+            <div>
               O evento será realizado de 12 a 14 de novembro de 2024.
             </div>
           </div>
@@ -88,8 +97,9 @@ export default function Orientacao() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontWeight: "bold",
-        marginTop: "40px"
+        fontWeight: "600",
+        marginTop: "40px",
+        fontSize: "18px"
       }}>
         Ver todas as orientações
       </div>
