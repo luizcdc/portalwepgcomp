@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateEventRequestDTO } from './event.dto';
+import {
+  CreateEventRequestDTO,
+  EventResponseDTO,
+  UpdateEventRequestDTO,
+} from './event.dto';
 
 @Injectable()
 export class EventService {
@@ -11,7 +15,9 @@ export class EventService {
       data: createEvent,
     });
 
-    return createdEvent;
+    const eventResponseDto = new EventResponseDTO(createdEvent);
+
+    return eventResponseDto;
   }
 
   async getById(id: number) {
@@ -21,6 +27,23 @@ export class EventService {
       },
     });
 
-    return event;
+    const eventResponseDto = new EventResponseDTO(event);
+
+    return eventResponseDto;
+  }
+
+  async update(id: number, updateEvent: UpdateEventRequestDTO) {
+    const updatedEvent = await this.prismaClient.event.update({
+      where: {
+        id,
+      },
+      data: updateEvent,
+    });
+
+    const eventResponseDto = new EventResponseDTO(updatedEvent);
+
+    console.log(eventResponseDto);
+
+    return eventResponseDto;
   }
 }
