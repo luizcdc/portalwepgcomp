@@ -11,6 +11,11 @@ export class EventController {
     return await this.eventService.create(createEventRequestDTO);
   }
 
+  @Get()
+  async getAll() {
+    return await this.eventService.getAll();
+  }
+
   @Get(':id')
   async getById(@Param('id') id: string) {
     return await this.eventService.getById(Number(id));

@@ -20,6 +20,18 @@ export class EventService {
     return eventResponseDto;
   }
 
+  async getAll() {
+    const events = await this.prismaClient.event.findMany({});
+
+    const eventsResponseDto = events.map(
+      (event) => new EventResponseDTO(event),
+    );
+
+    console.log(eventsResponseDto);
+
+    return eventsResponseDto;
+  }
+
   async getById(id: number) {
     const event = await this.prismaClient.event.findUnique({
       where: {
@@ -41,8 +53,6 @@ export class EventService {
     });
 
     const eventResponseDto = new EventResponseDTO(updatedEvent);
-
-    console.log(eventResponseDto);
 
     return eventResponseDto;
   }
