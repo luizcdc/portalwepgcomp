@@ -66,22 +66,21 @@ model DoctoralStudent {
 }
 
 model Event {
-  id             Int           @id @default(autoincrement())
-  name           String        @db.VarChar(255)
-  description    String?
-  url            String?       @db.VarChar(255)
-  location       String?       @db.VarChar(255)
-  startDate      DateTime?
-  endDate        DateTime?
-  submissionDate DateTime?
-  resultDate     DateTime?
-  awardDate      DateTime?
-  isActive       Boolean       @default(true)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @default(now())
-  committees     Committee[]
-  works          Work[]
-  certificates   Certificate[]
+  id                                Int      @id @default(autoincrement())
+  name                              String   @db.VarChar(255)
+  description                       String?
+  url                               String?  @db.VarChar(255)
+  location                          String?  @db.VarChar(255)
+  startDate                         DateTime
+  endDate                           DateTime
+  startSubmissionDate               DateTime
+  endSubmissionDate                 DateTime
+  presentationDuration              String
+  presentationsPerSession           Int
+  isEvaluationRestrictToLoggedUsers Boolean
+  isActive                          Boolean  @default(true)
+  createdAt                         DateTime @default(now())
+  updatedAt                         DateTime @default(now())
 }
 
 model Committee {
@@ -90,7 +89,6 @@ model Committee {
   professorId Int
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @default(now())
-  event       Event        @relation(fields: [eventId], references: [id])
   professor   Professor    @relation(fields: [professorId], references: [id])
   evaluations Evaluation[]
 
@@ -113,7 +111,6 @@ model Work {
   updatedAt         DateTime        @default(now())
   professor         Professor       @relation(fields: [professorId], references: [id])
   doctoralStudent   DoctoralStudent @relation(fields: [doctoralStudentId], references: [id])
-  event             Event           @relation(fields: [eventId], references: [id])
   presentation      Presentation?
   authors           Author[]
   evaluations       Evaluation[]
@@ -141,7 +138,6 @@ model Certificate {
   email     String   @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  event     Event    @relation(fields: [eventId], references: [id])
 }
 
 model Presentation {
