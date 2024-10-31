@@ -44,10 +44,6 @@ export class CreateEventRequestDTO {
 
   @IsBoolean()
   isEvaluationRestrictToLoggedUsers: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean = true;
 }
 
 export class EventResponseDTO {

@@ -78,7 +78,7 @@ model Event {
   presentationDuration              String
   presentationsPerSession           Int
   isEvaluationRestrictToLoggedUsers Boolean
-  isActive                          Boolean  @default(true)
+  isActive                          Boolean  @default(false)
   createdAt                         DateTime @default(now())
   updatedAt                         DateTime @default(now())
 }
