@@ -57,6 +57,30 @@ export class EventService {
     return eventResponseDto;
   }
 
+  async setActive(id: number) {
+    const updatedEvent = await this.prismaClient.$transaction(
+      async (prisma) => {
+        await prisma.event.updateMany({
+          where: {
+            isActive: true,
+            id: { not: id },
+          },
+          data: { isActive: false },
+        });
+
+        const updatedEvent = await prisma.event.update({
+          where: { id },
+          data: { isActive: true },
+        });
+
+        return updatedEvent;
+      },
+    );
+    const eventResponseDto = new EventResponseDTO(updatedEvent);
+
+    return eventResponseDto;
+  }
+
   async delete(id: number) {
     const deletedEvent = await this.prismaClient.event.delete({
       where: {
