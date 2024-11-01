@@ -56,4 +56,16 @@ export class EventService {
 
     return eventResponseDto;
   }
+
+  async delete(id: number) {
+    const deletedEvent = await this.prismaClient.event.delete({
+      where: {
+        id,
+      },
+    });
+
+    const eventResponseDto = new EventResponseDTO(deletedEvent);
+
+    return eventResponseDto;
+  }
 }
