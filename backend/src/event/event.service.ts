@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateEventRequestDTO,
@@ -39,12 +39,29 @@ export class EventService {
       },
     });
 
+    if (!event) {
+      throw new BadRequestException(
+        'Não existe nenhum evento com esse identificador',
+      );
+    }
+
     const eventResponseDto = new EventResponseDTO(event);
 
     return eventResponseDto;
   }
 
   async update(id: number, updateEvent: UpdateEventRequestDTO) {
+    const event = await this.prismaClient.event.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!event) {
+      throw new BadRequestException(
+        'Não existe nenhum evento com esse identificador',
+      );
+    }
     const updatedEvent = await this.prismaClient.event.update({
       where: {
         id,
@@ -58,6 +75,17 @@ export class EventService {
   }
 
   async setActive(id: number) {
+    const event = await this.prismaClient.event.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!event) {
+      throw new BadRequestException(
+        'Não existe nenhum evento com esse identificador',
+      );
+    }
     const updatedEvent = await this.prismaClient.$transaction(
       async (prisma) => {
         await prisma.event.updateMany({
@@ -82,6 +110,17 @@ export class EventService {
   }
 
   async delete(id: number) {
+    const event = await this.prismaClient.event.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!event) {
+      throw new BadRequestException(
+        'Não existe nenhum evento com esse identificador',
+      );
+    }
     const deletedEvent = await this.prismaClient.event.delete({
       where: {
         id,
