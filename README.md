@@ -42,8 +42,12 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
    ```
 3. **Executar o Back-end**:
    ```bash
-   npm run start-backend
+   cd backend
+   cp .env.example .env
+   npm run start
    ```
+
+   Obs.: As variáveis de ambiente com dados sensíveis estarão sem valor atribuído, e deverão ser consultadas na documentação via Notion.
 4. **Executar o Front-end**:
    ```bash
    npm run start-frontend
