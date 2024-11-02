@@ -1,8 +1,10 @@
 'use client'
 import {Poppins} from "next/font/google"
 import ScheduleCard from "./ScheduleCard"
-import { useState } from "react"
-import Calendar from "./UI/calendar"
+import { useRef, useState } from "react"
+import Calendar from "./UI/Calendar"
+import Modal from "./UI/Modal"
+import PresentationModal from "./PresentationModal"
 
 const mockup = [
     {
@@ -193,8 +195,30 @@ const mockupc = [
     },
 ]
 
+const mockupPresentention =
+    {
+        "titulo": "Titulo da Apresentação",
+        "doutorando": "Maria de Jesus",
+        "emailDoutorando": "mariadejesus@ufba.br",
+        "orientador": "Dr. João da Silva",
+        "data": "11/11",
+        "local": "Sala A ",
+        "horario": "14:30",
+        "descricao": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vestibulum justo vitae eros efficitur, sit amet tristique lacus accumsan. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Aenean vitae lacus sit amet ligula vehicula congue nec nec nisl. Proin vel eros nec lacus consequat cursus. Integer efficitur ipsum in enim fermentum fermentum. Nulla volutpat consectetur ante, at convallis sapien auctor et. Duis auctor est sed massa posuere, at scelerisque ipsum porttitor.",
+    }
 
 const mockup2 = [mockup, mockupb, mockupc]
+
+interface presentationData {
+    titulo: string,
+    doutorando: string,
+    emailDoutorando: string,
+    orientador: string,
+    data: string,
+    local: string,
+    horario: string,
+    descricao: string,
+}
 
 const poppins = Poppins({
   weight: ["400", "500", "600"],
@@ -205,13 +229,22 @@ const poppins = Poppins({
 export default function ScheduleSection() {
     const [date, setDate] = useState<number>(0)
     const [schedule, setSchedule] = useState<[]>()
+    const openModal = useRef<HTMLButtonElement | null>(null);
+    const [modalContent, setModalContent] = useState<presentationData>(mockupPresentention);
 
     function changeDate(date: number) {
         setDate(date);
     }
 
+    function openModalPresentation(item) {
+        setModalContent({ ...modalContent, doutorando: item.author });
+        openModal.current?.click()
+    }
+
+    
+
    return (
-        <div style={{fontFamily:poppins.style.fontFamily, width: "80vw", margin: "0 auto", padding: "20px 0"}}>
+        <div style={{fontFamily:poppins.style.fontFamily, width: "80vw", margin: "0 auto", padding: "20px 0 50px 0", borderBottom: '1px solid #000000'}}>
             <div style={{display: "flex", flexDirection: "column", width: "100%", gap: "15px"}}>
                 <h1 style={{fontSize: "50px", fontWeight: "700", lineHeight: "50px", textAlign: "center", color: "#054B75", marginBottom: '40px'}}>Programação</h1>
                 <div style={{display: "flex", gap: "30px", justifyContent: "center"}}>
@@ -228,22 +261,29 @@ export default function ScheduleSection() {
                         14 de novembro
                     </button>
                 </div>
-                <div style={{backgroundColor: '#0065A3', borderRadius: '10px', width: "89.26%", margin: '0 auto'}}>
-                    <p style={{color: 'white', fontSize: '13px', fontWeight: '700',lineHeight: '50px', margin: '0', textAlign: "center"}}>SALA A</p> 
+                <div style={{display: "flex", alignItems: "center", gap: "40px", width: "100%"}}>
+                    <p style={{margin: '0', width: '44px'}}></p>
+                    <div style={{backgroundColor: '#0065A3', borderRadius: '10px', width: "89.26%", margin: '0 auto', border: "1px solid #0065A3"}}>
+                        <p style={{color: 'white', fontSize: '13px', fontWeight: '700',lineHeight: '50px', margin: '0', textAlign: "center"}}>SALA A</p>
+                    </div>
+                    <p style={{margin: '0', width: '44px'}}></p>
                 </div>
+                
                 <div style={{display: "flex", flexDirection: "column", gap: "10px"}}>
                     {mockup2[date].map((item, index) => {
                         return (
-                            <div key={index + item.author} style={{display: "flex", alignItems: "center", gap: "40px", width: "100%"}}>
+                            <div key={index + item.author} style={{display: "flex", alignItems: "center", gap: "40px", width: "100%"}} >
                                 <p style={{margin: '0', width: '44px'}}>09:00</p>
-                                <ScheduleCard type={item.type} author={item.author} title={item.title}  />
+                                <ScheduleCard type={item.type} author={item.author} title={item.title} onClickEvent={() => openModalPresentation(item) } />
                                 <div style={{margin: '0', width: '44px'}}></div>
                             </div>
                         )
                     })}
                 </div>
             </div>
+            <Modal content={<PresentationModal
+                props={modalContent}
+            />} reference={openModal}  />
         </div>
     )
 };
-

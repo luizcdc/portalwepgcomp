@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 
-export default function ScheduleCard({ type, title, author }: {  type: string, title: string, author: string }) {
+export default function ScheduleCard({ type, title, author, onClickEvent }: {  type: string, title: string, author: string,  onClickEvent: React.MouseEventHandler<HTMLDivElement>;}) {
     const [over, setOver] = useState<boolean>(false)
 
     if (type == "outro") {    
@@ -24,12 +24,12 @@ export default function ScheduleCard({ type, title, author }: {  type: string, t
             </div>
         )
     }  return (
-        <div className="card" style={{border: "1px solid #F17F0C", fontFamily:poppins.style.fontFamily, width: '100%'}} onMouseOver={()=>setOver(true)} onMouseOut={()=>setOver(false)}>
+        <div className="card" style={{border: "1px solid #F17F0C", fontFamily:poppins.style.fontFamily, width: '100%', cursor: "pointer", backgroundColor: over ? "#F17F0C" : "white" }} onMouseOver={()=>setOver(true)} onMouseOut={()=>setOver(false)} onClick={onClickEvent}>
             <div className="card-body d-flex flex-row align-items-center gap-2">
                 <div>
                     <Image
                         src={PersonIcon}
-                        alt="PGCOMP Logo"
+                        alt="ícone pessoa"
                         width={65}
                         height={65}
                         priority={true}
