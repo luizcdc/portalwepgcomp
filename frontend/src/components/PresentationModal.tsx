@@ -36,7 +36,7 @@ export default function PresentationModal({props} : {props: presentationData}) {
             </div>
             <p><strong>Descrição da pesquisa: </strong>{props.descricao}</p>
             <div style={{width: "100%", display: "flex", justifyContent: "center"}}>
-                <button>Acessar Apresentação</button>
+                <button style={{border: "2px solid #FFA90F", borderRadius: "20px", color: "#FFA90F", padding: "3px 20px", backgroundColor: "white"}}>Acessar Apresentação</button>
             </div>
         </div>
     );
