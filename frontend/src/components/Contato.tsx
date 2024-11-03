@@ -1,16 +1,9 @@
 "use client";
-import { Poppins } from "next/font/google";
-
-const poppins = Poppins({
-  weight: ["400", "600"],
-  subsets: ["latin"],
-});
 
 export default function Contato() {
   return (
     <div
       style={{
-        fontFamily: poppins.style.fontFamily,
         display: "flex",
         flexDirection: "column",
         alignItems: "left",

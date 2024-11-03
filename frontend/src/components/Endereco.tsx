@@ -1,5 +1,4 @@
 "use client";
-import { Poppins } from "next/font/google";
 import React from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
@@ -7,11 +6,6 @@ import "leaflet/dist/leaflet.css";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-
-const poppins = Poppins({
-  weight: ["400", "600"],
-  subsets: ["latin"],
-});
 
 export default function Endereco() {
   const customIcon = new L.Icon({
@@ -27,7 +21,6 @@ export default function Endereco() {
   return (
     <div
       style={{
-        fontFamily: poppins.style.fontFamily,
         display: "flex",
         flexDirection: "column",
         alignItems: "left",
