@@ -17,12 +17,11 @@ export class UserService {
   async create(createUserDto: CreateUserRequestDto) {
     const existingUser = await this.prismaClient.user.findFirst({
       where: {
-        OR: [{ email: createUserDto.email }],
+       email: createUserDto.email,
       },
     });
 
-    if (existingUser) {
-      if (existingUser.email === createUserDto.email) {
+    if (existingUser && existingUser.email === createUserDto.email) {
         throw new AppException('Um usuário com esse email já existe.', 400);
       }
     }
