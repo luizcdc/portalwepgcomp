@@ -20,7 +20,7 @@ interface presentationData {
 
 export default function ScheduleSection() {
     const [date, setDate] = useState<number>(0)
-    const [schedule, setSchedule] = useState<[]>()
+    //const [schedule, setSchedule] = useState<[]>()
     const openModal = useRef<HTMLButtonElement | null>(null);
     const [modalContent, setModalContent] = useState<presentationData>(MockupPresentention);
 
