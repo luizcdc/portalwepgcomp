@@ -2,13 +2,13 @@
 
 import {MockOrganizacao} from "./../mocks/Organizacao"
 
-interface OrganizacaoProps {
+/* interface OrganizacaoProps {
     coordenador: string,
     comissao: string[],
     ti: string[],
     comunicaco: string[],
     administracao: string[]
-}
+} */
 
 export default function Organizacao(/*{props} : {props: OrganizacaoProps}*/) {
     function formatTeam(team: string[]) {
