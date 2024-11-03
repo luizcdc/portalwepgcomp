@@ -1,7 +1,7 @@
 'use client'
 import ScheduleCard from "./ScheduleCard"
 import { useRef, useState } from "react"
-import Calendar from "./UI/Calendar"
+import Calendar from "./UI/calendar"
 import Modal from "./UI/Modal"
 import PresentationModal from "./PresentationModal"
 import {MockupPresentention, MockupSchedule} from "./../mocks/Schedule"
