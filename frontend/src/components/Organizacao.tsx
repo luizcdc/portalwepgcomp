@@ -14,7 +14,7 @@ export default function Organizacao(/*{props} : {props: OrganizacaoProps}*/) {
     function formatTeam(team: string[]) {
         let stringTeam = '';
         team.forEach((item) => {stringTeam+=item+','})
-        stringTeam.slice(0, -1)
+        stringTeam = stringTeam.slice(0, -1)
         return stringTeam;
     }
 
