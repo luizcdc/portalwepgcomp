@@ -4,6 +4,7 @@ import backgroundOrientacao from "@/assets/images/background_orientacao.svg";
 export default function Orientacao() {
   return (
     <div
+      id='Orientacao'
       style={{
         backgroundImage: `url(${backgroundOrientacao.src})`,
         backgroundSize: "cover",
