@@ -1,33 +1,25 @@
 "use client";
-import { Poppins } from "next/font/google";
 import React from "react";
-import L from "leaflet";
-import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
+import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-const poppins = Poppins({
-  weight: ["400", "600"],
-  subsets: ["latin"],
-});
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+
+function MapPlaceholder() {
+  return <p>Instituto de Computação da UFBA - PAF 2</p>;
+}
 
 export default function Endereco() {
-  const customIcon = new L.Icon({
-    iconUrl: markerIcon.src,
-    iconRetinaUrl: markerIcon2x.src,
-    shadowUrl: markerShadow.src,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-  });
-
   return (
     <div
       style={{
-        fontFamily: poppins.style.fontFamily,
         display: "flex",
         flexDirection: "column",
         alignItems: "left",
@@ -39,9 +31,7 @@ export default function Endereco() {
 
       <div className='fs-6'>
         <div className='fw-bold'>Instituto de Computação da UFBA - PAF 2</div>
-
         <div>Avenida Milton Santos, s/n - Campus de Ondina</div>
-
         <div>CEP 40.170-110, Salvador - Bahia.</div>
       </div>
 
@@ -51,6 +41,7 @@ export default function Endereco() {
         <MapContainer
           center={[-13.0, -38.507]}
           zoom={30}
+          placeholder={<MapPlaceholder />}
           style={{
             height: "180px",
             width: "150%",
@@ -61,9 +52,6 @@ export default function Endereco() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
           />
-          <Marker position={[-13.0, -38.507]} icon={customIcon}>
-            <Popup>Instituto de Computação da UFBA - PAF 2</Popup>
-          </Marker>
         </MapContainer>
       </div>
     </div>
