@@ -23,8 +23,8 @@ export default function Modal({content, reference} : {content: React.ReactNode, 
             {isOpen ? 
             <>
                 <div style={{width: "100vw", height: "100vh", position: "fixed", backgroundColor: "#808080ba", display: "flex", justifyContent: "center", alignItems: "center", left: "0", top: "0"}} onClick={() => closeModal()} ></div>
-                <div style={{width: "40vw", backgroundColor: "white", borderRadius: "10px", border: "3px solid #F17F0C", position: "fixed", zIndex: "100", left: "30vw", top: "25vh"}}>
-                    <div onClick={() => closeModal()} style={{position: "relative", left: "calc(40vw - 45px)", top: "10px", width: "24px", height: "24px", cursor: "pointer"}}>
+                <div style={{width: "60vw", maxWidth: "800px", backgroundColor: "white", borderRadius: "10px", border: "3px solid #F17F0C", position: "fixed", zIndex: "100", left: "50%", top: "50%", transform: "translate(-50%, -50%)"}}>
+                    <div onClick={() => closeModal()} style={{position: "relative", left: "94%", top: "10px", width: "24px", height: "24px", cursor: "pointer"}}>
                         <Image
                             src={Close}
                             alt="ícone de fechar"
