@@ -1,236 +1,28 @@
 'use client'
-import {Poppins} from "next/font/google"
 import ScheduleCard from "./ScheduleCard"
 import { useRef, useState } from "react"
 import Calendar from "./UI/Calendar"
 import Modal from "./UI/Modal"
 import PresentationModal from "./PresentationModal"
-
-const mockup = [
-    {
-        "type":"outro",
-        "title":"Abertura (Autitório A)",
-        "author" : "Prof. Daniela Barreiro Claro (coordenadora do PGCOMP-UFBA)"
-    },
-    {
-        "type":"outro",
-        "title":"Coffee break",
-        "author" : ""
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"outro",
-        "title":"Almoço",
-        "author" : ""
-    },
-    {
-        "type":"outro",
-        "title":"Palestra - Nome",
-        "author" : "Prof. Fred Durão"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-]
-
-const mockupb = [
-    {
-        "type":"outro",
-        "title":"Abertura (Autitório A)",
-        "author" : "Prof. Daniela Barreiro Claro (coordenadora do PGCOMP-UFBA)"
-    },
-    {
-        "type":"outro",
-        "title":"Coffee break",
-        "author" : ""
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa B",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa B",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"outro",
-        "title":"Almoço",
-        "author" : ""
-    },
-    {
-        "type":"outro",
-        "title":"Palestra - Nome",
-        "author" : "Prof. Fred Durão"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-]
-
-const mockupc = [
-    {
-        "type":"outro",
-        "title":"Abertura (Autitório A)",
-        "author" : "Prof. Daniela Barreiro Claro (coordenadora do PGCOMP-UFBA)"
-    },
-    {
-        "type":"outro",
-        "title":"Coffee break",
-        "author" : ""
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa C",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa C",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"outro",
-        "title":"Almoço",
-        "author" : ""
-    },
-    {
-        "type":"outro",
-        "title":"Palestra - Nome",
-        "author" : "Prof. Fred Durão"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-    {
-        "type":"apresentacao",
-        "title":"Titulo da pesquisa",
-        "author" : "Nome do(a) Apresentador(a)"
-    },
-]
-
-const mockupPresentention =
-    {
-        "titulo": "Titulo da Apresentação",
-        "doutorando": "Maria de Jesus",
-        "emailDoutorando": "mariadejesus@ufba.br",
-        "orientador": "Dr. João da Silva",
-        "data": "11/11",
-        "local": "Sala A ",
-        "horario": "14:30",
-        "descricao": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vestibulum justo vitae eros efficitur, sit amet tristique lacus accumsan. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Aenean vitae lacus sit amet ligula vehicula congue nec nec nisl. Proin vel eros nec lacus consequat cursus. Integer efficitur ipsum in enim fermentum fermentum. Nulla volutpat consectetur ante, at convallis sapien auctor et. Duis auctor est sed massa posuere, at scelerisque ipsum porttitor.",
-    }
-
-const mockup2 = [mockup, mockupb, mockupc]
+import {MockupPresentention, MockupSchedule} from "./../mocks/Schedule"
 
 interface presentationData {
     titulo: string,
     doutorando: string,
     emailDoutorando: string,
     orientador: string,
-    data: string,
+    date: string,
     local: string,
-    horario: string,
+    time: string,
     descricao: string,
 }
-
-const poppins = Poppins({
-  weight: ["400", "500", "600"],
-  subsets: ["latin"],
-});
 
 
 export default function ScheduleSection() {
     const [date, setDate] = useState<number>(0)
     const [schedule, setSchedule] = useState<[]>()
     const openModal = useRef<HTMLButtonElement | null>(null);
-    const [modalContent, setModalContent] = useState<presentationData>(mockupPresentention);
+    const [modalContent, setModalContent] = useState<presentationData>(MockupPresentention);
 
     function changeDate(date: number) {
         setDate(date);
@@ -244,7 +36,7 @@ export default function ScheduleSection() {
     
 
    return (
-        <div style={{fontFamily:poppins.style.fontFamily, width: "80vw", margin: "0 auto", padding: "20px 0 50px 0", borderBottom: '1px solid #000000'}}>
+        <div style={{width: "80vw", margin: "0 auto", padding: "20px 0 50px 0", borderBottom: '1px solid #000000'}}>
             <div style={{display: "flex", flexDirection: "column", width: "100%", gap: "15px"}}>
                 <h1 style={{fontSize: "50px", fontWeight: "700", lineHeight: "50px", textAlign: "center", color: "#054B75", marginBottom: '40px'}}>Programação</h1>
                 <div style={{display: "flex", gap: "30px", justifyContent: "center"}}>
@@ -270,7 +62,7 @@ export default function ScheduleSection() {
                 </div>
                 
                 <div style={{display: "flex", flexDirection: "column", gap: "10px"}}>
-                    {mockup2[date].map((item, index) => {
+                    {MockupSchedule[date].map((item, index) => {
                         return (
                             <div key={index + item.author} style={{display: "flex", alignItems: "center", gap: "40px", width: "100%"}} >
                                 <p style={{margin: '0', width: '44px'}}>09:00</p>
