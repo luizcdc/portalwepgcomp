@@ -49,3 +49,8 @@ npm run lint
 ## Variáveis de ambiente
 
 Devem ser inseridas igualmente nas variáveis de produção (**.env.production**), desenvolvimento (**.env.developmentß**) e local(**.env.local**).
+
+## Ambientes da aplicação
+
+PRODUÇÃO - https://portal-wepgcomp-client.vercel.app
+DESENVOLVIMENTO - https://portal-wepgcomp-client-development.vercel.app
