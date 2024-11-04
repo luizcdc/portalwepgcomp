@@ -58,7 +58,7 @@ export default function Orientacao() {
                 backgroundColor: "white",
               }}
             ></div>
-            <div>Data limite para submissão: 27 de outubro de 2024.</div>
+            <div>Data limite para submissão: 27 de outubro de 2025.</div>
           </div>
 
           <div className='d-flex flex-direction-row align-items-center gap-2'>
@@ -70,7 +70,7 @@ export default function Orientacao() {
                 backgroundColor: "white",
               }}
             ></div>
-            <div>O evento será realizado de 12 a 14 de novembro de 2024.</div>
+            <div>O evento será realizado de 12 a 14 de novembro de 2025.</div>
           </div>
         </div>
       </div>

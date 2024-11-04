@@ -29,11 +29,11 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div className="container" style={{display: "flex", flexDirection: "column", flexGrow: 1, color: "black"}}>
       <div className="container">
         <h1 className="d-flex justify-content-center mt-5 fw-normal text-primary">
           WEPGCOMP
-          <span className="fw-bold text-primary ms-2">2024</span>
+          <span className="fw-bold text-primary ms-2">2025</span>
         </h1>
         <hr className="border border-warning border-2"></hr>
         <h2 className="d-flex justify-content-center mb-4">Acesse sua conta</h2>
@@ -67,7 +67,7 @@ export default function Login() {
             />
 
             <div className="text-end">
-              <a href="#" className="link-underline link-underline-opacity-0">
+              <a href="#" className="link-underline link-underline-opacity-0" style={{color: "blue"}}>
                 Esqueceu sua senha
               </a>
             </div>
@@ -86,6 +86,7 @@ export default function Login() {
           <Link
             href="/Cadastro"
             className="link-underline link-underline-opacity-0 ms-1"
+            style={{color: "blue"}}
           >
             Cadastre-se
           </Link>
