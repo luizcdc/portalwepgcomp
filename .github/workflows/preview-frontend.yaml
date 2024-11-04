@@ -1,7 +1,7 @@
 name: Vercel Preview Frontend Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: prj_6x1aXGtqVdtPTg7oUv2Ljgcaq9qA
+  VERCEL_PROJECT_ID: prj_y1zYc6ywtGS1Nn4D1VBPqDdf6is4
 on:
   push:
     branches:
