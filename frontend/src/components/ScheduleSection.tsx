@@ -61,7 +61,7 @@ export default function ScheduleSection() {
             marginBottom: "40px",
           }}
         >
-          Programa
+          Programação (EDITADO)
         </h1>
         <div style={{ display: "flex", gap: "30px", justifyContent: "center" }}>
           <button
