@@ -8,6 +8,7 @@ export default function Contato() {
         flexDirection: "column",
         alignItems: "left",
         gap: "20px",
+        color: "white"
       }}
     >
       <div className='fs-1 fw-bold text-left text-white'>Contato</div>
