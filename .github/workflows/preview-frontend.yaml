@@ -4,8 +4,8 @@ env:
   VERCEL_PROJECT_ID: prj_6x1aXGtqVdtPTg7oUv2Ljgcaq9qA
 on:
   push:
-    branches-ignore:
-      - main
+    branches:
+      - develop
     paths:
       - frontend/**
 
