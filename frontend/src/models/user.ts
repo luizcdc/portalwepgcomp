@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 interface RegisterUserParams {
     name: string,
     email: string,

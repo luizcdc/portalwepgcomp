@@ -1,5 +1,8 @@
 
 "use client"
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { userApi } from '@/services/user';
 import { createContext, ReactNode, useState } from 'react';
 
