@@ -14,6 +14,7 @@ export default function Home() {
       style={{
         display: "flex",
         flexDirection: "column",
+        gap: "50px",
       }}
     >
       <Carousel />

@@ -8,7 +8,7 @@ export default function Orientacao() {
       style={{
         backgroundImage: `url(${backgroundOrientacao.src})`,
         backgroundSize: "cover",
-        width: "1270px",
+        width: "100%",
         height: "600px",
         display: "flex",
         flexDirection: "column",

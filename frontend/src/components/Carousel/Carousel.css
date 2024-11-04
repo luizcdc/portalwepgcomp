@@ -14,13 +14,17 @@
     }
 
     .indicators-content{
-        bottom: 30%;
+        bottom: 35%;
         z-index: 3;
 
         .indicators-buttons{
             border-radius: 50%;
             width: 15px; 
             height: 15px;
+        }
+
+        @media (max-width: 2800px) {          
+            bottom: 30%;     
         }
           
         @media (max-width: 576px) {          
@@ -65,7 +69,7 @@
             flex-direction: column;
             margin-left: 3rem;
 
-            @media (max-width: 576px) {
+            @media (max-width: 900px) {
                 margin-left: 0;
 
                 p:last-of-type{
@@ -86,15 +90,12 @@
 }
 
 
-
-
-
 .carousel-slide{
     margin-bottom: 40px;
 
     .carousel-slide-content{
         width: 100vw;
-        height: 70vh;
+        height: 80vh;
         min-height: 400px;
         display: flex;
         flex-direction: column;
@@ -104,6 +105,18 @@
         position: relative;
         z-index: 2;
         padding: 1rem 1rem 4rem;
+
+        >*:last-child{
+            margin-bottom: 8rem;
+
+            @media (max-width: 578px) {          
+                margin-bottom: 5rem;
+            }
+        }
+
+        @media (max-width: 2000px) {          
+            height: 70vh;   
+        }
     }
     
     .shaddow-span {
@@ -111,14 +124,33 @@
         width: 100%;
         height: 300px;
         position: absolute;
-        bottom: 180px;
-        right: 150px;
-        border-radius: 80px;
+        bottom: 375px;
+        right: 390px;
+        border-radius: 60px;
         transform: rotate(13deg);
         z-index: 1;
     }
+
+      @media (max-width: 2800px) { 
+            .shaddow-span  {
+            height: 250px;
+            bottom: 230px;
+            right: 165px;
+            border-radius: 60px;
+            }
+        }
+
       
-      @media (max-width: 1280px) { 
+        @media (max-width: 2000px) { 
+            .shaddow-span  {
+            height: 250px;
+            bottom: 160px;
+            right: 165px;
+            border-radius: 60px;
+            }
+        }
+      
+      @media (max-width: 1400px) { 
         .shaddow-span  {
           height: 250px;
           bottom: 100px;

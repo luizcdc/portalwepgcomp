@@ -9,7 +9,7 @@ export default function Realizacao() {
       style={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "flex-start",
+        justifyContent: "center",
         alignItems: "center",
         height: "240px",
         gap: "30%",

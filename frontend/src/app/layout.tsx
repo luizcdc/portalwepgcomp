@@ -5,9 +5,10 @@ import BootstrapClient from "@/components/BootstrapClient";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
+import Providers from "@/context";
 
 export const metadata: Metadata = {
-  title: "WEPGCOMP 2024",
+  title: "WEPGCOMP 2025",
 };
 
 export default function RootLayout({
@@ -16,11 +17,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang="en">
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <Providers>
+          <Header />
+          {children}
+          <Footer />
+        </Providers>
       </body>
       <BootstrapClient />
     </html>

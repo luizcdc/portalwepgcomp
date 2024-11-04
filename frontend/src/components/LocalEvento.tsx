@@ -15,9 +15,10 @@ export default function LocalEvento() {
       <div
         style={{
           display: "flex",
+          justifyContent: "space-evenly",
           flexDirection: "row",
           gap: "40px",
-          marginLeft: "20px",
+          paddingRight: "10rem",
         }}
       >
         <Contato />
