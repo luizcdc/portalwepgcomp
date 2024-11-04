@@ -20,9 +20,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <Header />
-          {children}
-          <Footer />
+          <div style={{display: "flex", flexDirection: "column", height: '100vh'}}>
+            <Header />
+            {children}
+            <Footer />
+          </div>
         </Providers>
       </body>
       <BootstrapClient />

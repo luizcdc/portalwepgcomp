@@ -8,7 +8,7 @@ export const CarouselMock = {
     title: "WEPGCOMP 2025",
     subtitles: [
       "Workshop de Estudantes da Pós-Graduação em Ciência da Computação do WEPGCOMP-UFBA",
-      "de 12 a 14 de novembro de 2024",
+      "de 12 a 14 de novembro de 2025",
     ],
     labelButton: "Confira a Programação",
   },
@@ -25,9 +25,9 @@ export const CarouselMock = {
     backgroundUrl: Slide3.src,
     title: "DATAS IMPORTANTES",
     subtitles: [
-      "Inscrições: até 14 de novembro de 2024.",
-      "Data do evento: 12 a 14 de novembro de 2024.",
-      "Data limite para submissão: 27 de outubro de 2024.",
+      "Inscrições: até 14 de novembro de 2025.",
+      "Data do evento: 12 a 14 de novembro de 2025.",
+      "Data limite para submissão: 27 de outubro de 2025.",
     ],
     labelButton: "INSCREVA-SE JÁ!",
   },
