@@ -1,23 +1,14 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import BootstrapClient from "@/components/BootstrapClient";
-// import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import "./globals.css";
+import Providers from "@/context";
 
 export const metadata: Metadata = {
-  title: "WEPGCOMP 2024",
+  title: "WEPGCOMP 2025",
 };
 
 export default function RootLayout({
@@ -27,10 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <Providers>
+          <div style={{display: "flex", flexDirection: "column", height: '100vh'}}>
+            <Header />
+            {children}
+            <Footer />
+          </div>
+        </Providers>
       </body>
       <BootstrapClient />
     </html>

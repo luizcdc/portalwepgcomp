@@ -1,7 +1,10 @@
 export default function Footer() {
     return (
-        <div className="footer navbar-fixed-bottom text-center bg-body-secondary">
-            <p>{`© 2024 WEPGCOMP`}</p>
+        <div className="footer navbar-fixed-bottom text-center text-white pt-2"
+        style={{
+            backgroundColor: "#AAAAAA",
+        }}>
+            <div>© 2025 WEPGCOMP</div>
         </div>
     );
 };
