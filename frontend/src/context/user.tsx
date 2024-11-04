@@ -9,7 +9,7 @@ interface UserProps {
   
 interface UserProviderData {
     loadingCreateUser: boolean,
-    user: User;
+    user: User | null;
     registerUser: (body: RegisterUserParams) => Promise<void>;
 }
 
@@ -17,7 +17,7 @@ export const UserContext = createContext<UserProviderData>({} as UserProviderDat
 
 export const UserProvider = ({ children }: UserProps) => {
     const [loadingCreateUser, setLoadingCreateUser] = useState<boolean>(false);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const registerUser = async (body: RegisterUserParams) => {
         setLoadingCreateUser(true);
@@ -28,6 +28,7 @@ export const UserProvider = ({ children }: UserProps) => {
             console.log("criado");
           })
           .catch(err => {
+            console.log(err);
             setUser(null);
             console.log("erro ao criar")
         })
