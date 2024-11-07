@@ -7,6 +7,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { StudentModule } from './student/student.module';
 import { ProfessorModule } from './professor/professor.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailingModule } from './mailing/mailing.module';
+import { QueueModule } from './queue/queue.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { ConfigModule } from '@nestjs/config';
     StudentModule,
     ProfessorModule,
     ConfigModule.forRoot(),
+    MailingModule,
+    QueueModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
