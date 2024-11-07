@@ -1,13 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import {
-  RegisterStudentRequestDto,
-  RegisterStudentResponseDto,
-  RegisterProfessorRequestDto,
-  RegisterProfessorResponseDto,
-} from './user.dto';
-import { UserStatus } from '@prisma/client';
+import { CreateUserDto, Profile, UserLevel } from './dto/create-user.dto';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -20,8 +14,7 @@ describe('UserController', () => {
         {
           provide: UserService,
           useValue: {
-            registerStudent: jest.fn(),
-            registerProfessor: jest.fn(),
+            create: jest.fn(),
           },
         },
       ],
@@ -35,79 +28,38 @@ describe('UserController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('registerStudent', () => {
-    it('should register a student and return a RegisterStudentResponseDto', async () => {
-      const registerStudentDto: RegisterStudentRequestDto = {
-        name: 'John',
-        surname: 'Doe',
-        registration: '2021001',
-        email: 'student@example.com',
-        advisor: 'Dr. Smith',
-        photo: 'student-photo-url',
-        program: 'mestrado',
+  describe('create', () => {
+    it('should create a new user and return the result', async () => {
+      const createUserDto: CreateUserDto = {
+        name: 'John Doe',
+        email: 'johndoe@example.com',
         password: 'Password@1234',
+        registrationNumber: '2021001',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+        isActive: true,
       };
 
-      const studentResponse: RegisterStudentResponseDto = {
+      const userResponse = {
         id: '1',
-        name: 'John',
-        surname: 'Doe',
-        registration: '2021001',
-        email: 'student@example.com',
-        advisor: 'Dr. Smith',
-        photo: 'student-photo-url',
-        program: 'mestrado',
-        status: UserStatus.ATIVO,
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        registrationNumber: '2021001',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      jest
-        .spyOn(userService, 'registerStudent')
-        .mockResolvedValue(studentResponse);
+      jest.spyOn(userService, 'create').mockResolvedValue(userResponse);
 
-      const result = await controller.registerStudent(registerStudentDto);
+      const result = await controller.create(createUserDto);
 
-      expect(userService.registerStudent).toHaveBeenCalledWith(
-        registerStudentDto,
-      );
-      expect(result).toEqual(studentResponse);
-    });
-  });
-
-  describe('registerProfessor', () => {
-    it('should register a professor and return a RegisterProfessorResponseDto', async () => {
-      const registerProfessorDto: RegisterProfessorRequestDto = {
-        name: 'Jane',
-        surname: 'Smith',
-        registration: 'T2021001',
-        email: 'professor@example.com',
-        photo: 'professor-photo-url',
-        password: 'Password@1234',
-      };
-
-      const professorResponse: RegisterProfessorResponseDto = {
-        id: '2',
-        name: 'Jane',
-        surname: 'Smith',
-        registration: 'T2021001',
-        email: 'professor@example.com',
-        photo: 'professor-photo-url',
-        status: UserStatus.PENDENTE,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      jest
-        .spyOn(userService, 'registerProfessor')
-        .mockResolvedValue(professorResponse);
-
-      const result = await controller.registerProfessor(registerProfessorDto);
-
-      expect(userService.registerProfessor).toHaveBeenCalledWith(
-        registerProfessorDto,
-      );
-      expect(result).toEqual(professorResponse);
+      expect(userService.create).toHaveBeenCalledWith(createUserDto);
+      expect(result).toEqual(userResponse);
     });
   });
 });
