@@ -50,49 +50,61 @@ enum SubmissionStatus {
   Rejected
 }
 
+enum PanelistStatus {
+  Pending
+  Confirmed
+  Rejected
+  Present
+  Missing
+}
+
 enum PresentationBlockType {
   General
   Presentation
 }
 
 model UserAccount {
-  id                 String       @id @default(uuid())
-  name               String       @db.VarChar(255)
-  email              String       @unique @db.VarChar(255)
-  password           String       @db.VarChar(255)
-  registrationNumber String?      @unique @db.VarChar(20)
-  photoFilePath      String?      @db.VarChar(255)
-  profile            Profile      @default(DoctoralStudent)
-  level              UserLevel    @default(Default)
-  isActive           Boolean      @default(true)
-  advisorFor         Submission[] @relation("AdvisorRelation")
-  mainAuthored       Submission[] @relation("MainAuthorRelation")
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @default(now())
+  id                 String            @id @default(uuid())
+  name               String            @db.VarChar(255)
+  email              String            @unique @db.VarChar(255)
+  password           String            @db.VarChar(255)
+  registrationNumber String?           @unique @db.VarChar(20)
+  photoFilePath      String?           @db.VarChar(255)
+  profile            Profile           @default(DoctoralStudent)
+  level              UserLevel         @default(Default)
+  isActive           Boolean           @default(true)
+  advisorFor         Submission[]      @relation("AdvisorRelation")
+  mainAuthored       Submission[]      @relation("MainAuthorRelation")
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
   Committee          Committee[]
   Evaluation         Evaluation[]
+  AwardedPanelist    AwardedPanelist[]
+  Panelist           Panelist[]
 }
 
 model EventEdition {
-  id                                String        @id @default(uuid())
-  name                              String        @db.VarChar(255)
-  description                       String        @db.Text
-  callForPapersText                 String        @db.Text
-  partnersText                      String        @db.Text
-  url                               String        @db.VarChar(255)
-  location                          String        @db.VarChar(255)
+  id                                String            @id @default(uuid())
+  name                              String            @db.VarChar(255)
+  description                       String            @db.Text
+  callForPapersText                 String            @db.Text
+  partnersText                      String            @db.Text
+  url                               String            @db.VarChar(255)
+  location                          String            @db.VarChar(255)
   startDate                         DateTime
   endDate                           DateTime
   submissionDeadline                DateTime
-  isActive                          Boolean       @default(false)
-  isEvaluationRestrictToLoggedUsers Boolean       @default(true)
+  isActive                          Boolean           @default(false)
+  isEvaluationRestrictToLoggedUsers Boolean           @default(true)
   presentationDuration              Int
   presentationsPerPresentationBlock Int
-  createdAt                         DateTime      @default(now())
-  updatedAt                         DateTime      @default(now())
+  createdAt                         DateTime          @default(now())
+  updatedAt                         DateTime          @updatedAt
   submissions                       Submission[]
   Committee                         Committee[]
   Certificate                       Certificate[]
+  AwardedPanelist                   AwardedPanelist[]
+  Room                              Room[]
 }
 
 model Committee {
@@ -102,7 +114,7 @@ model Committee {
   level        CommitteeLevel
   role         Role
   createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   eventEdition EventEdition   @relation(fields: [eventId], references: [id])
   user         UserAccount    @relation(fields: [userId], references: [id])
 
@@ -116,7 +128,7 @@ model EvaluationCriteria {
   description String       @db.Text
   weightRadio Float?
   createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   Evaluation  Evaluation[]
 }
 
@@ -132,7 +144,7 @@ model Evaluation {
   email                String             @db.VarChar(255)
   expertise            String             @db.VarChar(255)
   createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
   user                 UserAccount        @relation(fields: [userId], references: [id])
   evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id])
   submission           Submission         @relation(fields: [submissionId], references: [id])
@@ -151,7 +163,7 @@ model Submission {
   ranking      Int?
   status       SubmissionStatus
   createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
   advisor      UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id])
   mainAuthor   UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id])
   eventEdition EventEdition     @relation(fields: [eventId], references: [id])
@@ -160,29 +172,62 @@ model Submission {
   CoAuthor     CoAuthor[]
 }
 
+model Panelist {
+  id                  String            @id @default(uuid())
+  presentationBlockId String
+  userId              String
+  status              PanelistStatus    @default(Pending)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  presentationBlock   PresentationBlock @relation(fields: [presentationBlockId], references: [id])
+  user                UserAccount       @relation(fields: [userId], references: [id])
+}
+
+model AwardedPanelist {
+  eventEditionId String
+  userId         String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id])
+  user           UserAccount  @relation(fields: [userId], references: [id])
+
+  @@id([eventEditionId, userId])
+}
+
+model Room {
+  id             String       @id @default(uuid())
+  eventEditionId String
+  name           String       @db.VarChar(255)
+  description    String?      @db.Text
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id])
+}
+
 model Certificate {
   id           String       @id @default(uuid())
   eventId      String
   name         String       @db.VarChar(255)
   email        String       @db.VarChar(255)
   createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   eventEdition EventEdition @relation(fields: [eventId], references: [id])
 }
 
 model PresentationBlock {
-  id         String                @id @default(uuid())
-  eventId    String
-  roomId     String?
-  type       PresentationBlockType
-  title      String?               @db.VarChar(255)
-  speakerName String?              @db.VarChar(255)
-  startTime DateTime
-  duration   Int
-  createdAt  DateTime              @default(now())
-  updatedAt  DateTime              @default(now())
+  id          String                @id @default(uuid())
+  eventId     String
+  roomId      String?
+  type        PresentationBlockType
+  title       String?               @db.VarChar(255)
+  speakerName String?               @db.VarChar(255)
+  startTime   DateTime
+  duration    Int
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
 
   Presentation Presentation[]
+  Panelist     Panelist[]
 }
 
 model Presentation {
@@ -192,7 +237,7 @@ model Presentation {
   positionWithinPresentationBlock String             @db.VarChar(255)
   status                          PresentationStatus
   createdAt                       DateTime           @default(now())
-  updatedAt                       DateTime           @default(now())
+  updatedAt                       DateTime           @updatedAt
   submission                      Submission         @relation(fields: [submissionId], references: [id])
   presentationBlock               PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
 }
@@ -203,6 +248,6 @@ model CoAuthor {
   name        String     @db.VarChar(255)
   institution String     @db.VarChar(255)
   createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   submision   Submission @relation(fields: [submisionId], references: [id])
 }
