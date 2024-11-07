@@ -16,154 +16,193 @@ datasource db {
 enum Profile {
   DoctoralStudent
   Professor
+  Listener
 }
 
-enum Status {
+enum UserLevel {
+  Superadmin
+  Admin
+  Default
+}
+
+enum CommitteeLevel {
+  Committee
+  Coordinator
+}
+
+enum Role {
+  OrganizingCommittee
+  StudentVolunteers
+  AdministativeSupport
+  Communication
+  TISupport
+}
+
+enum PresentationStatus {
+  ToPresent
+  Presented
+  NotPresented
+}
+
+enum SubmissionStatus {
   Submitted
-  Accepted
-  Rejected
-  Pending
   Confirmed
-  Cancelled
-  Completed
+  Rejected
 }
 
-model User {
-  id              Int              @id @default(autoincrement())
-  name            String           @db.VarChar(255)
-  email           String           @unique @db.VarChar(255)
-  password        String           @db.VarChar(255)
-  photoFilePath   String?          @db.VarChar(255)
-  profile         Profile          @default(DoctoralStudent)
-  isAdmin         Boolean          @default(false)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @default(now())
-  professor       Professor?
-  doctoralStudent DoctoralStudent?
+enum PresentationBlockType {
+  General
+  Presentation
 }
 
-model Professor {
-  id            Int         @id @default(autoincrement())
-  userId        Int         @unique
-  areaExpertise String?     @db.VarChar(255)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @default(now())
-  user          User        @relation(fields: [userId], references: [id])
-  committees    Committee[]
-  works         Work[]
+model UserAccount {
+  id                 String       @id @default(uuid())
+  name               String       @db.VarChar(255)
+  email              String       @unique @db.VarChar(255)
+  password           String       @db.VarChar(255)
+  registrationNumber String?      @unique @db.VarChar(20)
+  photoFilePath      String?      @db.VarChar(255)
+  profile            Profile      @default(DoctoralStudent)
+  level              UserLevel    @default(Default)
+  isActive           Boolean      @default(true)
+  advisorFor         Submission[] @relation("AdvisorRelation")
+  mainAuthored       Submission[] @relation("MainAuthorRelation")
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @default(now())
+  Committee          Committee[]
+  Evaluation         Evaluation[]
 }
 
-model DoctoralStudent {
-  id           Int      @id @default(autoincrement())
-  userId       Int      @unique
-  registration String?  @unique @db.VarChar(20)
-  eligible     Boolean  @default(false)
-  biography    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id])
-  works        Work[]
-}
-
-model Event {
-  id             Int           @id @default(autoincrement())
-  name           String        @db.VarChar(255)
-  description    String?
-  url            String?       @db.VarChar(255)
-  location       String?       @db.VarChar(255)
-  startDate      DateTime?
-  endDate        DateTime?
-  submissionDate DateTime?
-  resultDate     DateTime?
-  awardDate      DateTime?
-  isActive       Boolean       @default(true)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @default(now())
-  committees     Committee[]
-  works          Work[]
-  certificates   Certificate[]
+model EventEdition {
+  id                                String        @id @default(uuid())
+  name                              String        @db.VarChar(255)
+  description                       String        @db.Text
+  callForPapersText                 String        @db.Text
+  partnersText                      String        @db.Text
+  url                               String        @db.VarChar(255)
+  location                          String        @db.VarChar(255)
+  startDate                         DateTime
+  endDate                           DateTime
+  submissionDeadline                DateTime
+  isActive                          Boolean       @default(false)
+  isEvaluationRestrictToLoggedUsers Boolean       @default(true)
+  presentationDuration              Int
+  presentationsPerPresentationBlock Int
+  createdAt                         DateTime      @default(now())
+  updatedAt                         DateTime      @default(now())
+  submissions                       Submission[]
+  Committee                         Committee[]
+  Certificate                       Certificate[]
 }
 
 model Committee {
-  id          Int          @id @default(autoincrement())
-  eventId     Int
-  professorId Int
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now())
-  event       Event        @relation(fields: [eventId], references: [id])
-  professor   Professor    @relation(fields: [professorId], references: [id])
-  evaluations Evaluation[]
+  id           String         @id @default(uuid())
+  eventId      String
+  userId       String
+  level        CommitteeLevel
+  role         Role
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now())
+  eventEdition EventEdition   @relation(fields: [eventId], references: [id])
+  user         UserAccount    @relation(fields: [userId], references: [id])
 
-  @@unique([eventId, professorId])
+  @@unique([eventId, userId])
 }
 
-model Work {
-  id                Int             @id @default(autoincrement())
-  professorId       Int
-  doctoralStudentId Int
-  eventId           Int
-  title             String          @db.VarChar(255)
-  summary           String?
-  overallGrade      Float?
-  committeeGrade    Float?
-  pdfFilePath       String?         @db.VarChar(255)
-  submissionDate    DateTime?
-  status            Status
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @default(now())
-  professor         Professor       @relation(fields: [professorId], references: [id])
-  doctoralStudent   DoctoralStudent @relation(fields: [doctoralStudentId], references: [id])
-  event             Event           @relation(fields: [eventId], references: [id])
-  presentation      Presentation?
-  authors           Author[]
-  evaluations       Evaluation[]
+model EvaluationCriteria {
+  id          String       @id @default(uuid())
+  eventId     String
+  title       String       @db.VarChar(255)
+  description String       @db.Text
+  weightRadio Float?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
+  Evaluation  Evaluation[]
 }
 
 model Evaluation {
-  id          Int       @id @default(autoincrement())
-  committeeId Int
-  workId      Int
-  grade       Float
-  comments    String?
-  name        String    @db.VarChar(255)
-  email       String    @db.VarChar(255)
-  expertise   String    @db.VarChar(255)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
-  committee   Committee @relation(fields: [committeeId], references: [id])
-  work        Work      @relation(fields: [workId], references: [id])
+  id                   String             @id @default(uuid())
+  userId               String
+  evaluationCriteriaId String
+  submissionId         String
+  workId               Int
+  grade                Float
+  comments             String?
+  name                 String             @db.VarChar(255)
+  email                String             @db.VarChar(255)
+  expertise            String             @db.VarChar(255)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @default(now())
+  user                 UserAccount        @relation(fields: [userId], references: [id])
+  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id])
+  submission           Submission         @relation(fields: [submissionId], references: [id])
+}
+
+model Submission {
+  id           String           @id @default(uuid())
+  advisorId    String
+  mainAuthorId String
+  eventId      String
+  title        String           @db.VarChar(255)
+  abstract     String           @db.Text
+  pdfFile      String           @db.VarChar(255)
+  phoneNumber  String           @db.VarChar(20)
+  linkedInUrl  String?          @db.VarChar(255)
+  ranking      Int?
+  status       SubmissionStatus
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @default(now())
+  advisor      UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id])
+  mainAuthor   UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id])
+  eventEdition EventEdition     @relation(fields: [eventId], references: [id])
+  Evaluation   Evaluation[]
+  Presentation Presentation[]
+  CoAuthor     CoAuthor[]
 }
 
 model Certificate {
-  id        Int      @id @default(autoincrement())
-  eventId   Int
-  name      String   @db.VarChar(255)
-  email     String   @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  event     Event    @relation(fields: [eventId], references: [id])
+  id           String       @id @default(uuid())
+  eventId      String
+  name         String       @db.VarChar(255)
+  email        String       @db.VarChar(255)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @default(now())
+  eventEdition EventEdition @relation(fields: [eventId], references: [id])
+}
+
+model PresentationBlock {
+  id         String                @id @default(uuid())
+  eventId    String
+  roomId     String?
+  type       PresentationBlockType
+  title      String?               @db.VarChar(255)
+  speakerName String?              @db.VarChar(255)
+  startTime DateTime
+  duration   Int
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @default(now())
+
+  Presentation Presentation[]
 }
 
 model Presentation {
-  id        Int       @id @default(autoincrement())
-  workId    Int       @unique
-  startTime DateTime?
-  endTime   DateTime?
-  duration  String?
-  location  String?   @db.VarChar(255)
-  room      String?   @db.VarChar(255)
-  status    Status
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  work      Work      @relation(fields: [workId], references: [id])
+  id                              String             @id @default(uuid())
+  submissionId                    String
+  presentationBlockId             String
+  positionWithinPresentationBlock String             @db.VarChar(255)
+  status                          PresentationStatus
+  createdAt                       DateTime           @default(now())
+  updatedAt                       DateTime           @default(now())
+  submission                      Submission         @relation(fields: [submissionId], references: [id])
+  presentationBlock               PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
 }
 
-model Author {
-  id          Int      @id @default(autoincrement())
-  workId      Int
-  name        String   @db.VarChar(255)
-  affiliation String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
-  work        Work     @relation(fields: [workId], references: [id])
+model CoAuthor {
+  id          String     @id @default(uuid())
+  submisionId String
+  name        String     @db.VarChar(255)
+  institution String     @db.VarChar(255)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+  submision   Submission @relation(fields: [submisionId], references: [id])
 }
