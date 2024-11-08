@@ -20,6 +20,10 @@ export class UserService {
       throw new AppException('Um usuário com esse email já existe.', 400);
     }
 
+    if (createUserDto.profile === 'DoctoralStudent' && !createUserDto.registrationNumber) {
+      throw new AppException('O número de matrícula é obrigatório para estudantes de doutorado.', 400);
+    }
+
     if (createUserDto.registrationNumber) {
       const registrationExists = await this.prismaClient.userAccount.findUnique(
         {

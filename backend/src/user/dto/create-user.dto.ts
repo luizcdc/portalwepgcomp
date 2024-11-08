@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsBoolean,
   Length,
+  ValidateIf,
 } from 'class-validator';
 
 export enum Profile {
@@ -32,7 +33,7 @@ export class CreateUserDto {
   @Length(1, 255)
   password: string;
 
-  @IsOptional()
+  @ValidateIf(object => object.profile === Profile.DoctoralStudent)
   @IsString()
   @Length(1, 20)
   registrationNumber?: string;
@@ -42,7 +43,6 @@ export class CreateUserDto {
   @Length(1, 255)
   photoFilePath?: string;
 
-  @IsOptional()
   @IsEnum(Profile)
   profile?: Profile;
 
