@@ -29,7 +29,7 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 - Link para o Figma: <a href="https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0" target="_blank">Figma Design</a>
 
 
-## Como Executar o Projeto (Exemplo)
+## Configuração do Projeto
 
 1. **Clonar o Repositório**:
    ```bash
@@ -37,22 +37,42 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
    cd projeto-wepgcomp
    ```
 2. **Instalar Dependências**:
+   ### Back-end
+   Para rodar o projeto localmente, é necessário possuir instâncias de banco de dados (PostgreSQL) e fila RabbitMQ. De modo a facilitar o desenvolvimento local, o projeto acompanha um arquivo docker-compose.yml, mas que tem o Docker como dependência. Após instalar a ferramenta (ou caso já a possua), construa os _containers_ executando o seguinte comando na pasta do back-end:
+
    ```bash
-   npm install
-   ```
-3. **Executar o Back-end**:
-   ```bash
-   cd backend
-   cp .env.example .env
-   npm run start
+   docker-compose up -d
    ```
 
-   Obs.: As variáveis de ambiente com dados sensíveis estarão sem valor atribuído, e deverão ser consultadas na documentação via Notion.
-4. **Executar o Front-end**:
+   As imagens serão baixadas e instaladas nas portas predefinidas. Na sequência, instale as bibliotecas utilizadas e crie uma cópia do arquivo de variáveis de ambiente através do ".env.example".
+
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   ```
+
+   Obs.: As variáveis com dados sensíveis estarão sem valor atribuído, e deverão ser consultadas na documentação via Notion.
+   
+   ### Front-end
+   ```
+   cd frontend
+   npm install
+   ```
+
+3. O projeto será hospedado na **Vercel** para deploy contínuo e fácil acesso.
+
+## Execução
+   ### Back-end
+   ```bash
+   cd backend
+   npm run start
+   ```
+   
+   ### **Front-end**:
    ```bash
    npm run start-frontend
    ```
-5. O projeto será hospedado na **Vercel** para deploy contínuo e fácil acesso.
 
 ## Colaboradores
 

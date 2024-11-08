@@ -11,6 +11,12 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data 
 
+  rabbitmq:
+    image: docker.io/rabbitmq:latest
+    container_name: rabbitmq
+    ports:
+    - "5672:5672"
+
 volumes:
   postgres-data:
     driver: local
