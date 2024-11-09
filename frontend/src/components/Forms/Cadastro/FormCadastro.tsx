@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import "./style.scss";
 
 const formCadastroSchema = z
   .object({
@@ -32,7 +32,7 @@ const formCadastroSchema = z
         message: "E-mail inválido!",
       }),
 
-    perfil: z.enum(["professor", "aluno"], {
+    perfil: z.enum(["doutorando", "professor", "ouvinte"], {
       required_error: "A escolha do perfil é obrigatória!",
       invalid_type_error: "Campo inválido!",
     }),
@@ -62,7 +62,7 @@ export function FormCadastro() {
   } = useForm<FormCadastroSchema>({
     resolver: zodResolver(formCadastroSchema),
     defaultValues: {
-      perfil: "aluno",
+      perfil: "doutorando",
     },
   });
 
@@ -96,55 +96,55 @@ export function FormCadastro() {
 
   return (
     <form className="row g-3" onSubmit={handleSubmit(handleFormCadastro)}>
-      <div className="col-12 mb-3">
-        <label className="form-label">
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold form-title">
           Nome completo
-          <span className="text-danger ms-1">*</span>
+          <span className="text-danger ms-1 form-title">*</span>
         </label>
         <input
           type="text"
-          className="form-control"
+          className="form-control input-title"
           id="nome"
           placeholder="Insira seu nome"
           {...register("nome")}
         />
-        <p className="text-danger">{errors.nome?.message}</p>
+        <p className="text-danger error-message">{errors.nome?.message}</p>
       </div>
 
-      <div className="col-12 mb-3">
-        <label className="form-label">
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold form-title">
           Matrícula
-          <span className="text-danger ms-1">*</span>
+          <span className="text-danger ms-1 form-title">*</span>
         </label>
         <input
           type="text"
-          className="form-control"
+          className="form-control input-title"
           id="matricula"
           placeholder="Insira sua matrícula"
           {...register("matricula")}
         />
-        <p className="text-danger">{errors.matricula?.message}</p>
+        <p className="text-danger error-message">{errors.matricula?.message}</p>
       </div>
 
-      <div className="col-12 mb-3">
-        <label className="form-label">
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold form-title">
           E-mail UFBA
-          <span className="text-danger ms-1">*</span>
+          <span className="text-danger ms-1 form-title">*</span>
         </label>
         <input
           type="email"
-          className="form-control"
+          className="form-control input-title"
           id="email"
           placeholder="Insira seu e-mail"
           {...register("email")}
         />
-        <p className="text-danger">{errors.email?.message}</p>
+        <p className="text-danger error-message">{errors.email?.message}</p>
       </div>
 
-      <div className="col-12 mb-3">
-        <label className="form-label">
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold form-title">
           Perfil
-          <span className="text-danger ms-1">*</span>
+          <span className="text-danger ms-1 form-title">*</span>
         </label>
         <div className="d-flex">
           <div className="form-check me-3">
@@ -153,9 +153,21 @@ export function FormCadastro() {
               className="form-check-input"
               id="radio1"
               {...register("perfil")}
+              value="doutorando"
+            />
+            <label className="form-check-label fw-bold input-title" htmlFor="radio1">
+              Doutorando
+            </label>
+          </div>
+          <div className="form-check me-3">
+            <input
+              type="radio"
+              className="form-check-input"
+              id="radio2"
+              {...register("perfil")}
               value="professor"
             />
-            <label className="form-check-label" htmlFor="radio1">
+            <label className="form-check-label fw-bold input-title" htmlFor="radio2">
               Professor
             </label>
           </div>
@@ -163,38 +175,38 @@ export function FormCadastro() {
             <input
               type="radio"
               className="form-check-input"
-              id="radio2"
+              id="radio3"
               {...register("perfil")}
-              value="aluno"
+              value="ouvinte"
             />
-            <label className="form-check-label" htmlFor="radio2">
-              Aluno
+            <label className="form-check-label fw-bold input-title" htmlFor="radio3">
+              Ouvinte
             </label>
           </div>
         </div>
-        <p className="text-danger">{errors.perfil?.message}</p>
+        <p className="text-danger error-message">{errors.perfil?.message}</p>
       </div>
 
-      <div className="col-12 mb-3">
-        <label className="form-label">
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold form-title">
           Senha
-          <span className="text-danger ms-1">*</span>
+          <span className="text-danger ms-1 form-title">*</span>
         </label>
         <input
           type="password"
-          className="form-control"
+          className="form-control input-title"
           id="senha"
           placeholder="Insira sua senha"
           {...register("senha")}
           value={senha}
           onChange={handleChangeSenha}
         />
-        <p className="text-danger">{errors.senha?.message}</p>
+        <p className="text-danger error-message">{errors.senha?.message}</p>
         <div className="mt-3">
-          <p className="mb-1">A senha deve possuir pelo menos:</p>
+          <p className="mb-1 fw-semibold paragraph-title">A senha deve possuir pelo menos:</p>
           <ul className="mb-0">
             <li
-              className={requisitos.minLength ? "text-success" : "text-danger"}
+              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"}`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -204,7 +216,7 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={requisitos.upperCase ? "text-success" : "text-danger"}
+              className={`fw-semibold list-title ${requisitos.upperCase ? "text-success" : "text-danger"}`}
             >
               {requisitos.upperCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -214,7 +226,7 @@ export function FormCadastro() {
               1 letra maiúscula
             </li>
             <li
-              className={requisitos.lowerCase ? "text-success" : "text-danger"}
+              className={`fw-semibold list-title ${requisitos.lowerCase ? "text-success" : "text-danger"}`}
             >
               {requisitos.lowerCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -223,7 +235,9 @@ export function FormCadastro() {
               )}{" "}
               1 letra minúscula
             </li>
-            <li className={requisitos.number ? "text-success" : "text-danger"}>
+            <li
+              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"}`}
+            >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
               ) : (
@@ -232,9 +246,7 @@ export function FormCadastro() {
               4 números
             </li>
             <li
-              className={
-                requisitos.specialChar ? "text-success" : "text-danger"
-              }
+              className={`fw-semibold list-title ${requisitos.specialChar ? "text-success" : "text-danger"}`}
             >
               {requisitos.specialChar ? (
                 <i className="bi bi-shield-fill-check" />
@@ -247,40 +259,29 @@ export function FormCadastro() {
         </div>
       </div>
 
-      <div className="col-12 mb-5">
-        <label className="form-label">
+      <div className="col-12 mb-4">
+        <label className="form-label fw-bold form-title">
           Confirmação de senha
-          <span className="text-danger ms-1">*</span>
+          <span className="text-danger ms-1 form-title">*</span>
         </label>
         <input
           type="password"
-          className="form-control"
+          className="form-control input-title"
           id="confirmaSenha"
           placeholder="Insira sua senha novamente"
           {...register("confirmaSenha")}
         />
-        <p className="text-danger">{errors.confirmaSenha?.message}</p>
+        <p className="text-danger error-message">{errors.confirmaSenha?.message}</p>
       </div>
 
       <div className="d-grid gap-2 col-3 mx-auto">
         <button
           type="submit"
-          className="btn btn-warning text-white fs-5 fw-bold"
+          className="btn text-white fs-5 fw-bold submit-button"
         >
-          Enviar
+          Cadastrar
         </button>
       </div>
-
-      <p className="text-end">
-        Já tem uma conta?
-        <Link
-          href="/Login"
-          className="link-underline link-underline-opacity-0 ms-1"
-          style={{color: "blue"}}
-        >
-          Login
-        </Link>
-      </p>
-    </form>
+    </form >
   );
 }
