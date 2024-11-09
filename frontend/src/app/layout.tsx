@@ -1,6 +1,6 @@
 import BootstrapClient from "@/components/BootstrapClient";
 import Footer from "@/components/Footer/Footer";
-import Header from "@/components/Header";
+import Header from "@/components/Header/Header";
 import Providers from "@/context";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
