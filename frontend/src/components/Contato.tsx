@@ -1,6 +1,6 @@
 "use client";
 
-import { FormContato } from "../Forms/Contato/FormContato";
+import { FormContato } from "./Forms/Contato/FormContato";
 
 export default function Contato() {
   return (
