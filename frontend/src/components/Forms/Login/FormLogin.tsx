@@ -32,43 +32,43 @@ export function FormLogin() {
     return (
         <form className="row g-3" onSubmit={handleLogin}>
             <div className="col-12 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-bold form-title">
                     E-mail
                     <span className="text-danger ms-1">*</span>
                 </label>
                 <input
                     type="email"
-                    className="form-control"
+                    className="form-control input-title"
                     id="email"
                     placeholder="exemplo@ufba.br"
                     required
                 />
             </div>
             <div className="col-12 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-bold form-title">
                     Senha
                     <span className="text-danger ms-1">*</span>
                 </label>
                 <input
                     type="password"
-                    className="form-control"
+                    className="form-control input-title"
                     id="password"
                     placeholder="digite sua senha"
                     required
                 />
 
-                <div className="text-end">
+                <div className="text-end link">
                     <a href="/AlterarSenha" className="link-underline link-underline-opacity-0">
-                        Esqueceu sua senha
+                        Esqueceu sua senha?
                     </a>
                 </div>
             </div>
             <div className="d-grid gap-2 col-3 mx-auto">
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn text-white fw-semibold">
                     Entrar
                 </button>
             </div>
-            <hr className="border border-warning border-2"></hr>
+            <hr />
         </form>
     )
 }

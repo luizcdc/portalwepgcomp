@@ -19,7 +19,7 @@ export default function Login() {
         <FormLogin />
       </div>
 
-      <div className="text-center mb-4">
+      <div className="text-center mb-4 link">
         <h6>
           Ainda não tem conta?
           <a
