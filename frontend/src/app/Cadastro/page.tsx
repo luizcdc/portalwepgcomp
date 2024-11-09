@@ -1,6 +1,6 @@
 "use client"
 
-import { FormCadastro } from "@/components/Forms/FormCadastro";
+import { FormCadastro } from "@/components/Forms/Cadastro/FormCadastro";
 import "./style.scss";
 
 export default function Cadastro() {
