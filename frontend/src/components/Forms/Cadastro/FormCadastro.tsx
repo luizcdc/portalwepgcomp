@@ -282,6 +282,6 @@ export function FormCadastro() {
           Cadastrar
         </button>
       </div>
-    </form >
+    </form>
   );
 }
