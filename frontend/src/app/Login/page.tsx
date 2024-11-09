@@ -69,7 +69,7 @@ export default function Login() {
             />
 
             <div className="text-end">
-              <a href="#" className="link-underline link-underline-opacity-0" style={{color: "blue"}}>
+              <a href="/AlterarSenha" className="link-underline link-underline-opacity-0" style={{color: "blue"}}>
                 Esqueceu sua senha
               </a>
             </div>
