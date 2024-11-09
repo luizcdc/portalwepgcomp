@@ -25,7 +25,7 @@ const formContatoSchema = z.object({
     mensagem: z.string({
         required_error: "A mensagem é obrigatória!",
         invalid_type_error: "Campo inválido!",
-    })
+    }).min(1, { message: "A mensagem não pode ser vazia!" })
 })
 
 export function FormContato() {
