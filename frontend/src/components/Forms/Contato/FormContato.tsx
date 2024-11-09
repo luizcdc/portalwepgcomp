@@ -24,7 +24,7 @@ const formContatoSchema = z.object({
             message: "E-mail inválido!",
         }),
 
-    message: z.string({
+    text: z.string({
         required_error: "A mensagem é obrigatória!",
         invalid_type_error: "Campo inválido!",
     }).min(1, { message: "A mensagem não pode ser vazia!" })
@@ -43,7 +43,7 @@ export function FormContato() {
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [message, setMessage] = useState('')
+    const [text, setText] = useState('')
 
     const handleFormContato = async (data: FormContatoSchema) => {
         try {
@@ -65,7 +65,6 @@ export function FormContato() {
                     <input
                         type='nome'
                         className='form-control input-title bg-transparent border-1 text-white shadow-none'
-                        id='name'
                         placeholder='Insira seu nome'
                         {...register("name")}
                         onChange={(e) => setName(e.target.value)}
@@ -81,7 +80,6 @@ export function FormContato() {
                     <input
                         type='email'
                         className='form-control input-title bg-transparent border-1 text-white shadow-none'
-                        id='email'
                         placeholder='Insira seu e-mail'
                         {...register("email")}
                         onChange={(e) => setEmail(e.target.value)}
@@ -97,14 +95,13 @@ export function FormContato() {
                 </label>
                 <textarea
                     className='form-control input-title bg-transparent border-1 border-white text-white shadow-none'
-                    id='message'
                     placeholder='Digite sua mensagem'
                     rows={5}
-                    {...register("message")}
-                    onChange={(e) => setMessage(e.target.value)}
-                    value={message}
+                    {...register("text")}
+                    onChange={(e) => setText(e.target.value)}
+                    value={text}
                 />
-                <p className="text-warning error-message">{errors.message?.message}</p>
+                <p className="text-warning error-message">{errors.text?.message}</p>
             </div>
 
             <div className="d-flex justify-content-center mt-4 mb-4 bg-white border border-white rounded-3">

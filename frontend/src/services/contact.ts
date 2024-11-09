@@ -1,7 +1,7 @@
 interface ContactRequest {
     name: string;
     email: string;
-    message: string;
+    text: string;
 }
 
 export const sendContactRequest = async (data: ContactRequest): Promise<void> => {
