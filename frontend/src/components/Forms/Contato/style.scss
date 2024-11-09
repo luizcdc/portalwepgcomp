@@ -1,0 +1,26 @@
+.form-title {
+    font-size: 1.25rem;
+}
+
+.input-title {
+    font-size: 0.875rem;
+}
+
+.error-message {
+    font-size: 0.8rem;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: white !important;
+}
+
+button {
+    color: #054B75 !important;
+    width: 38.75rem;
+    height: 2.375rem;
+
+    &:hover {
+        color: #054B75 !important;
+    }
+}
