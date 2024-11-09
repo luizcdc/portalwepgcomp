@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
 
 const formContatoSchema = z.object({
-    nome: z
+    name: z
         .string({
             required_error: "Nome é obrigatório!",
             invalid_type_error: "Campo inválido!",
@@ -22,7 +23,7 @@ const formContatoSchema = z.object({
             message: "E-mail inválido!",
         }),
 
-    mensagem: z.string({
+    message: z.string({
         required_error: "A mensagem é obrigatória!",
         invalid_type_error: "Campo inválido!",
     }).min(1, { message: "A mensagem não pode ser vazia!" })
@@ -39,9 +40,18 @@ export function FormContato() {
         resolver: zodResolver(formContatoSchema)
     });
 
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('')
+
+    const sendEmail = (data: { name: string; email: string; message: string }) => {
+        alert(`Email enviado! Nome: ${data.name}, E-mail: ${data.email}, Mensagem: ${data.message}`);
+    }
+
     const handleFormContato = (data: FormContatoSchema) => {
-        console.log(data);
+        sendEmail(data);
     };
+
 
     return (
         <form className="justify-content-center" onSubmit={handleSubmit(handleFormContato)}>
@@ -55,9 +65,11 @@ export function FormContato() {
                         className='form-control input-title bg-transparent border-1 text-white shadow-none'
                         id='name'
                         placeholder='Insira seu nome'
-                        {...register("nome")}
+                        {...register("name")}
+                        onChange={(e) => setName(e.target.value)}
+                        value={name}
                     />
-                    <p className="text-warning error-message">{errors.nome?.message}</p>
+                    <p className="text-warning error-message">{errors.name?.message}</p>
                 </div>
 
                 <div className="col-6">
@@ -70,6 +82,8 @@ export function FormContato() {
                         id='email'
                         placeholder='Insira seu e-mail'
                         {...register("email")}
+                        onChange={(e) => setEmail(e.target.value)}
+                        value={email}
                     />
                     <p className="text-warning error-message">{errors.email?.message}</p>
                 </div>
@@ -83,10 +97,12 @@ export function FormContato() {
                     className='form-control input-title bg-transparent border-1 border-white text-white shadow-none'
                     id='message'
                     placeholder='Digite sua mensagem'
-                    rows="5"
-                    {...register("mensagem")}
+                    rows={5}
+                    {...register("message")}
+                    onChange={(e) => setMessage(e.target.value)}
+                    value={message}
                 />
-                <p className="text-warning error-message">{errors.mensagem?.message}</p>
+                <p className="text-warning error-message">{errors.message?.message}</p>
             </div>
 
             <div className="d-flex justify-content-center mt-4 mb-4 bg-white border border-white rounded-3">
