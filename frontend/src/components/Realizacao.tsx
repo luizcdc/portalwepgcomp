@@ -1,7 +1,4 @@
 "use client";
-import logo_jusbrasil from "@/assets/images/logo_jusbrasil.svg";
-import logo_ufba from "@/assets/images/logo_ufba.svg";
-import logo_computacao from "@/assets/images/logo_computacao.svg";
 
 export default function Realizacao() {
   return (
@@ -38,7 +35,7 @@ export default function Realizacao() {
 
         <div
           style={{
-            backgroundImage: `url(${logo_computacao.src})`,
+            backgroundImage: `url(/assets/images/logo_computacao.svg)`,
             backgroundSize: "cover",
             width: "240px",
             height: "70px",
@@ -76,7 +73,7 @@ export default function Realizacao() {
         >
           <div
             style={{
-              backgroundImage: `url(${logo_ufba.src})`,
+              backgroundImage: `url(/assets/images/logo_ufba.svg)`,
               backgroundSize: "cover",
               width: "138px",
               height: "89px",
@@ -85,7 +82,7 @@ export default function Realizacao() {
 
           <div
             style={{
-              backgroundImage: `url(${logo_jusbrasil.src})`,
+              backgroundImage: `url(/assets/images/logo_jusbrasil.svg)`,
               backgroundSize: "cover",
               width: "208px",
               height: "32px",
