@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import logo_PGCOMP from "@/assets/images/logo_PGCOMP.svg";
 import Link from "next/link";
 
 export default function Header() {
@@ -8,7 +7,7 @@ export default function Header() {
     <nav className='navbar navbar-expand-lg'>
       <div className='container-fluid'>
         <a className='navbar-brand'>
-          <Image src={logo_PGCOMP} alt='PGCOMP Logo' />
+          <Image src={'/assets/images/logo_PGCOMP.svg'} alt='PGCOMP Logo' width={300} height={100} />
         </a>
 
         <div className='d-flex justify-content-end me-5'>

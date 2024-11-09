@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import Close from "@/assets/images/close.svg";
 
 import { useState } from "react";
 
@@ -72,7 +71,7 @@ export default function Modal({
               }}
             >
               <Image
-                src={Close}
+                src={"/assets/images/close.svg"}
                 alt='ícone de fechar'
                 width={24}
                 height={24}
