@@ -1,5 +1,5 @@
 "use client";
-import Contato from "@/components/Contato/Contato";
+import Contato from "@/components/Contato";
 import Endereco from "@/components/Endereco";
 
 export default function LocalEvento() {
