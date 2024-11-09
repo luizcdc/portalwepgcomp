@@ -1,3 +1,4 @@
+import { sendContactRequest } from "@/services/contact";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -44,14 +45,15 @@ export function FormContato() {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('')
 
-    const sendEmail = (data: { name: string; email: string; message: string }) => {
-        alert(`Email enviado! Nome: ${data.name}, E-mail: ${data.email}, Mensagem: ${data.message}`);
-    }
-
-    const handleFormContato = (data: FormContatoSchema) => {
-        sendEmail(data);
+    const handleFormContato = async (data: FormContatoSchema) => {
+        try {
+            await sendContactRequest(data);
+            alert("Mensagem enviada com sucesso!");
+        } catch (error) {
+            console.error(error);
+            alert("Ocorreu um erro ao enviar o formulário. Tente novamente.");
+        }
     };
-
 
     return (
         <form className="justify-content-center" onSubmit={handleSubmit(handleFormContato)}>
