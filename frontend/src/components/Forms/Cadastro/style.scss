@@ -6,6 +6,10 @@
     font-size: 0.9rem;
 }
 
+input::placeholder {
+    color: #ADB5BD !important;
+}
+
 .paragraph-title,
 .list-title,
 .error-message {
