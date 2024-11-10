@@ -2,7 +2,7 @@
 
 import Banner from "@/components/UI/Banner";
 
-export default function Home() {
+export default function Orientacoes() {
   return (
     <div
       style={{
