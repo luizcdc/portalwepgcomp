@@ -1,9 +1,9 @@
 "use client"
 
-import { FormCadastro } from "@/components/Forms/Cadastro/FormCadastro";
+import { FormAlterarSenha } from "@/components/Forms/AlterarSenha/FormAlterarSenha";
 import "./style.scss";
 
-export default function Cadastro() {
+export default function AlterarSenha() {
     return (
         <div className="container d-flex flex-column flex-grow-1 text-black">
             <div className="container">
@@ -11,10 +11,10 @@ export default function Cadastro() {
                     <span className="ms-2">2025</span>
                 </h1>
                 <hr />
-                <h2 className="d-flex justify-content-center mb-4 fw-bold text-black">Cadastro</h2>
+                <h2 className="d-flex justify-content-center mb-4 fw-bold text-black">Alteração de Senha</h2>
             </div>
             <div className="container d-flex justify-content-center mb-5">
-                <FormCadastro />
+                <FormAlterarSenha />
             </div>
         </div>
     );

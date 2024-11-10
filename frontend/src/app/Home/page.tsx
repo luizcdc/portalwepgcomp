@@ -10,10 +10,8 @@ import SearchGroups from "@/components/SearchGroups";
 
 export default function Home() {
   return (
-    <div
+    <div className="d-flex flex-column"
       style={{
-        display: "flex",
-        flexDirection: "column",
         gap: "50px",
       }}
     >
