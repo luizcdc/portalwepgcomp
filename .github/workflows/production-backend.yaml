@@ -1,0 +1,34 @@
+name: Vercel Production Backend Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: prj_E4SjQgIxiBmvIAAueSChDjIElO5O
+on:
+  push:
+    branches:
+      - configuracao-backend
+    paths:
+      - backend/**
+
+defaults:
+  run:
+    working-directory: backend
+    
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
+      - name: Clean modules
+        run: npm run clean
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
