@@ -1,17 +1,23 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SignInDto } from './auth.dto';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AppException } from 'src/exceptions/app.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { MailingService } from 'src/mailing/mailing.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private prismaClient: PrismaService
+    private prismaClient: PrismaService,
+    private mailingService: MailingService,
   ) {}
 
   async signIn(data: SignInDto): Promise<{ token: string }> {
@@ -33,7 +39,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const user = await this.prismaClient.user.findUnique({ where: { email } });
+    const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new NotFoundException('Usuário não encontrado.');
     }
@@ -43,9 +49,17 @@ export class AuthService {
       { expiresIn: '1h' },
     );
 
-    return { message: 'Token de redefinição de senha enviado.',
-      resetToken
-     };
+    const text = `Link para redefinição de senha: ${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    const forgotPasswordEmail = {
+      from: `"${user.name}" <${user.email}>`,
+      to: user.email,
+      subject: 'Redefinição de senha: WEPGCOMP',
+      text,
+    };
+
+    await this.mailingService.sendEmail(forgotPasswordEmail);
+
+    return { message: 'Token de redefinição de senha enviado.' };
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -53,18 +67,17 @@ export class AuthService {
     let payload;
     try {
       payload = this.jwtService.verify(token);
-    } catch (error) {
+    } catch {
       throw new BadRequestException('Token inválido ou expirado.');
     }
 
     // Atualizar a senha do usuário
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await this.prismaClient.user.update({
+    await this.prismaClient.userAccount.update({
       where: { id: payload.userId },
       data: { password: hashedPassword },
     });
 
     return { message: 'Senha redefinida com sucesso.' };
   }
-
 }
