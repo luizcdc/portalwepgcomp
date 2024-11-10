@@ -1,20 +1,24 @@
+import { axiosInstance } from '@/utils/api';
+
 interface ContactRequest {
     name: string;
     email: string;
-    message: string;
+    text: string;
 }
 
+const baseUrl = "/mailing";
+
 export const sendContactRequest = async (data: ContactRequest): Promise<void> => {
+    const instance = axiosInstance();
+
     try {
-        const response = await fetch("http://localhost:3000/mailing/contact", {
-            method: "POST",
+        const response = await instance.post(`${baseUrl}/contact`, data, {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(data),
         });
 
-        if (!response.ok) {
+        if (response.status < 200 || response.status >= 300) {
             throw new Error("Erro ao enviar os dados!");
         }
     } catch (error) {
