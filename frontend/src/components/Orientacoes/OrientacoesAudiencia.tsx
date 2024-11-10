@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import "./Orientacoes.css";
 
 export default function OrientacoesAudiencia(){
@@ -41,7 +42,7 @@ export default function OrientacoesAudiencia(){
                         <div className="dot"></div>
 
                         <div className="line">
-                            A Programação Preliminar do WEPGCOMP 2025 pode ser encontrada na página do evento.
+                            A Programação Preliminar do WEPGCOMP 2025 pode ser encontrada na <Link href=''><span className="link">página do evento</span></Link>.
                         </div>
 
                     </div>

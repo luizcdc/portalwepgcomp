@@ -5,6 +5,7 @@ import OrientacoesAutores from "@/components/Orientacoes/OrientacoesAutores";
 import OrientacoesAvaliadores from "@/components/Orientacoes/OrientacoesAvaliadores";
 import Banner from "@/components/UI/Banner";
 import { useState } from "react";
+import "./style.scss";
 
 export default function Orientacoes() {
   const [setion, setSetion] = useState<number>(0);
@@ -23,9 +24,9 @@ export default function Orientacoes() {
         <div className={setion == 1 ? "buttonTrue" : "buttonFalse"} onClick={() => setSetion(1)}>Avaliadores</div>
         <div className={setion == 2 ? "buttonTrue" : "buttonFalse"} onClick={() => setSetion(2)}>Audiência</div>
       </div>
-      {setion == 0 ? <OrientacoesAudiencia /> : ''}
-      {setion == 1 ? <OrientacoesAutores /> : ''}
-      {setion == 2 ? <OrientacoesAvaliadores /> : ''}
+      {setion == 0 ? <OrientacoesAutores /> : ''}
+      {setion == 1 ? <OrientacoesAvaliadores /> : ''}
+      {setion == 2 ? <OrientacoesAudiencia /> : ''}
     </div>
   );
 }

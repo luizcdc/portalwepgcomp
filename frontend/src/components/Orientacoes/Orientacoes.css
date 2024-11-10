@@ -3,49 +3,6 @@
     padding: 0 100px;
 }
 
-.button{
-    display: flex;
-    flex-Direction: row;
-    justify-Content: center;
-    align-Items: center;
-    margin-Bottom: 25px;
-    gap: 20px;
-}
-
-.buttonFalse{
-    border: solid;
-    border-Color: #FFA90F;
-    background-Color: white;
-    color: #FFA90F;
-    width: 190px;
-    height: 30px;
-    border-Radius: 15px;
-    border-Width: 3px;
-    cursor: pointer;
-    display: flex;
-    align-Items: center;
-    justify-Content: center;
-    font-Weight: bold;
-    font-Size: 20px;
-}
-
-.buttonTrue{
-    border: solid;
-    border-Color: #FFA90F;
-    background-Color: #FFA90F;
-    color: white;
-    width: 190px;
-    height: 30px;
-    border-Radius: 15px;
-    border-Width: 3px;
-    cursor: pointer;
-    display: flex;
-    align-Items: center;
-    justify-Content: center;
-    font-Weight: bold;
-    font-Size: 20px;
-}
-
 .text{
     display: flex;
     flex-Direction: column;
@@ -84,4 +41,18 @@
 .line{
     font-size: 16px;
     line-height: 45px;
+}
+
+.link {
+    text-decoration: underline;
+}
+
+.blue {
+    color: #0065A3;
+}
+
+@media (max-width: 768px) {
+    .orientacoes {
+        padding: 0 10px;
+    }
 }

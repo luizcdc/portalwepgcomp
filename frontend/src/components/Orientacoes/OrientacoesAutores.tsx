@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import "./Orientacoes.css";
 
 export default function OrientacoesAutores(){
@@ -12,7 +13,7 @@ export default function OrientacoesAutores(){
                     <div className="title">Template para slides</div>
 
                     <div className="line">
-                        O template para slides do WEPGCOMP está disponível aqui. Faça uma cópia, 
+                        O template para slides do WEPGCOMP está disponível <Link href=''><span className="link">aqui</span></Link>. Faça uma cópia, 
                         renomeie para wepgcomp25-nome-sobrenome, e adicione os seus slides.
                     </div>
 
@@ -34,7 +35,7 @@ export default function OrientacoesAutores(){
 
                     <div className="line">
                         O nome do arquivo deve ser wepgcomp23-nome-sobrenome.pdf. 
-                        Link para upload na comunidade do WEPGCOMP no Zenodo.
+                        <Link href=''><span className="link blue">Link para upload na comunidade do WEPGCOMP no Zenodo</span></Link>.
                     </div>
 
                     <div className="topic">
