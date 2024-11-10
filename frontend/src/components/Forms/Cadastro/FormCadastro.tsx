@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
+import { useUsers } from "@/hooks/useUsers";
 
 const formCadastroSchema = z
   .object({
@@ -55,6 +56,8 @@ const formCadastroSchema = z
   });
 
 export function FormCadastro() {
+  const { registerUser } = useUsers();
+
   const {
     register,
     handleSubmit,
@@ -78,7 +81,33 @@ export function FormCadastro() {
   });
 
   const handleFormCadastro = (data: FormCadastroSchema) => {
-    console.log(data);
+    const { nome, email, senha, matricula, perfil } = data;
+
+    const profileFormated = {
+      doutorando: "DoctoralStudent",
+      professor: "Professor",
+      ouvinte: "Listener",
+    };
+
+    if (
+      !nome ||
+      !email ||
+      !senha ||
+      !perfil ||
+      (perfil !== "ouvinte" && !matricula)
+    ) {
+      throw new Error("Campos obrigatórios em branco.");
+    }
+
+    const body = {
+      name: nome,
+      email: email,
+      password: senha,
+      registrationNumber: matricula,
+      profile: profileFormated[perfil] as ProfileType,
+    };
+
+    registerUser(body);
   };
 
   const handleChangeSenha = (e) => {
@@ -155,7 +184,10 @@ export function FormCadastro() {
               {...register("perfil")}
               value="doutorando"
             />
-            <label className="form-check-label fw-bold input-title" htmlFor="radio1">
+            <label
+              className="form-check-label fw-bold input-title"
+              htmlFor="radio1"
+            >
               Doutorando
             </label>
           </div>
@@ -167,7 +199,10 @@ export function FormCadastro() {
               {...register("perfil")}
               value="professor"
             />
-            <label className="form-check-label fw-bold input-title" htmlFor="radio2">
+            <label
+              className="form-check-label fw-bold input-title"
+              htmlFor="radio2"
+            >
               Professor
             </label>
           </div>
@@ -179,7 +214,10 @@ export function FormCadastro() {
               {...register("perfil")}
               value="ouvinte"
             />
-            <label className="form-check-label fw-bold input-title" htmlFor="radio3">
+            <label
+              className="form-check-label fw-bold input-title"
+              htmlFor="radio3"
+            >
               Ouvinte
             </label>
           </div>
@@ -203,10 +241,14 @@ export function FormCadastro() {
         />
         <p className="text-danger error-message">{errors.senha?.message}</p>
         <div className="mt-3">
-          <p className="mb-1 fw-semibold paragraph-title">A senha deve possuir pelo menos:</p>
+          <p className="mb-1 fw-semibold paragraph-title">
+            A senha deve possuir pelo menos:
+          </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.minLength ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -216,7 +258,9 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.upperCase ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.upperCase ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.upperCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -226,7 +270,9 @@ export function FormCadastro() {
               1 letra maiúscula
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.lowerCase ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.lowerCase ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.lowerCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -236,7 +282,9 @@ export function FormCadastro() {
               1 letra minúscula
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.number ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
@@ -246,7 +294,9 @@ export function FormCadastro() {
               4 números
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.specialChar ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.specialChar ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.specialChar ? (
                 <i className="bi bi-shield-fill-check" />
@@ -271,7 +321,9 @@ export function FormCadastro() {
           placeholder="Insira sua senha novamente"
           {...register("confirmaSenha")}
         />
-        <p className="text-danger error-message">{errors.confirmaSenha?.message}</p>
+        <p className="text-danger error-message">
+          {errors.confirmaSenha?.message}
+        </p>
       </div>
 
       <div className="d-grid gap-2 col-3 mx-auto">
