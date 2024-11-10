@@ -1,7 +1,7 @@
 "use client"
 
 import CarouselSlide from "../Carousel/CarouselSlide";
-import imageBanner from "@/assets/images/slide1.png";
+import imageBanner from "@/public/assets/images/slide1.png";
 
 interface BannerProps {
     title: string;
