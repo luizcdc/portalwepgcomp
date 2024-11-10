@@ -1,0 +1,80 @@
+.button{
+    display: flex;
+    flex-Direction: row;
+    justify-Content: center;
+    align-Items: center;
+    margin-Bottom: 25px;
+    gap: 20px;
+}
+
+.buttonFalse{
+    border: solid;
+    border-Color: #FFA90F;
+    background-Color: white;
+    color: #FFA90F;
+    width: 190px;
+    height: 30px;
+    border-Radius: 15px;
+    border-Width: 3px;
+    cursor: pointer;
+    display: flex;
+    align-Items: center;
+    justify-Content: center;
+    font-Weight: bold;
+    font-Size: 20px;
+}
+
+.buttonTrue{
+    border: solid;
+    border-Color: #FFA90F;
+    background-Color: #FFA90F;
+    color: white;
+    width: 190px;
+    height: 30px;
+    border-Radius: 15px;
+    border-Width: 3px;
+    cursor: pointer;
+    display: flex;
+    align-Items: center;
+    justify-Content: center;
+    font-Weight: bold;
+    font-Size: 20px;
+}
+
+.text{
+    display: flex;
+    flex-Direction: column;
+    gap: 25px;
+    color: black;
+    margin-Left: 10px;
+    margin-Bottom: 200px;
+}
+
+.textSection{
+    display: flex;
+    flex-Direction: column;
+    gap: 10px;
+}
+
+.title{
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.topic{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot{
+    width: 3px;
+    height: 3px;
+    border-Radius: 10px;
+    background-Color: black;
+}
+
+.line{
+    font-size: 14px;
+}
