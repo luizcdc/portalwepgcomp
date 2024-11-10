@@ -55,7 +55,7 @@ export function FormAlterarSenha() {
       minLength: value.length >= 8,
       upperCase: /[A-Z]/.test(value),
       lowerCase: /[a-z]/.test(value),
-      number: /\d/.test(value),
+      number: /\d{4,}/.test(value),
       specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
     });
   };

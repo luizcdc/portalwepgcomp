@@ -1,9 +1,9 @@
+import { useUsers } from "@/hooks/useUsers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
-import { useUsers } from "@/hooks/useUsers";
 
 const formCadastroSchema = z
   .object({
@@ -118,7 +118,7 @@ export function FormCadastro() {
       minLength: value.length >= 8,
       upperCase: /[A-Z]/.test(value),
       lowerCase: /[a-z]/.test(value),
-      number: /\d/.test(value),
+      number: /\d{4,}/.test(value),
       specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
     });
   };
