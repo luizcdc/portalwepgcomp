@@ -74,6 +74,18 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
    npm run start-frontend
    ```
 
+## Ambientes
+
+- **Frontend**
+- Produção: https://portal-wepgcomp-client.vercel.app
+- Desenvolvimento: https://portal-wepgcomp-client-development.vercel.app
+
+- **Backend**
+- Produção: https://portal-wepgcomp-api-development.vercel.app
+- Swagger produção: https://portal-wepgcomp-api-development.vercel.app/docs
+- Desenvolvimento: https://portal-wepgcomp-api.vercel.app
+- Swagger desenvolvimento: https://portal-wepgcomp-api.vercel.app/docs
+
 ## Colaboradores
 
 - **Alexandre Cury Lima** - [alexandre.cury@ufba.br](mailto:alexandre.cury@ufba.br)

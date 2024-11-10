@@ -58,6 +58,13 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Ambientes
+
+- Produção: https://portal-wepgcomp-api-development.vercel.app
+- Swagger produção: https://portal-wepgcomp-api-development.vercel.app/docs
+- Desenvolvimento: https://portal-wepgcomp-api.vercel.app
+- Swagger desenvolvimento: https://portal-wepgcomp-api.vercel.app/docs
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:
