@@ -44,5 +44,6 @@ import { queueConstants } from '../queue/constants';
   ],
   controllers: [MailingController],
   providers: [MailingService],
+  exports: [MailingService],
 })
 export class MailingModule {}

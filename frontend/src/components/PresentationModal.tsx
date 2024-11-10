@@ -1,6 +1,5 @@
 "use client";
 
-import PersonIcon from "@/assets/images/person_icon.svg";
 import Image from "next/image";
 
 interface presentationData {
@@ -41,7 +40,7 @@ export default function PresentationModal({
         }}
       >
         <Image
-          src={PersonIcon}
+          src={'/assets/images/person_icon.svg'}
           alt='PGCOMP Logo'
           width={110}
           height={110}

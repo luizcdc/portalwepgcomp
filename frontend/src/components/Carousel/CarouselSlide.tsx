@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import Image from "next/image";
 
 import "./Carousel.css";
 
@@ -18,16 +19,19 @@ export default function CarouselSlide({
   return (
     <div className={`carousel-item ${isActive ? "active" : ""} carousel-slide`}>
       <div
-        style={{
-          backgroundImage: `url(${imageUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "bottom",
-        }}
-        className='carousel-slide-content'
+        className="carousel-slide-content"
       >
+        <Image
+          src={imageUrl}
+          alt="Imagem do carousel"
+          fill={true}
+          priority={isActive}
+          className="image-background"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          quality={100}
+        />
         {children}
       </div>
-      <span className='shaddow-span' />
     </div>
   );
 }
