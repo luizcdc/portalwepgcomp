@@ -2,6 +2,7 @@
 
 import { FormLogin } from "@/components/Forms/Login/FormLogin";
 import "./style.scss";
+import ModalAlterarSenha from "@/components/ModalAlterarSenha/ModalAlterarSenha";
 
 export default function Login() {
   return (
@@ -12,7 +13,9 @@ export default function Login() {
           <span className="ms-2">2025</span>
         </h1>
         <hr />
-        <h2 className="d-flex justify-content-center mb-4 fw-semibold">Acesse sua conta</h2>
+        <h2 className="d-flex justify-content-center mb-4 fw-semibold">
+          Acesse sua conta
+        </h2>
       </div>
 
       <div className="container d-flex justify-content-center mb-5">
@@ -30,6 +33,8 @@ export default function Login() {
           </a>
         </h6>
       </div>
+
+      <ModalAlterarSenha />
     </div>
   );
 }
