@@ -10,6 +10,8 @@
     "build:dev": "cp .env.development .env && nest build",
     "build:vercel": "npm run build && vercel --prod",
     "build:vercel:dev": "npm run build:dev && vercel --prod",
+    "vercel:link": "vercel link --yes --project portal-wepgcomp-api",
+    "vercel:link:dev": "vercel link --yes --project portal-wepgcomp-api-development",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -23,7 +25,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:migrate": "prisma db push",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "clean": "rm -rf package-lock.json node_modules && npm cache clean --force"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -37,7 +40,6 @@
     "@vercel/postgres": "^0.10.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
-    "helmet": "^8.0.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "uuid": "^10.0.0"

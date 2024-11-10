@@ -1,7 +1,7 @@
-name: Vercel Production Backend Deployment
+name: Vercel Preview Backend Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: prj_E4SjQgIxiBmvIAAueSChDjIElO5O
+  VERCEL_PROJECT_ID: prj_kpcdqVmnikzopwCsOO8OkKiJZtaa
 on:
   push:
     branches:
@@ -30,8 +30,8 @@ jobs:
         run: npm run clean
       - name: Build Project Artifacts
         run: vercel build --prod --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
-      - name: Prepare environment
-        run: cp .env.production .env
+      - name: Prepare environment variables
+        run: cp .env.development .env
       - name: Execute migrations
         run: npm run prisma:migrate
       - name: Deploy Project Artifacts to Vercel
