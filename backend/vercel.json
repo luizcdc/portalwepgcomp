@@ -1,5 +1,6 @@
 {
     "version": 2,
+    "name": "portal-wepgcomp-api",
     "builds": [
         {
             "src": "src/main.ts",
