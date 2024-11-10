@@ -1,6 +1,5 @@
 'use client'
 import Image from 'next/image'
-import PersonIcon from '@/assets/images/person_icon.svg'
 
 import { useState } from 'react';
 
@@ -22,7 +21,7 @@ export default function ScheduleCard({ type, title, author, onClickEvent }: {  t
             <div className="card-body d-flex flex-row align-items-center gap-2">
                 <div>
                     <Image
-                        src={PersonIcon}
+                        src={"/assets/images/person_icon.svg"}
                         alt="ícone pessoa"
                         width={65}
                         height={65}

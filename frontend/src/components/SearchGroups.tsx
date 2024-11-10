@@ -1,5 +1,4 @@
 "use client";
-import backgroundGruposPesquisa from "@/assets/images/background_gruposPesquisa.svg";
 import Image from "next/image";
 
 export default function SearchGroups() {
@@ -25,7 +24,7 @@ export default function SearchGroups() {
       </div>
 
       <Image
-        src={backgroundGruposPesquisa.src}
+        src={"/assets/images/background_gruposPesquisa.svg"}
         alt="ícone pessoa"
         width={1217.21}
         height={695.88}
