@@ -5,14 +5,6 @@ import "./Orientacoes.css";
 export default function OrientacoesAutores(){
     return(
         <div className="orientacoes">
-            <div className="button">
-                <div className="buttonTrue">Autores</div>
-
-                <div className="buttonFalse">Avaliadores</div>
-
-                <div className="buttonFalse">Audiência</div>
-            </div>
-
             <div className="text">
 
                 <div className="textSection">
