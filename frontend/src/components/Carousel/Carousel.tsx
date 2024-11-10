@@ -10,6 +10,7 @@ import Link from "next/link";
 export default function Carousel() {
   const { slide1, slide2, slide3 } = CarouselMock;
 
+
   return (
     <div
       id="carousel-wepgcomp"

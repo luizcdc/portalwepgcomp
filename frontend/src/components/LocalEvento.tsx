@@ -12,11 +12,8 @@ export default function LocalEvento() {
         paddingBottom: "20px",
       }}
     >
-      <div
+      <div className="d-flex flex-row justify-content-evenly"
         style={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          flexDirection: "row",
           gap: "40px",
           paddingRight: "10rem",
         }}
