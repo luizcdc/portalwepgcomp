@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import "./style.scss";
 
 export default function Header() {
   return (
@@ -26,34 +27,31 @@ export default function Header() {
           <div className='collapse navbar-collapse' id='navbarSupportedContent'>
             <ul
               className='navbar-nav me-auto mb-2 mb-lg-0'
-              style={{
-                gap: "15px",
-              }}
             >
               <li className='nav-item'>
                 <Link className='nav-link text-black' href='/Home'>
                   Início
                 </Link>
               </li>
-              <div className='vr'></div>
+              <div className='vr text-black'></div>
               <li className='nav-item'>
                 <Link className='nav-link text-black' href='#Programacao'>
                   Programação do Evento
                 </Link>
               </li>
-              <div className='vr'></div>
+              <div className='vr text-black'></div>
               <li className='nav-item'>
                 <Link className='nav-link text-black' href='#Orientacao'>
                   Orientações
                 </Link>
               </li>
-              <div className='vr'></div>
+              <div className='vr text-black'></div>
               <li className='nav-item'>
                 <Link className='nav-link text-black' href='#Contato'>
                   Contato
                 </Link>
               </li>
-              <div className='vr'></div>
+              <div className='vr text-black'></div>
               <li className='nav-item'>
                 <Link
                   className='nav-link active text-black'
