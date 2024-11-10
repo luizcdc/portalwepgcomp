@@ -1,0 +1,37 @@
+.form-title {
+    font-size: 1.25rem;
+}
+
+.input-title {
+    font-size: 0.875rem;
+}
+
+input::placeholder {
+    color: #ADB5BD !important;
+}
+
+a {
+    color: #090DF0;
+}
+
+.link {
+    font-size: 0.875rem;
+}
+
+
+button {
+    background-color: #0065A3 !important;
+    font-size: 1rem;
+    width: 7.938rem;
+    height: 2.375rem;
+
+    &:hover {
+        background-color: #0065A3 !important;
+    }
+}
+
+hr {
+    border-width: 0.125rem;
+    border-color: #FFA90F;
+    border-style: solid;
+}

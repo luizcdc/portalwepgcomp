@@ -5,9 +5,11 @@ import "./Carousel.css";
 import { CarouselMock } from "@/mocks/Carousel";
 
 import CarouselSlide from "./CarouselSlide";
+import Link from "next/link";
 
 export default function Carousel() {
   const { slide1, slide2, slide3 } = CarouselMock;
+
 
   return (
     <div
@@ -47,9 +49,10 @@ export default function Carousel() {
           <p className="lead">{slide1.subtitles[0]}</p>
 
           <p className="lead fw-semibold">{slide1.subtitles[1]}</p>
-          <button className="btn btn-outline-light mt-3 px-4 py-2 schedule-button">
+
+          <Link className="btn btn-outline-light mt-3 px-4 py-2 schedule-button" href='#Programacao'>
             {slide1.labelButton}
-          </button>
+          </Link>
         </CarouselSlide>
 
         <CarouselSlide imageUrl={slide2.backgroundUrl || ""}>
