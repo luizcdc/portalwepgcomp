@@ -5,18 +5,17 @@ import Endereco from "@/components/Endereco";
 export default function LocalEvento() {
   return (
     <div
+      id='Contato'
       style={{
         backgroundColor: "#0074BA",
         paddingTop: "20px",
         paddingBottom: "20px",
       }}
     >
-      <div
+      <div className="d-flex flex-row justify-content-evenly"
         style={{
-          display: "flex",
-          flexDirection: "row",
           gap: "40px",
-          marginLeft: "20px",
+          paddingRight: "10rem",
         }}
       >
         <Contato />

@@ -1,55 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserRequestDto, Profile } from './user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
-import { StudentService } from 'src/student/student.service';
-import { ProfessorService } from 'src/professor/professor.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ResponseUserDto } from './dto/response-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private prismaClient: PrismaService,
-    private studentService: StudentService,
-    private professorService: ProfessorService,
-  ) {}
+  constructor(private prismaClient: PrismaService) {}
 
-  async create(createUserDto: CreateUserRequestDto) {
-    const existingUser = await this.prismaClient.user.findFirst({
+  async create(createUserDto: CreateUserDto) {
+    const emailExists = await this.prismaClient.userAccount.findUnique({
       where: {
-       email: createUserDto.email,
+        email: createUserDto.email,
       },
     });
 
-    if (existingUser && existingUser.email === createUserDto.email) {
-        throw new AppException('Um usuário com esse email já existe.', 400);
+    if (emailExists) {
+      throw new AppException('Um usuário com esse email já existe.', 400);
+    }
+
+    if (
+      createUserDto.profile === 'DoctoralStudent' &&
+      !createUserDto.registrationNumber
+    ) {
+      throw new AppException(
+        'O número de matrícula é obrigatório para estudantes de doutorado.',
+        400,
+      );
+    }
+
+    if (createUserDto.registrationNumber) {
+      const registrationExists = await this.prismaClient.userAccount.findUnique(
+        {
+          where: {
+            registrationNumber: createUserDto.registrationNumber,
+          },
+        },
+      );
+      if (registrationExists) {
+        throw new AppException('Um usuário com essa matrícula já existe.', 400);
       }
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    let user = null;
-
-    if (createUserDto.profile === Profile.DoctoralStudent) {
-      user = await this.studentService.create({
+    const createdUser = await this.prismaClient.userAccount.create({
+      data: {
         ...createUserDto,
         password: hashedPassword,
-        registration: createUserDto.registration,
-      });
-    } else if (createUserDto.profile === Profile.Professor) {
-      user = await this.professorService.create({
-        ...createUserDto,
-        password: hashedPassword,
-        areaExpertise: createUserDto.areaExpertise,
-        registration: createUserDto.registration,
-      });
-    }
+      },
+    });
 
-    return user;
+    const responseUserDto = new ResponseUserDto(createdUser);
+
+    return responseUserDto;
   }
 
   async findByEmail(email: string) {
-    const user = await this.prismaClient.user.findUnique({
+    const user = await this.prismaClient.userAccount.findUnique({
       where: {
         email,
       },

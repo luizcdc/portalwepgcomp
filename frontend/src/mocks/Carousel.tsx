@@ -1,19 +1,15 @@
-import Slide1 from "@/assets/images/slide1.png";
-import Slide2 from "@/assets/images/slide2.png";
-import Slide3 from "@/assets/images/slide3.png";
-
 export const CarouselMock = {
   slide1: {
-    backgroundUrl: Slide1.src,
+    backgroundUrl: "/assets/images/slide1.png",
     title: "WEPGCOMP 2025",
     subtitles: [
       "Workshop de Estudantes da Pós-Graduação em Ciência da Computação do WEPGCOMP-UFBA",
-      "de 12 a 14 de novembro de 2024",
+      "de 12 a 14 de novembro de 2025",
     ],
     labelButton: "Confira a Programação",
   },
   slide2: {
-    backgroundUrl: Slide2.src,
+    backgroundUrl: "/assets/images/slide2.png",
     title: "O WEPGCOMP",
     concept_subtitles: ["CONCEITO", "5", "CAPES"],
     subtitles: [
@@ -22,12 +18,12 @@ export const CarouselMock = {
     ],
   },
   slide3: {
-    backgroundUrl: Slide3.src,
+    backgroundUrl: "/assets/images/slide3.png",
     title: "DATAS IMPORTANTES",
     subtitles: [
-      "Inscrições: até 14 de novembro de 2024.",
-      "Data do evento: 12 a 14 de novembro de 2024.",
-      "Data limite para submissão: 27 de outubro de 2024.",
+      "Inscrições: até 14 de novembro de 2025.",
+      "Data do evento: 12 a 14 de novembro de 2025.",
+      "Data limite para submissão: 27 de outubro de 2025.",
     ],
     labelButton: "INSCREVA-SE JÁ!",
   },
