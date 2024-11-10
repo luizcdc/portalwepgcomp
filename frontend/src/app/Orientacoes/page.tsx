@@ -1,5 +1,8 @@
 "use client";
 
+import OrientacoesAudiencia from "@/components/Orientacoes/OrientacoesAudiencia";
+import OrientacoesAutores from "@/components/Orientacoes/OrientacoesAutores";
+import OrientacoesAvaliadores from "@/components/Orientacoes/OrientacoesAvaliadores";
 import Banner from "@/components/UI/Banner";
 
 export default function Orientacoes() {
@@ -12,6 +15,9 @@ export default function Orientacoes() {
       }}
     >
       <Banner title="Orientações" />
+      <OrientacoesAudiencia />
+      <OrientacoesAutores />
+      <OrientacoesAvaliadores />
     </div>
   );
 }

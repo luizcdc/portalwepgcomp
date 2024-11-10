@@ -4,7 +4,7 @@ import "./Orientacoes.css";
 
 export default function OrientacoesAvaliadores(){
     return(
-        <div className="orientacoes-avaliadores">
+        <div className="orientacoes">
             <div className="button">
                 <div className="buttonFalse">Autores</div>
 
