@@ -1,13 +1,9 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
-import LandingContainer from "@/pages/Landing/LandingContainer";
+import Home from "./Home/page";
 
-export default function Home() {
+export default function App() {
   return (
-      <main>
-        <Header />
-        <LandingContainer></LandingContainer>
-        <Footer />
-      </main>
+    <main>
+      <Home />
+    </main>
   );
 }

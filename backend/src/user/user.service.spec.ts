@@ -3,7 +3,8 @@ import { UserService } from './user.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
-import { UserStatus } from '@prisma/client';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ResponseUserDto } from './dto/response-user.dto';
 
 jest.mock('bcrypt');
 
@@ -18,11 +19,7 @@ describe('UserService', () => {
         {
           provide: PrismaService,
           useValue: {
-            student: {
-              findUnique: jest.fn(),
-              create: jest.fn(),
-            },
-            professor: {
+            userAccount: {
               findUnique: jest.fn(),
               create: jest.fn(),
             },
@@ -39,37 +36,50 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('registerStudent', () => {
-    it('should throw an AppException if the student already exists', async () => {
-      prismaService.student.findUnique = jest.fn().mockResolvedValue(true);
+  describe('create', () => {
+    it('should throw an AppException if email already exists', async () => {
+      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(true);
 
-      const createStudentDto = {
-        email: 'student@example.com',
-        password: 'password123',
+      const createUserDto: CreateUserDto = {
         name: 'John',
-        registration: '2021001',
-        advisor: 'Dr. Smith',
-        program: 'Computer Science',
+        email: 'existing@example.com',
+        password: 'password123',
       };
 
-      await expect(service.registerStudent(createStudentDto)).rejects.toThrow(
+      await expect(service.create(createUserDto)).rejects.toThrow(
         new AppException('Um usuário com esse email já existe.', 400),
       );
     });
 
-    it('should hash the password and create a new student', async () => {
-      prismaService.student.findUnique = jest.fn().mockResolvedValue(null);
-      prismaService.student.create = jest.fn().mockResolvedValue({
-        id: '123',
-        email: 'student@example.com',
+    it('should throw an AppException if registration number already exists', async () => {
+      prismaService.userAccount.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(true);
+
+      const createUserDto: CreateUserDto = {
+        name: 'Jane',
+        email: 'new@example.com',
+        password: 'password123',
+        registrationNumber: '2021001',
+      };
+
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        new AppException('Um usuário com essa matrícula já existe.', 400),
+      );
+    });
+
+    it('should hash password and create a new user', async () => {
+      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(null);
+      prismaService.userAccount.create = jest.fn().mockResolvedValue({
+        id: '1',
         name: 'John',
-        surname: null,
-        registration: '2021001',
-        advisor: 'Dr. Smith',
-        photo: null,
-        program: 'Computer Science',
-        status: UserStatus.ATIVO,
-        password: 'hashedPassword',
+        email: 'newuser@example.com',
+        registrationNumber: '2021001',
+        photoFilePath: null,
+        profile: 'DoctoralStudent',
+        level: 'Default',
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -77,95 +87,63 @@ describe('UserService', () => {
       const hashedPassword = 'hashedPassword';
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
-      const createStudentDto = {
-        email: 'student@example.com',
-        password: 'password123',
+      const createUserDto: CreateUserDto = {
         name: 'John',
-        registration: '2021001',
-        advisor: 'Dr. Smith',
-        program: 'Computer Science',
+        email: 'newuser@example.com',
+        password: 'password123',
+        registrationNumber: '2021001',
       };
 
-      const result = await service.registerStudent(createStudentDto);
+      const result = await service.create(createUserDto);
 
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
-      expect(prismaService.student.create).toHaveBeenCalledWith({
+      expect(prismaService.userAccount.create).toHaveBeenCalledWith({
         data: {
-          ...createStudentDto,
+          ...createUserDto,
           password: hashedPassword,
-          status: UserStatus.ATIVO,
         },
       });
-      expect(result).toEqual(
-        expect.objectContaining({
-          id: '123',
-          email: 'student@example.com',
-          name: 'John',
-          status: UserStatus.ATIVO,
-        }),
-      );
+      expect(result).toBeInstanceOf(ResponseUserDto);
+      expect(result.email).toEqual(createUserDto.email);
     });
   });
 
-  describe('registerProfessor', () => {
-    it('should throw an AppException if the professor already exists', async () => {
-      prismaService.professor.findUnique = jest.fn().mockResolvedValue(true);
-
-      const createProfessorDto = {
-        email: 'professor@example.com',
-        password: 'password123',
-        name: 'Jane',
-        registration: 'T2021001',
-      };
-
-      await expect(service.registerProfessor(createProfessorDto)).rejects.toThrow(
-        new AppException('Um usuário com esse email já existe.', 400),
-      );
-    });
-
-    it('should hash the password and create a new professor', async () => {
-      prismaService.professor.findUnique = jest.fn().mockResolvedValue(null);
-      prismaService.professor.create = jest.fn().mockResolvedValue({
-        id: '456',
-        email: 'professor@example.com',
-        name: 'Jane',
-        surname: null,
-        registration: 'T2021001',
-        photo: null,
-        status: UserStatus.PENDENTE,
-        password: 'hashedPassword',
+  describe('findByEmail', () => {
+    it('should return a user by email', async () => {
+      const userMock = {
+        id: '1',
+        name: 'John',
+        email: 'user@example.com',
+        registrationNumber: '2021001',
+        photoFilePath: null,
+        profile: 'DoctoralStudent',
+        level: 'Default',
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
-
-      const hashedPassword = 'hashedPassword';
-      (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
-
-      const createProfessorDto = {
-        email: 'professor@example.com',
-        password: 'password123',
-        name: 'Jane',
-        registration: 'T2021001',
       };
 
-      const result = await service.registerProfessor(createProfessorDto);
+      prismaService.userAccount.findUnique = jest
+        .fn()
+        .mockResolvedValue(userMock);
 
-      expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
-      expect(prismaService.professor.create).toHaveBeenCalledWith({
-        data: {
-          ...createProfessorDto,
-          password: hashedPassword,
-          status: UserStatus.PENDENTE,
-        },
+      const result = await service.findByEmail('user@example.com');
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { email: 'user@example.com' },
       });
-      expect(result).toEqual(
-        expect.objectContaining({
-          id: '456',
-          email: 'professor@example.com',
-          name: 'Jane',
-          status: UserStatus.PENDENTE,
-        }),
-      );
+      expect(result).toEqual(userMock);
+    });
+
+    it('should return null if user does not exist', async () => {
+      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(null);
+
+      const result = await service.findByEmail('nonexistent@example.com');
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { email: 'nonexistent@example.com' },
+      });
+      expect(result).toBeNull();
     });
   });
 });

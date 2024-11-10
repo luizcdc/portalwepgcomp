@@ -1,0 +1,29 @@
+.form-title {
+    font-size: 1rem;
+}
+
+.input-title {
+    font-size: 0.9rem;
+}
+
+.paragraph-title,
+.list-title,
+.error-message {
+    font-size: 0.8rem;
+
+}
+
+.paragraph-title {
+    color: #555555;
+}
+
+
+.submit-button {
+    background-color: #FFA90F;
+    width: 15.375rem;
+    height: 2.688rem;
+
+    &:hover {
+        background-color: #FFA90F;
+    }
+}
