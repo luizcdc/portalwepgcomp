@@ -1,6 +1,6 @@
 export const CarouselMock = {
   slide1: {
-    backgroundUrl: "/assets/images/slide1.png",
+    backgroundUrl: "/assets/images/slide1.svg",
     title: "WEPGCOMP 2025",
     subtitles: [
       "Workshop de Estudantes da Pós-Graduação em Ciência da Computação do WEPGCOMP-UFBA",
@@ -9,7 +9,7 @@ export const CarouselMock = {
     labelButton: "Confira a Programação",
   },
   slide2: {
-    backgroundUrl: "/assets/images/slide2.png",
+    backgroundUrl: "/assets/images/slide2.svg",
     title: "O WEPGCOMP",
     concept_subtitles: ["CONCEITO", "5", "CAPES"],
     subtitles: [
@@ -18,7 +18,7 @@ export const CarouselMock = {
     ],
   },
   slide3: {
-    backgroundUrl: "/assets/images/slide3.png",
+    backgroundUrl: "/assets/images/slide3.svg",
     title: "DATAS IMPORTANTES",
     subtitles: [
       "Inscrições: até 14 de novembro de 2025.",

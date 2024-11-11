@@ -1,0 +1,67 @@
+.listagem-template{
+    display: flex;
+    flex-direction: column;
+
+    h2{
+        font-weight: 900;
+    }
+    
+    .listagem-template-content{
+        display: flex;
+        flex-direction: column;
+        padding: 4rem ;
+
+        .listagem-template-user-area{
+            display: grid;
+            grid-template-columns: 1.5fr 3fr 4fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+          
+
+            button{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: #FFA90F;
+                border: none;
+                color: white;
+                max-width: 15.625rem;
+                padding: 0.5rem 1rem;
+                border-radius: 10px;
+                font-weight: 600;
+            }
+
+            .listagem-template-content-input{
+                max-width: 24rem;
+
+                >input{
+                    border: 3px solid #FFA90F;
+
+                    ::placeholder{
+                        color: #ADB5BD;
+                    }
+                }
+            }
+        }
+    
+        .listagem-template-cards{
+            display: grid;
+            gap: 1rem;
+        }
+
+        .listagem-template-mais-cards{
+            margin-top: 4rem;
+            align-self: center;
+            max-width: 24rem;
+            font-weight: 800;
+            border: none;
+            background-color: #FFA90F;
+            padding: 0.5rem 1rem;
+            border-radius: 1.875rem;
+
+            .listagem-template-mais-cards-icon{
+                margin-left: 2rem;
+            }
+        }
+    }
+}
