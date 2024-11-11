@@ -6,19 +6,13 @@ import Organizacao from "@/components/Organizacao";
 import Orientacao from "@/components/Orientacao";
 import Realizacao from "@/components/Realizacao";
 import ScheduleSection from "@/components/ScheduleSection";
-import SearchGroups from "@/components/SearchGroups";
 
 export default function Home() {
   return (
-    <div className="d-flex flex-column"
-      style={{
-        gap: "50px",
-      }}
-    >
+    <div className="d-flex flex-column">
       <Carousel />
       <ScheduleSection />
       <Orientacao />
-      <SearchGroups />
       <Organizacao />
       <LocalEvento />
       <Realizacao />
