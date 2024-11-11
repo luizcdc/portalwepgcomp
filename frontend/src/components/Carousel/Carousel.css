@@ -24,7 +24,7 @@
         }
 
         @media (max-width: 2800px) {          
-            bottom: 25%;     
+            bottom: 30%;     
         }
           
         @media (max-width: 576px) {          
@@ -48,6 +48,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-top: -75px;
 
             .concept-subtitle{
                 margin-bottom: 2.5rem;
