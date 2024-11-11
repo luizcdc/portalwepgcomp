@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
+import { useUsers } from "@/hooks/useUsers";
 
 const formAlterarSenhaSchema = z
   .object({
@@ -23,13 +24,15 @@ const formAlterarSenhaSchema = z
     path: ["confirmaSenha"],
   });
 
-export function FormAlterarSenha() {
+export function FormAlterarSenha({ params }) {
+  const { resetPassword } = useUsers();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormAlterarSenhaSchema>({
-    resolver: zodResolver(formAlterarSenhaSchema)
+    resolver: zodResolver(formAlterarSenhaSchema),
   });
 
   type FormAlterarSenhaSchema = z.infer<typeof formAlterarSenhaSchema>;
@@ -44,7 +47,18 @@ export function FormAlterarSenha() {
   });
 
   const handleFormCadastro = (data: FormAlterarSenhaSchema) => {
-    console.log(data);
+    const { senha, confirmaSenha } = data;
+
+    if (!senha || !confirmaSenha) {
+      throw new Error("Campos obrigatórios em branco.");
+    }
+
+    const body = {
+      token: params.token,
+      newPassword: senha,
+    };
+
+    resetPassword(body);
   };
 
   const handleChangeSenha = (e) => {
@@ -78,10 +92,14 @@ export function FormAlterarSenha() {
         />
         <p className="text-danger error-message">{errors.senha?.message}</p>
         <div className="mt-3">
-          <p className="mb-1 fw-semibold paragraph-title">A senha deve possuir pelo menos:</p>
+          <p className="mb-1 fw-semibold paragraph-title">
+            A senha deve possuir pelo menos:
+          </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.minLength ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -91,7 +109,9 @@ export function FormAlterarSenha() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.upperCase ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.upperCase ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.upperCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -101,7 +121,9 @@ export function FormAlterarSenha() {
               1 letra maiúscula
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.lowerCase ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.lowerCase ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.lowerCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -111,7 +133,9 @@ export function FormAlterarSenha() {
               1 letra minúscula
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.number ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
@@ -121,7 +145,9 @@ export function FormAlterarSenha() {
               4 números
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.specialChar ? "text-success" : "text-danger"}`}
+              className={`fw-semibold list-title ${
+                requisitos.specialChar ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.specialChar ? (
                 <i className="bi bi-shield-fill-check" />
@@ -146,7 +172,9 @@ export function FormAlterarSenha() {
           placeholder="Insira sua senha novamente"
           {...register("confirmaSenha")}
         />
-        <p className="text-danger error-message">{errors.confirmaSenha?.message}</p>
+        <p className="text-danger error-message">
+          {errors.confirmaSenha?.message}
+        </p>
       </div>
 
       <div className="d-grid gap-2 col-3 mx-auto">
@@ -157,6 +185,6 @@ export function FormAlterarSenha() {
           Enviar
         </button>
       </div>
-    </form >
+    </form>
   );
 }
