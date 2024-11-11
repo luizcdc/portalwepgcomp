@@ -7,6 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import type { Metadata } from "next";
 import "./globals.css";
 
+require("dotenv").config();
+
 export const metadata: Metadata = {
   title: "WEPGCOMP 2025",
 };
