@@ -1,7 +1,5 @@
 import  Axios from "axios";
 
-require('dotenv').config();
-
 
 const headersDefault = {
     'Content-Type': 'application/json',
