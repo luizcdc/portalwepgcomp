@@ -1,12 +1,11 @@
 "use client";
 
 import CardListagem from "@/components/CardListagem/CardListagem";
-import CarouselSlide from "@/components/Carousel/CarouselSlide";
-import { CarouselMock } from "@/mocks/Carousel";
 import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
 
 import "./style.scss";
+import Banner from "@/components/UI/Banner";
 
 interface ListagemProps {
   title: string;
@@ -25,9 +24,7 @@ export default function Listagem({
 }: Readonly<ListagemProps>) {
   return (
     <div className="listagem-template">
-      <CarouselSlide imageUrl={CarouselMock.slide1.backgroundUrl} isActive>
-        <h2 className="display-4 title">{title}</h2>
-      </CarouselSlide>
+      <Banner title={title} />
       <div className="listagem-template-content">
         <div className="listagem-template-user-area">
           <button>
