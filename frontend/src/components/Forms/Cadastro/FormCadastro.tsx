@@ -62,6 +62,14 @@ const formCadastroSchema = z
         code: z.ZodIssueCode.custom,
       });
     }
+
+    if (data.perfil !== "ouvinte" && data.matricula && !/^\d{10}$/.test(data.matricula)) {
+      ctx.addIssue({
+        path: ["matricula"],
+        message: "A matrícula precisa conter apenas números e ter exatamente 10 dígitos.",
+        code: z.ZodIssueCode.custom,
+      });
+    }
   })
   .refine((data) => data.senha === data.confirmaSenha, {
     message: "As senhas não conferem!",
