@@ -12,13 +12,13 @@ export default function ModalAlterarSenha() {
   const handleSendEmail = () => {
     if (!email) {
       throw new Error("Campos obrigatórios em branco.");
+    } else {
+      const body = {
+        email,
+      };
+
+      resetPasswordSendEmail(body);
     }
-
-    const body = {
-      email,
-    };
-
-    resetPasswordSendEmail(body);
   };
 
   return (
@@ -75,7 +75,7 @@ export default function ModalAlterarSenha() {
             <button
               type="button"
               className="btn btn-primary button-alterar-senha"
-              onClick={!!email ? handleSendEmail : () => {}}
+              onClick={handleSendEmail}
               disabled={!email}
             >
               Enviar

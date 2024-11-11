@@ -6,7 +6,6 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import type { Metadata } from "next";
 import "./globals.css";
-import ModalAlterarSenha from "@/components/ModalAlterarSenha/ModalAlterarSenha";
 
 export const metadata: Metadata = {
   title: "WEPGCOMP 2025",
