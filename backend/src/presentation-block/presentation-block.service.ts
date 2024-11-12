@@ -40,7 +40,7 @@ export class PresentationBlockService {
 
     if (eventEdition.endDate < createPresentationBlockDto.startTime) {
       throw new AppException(
-        'Presentation block end date is after event edition end date',
+        'Presentation block starts after event edition end date',
         400,
       );
     }
@@ -66,7 +66,7 @@ export class PresentationBlockService {
   }
 
   async findAll() {
-    return `This action returns all presentationBlock`;
+    return await this.prismaClient.presentationBlock.findMany();
   }
   async findAllByEventEditionId(eventEditionId: string) {
     const presentationBlocks =
