@@ -55,15 +55,27 @@ export default function Header() {
                   Contato
                 </Link>
               </li>
-              <div className="vr text-black"></div>
-              <li className="nav-item">
-                <Link
-                  className="nav-link active text-black"
-                  aria-current="page"
-                  href="/Login"
-                >
-                  Login
-                </Link>
+              <div className='vr text-black'></div>
+              <li className='nav-item'>
+                { false 
+                    ?
+                    <Link
+                      className='nav-link active text-black'
+                      aria-current='page'
+                      href='/'
+                    >
+                      Logout
+                    </Link>                    
+                    :
+                      <Link
+                      className='nav-link active text-black'
+                      aria-current='page'
+                      href='/Login'
+                    >
+                      Login                    
+                    </Link>
+                }
+                
               </li>
             </ul>
           </div>

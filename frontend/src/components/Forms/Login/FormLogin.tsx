@@ -4,6 +4,9 @@
 import usePost from "@/services/usePost";
 import { useState } from "react";
 import "./style.scss";
+import { useAuth } from "@/hooks/useAuth";
+import { useForm } from "react-hook-form";
+import { IUser } from "@/context/AuthProvider/types";
 
 interface ILogin {
   email: string;
@@ -11,26 +14,31 @@ interface ILogin {
 }
 
 export function FormLogin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { cadastrarDados, error, sucesso } = usePost();
 
-  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const { register, handleSubmit} = useForm();
+  const { cadastrarDados, error, sucesso } = usePost();
+  const auth = useAuth();
+
+  async function handleLogin(data: any ) {   
+    const { email, password }  = data;
+
     const usuario: ILogin = {
       email: email,
       password: password,
     };
 
     try {
-      cadastrarDados({ url: "auth/login", dados: usuario });
-    } catch (error) {
-      error && alert("Não foi possível realizar o login!");
+      await auth.authenticate(usuario.email, usuario.password);
+      console.log("Chama login")
+    //  cadastrarDados({ url: "auth/login", dados: usuario });
+    } catch (error) {      
+      console.log(error)
+      error ;
     }
   };
 
   return (
-    <form className="row g-3" onSubmit={handleLogin}>
+    <form className="row g-3" onSubmit={handleSubmit(handleLogin)}>
       <div className="col-12 mb-3">
         <label className="form-label fw-bold form-title">
           E-mail
@@ -42,6 +50,7 @@ export function FormLogin() {
           id="email"
           placeholder="exemplo@ufba.br"
           required
+          {...register("email")}
         />
       </div>
       <div className="col-12 mb-3">
@@ -55,6 +64,7 @@ export function FormLogin() {
           id="password"
           placeholder="digite sua senha"
           required
+          {...register("password")}
         />
 
         <div className="text-end link">
