@@ -9,7 +9,7 @@ const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
 const domain = hostname?.split('.')[0];
 
 const apis = {
-  "localhost": "https://reqres.in",
+  "localhost": "http://localhost:3080",
   "portal-wepgcomp-client-development": "https://portal-wepgcomp-api-development.vercel.app/",
   "portal-wepgcomp-client": "https://portal-wepgcomp-api.vercel.app/",
 };

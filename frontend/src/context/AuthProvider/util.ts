@@ -1,32 +1,27 @@
 import { axiosInstance } from "@/utils/api";
-import { IUser } from "./types";
 
 
-export function setUserLocalStorage(user: IUser | null){
-    localStorage.setItem("u", JSON.stringify(user));
+export const instance = axiosInstance();
+ 
+export function setTokenLocaStorage(token: any){
+    localStorage.setItem("@Auth:token", token)
 }
 
 export function getUserLocalStorage(){
-    const json = localStorage.getItem('u');
+    const storageToken = localStorage.getItem('@Auth:token');
     
-    if(!json){
-        return null;
+    if(storageToken){
+       return storageToken;
     }
-
-    const user = JSON.parse(json);
-
-    return user ?? null;
+    return  null;
 }
 
 export async function LoginRequest (email: string, password: string){
     try {
-        console.log("Cheguei na requisição")
-        const instance = axiosInstance();
-        const request = await instance.post('login', { email, password })
-
-        return request.data;
+        const request = await instance.post('auth/login', { email, password });
+        return request;
     } catch (error) {
-        console.log("Erro: ", error)
-        return null ;
+        console.log("Erro: ", error);
+        return null;
     }
 }

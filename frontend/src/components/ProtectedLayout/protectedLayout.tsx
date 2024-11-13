@@ -1,10 +1,11 @@
-import React from "react";
-import { useAuth } from "@/hooks/useAuth"
+import React, { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 export const ProtectedLayout = ({ children }: { children:  React.ReactNode}) => {
-    const auth = useAuth();
+    const {signed} = useContext(AuthContext);
+
     
-    if(!auth.email){
+    if(!signed){
         return <h1>Você não possui acesso!</h1>;
     }
 
