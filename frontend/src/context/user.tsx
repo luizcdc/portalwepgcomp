@@ -41,12 +41,14 @@ export const UserProvider = ({ children }: UserProps) => {
       .then((response) => {
         setUser(response);
         console.log("criado");
+        alert("Cadastro realizado com sucesso!");
         router.push("/Login");
       })
       .catch((err) => {
         console.log(err);
         setUser(null);
         console.log("erro ao criar");
+        alert("Erro ao tentar cadastrar!");
       })
       .finally(() => {
         setLoadingCreateUser(false);
@@ -59,12 +61,14 @@ export const UserProvider = ({ children }: UserProps) => {
       .resetPasswordSendEmail(body)
       .then((response) => {
         setUser(response);
+        alert("Email enviado com sucesso!");
         console.log("Email enviado");
         router.push("/Login");
       })
       .catch((err) => {
         console.log(err);
         setUser(null);
+        alert("Erro ao enviar email!");
         console.log("erro ao enviar");
       })
       .finally(() => {
@@ -79,12 +83,14 @@ export const UserProvider = ({ children }: UserProps) => {
       .then((response) => {
         setUser(response);
         console.log("Senha alterada");
+        alert("Senha alterada com sucesso!");
         router.push("/Login");
       })
       .catch((err) => {
         console.log(err);
         setUser(null);
         console.log("erro ao enviar");
+        alert("Erro ao alterar senha!");
       })
       .finally(() => {
         setLoadingResetPassword(false);
