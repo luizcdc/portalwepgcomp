@@ -1,45 +1,38 @@
 .modal-alterar-senha{
-
-    .header-alterar-senha{
-        border: none;
-    }
-
-    .title-alterar-senha{
-        margin-top:  0 !important;
-    }
-
-    .linha-alterar-senha{
-        width: 100%;
-    }
-
-    .field-alterar-senha{
-        max-width: 80%;
-    }
-
-    .form-label-alterar-senha{
-        font-size: 1rem;
-    }
-
-    .content-alterar-senha{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        >h2{
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
      
-
-        >p{
-            max-width: 60%;
-            text-align: center;
-        }
-
-        .button-alterar-senha{
-            background-color: #0065A3;
-            font-weight: 700;
-            width: 12rem;
-        }
+    .title-alterar-senha {
+      margin-top: 0 !important;
+    }
+    
+    .linha-alterar-senha {
+      width: 100%;
+    }
+    
+    .field-alterar-senha {
+    
+      max-width: 80%;
+    }
+    
+    .form-label-alterar-senha {
+      font-size: 1rem;
+    }
+    
+    .content-alterar-senha {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    
+      > h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+    
+      > p {
+        max-width: 60%;
+        text-align: center;
+      }
     }
 }
