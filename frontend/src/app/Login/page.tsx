@@ -3,6 +3,7 @@
 import { FormLogin } from "@/components/Forms/Login/FormLogin";
 import "./style.scss";
 import ModalAlterarSenha from "@/components/ModalAlterarSenha/ModalAlterarSenha";
+import ModalEdicaoApresentacao from "@/components/ModalEdicaoApresentacao/ModalEdicaoApresentacao";
 
 export default function Login() {
   return (
@@ -35,6 +36,7 @@ export default function Login() {
       </div>
 
       <ModalAlterarSenha />
+      <ModalEdicaoApresentacao/>
     </div>
   );
 }

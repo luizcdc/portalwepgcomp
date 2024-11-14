@@ -19,6 +19,7 @@ export default function Apresentacoes() {
         labelListCardsButton={buttonList}
         searchPlaceholder={userArea.search}
         cardsList={cardsMock}
+        dataBsTarget="#alterarApresentacaoModal"
       />
     </div>
   );

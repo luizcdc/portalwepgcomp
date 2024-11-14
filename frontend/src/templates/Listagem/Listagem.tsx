@@ -13,6 +13,7 @@ interface ListagemProps {
   searchPlaceholder: string;
   labelListCardsButton: string;
   cardsList: any[];
+  dataBsTarget: string;
 }
 
 export default function Listagem({
@@ -21,6 +22,7 @@ export default function Listagem({
   labelListCardsButton,
   searchPlaceholder,
   cardsList,
+  dataBsTarget
 }: Readonly<ListagemProps>) {
   return (
     <div className="listagem-template">
@@ -58,6 +60,7 @@ export default function Listagem({
             <CardListagem
               key={card.name}
               title={card.name}
+              dataBsTarget={dataBsTarget}
               subtitle={
                 title === "Sessões"
                   ? `${formatDate(card.startAt, card.endAt)}`
