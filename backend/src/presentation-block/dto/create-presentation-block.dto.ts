@@ -3,12 +3,15 @@ import {
   IsString,
   IsUUID,
   IsEnum,
-  IsDate,
+  IsISO8601,
   IsInt,
   Min,
   Max,
   MinLength,
 } from 'class-validator';
+// import annotations from swagger
+
+import { ApiProperty } from '@nestjs/swagger';
 
 import { PresentationBlockType } from '@prisma/client';
 
@@ -22,6 +25,10 @@ export class CreatePresentationBlockDto {
 
   @IsEnum(PresentationBlockType, {
     message: 'Opção inválida.',
+  })
+  @ApiProperty({
+    enum: PresentationBlockType,
+    example: PresentationBlockType.Presentation,
   })
   type: PresentationBlockType;
 
@@ -38,7 +45,13 @@ export class CreatePresentationBlockDto {
   })
   speakerName?: string;
 
-  @IsDate()
+  @IsISO8601(
+    {},
+    {
+      message:
+        'A data de início da sessão deve estar no formato ISO 8601 (yyyy-mm-ddThh:mm:ss).',
+    },
+  )
   startTime: Date;
 
   @IsInt({
