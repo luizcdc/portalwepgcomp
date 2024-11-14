@@ -15,6 +15,13 @@ describe('PresentationBlockService', () => {
         {
           provide: PrismaService,
           useValue: {
+            presentationBlock: {
+              findMany: jest.fn(),
+              findUnique: jest.fn(),
+              create: jest.fn(),
+              update: jest.fn(),
+              delete: jest.fn(),
+            },
             eventEdition: {
               findUnique: jest.fn(),
             },
@@ -130,7 +137,7 @@ describe('PresentationBlockService', () => {
       const now = new Date();
       prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
         startDate: new Date(now.getTime() - 2),
-        endDate: new Date(now.getTime() + 1),
+        endDate: new Date(now.getTime() + 5 * 60 * 1000),
       });
       prismaService.room.findUnique = jest.fn().mockResolvedValue({});
 
@@ -141,6 +148,7 @@ describe('PresentationBlockService', () => {
         duration: 5,
         type: PresentationBlockType.General,
       };
+
       prismaService.presentationBlock.create = jest
         .fn()
         .mockResolvedValue(presentationBlock);
@@ -159,7 +167,7 @@ describe('PresentationBlockService', () => {
       const now = new Date();
       prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
         startDate: new Date(now.getTime() - 2),
-        endDate: new Date(now.getTime() + 1),
+        endDate: new Date(now.getTime() + 5 * 60 * 1000),
       });
 
       const presentationBlock = {
@@ -186,7 +194,7 @@ describe('PresentationBlockService', () => {
       const now = new Date();
       prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
         startDate: new Date(now.getTime() - 2),
-        endDate: new Date(now.getTime() + 1),
+        endDate: new Date(now.getTime() + 5 * 60 * 1000),
       });
 
       const presentationBlock = {
@@ -213,7 +221,7 @@ describe('PresentationBlockService', () => {
       const now = new Date();
       prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
         startDate: new Date(now.getTime() - 2),
-        endDate: new Date(now.getTime() + 1),
+        endDate: new Date(now.getTime() + 5 * 60 * 1000),
       });
 
       const presentationBlock = {
@@ -300,13 +308,21 @@ describe('PresentationBlockService', () => {
           type: PresentationBlockType.General,
         },
       ];
+
       prismaService.presentationBlock.findMany = jest
         .fn()
-        .mockResolvedValue(presentationBlocks);
+        .mockResolvedValue([presentationBlocks[0], presentationBlocks[2]]);
 
       const result = await service.findAllByEventEditionId(eventEditionId);
 
-      expect(result).toEqual([presentationBlocks[0]]);
+      expect(prismaService.presentationBlock.findMany).toHaveBeenCalledWith({
+        where: {
+          eventEditionId,
+        },
+      });
+
+      // Verify the result is correct
+      expect(result).toEqual([presentationBlocks[0], presentationBlocks[2]]);
     });
   });
 
@@ -354,15 +370,15 @@ describe('PresentationBlockService', () => {
 
   describe('remove', () => {
     it('should remove a presentation block', async () => {
-      prismaService.presentationBlock.delete = jest.fn().mockResolvedValue({
-        id: '1',
-        eventEditionId: '123',
-        startTime: new Date(),
-        duration: 1,
-        type: PresentationBlockType.General,
-      });
+      prismaService.presentationBlock.delete = jest.fn().mockResolvedValue({});
 
       const result = await service.remove('1');
+
+      expect(prismaService.presentationBlock.delete).toHaveBeenCalledWith({
+        where: {
+          id: '1',
+        },
+      });
 
       expect(result).toEqual({});
     });
