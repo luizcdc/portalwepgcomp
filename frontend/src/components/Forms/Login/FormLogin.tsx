@@ -8,12 +8,13 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
 
 export function FormLogin() {
-  const { register, handleSubmit} = useForm();
+  const { register, handleSubmit} = useForm<UserLogin>();
   const { singIn, signed } = useContext(AuthContext);
   const router = useRouter();
 
-  async function handleLogin(data: any ) {   
+  async function handleLogin(data: UserLogin ) {   
     const { email, password }  = data;
+    
 
     const usuario: UserLogin = {
       email: email,

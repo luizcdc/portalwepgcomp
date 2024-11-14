@@ -1,6 +1,6 @@
 "use client"
 import { createContext, useEffect, useState } from "react";
-import { getUserLocalStorage, instance, LoginRequest, setTokenLocaStorage } from "./util";
+import { getUserLocalStorage, api, LoginRequest, setTokenLocaStorage } from "./util";
 import { useRouter } from "next/navigation";
 
 export const AuthContext = createContext< IContextLogin>( {} as IContextLogin);
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
         } else {             
             const payload = response.data;
             setUser(payload);
-            instance.defaults.headers.common[
+            api.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${payload.token}`;
             setTokenLocaStorage(payload.token);
