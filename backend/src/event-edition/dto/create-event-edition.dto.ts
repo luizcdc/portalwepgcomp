@@ -42,10 +42,6 @@ export class CreateEventEditionDto {
 
   @IsOptional()
   @IsBoolean()
-  isActive?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
   isEvaluationRestrictToLoggedUsers?: boolean;
 
   @IsInt()
