@@ -31,7 +31,7 @@ describe('SubmissionService', () => {
         createMany: jest.fn(),
       },
     } as unknown as PrismaService;
-    
+
     service = new SubmissionService(prismaService);
   });
 
@@ -82,9 +82,9 @@ describe('SubmissionService', () => {
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([]);
 
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([{ id: 'advisor-id' }]);
- 
+
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({ id: 'event-edition-id' });
-    
+
       await expect(service.create(createSubmissionDto))
         .rejects
         .toThrowError(new AppException('Autor principal não encontrado.', 404));
@@ -205,7 +205,7 @@ describe('SubmissionService', () => {
       await expect(service.update('submission-id', updateSubmissionDto as UpdateSubmissionDto))
         .rejects.toThrowError(new AppException('Autor principal não encontrado.', 404));
     });
-    
+
     it('should throw error if advisor not found', async () => {
       const updateSubmissionDto: UpdateSubmissionDto = {
         advisorId: 'invalidAdvisor',

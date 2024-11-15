@@ -9,19 +9,19 @@ import { SubmissionStatus } from '@prisma/client';
 
 @Injectable()
 export class SubmissionService {
-  constructor(private prismaClient: PrismaService) {}
+  constructor(private prismaClient: PrismaService) { }
 
   async create(createSubmissionDto: CreateSubmissionDto) {
-    const { advisorId, 
-            mainAuthorId, 
-            eventEditionId, 
-            title, abstract, 
-            pdfFile, 
-            phoneNumber, 
-            linkedinUrl, 
-            status, 
-            coAuthors } = createSubmissionDto;
-            
+    const { advisorId,
+      mainAuthorId,
+      eventEditionId,
+      title, abstract,
+      pdfFile,
+      phoneNumber,
+      linkedinUrl,
+      status,
+      coAuthors } = createSubmissionDto;
+
     const users = await this.prismaClient.userAccount.findMany({
       where: {
         OR: [
@@ -41,17 +41,17 @@ export class SubmissionService {
     if (mainAuthorId && !mainAuthorExists) {
       throw new AppException('Autor principal não encontrado.', 404);
     }
-  
+
     const eventEditionExists = await this.prismaClient.eventEdition.findUnique({
       where: { id: eventEditionId },
     });
-  
+
     if (!eventEditionExists) {
       throw new AppException('Edição do evento não encontrada.', 404);
     }
-  
+
     const submissionStatus = status || SubmissionStatus.Submitted;
-  
+
     const createdSubmission = await this.prismaClient.submission.create({
       data: {
         advisorId,
@@ -71,7 +71,7 @@ export class SubmissionService {
         },
       },
     });
-  
+
     return createdSubmission;
   }
 
@@ -83,23 +83,23 @@ export class SubmissionService {
     const submission = await this.prismaClient.submission.findUnique({
       where: { id },
     });
-  
+
     if (!submission) throw new AppException('Submissão não encontrada.', 404);
-  
+
     return submission;
   }
 
   async update(id: string, updateSubmissionDto: UpdateSubmissionDto) {
     const { advisorId, mainAuthorId, eventEditionId, title, abstract, pdfFile, phoneNumber, linkedinUrl, status } = updateSubmissionDto;
-  
+
     const existingSubmission = await this.prismaClient.submission.findUnique({
       where: { id },
     });
-  
+
     if (!existingSubmission) {
       throw new AppException('Submissão não encontrada.', 404);
     }
-  
+
     if (advisorId) {
       const advisorExists = await this.prismaClient.userAccount.findUnique({
         where: { id: advisorId },
@@ -108,7 +108,7 @@ export class SubmissionService {
         throw new AppException('Orientador não encontrado.', 404);
       }
     }
-  
+
     if (mainAuthorId) {
       const mainAuthorExists = await this.prismaClient.userAccount.findUnique({
         where: { id: mainAuthorId },
@@ -117,7 +117,7 @@ export class SubmissionService {
         throw new AppException('Autor principal não encontrado.', 404);
       }
     }
-  
+
     if (eventEditionId) {
       const eventEditionExists = await this.prismaClient.eventEdition.findUnique({
         where: { id: eventEditionId },
@@ -126,9 +126,9 @@ export class SubmissionService {
         throw new AppException('Edição do evento não encontrada.', 404);
       }
     }
-  
+
     const submissionStatus = status || SubmissionStatus.Submitted;
-  
+
     return this.prismaClient.submission.update({
       where: { id },
       data: {
@@ -144,30 +144,30 @@ export class SubmissionService {
       },
     });
   }
-  
+
   async updateCoAuthors(submissionId: string, coAuthors: CoAuthorDto[]) {
     const submissionExists = await this.prismaClient.submission.findUnique({
       where: { id: submissionId },
     });
-  
+
     if (!submissionExists) {
       throw new AppException('Submissão não encontrada.', 404);
     }
-  
+
     await this.prismaClient.coAuthor.deleteMany({
-      where: { submisionId: submissionId }, 
+      where: { submisionId: submissionId },
     });
-  
+
 
     return await this.prismaClient.coAuthor.createMany({
       data: coAuthors.map((coAuthor) => ({
-        submisionId: submissionId, 
+        submisionId: submissionId,
         name: coAuthor.name,
         institution: coAuthor.institution,
       })),
     });
   }
-  
+
   async remove(id: string) {
     const submissionExists = await this.prismaClient.submission.findUnique({
       where: { id },

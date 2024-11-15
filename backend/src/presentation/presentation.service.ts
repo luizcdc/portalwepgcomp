@@ -8,7 +8,7 @@ import { PresentationStatus } from '@prisma/client';
 
 @Injectable()
 export class PresentationService {
-  constructor(private prismaClient: PrismaService) {}
+  constructor(private prismaClient: PrismaService) { }
 
   async create(createPresentationDto: CreatePresentationDto) {
     const { submissionId, presentationBlockId, positionWithinBlock, status } = createPresentationDto;
@@ -80,7 +80,7 @@ export class PresentationService {
   }
 
   async update(id: string, updatePresentationDto: UpdatePresentationDto) {
-    const  { submissionId, presentationBlockId, positionWithinBlock, status } = updatePresentationDto;
+    const { submissionId, presentationBlockId, positionWithinBlock, status } = updatePresentationDto;
 
     const existingPresentation = await this.prismaClient.presentation.findUnique({
       where: { id },

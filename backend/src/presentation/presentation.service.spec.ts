@@ -17,15 +17,15 @@ describe('PresentationService', () => {
         findFirst: jest.fn(),
         create: jest.fn(),
         findMany: jest.fn(),
-        findUnique: jest.fn(), 
+        findUnique: jest.fn(),
         update: jest.fn(),
         delete: jest.fn(),
       },
       presentationBlock: {
         findUnique: jest.fn(),
       },
-    } as unknown as PrismaService; 
-  
+    } as unknown as PrismaService;
+
     service = new PresentationService(prismaService);
   });
 
@@ -235,15 +235,15 @@ describe('PresentationService', () => {
         presentationBlockId: 'validBlockId',
         positionWithinBlock: '1',
       });
-    
 
-      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValueOnce(null) 
+
+      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValueOnce(null)
         .mockResolvedValueOnce({
           id: 'existingPresentationId',
           submissionId: 'anotherSubmissionId',
           presentationBlockId: 'validBlockId',
           positionWithinBlock: '1',
-        }); 
+        });
 
       await expect(service.update('1', createPresentationDto)).rejects.toThrow(
         new AppException('Posição de apresentação já ocupada.', 400)
@@ -294,15 +294,15 @@ describe('PresentationService', () => {
 
     it('should remove the presentation and return success message', async () => {
       const id = 'existingId';
-    
+
       const mockDeletedPresentation = { id: 'existingId', submissionId: '1', presentationBlockId: '1', positionWithinBlock: '1' };
-    
+
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(mockDeletedPresentation);
-    
+
       (prismaService.presentation.delete as jest.Mock).mockResolvedValue(mockDeletedPresentation);
-    
+
       const response = await service.remove(id);
-    
+
       expect(response).toEqual({ message: 'Apresentação removida com sucesso.' });
       expect(prismaService.presentation.delete).toHaveBeenCalledWith({ where: { id } });
     });
