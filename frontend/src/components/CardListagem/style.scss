@@ -1,0 +1,26 @@
+.card-listagem{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 3px solid #F17F0C;
+    border-radius: 10px;
+    padding: 1rem;
+
+    .card-listagem-text{
+        color: black;
+        
+        p:first-of-type{
+            font-weight: 600;
+        }
+
+        p{
+            margin-bottom: 0;
+        }
+    }
+
+    button{
+        width: min-content;
+        border: none;
+        background: none;
+    }
+}
