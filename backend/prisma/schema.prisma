@@ -94,7 +94,7 @@ model EventEdition {
   startDate                         DateTime
   endDate                           DateTime
   submissionDeadline                DateTime
-  isActive                          Boolean           @default(true)
+  isActive                          Boolean           @default(false)
   isEvaluationRestrictToLoggedUsers Boolean           @default(true)
   presentationDuration              Int               @default(20)
   presentationsPerPresentationBlock Int               @default(6)
