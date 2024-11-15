@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import "./style.scss";
-import { useAuth } from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
@@ -16,10 +15,7 @@ export function FormLogin() {
     const { email, password }  = data;
     
 
-    const usuario: UserLogin = {
-      email: email,
-      password: password,
-    };
+    const usuario: UserLogin = { email, password };
 
     try {
       await singIn(usuario);

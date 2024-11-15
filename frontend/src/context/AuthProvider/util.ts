@@ -21,7 +21,6 @@ export async function LoginRequest (email: string, password: string){
         const request = await api.post('auth/login', { email, password });
         return request;
     } catch (error) {
-        console.log("Erro: ", error);
-        return null;
+        return error;
     }
 }

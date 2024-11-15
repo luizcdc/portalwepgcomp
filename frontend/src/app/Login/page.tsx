@@ -12,8 +12,7 @@ export default function Login() {
           WEPGCOMP
           <span className="ms-2">2025</span>
         </h1>
-        <hr />
-        <h2 className="d-flex justify-content-center mb-4 fw-semibold">
+        <h2 className="d-flex justify-content-center mb-4 fw-semibold fs-4">
           Acesse sua conta
         </h2>
       </div>

@@ -66,7 +66,7 @@ export default function Header() {
                     <Link
                       className='nav-link active text-black'
                       aria-current='page'
-                      href='/'
+                      href='/Home'
                       onClick={ logout }
                     >
                       Logout
