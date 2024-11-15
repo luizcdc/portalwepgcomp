@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateEventEditionDto } from './dto/create-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 import { UpdateEventEditionDto } from './dto/upddate-event-edition.dto';
@@ -24,8 +24,6 @@ export class EventEditionService {
     const eventsResponseDto = events.map(
       (event) => new EventEditionResponseDto(event),
     );
-
-    console.log(eventsResponseDto);
 
     return eventsResponseDto;
   }
