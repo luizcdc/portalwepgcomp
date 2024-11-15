@@ -28,6 +28,7 @@ export default function Premiacoes() {
                 medalWidth={50}
                 medalHeight={50}
             />
+
             <PremiacaoCategoria
                 titulo="Melhores Apresentações - Banca"
                 descricao="Ranking das melhores apresentações por voto da banca avaliadora"
@@ -35,6 +36,7 @@ export default function Premiacoes() {
                 medalWidth={50}
                 medalHeight={50}
             />
+            
             <PremiacaoCategoria
                 titulo="Melhores Avaliadores"
                 descricao="Ranking dos melhores/maiores avaliadores da edição"
