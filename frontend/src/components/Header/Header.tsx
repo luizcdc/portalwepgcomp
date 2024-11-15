@@ -11,7 +11,7 @@ export default function Header() {
   return (
     <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
-        <a className="navbar-brand">
+        <Link className="navbar-brand" href="/">
           <Image
             src={"/assets/images/logo_PGCOMP.svg"}
             alt="PGCOMP Logo"
@@ -19,7 +19,7 @@ export default function Header() {
             height={100}
             priority
           />
-        </a>
+        </Link>
 
         <div className="d-flex justify-content-end me-5">
           <button
@@ -37,7 +37,7 @@ export default function Header() {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link text-black" href="/Home">
+                <Link className="nav-link text-black" href="/">
                   Início
                 </Link>
               </li>
