@@ -2,9 +2,9 @@ import PremiacaoCategoria from './PremiacaoCategoria';
 
 export default function Premiacoes() {
     const premiacoesPublico: { titulo: string; subtitulo: string; medalha: 'gold' | 'silver' | 'bronze' }[] = [
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)', medalha: 'gold' },
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)', medalha: 'silver' },
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)', medalha: 'bronze' },
+        // { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)', medalha: 'gold' },
+        // { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)', medalha: 'silver' },
+        // { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)', medalha: 'bronze' },
     ];
 
     const premiacoesBanca: { titulo: string; subtitulo: string; medalha: 'gold' | 'silver' | 'bronze' }[] = [
