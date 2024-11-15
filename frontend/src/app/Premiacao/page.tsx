@@ -1,5 +1,6 @@
 "use client";
 
+import Premiacoes from "@/components/Premiacao/Premiacoes";
 import Banner from "@/components/UI/Banner";
 
 export default function Premiacao() {
@@ -17,10 +18,12 @@ export default function Premiacao() {
                                 <li className="mb-2">• Melhores apresentações por voto da banca avaliadora</li>
                                 <li className="mb-2">• Melhores avaliadores</li>
                             </ul>
-                            <p className="fw-bold">O resultado será divulgado no último dia do evento.</p>
+                            <p className="fw-bold mb-5">O resultado será divulgado no último dia do evento.</p>
                         </div>
                     </div>
                 </div>
+
+                <Premiacoes />
             </div>
         </div>
     );
