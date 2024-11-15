@@ -1,30 +1,28 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  CreateEventRequestDTO,
-  EventResponseDTO,
-  UpdateEventRequestDTO,
-} from './event.dto';
+import { CreateEventEditionDto } from './dto/create-event-edition.dto';
+import { EventEditionResponseDto } from './dto/event-edition-response';
+import { UpdateEventEditionDto } from './dto/upddate-event-edition.dto';
 
 @Injectable()
-export class EventService {
+export class EventEditionService {
   constructor(private prismaClient: PrismaService) {}
 
-  async create(createEvent: CreateEventRequestDTO) {
-    const createdEvent = await this.prismaClient.event.create({
-      data: createEvent,
+  async create(createEventEditionDto: CreateEventEditionDto) {
+    const createdEventEdition = await this.prismaClient.eventEdition.create({
+      data: createEventEditionDto,
     });
 
-    const eventResponseDto = new EventResponseDTO(createdEvent);
+    const eventResponseDto = new EventEditionResponseDto(createdEventEdition);
 
     return eventResponseDto;
   }
 
   async getAll() {
-    const events = await this.prismaClient.event.findMany({});
+    const events = await this.prismaClient.eventEdition.findMany({});
 
     const eventsResponseDto = events.map(
-      (event) => new EventResponseDTO(event),
+      (event) => new EventEditionResponseDto(event),
     );
 
     console.log(eventsResponseDto);
@@ -32,8 +30,8 @@ export class EventService {
     return eventsResponseDto;
   }
 
-  async getById(id: number) {
-    const event = await this.prismaClient.event.findUnique({
+  async getById(id: string) {
+    const event = await this.prismaClient.eventEdition.findUnique({
       where: {
         id,
       },
@@ -45,13 +43,13 @@ export class EventService {
       );
     }
 
-    const eventResponseDto = new EventResponseDTO(event);
+    const eventResponseDto = new EventEditionResponseDto(event);
 
     return eventResponseDto;
   }
 
-  async update(id: number, updateEvent: UpdateEventRequestDTO) {
-    const event = await this.prismaClient.event.findUnique({
+  async update(id: string, updateEventEdition: UpdateEventEditionDto) {
+    const event = await this.prismaClient.eventEdition.findUnique({
       where: {
         id,
       },
@@ -62,20 +60,20 @@ export class EventService {
         'Não existe nenhum evento com esse identificador',
       );
     }
-    const updatedEvent = await this.prismaClient.event.update({
+    const updatedEvent = await this.prismaClient.eventEdition.update({
       where: {
         id,
       },
-      data: updateEvent,
+      data: updateEventEdition,
     });
 
-    const eventResponseDto = new EventResponseDTO(updatedEvent);
+    const eventResponseDto = new EventEditionResponseDto(updatedEvent);
 
     return eventResponseDto;
   }
 
-  async setActive(id: number) {
-    const event = await this.prismaClient.event.findUnique({
+  async setActive(id: string) {
+    const event = await this.prismaClient.eventEdition.findUnique({
       where: {
         id,
       },
@@ -88,7 +86,7 @@ export class EventService {
     }
     const updatedEvent = await this.prismaClient.$transaction(
       async (prisma) => {
-        await prisma.event.updateMany({
+        await prisma.eventEdition.updateMany({
           where: {
             isActive: true,
             id: { not: id },
@@ -96,7 +94,7 @@ export class EventService {
           data: { isActive: false },
         });
 
-        const updatedEvent = await prisma.event.update({
+        const updatedEvent = await prisma.eventEdition.update({
           where: { id },
           data: { isActive: true },
         });
@@ -104,13 +102,13 @@ export class EventService {
         return updatedEvent;
       },
     );
-    const eventResponseDto = new EventResponseDTO(updatedEvent);
+    const eventResponseDto = new EventEditionResponseDto(updatedEvent);
 
     return eventResponseDto;
   }
 
-  async delete(id: number) {
-    const event = await this.prismaClient.event.findUnique({
+  async delete(id: string) {
+    const event = await this.prismaClient.eventEdition.findUnique({
       where: {
         id,
       },
@@ -121,13 +119,13 @@ export class EventService {
         'Não existe nenhum evento com esse identificador',
       );
     }
-    const deletedEvent = await this.prismaClient.event.delete({
+    const deletedEvent = await this.prismaClient.eventEdition.delete({
       where: {
         id,
       },
     });
 
-    const eventResponseDto = new EventResponseDTO(deletedEvent);
+    const eventResponseDto = new EventEditionResponseDto(deletedEvent);
 
     return eventResponseDto;
   }

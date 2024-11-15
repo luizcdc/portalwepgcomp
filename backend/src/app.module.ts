@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { EventModule } from './event/event.module';
+import { EventEditionModule } from './event-edition/event-edition.module';
 import { MailingModule } from './mailing/mailing.module';
 import { QueueModule } from './queue/queue.module';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -16,7 +16,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UserModule,
     PrismaModule,
     ConfigModule.forRoot(),
-    EventModule,
+    EventEditionModule,
     MailingModule,
     QueueModule,
     ScheduleModule.forRoot(),
