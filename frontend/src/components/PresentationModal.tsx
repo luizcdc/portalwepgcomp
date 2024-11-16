@@ -82,7 +82,7 @@ export default function PresentationModal({
           {props.emailDoutorando}
         </div>
         <h4 style={{ fontSize: "15px", fontWeight: "400", textAlign: "left" }}>
-          Orientador(a): Prof. {props.orientador}
+          Orientador(a): {props.orientador}
         </h4>
       </div>
       <div>
