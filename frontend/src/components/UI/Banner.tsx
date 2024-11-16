@@ -16,6 +16,7 @@ export default function Banner({ title }: BannerProps) {
             fontWeight: "700",
             lineHeight: "80px",
             textAlign: "center",
+            color: "white",
           }}
         >
           {title}
