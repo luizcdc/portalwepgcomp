@@ -4,6 +4,7 @@ import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePresentationDto } from './dto/update-presentation.dto';
 import { PresentationStatus } from '@prisma/client';
+import { PresentationBlockType } from '@prisma/client';
 
 
 @Injectable()
@@ -36,6 +37,7 @@ export class PresentationService {
     const presentationBlockExists = await this.prismaClient.presentationBlock.findUnique({
       where: {
         id: presentationBlockId,
+        type: PresentationBlockType.Presentation
       },
     })
 
