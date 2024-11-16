@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  private dataExecucao = new Date;
+  private executionDate = new Date;
   getServerStatus(): string {
-    return `Servidor rodando em ${this.dataExecucao}`;
+    return `Servidor rodando em ${this.executionDate}`;
   }
 }
