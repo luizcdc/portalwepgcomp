@@ -5,6 +5,7 @@ import Star from "./UI/Star";
 import { useState } from "react";
 import Link from "next/link";
 import Linkedin from "@/public/assets/images/logo_linkedin.svg"
+import avaliar from "@/public/assets/images/avaliar.svg"
 
 interface presentationData {
   titulo: string;
@@ -67,34 +68,44 @@ export default function PresentationModal({
           {props.titulo}
         </h3>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          fontSize: "15px",
-          fontWeight: "400",
-          textAlign: "left",
-          gap: "6px",
-        }}
-      >
+      <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+        >
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column",
             alignItems: "flex-start",
-            gap: "10px",
+            fontSize: "15px",
+            fontWeight: "400",
+            textAlign: "left",
+            gap: "6px",
           }}
         >
-          <strong>{props.doutorando}</strong>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "flex-start",
+              gap: "10px",
+            }}
+          >
+            <strong>{props.doutorando}</strong>
 
-          <div> | </div>
-          <div>{props.emailDoutorando}</div>
-          <div><Link href=""><Image src={Linkedin} width={22} height={22} alt="linkedin"/></Link></div>
+            <div> | </div>
+            <div>{props.emailDoutorando}</div>
+            <div><Link href=""><Image src={Linkedin} width={22} height={22} alt="linkedin"/></Link></div>
+          </div>
+          <h4 style={{ fontSize: "15px", fontWeight: "400", textAlign: "left" }}>
+            Orientador(a): {props.orientador}
+          </h4>
         </div>
-        <h4 style={{ fontSize: "15px", fontWeight: "400", textAlign: "left" }}>
-          Orientador(a): {props.orientador}
-        </h4>
+        <div>
+          <Link href=""><Image src={avaliar} width={40} height={25} alt="avaliar" /></Link>
+        </div>
       </div>
       <div style={{ display: "flex", gap: "10px" }}>
         <em
