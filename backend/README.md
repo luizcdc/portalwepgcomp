@@ -64,6 +64,7 @@ $ npm run test:cov
 - Swagger produção: https://portal-wepgcomp-api-development.vercel.app/docs
 - Desenvolvimento: https://portal-wepgcomp-api.vercel.app
 - Swagger desenvolvimento: https://portal-wepgcomp-api.vercel.app/docs
+- E-mail: wepgcompportal@gmail.com (usando o SMTP do Twillio)
 
 ## Resources
 
