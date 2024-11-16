@@ -18,3 +18,12 @@ interface User extends RegisterUserParams{
     deletedAt: string;
     updatedAt: string;
 }
+
+interface ResetPasswordSendEmailParams {
+    email: string,
+}
+
+interface ResetPasswordParams {
+    token: string,
+    newPassword: string,
+}

@@ -26,7 +26,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:migrate": "prisma db push",
     "postinstall": "prisma generate",
-    "clean": "rm -rf package-lock.json node_modules && npm cache clean --force"
+    "clean": "rm -rf package-lock.json node_modules && npm cache clean --force",
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -50,6 +51,8 @@
     "@nestjs/schedule": "^4.1.1",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
+    "@swc/cli": "^0.4.0",
+    "@swc/core": "^1.9.1",
     "@types/amqplib": "^0.10.5",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.17",

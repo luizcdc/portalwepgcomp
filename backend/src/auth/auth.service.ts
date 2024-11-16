@@ -7,9 +7,9 @@ import { SignInDto } from './auth.dto';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { AppException } from 'src/exceptions/app.exception';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { MailingService } from 'src/mailing/mailing.service';
+import { AppException } from '../exceptions/app.exception';
+import { PrismaService } from '../prisma/prisma.service';
+import { MailingService } from '../mailing/mailing.service';
 
 @Injectable()
 export class AuthService {

@@ -1,0 +1,19 @@
+.modal-component{
+
+    .header-modal-component{
+        border: none;
+    }
+
+    .content-modal-component{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .button-modal-component{
+            align-self: center;
+            background-color: #0065A3;
+            font-weight: 700;
+            width: 12rem;
+        }
+    }
+}
