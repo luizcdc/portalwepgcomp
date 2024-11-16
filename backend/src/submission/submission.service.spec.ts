@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Profile } from '@prisma/client';
 import { SubmissionService } from './submission.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
@@ -21,6 +22,7 @@ describe('SubmissionService', () => {
       },
       submission: {
         create: jest.fn(),
+        findFirst: jest.fn(),
         findMany: jest.fn(),
         findUnique: jest.fn(),
         update: jest.fn(),
@@ -38,7 +40,7 @@ describe('SubmissionService', () => {
   describe('create', () => {
     it('should create a submission successfully', async () => {
       const createSubmissionDto: CreateSubmissionDto = {
-        advisorId: 'advisor123',
+        advisorId: 'advisor-id',
         mainAuthorId: 'author123',
         eventEditionId: 'event123',
         title: 'Test Submission',
@@ -50,8 +52,8 @@ describe('SubmissionService', () => {
       };
 
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
-        { id: 'advisor123' },
         { id: 'author123' },
+        { id: 'advisor-id', profile: Profile.Professor },
       ]);
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({ id: 'event123' });
       (prismaService.submission.create as jest.Mock).mockResolvedValue({
@@ -81,7 +83,9 @@ describe('SubmissionService', () => {
 
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([]);
 
-      (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([{ id: 'advisor-id' }]);
+      (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
+        { id: 'advisor-id', profile: Profile.Professor },
+      ]);
 
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({ id: 'event-edition-id' });
 
@@ -112,7 +116,7 @@ describe('SubmissionService', () => {
 
     it('should throw error if event edition not found', async () => {
       const createSubmissionDto: CreateSubmissionDto = {
-        advisorId: 'advisor123',
+        advisorId: 'advisor-id',
         mainAuthorId: 'author123',
         eventEditionId: 'invalidEvent',
         title: 'Test Submission',
@@ -124,9 +128,10 @@ describe('SubmissionService', () => {
       };
 
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
-        { id: 'advisor123' },
         { id: 'author123' },
+        { id: 'advisor-id', profile: Profile.Professor },
       ]);
+
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue(null);
 
       await expect(service.create(createSubmissionDto)).rejects.toThrow(
@@ -172,14 +177,27 @@ describe('SubmissionService', () => {
         title: 'Old Title',
       });
 
-      (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({ id: 'advisor123' });
-      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({ id: 'event123' });
+
+      (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: 'advisor123',
+        profile: Profile.Professor,
+      });
+
+      (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: 'author123',
+      });
+
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        id: 'event123',
+      });
+
       (prismaService.submission.update as jest.Mock).mockResolvedValue({
         ...updateSubmissionDto,
         id: 'submission123',
       });
 
       const result = await service.update('submission123', updateSubmissionDto);
+
       expect(result).toHaveProperty('id');
       expect(result.title).toBe(updateSubmissionDto.title);
     });

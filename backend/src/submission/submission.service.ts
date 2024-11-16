@@ -76,11 +76,14 @@ export class SubmissionService {
         linkedinUrl,
         status: submissionStatus,
         CoAuthor: {
-          create: coAuthors?.map(coAuthor => ({
+          create: (coAuthors || []).map(coAuthor => ({
             name: coAuthor.name,
             institution: coAuthor.institution,
           })),
         },
+      },
+      include: {
+        CoAuthor: true,
       },
     });
 
@@ -88,12 +91,19 @@ export class SubmissionService {
   }
 
   async findAll() {
-    return await this.prismaClient.submission.findMany();
-  }
+    return await this.prismaClient.submission.findMany({
+        include: {
+            CoAuthor: true,  
+        },
+    });
+}
 
   async findOne(id: string) {
     const submission = await this.prismaClient.submission.findUnique({
-      where: { id },
+        where: { id },
+        include: {
+            CoAuthor: true,
+        },
     });
 
     if (!submission) throw new AppException('Submissão não encontrada.', 404);
