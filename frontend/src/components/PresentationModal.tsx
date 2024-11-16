@@ -1,6 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Star from "./UI/Star";
+import { useState } from "react";
+import Link from "next/link";
+import Linkedin from "@/public/assets/images/logo_linkedin.svg"
 
 interface presentationData {
   titulo: string;
@@ -18,6 +22,12 @@ export default function PresentationModal({
 }: {
   props: presentationData;
 }) {
+  const [favorite, setFavorite] = useState<boolean>(false)
+
+  function handleFavorite () {
+    setFavorite(!favorite)
+  }
+
   return (
     <div
       style={{
@@ -79,13 +89,14 @@ export default function PresentationModal({
           <strong>{props.doutorando}</strong>
 
           <div> | </div>
-          {props.emailDoutorando}
+          <div>{props.emailDoutorando}</div>
+          <div><Link href=""><Image src={Linkedin} width={22} height={22} alt="linkedin"/></Link></div>
         </div>
         <h4 style={{ fontSize: "15px", fontWeight: "400", textAlign: "left" }}>
           Orientador(a): {props.orientador}
         </h4>
       </div>
-      <div>
+      <div style={{ display: "flex", gap: "10px" }}>
         <em
           style={{
             backgroundColor: "#F17F0C",
@@ -98,6 +109,9 @@ export default function PresentationModal({
         >
           {props.date} - {props.local} - {props.time}
         </em>
+        <div onClick={handleFavorite} style={{cursor: "pointer"}}>
+          <Star color={favorite ? "#F17F0C" : "#D9D9D9"}/>
+        </div>
       </div>
       <div
         style={{
