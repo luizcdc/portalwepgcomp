@@ -5,6 +5,7 @@ import { CoAuthorDto } from './dto/co-author.dto';
 import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmissionStatus } from '@prisma/client';
+import { Profile } from '@prisma/client';
 
 
 @Injectable()
@@ -31,7 +32,7 @@ export class SubmissionService {
       },
     });
 
-    const advisorExists = users.some(user => user.id === advisorId);
+    const advisorExists = users.some(user => user.id === advisorId && user.profile === Profile.Professor);
     const mainAuthorExists = users.some(user => user.id === mainAuthorId);
 
     if (advisorId && !advisorExists) {
@@ -40,6 +41,17 @@ export class SubmissionService {
 
     if (mainAuthorId && !mainAuthorExists) {
       throw new AppException('Autor principal não encontrado.', 404);
+    }
+
+    const mainAuthorAlreadySubmitted = await this.prismaClient.submission.findFirst({
+      where: {
+        mainAuthorId,
+        eventEditionId,
+      },
+    });
+
+    if (mainAuthorAlreadySubmitted) {
+      throw new AppException('Autor principal já submeteu uma apresentação para esta edição do evento.', 400);
     }
 
     const eventEditionExists = await this.prismaClient.eventEdition.findUnique({
@@ -104,7 +116,7 @@ export class SubmissionService {
       const advisorExists = await this.prismaClient.userAccount.findUnique({
         where: { id: advisorId },
       });
-      if (!advisorExists) {
+      if (!advisorExists || advisorExists.profile !== Profile.Professor) {
         throw new AppException('Orientador não encontrado.', 404);
       }
     }
@@ -115,6 +127,18 @@ export class SubmissionService {
       });
       if (!mainAuthorExists) {
         throw new AppException('Autor principal não encontrado.', 404);
+      }
+
+      const mainAuthorAlreadySubmitted = await this.prismaClient.submission.findFirst({
+        where: {
+          mainAuthorId,
+          eventEditionId: existingSubmission.eventEditionId,
+          NOT: { id },
+        },
+      });
+
+      if (mainAuthorAlreadySubmitted) {
+        throw new AppException('Autor principal já submeteu uma apresentação para esta edição do evento.', 400);
       }
     }
 
