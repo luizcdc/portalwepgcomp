@@ -13,21 +13,30 @@ interface ListagemProps {
   searchPlaceholder: string;
   labelListCardsButton: string;
   cardsList: any[];
+  idModal?: string;
+  onAddButtonClick?: () => void;
 }
 
 export default function Listagem({
+  idModal,
   title,
   labelAddButton,
   labelListCardsButton,
   searchPlaceholder,
   cardsList,
+  onAddButtonClick,
 }: Readonly<ListagemProps>) {
   return (
     <div className="listagem-template">
       <Banner title={title} />
       <div className="listagem-template-content">
         <div className="listagem-template-user-area">
-          <button>
+          <button    
+            type="button"
+            data-bs-toggle={idModal ? "modal" : undefined} 
+            data-bs-target={idModal ? `#${idModal}` : undefined}
+            onClick={idModal ? () => {} : onAddButtonClick}
+            >
             {labelAddButton}{" "}
             <Image src="/assets/images/add.svg" alt="" width={24} height={24} />
           </button>

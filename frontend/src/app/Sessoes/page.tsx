@@ -1,5 +1,6 @@
 "use client";
 
+import ModalSessao from "@/components/ModalSessao/ModalSessao";
 import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";
 
@@ -14,12 +15,14 @@ export default function Sessoes() {
       }}
     >
       <Listagem
+        idModal="sessaoModal"
         title={title}
         labelAddButton={userArea.add}
         labelListCardsButton={buttonList}
         searchPlaceholder={userArea.search}
         cardsList={cardsMock}
       />
+      <ModalSessao />
     </div>
   );
 }
