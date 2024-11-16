@@ -167,7 +167,7 @@ model Submission {
   eventEdition   EventEdition     @relation(fields: [eventEditionId], references: [id])
   Evaluation     Evaluation[]
   Presentation   Presentation[]
-  CoAuthor       CoAuthor[]
+  CoAuthor       CoAuthor[] 
 }
 
 model Panelist {
@@ -247,5 +247,5 @@ model CoAuthor {
   institution String     @db.VarChar(255)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  submision   Submission @relation(fields: [submisionId], references: [id])
+  submision   Submission @relation(fields: [submisionId], references: [id], onDelete: Cascade)
 }
