@@ -101,10 +101,10 @@ export default function PresentationModal({
       </div>
       <div
         style={{
-          textAlign: "left",
+          textAlign: "justify",
         }}
       >
-        <strong>Descrição da pesquisa: </strong>
+        <strong>Abstract: </strong>
         {props.descricao}
       </div>
       <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
