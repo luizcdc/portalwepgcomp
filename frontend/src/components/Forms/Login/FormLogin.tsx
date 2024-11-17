@@ -30,6 +30,7 @@ export function FormLogin() {
 
     return (
       <form className="row g-3" onSubmit={handleSubmit(handleLogin)}>
+        <hr />
         <div className="col-12 mb-3">
           <label className="form-label fw-bold form-title">
             E-mail
