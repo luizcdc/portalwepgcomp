@@ -16,11 +16,12 @@ export function getUserLocalStorage(){
     return  null;
 }
 
-export async function LoginRequest (email: string, password: string){
+export async function LoginRequest (email: string, password: string): Promise<{ token: string }>{
     try {
-        const request = await api.post('auth/login', { email, password });
-        return request;
-    } catch (error) {
-        return error;
+        const response = await api.post('auth/login', { email, password });
+        return { token: response.data.token };
+    } catch (error: any) {
+        const message = error || "Login ou senha invalida!";
+        return message;
     }
 }

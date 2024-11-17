@@ -1,4 +1,5 @@
 "use client"
+
 import { createContext, useEffect, useState } from "react";
 import { getUserLocalStorage, api, LoginRequest, setTokenLocaStorage } from "./util";
 import { useRouter } from "next/navigation";
@@ -27,15 +28,15 @@ export const AuthProvider = ({ children }) => {
     const singIn = async ({email, password}) => {
         const response = await LoginRequest(email, password);
 
-        if(!response || response.data.error){
-            alert(response?.data.error || "Error");
+        if(!response){
+            alert(response || "Error");
         } else {             
-            const payload = response.data;
+            const payload = response.token;
             setUser(payload);
             api.defaults.headers.common[
                 "Authorization"
-            ] = `Bearer ${payload.token}`;
-            setTokenLocaStorage(payload.token);
+            ] = `Bearer ${payload}`;
+            setTokenLocaStorage(payload);
         }    
     }
 
