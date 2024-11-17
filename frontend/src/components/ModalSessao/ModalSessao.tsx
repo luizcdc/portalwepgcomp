@@ -6,10 +6,11 @@ import ModalComponent from "../UI/ModalComponent/ModalComponent";
 import "./style.scss";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import FormSessaoGeral from "../Forms/Sessao/FormSessaoGeral";
+import FormSessaoApresentacoes from "../Forms/Sessao/FormSessaoApresentacoes";
 
 enum SessaoTipoEnum {
-    "Sessão geral do evento" = 1,
-    "Sessão de apresentações" = 2
+  "Sessão geral do evento" = 1,
+  "Sessão de apresentações" = 2,
 }
 
 // const translateTipoEnum = (op: SessaoTipoEnum) => {
@@ -22,10 +23,9 @@ enum SessaoTipoEnum {
 // }
 
 export default function ModalSessao() {
-    const { tipo } = ModalSessaoMock;
+  const { tipo } = ModalSessaoMock;
 
-  const [tipoSessao, setTipoSessao ]= useState<SessaoTipoEnum>(1);
-
+  const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(1);
 
   return (
     <ModalComponent
@@ -36,37 +36,39 @@ export default function ModalSessao() {
       colorButtonConfirm="#FFA90F"
       onConfirm={() => {}}
     >
-      <div className="modal-sessao">
+      <div className="modal-sessao px-5">
         <div className="col-12 mb-1">
-          <label className="form-label fw-bold form-title">
-            {tipo.label}
-          </label>
+          <label className="form-label fw-bold form-title">{tipo.label}</label>
           <div className="d-flex">
-            {
-                tipo.options?.map((op, i) => (
-                    <div className="form-check me-3">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      id={`radio${op}-${i}`}
-                      value={op}
-                      name="radioTipoSessao"
-                      onChange={() => setTipoSessao(SessaoTipoEnum[op])}
-                    />
-                    <label
-                      className="form-check-label fw-bold input-title"
-                      htmlFor={`radio${op}-${i}`}
-                    >
-                      {op}
-                    </label>
-                  </div>
-                ))
-            }
+            {tipo.options?.map((op, i) => (
+              <div className="form-check me-3" key={`radio${op}-${i}`}>
+                <input
+                  type="radio"
+                  className="form-check-input"
+                  id={`radio${op}-${i}`}
+                  value={op}
+                  name="radioTipoSessao"
+                  onChange={() => setTipoSessao(SessaoTipoEnum[op])}
+                />
+                <label
+                  className="form-check-label fw-bold input-title"
+                  htmlFor={`radio${op}-${i}`}
+                >
+                  {op}
+                </label>
+              </div>
+            ))}
           </div>
           <p className="text-danger error-message"></p>
         </div>
 
-        {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] && <FormSessaoGeral />}
+        {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] && (
+          <FormSessaoGeral />
+        )}
+
+        {tipoSessao === SessaoTipoEnum["Sessão de apresentações"] && (
+          <FormSessaoApresentacoes />
+        )}
       </div>
     </ModalComponent>
   );
