@@ -192,7 +192,7 @@ export const MockupPresentention =
         "titulo": "Titulo da Apresentação",
         "doutorando": "Maria de Jesus",
         "emailDoutorando": "mariadejesus@ufba.br",
-        "orientador": "Dr. João da Silva",
+        "orientador": "João da Silva",
         "date": "11/11",
         "local": "Sala A ",
         "time": "14:30",
