@@ -27,3 +27,8 @@ interface ResetPasswordParams {
     token: string,
     newPassword: string,
 }
+
+interface UserLogin {
+    email: string,
+    password: string
+}

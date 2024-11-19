@@ -4,8 +4,12 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import "./style.scss";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 export default function Header() {
+  const { signed, logout } = useContext(AuthContext);
+
   type MenuItem =
     | "inicio"
     | "programação do evento"
@@ -114,20 +118,26 @@ export default function Header() {
                 </Link>
               </div>
               <div className='vr text-black'></div>
-              <div
-                className={`nav-item ${
-                  selectedItem === "login" ? "fw-bold" : ""
-                }`}
-                onClick={() => handleItemClick("login")}
-              >
-                <Link
-                  className='nav-link active text-black'
-                  aria-current='page'
-                  href='/Login'
-                >
-                  Login
-                </Link>
-              </div>
+              <li className='nav-item'>
+                {signed ? (
+                  <Link
+                    className='nav-link active text-black'
+                    aria-current='page'
+                    href='/Home'
+                    onClick={logout}
+                  >
+                    Logout
+                  </Link>
+                ) : (
+                  <Link
+                    className='nav-link active text-black'
+                    aria-current='page'
+                    href='/Login'
+                  >
+                    Login
+                  </Link>
+                )}
+              </li>
             </ul>
           </div>
         </div>
