@@ -16,7 +16,7 @@ export class PresentationBlockService {
     });
 
     if (eventEdition == null) {
-      throw new AppException('Event edition not found', 404);
+      throw new AppException('Edição do evento não encontrada', 404);
     }
 
     if (createPresentationBlockDto.roomId) {
@@ -27,20 +27,20 @@ export class PresentationBlockService {
       });
 
       if (roomExists == null) {
-        throw new AppException('Room not found', 404);
+        throw new AppException('Sala não encontrada', 404);
       }
     }
 
     if (eventEdition.startDate > createPresentationBlockDto.startTime) {
       throw new AppException(
-        'Presentation block start date is before event edition start date',
+        'O início da sessão foi marcado para antes do início da edição do evento',
         400,
       );
     }
 
     if (eventEdition.endDate < createPresentationBlockDto.startTime) {
       throw new AppException(
-        'Presentation block starts after event edition end date',
+        'O início da sessão foi marcado para depois do fim da edição do evento',
         400,
       );
     }
@@ -52,7 +52,7 @@ export class PresentationBlockService {
     const endTimeDate = new Date(endTime);
     if (eventEdition.endDate < endTimeDate) {
       throw new AppException(
-        'Presentation block end date is after event edition end date',
+        'O fim da sessão foi marcado para depois do fim da edição do evento',
         400,
       );
     }

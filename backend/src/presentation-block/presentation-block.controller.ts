@@ -42,9 +42,7 @@ export class PresentationBlockController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const found = await this.presentationBlockService.findOne(id);
-    if (found != null) {
-      return new ResponsePresentationBlockDto(found);
-    }
+    return found ? new ResponsePresentationBlockDto(found) : null;
   }
 
   @Patch(':id')

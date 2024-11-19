@@ -88,14 +88,14 @@ describe('PresentationBlockController', () => {
       expect(service.findOne).toHaveBeenCalledWith(id);
     });
 
-    it('should return undefined when not found', async () => {
+    it('should return null when not found', async () => {
       const id = '999';
 
       mockPresentationBlockService.findOne.mockResolvedValue(null);
 
       const result = await controller.findOne(id);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
       expect(service.findOne).toHaveBeenCalledWith(id);
     });
   });

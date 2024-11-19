@@ -53,7 +53,9 @@ describe('PresentationBlockService', () => {
           duration: 1,
           type: PresentationBlockType.General,
         }),
-      ).rejects.toThrow(new AppException('Event edition not found', 404));
+      ).rejects.toThrow(
+        new AppException('Edição do evento não encontrada', 404),
+      );
     });
 
     it('should throw an AppException if room not found', async () => {
@@ -68,7 +70,7 @@ describe('PresentationBlockService', () => {
           type: PresentationBlockType.General,
           roomId: '123',
         }),
-      ).rejects.toThrow(new AppException('Room not found', 404));
+      ).rejects.toThrow(new AppException('Sala não encontrada', 404));
     });
     it('should throw an AppException if presentation block starts before event edition starts', async () => {
       const now = new Date();
@@ -85,7 +87,7 @@ describe('PresentationBlockService', () => {
         }),
       ).rejects.toThrow(
         new AppException(
-          'Presentation block start date is before event edition start date',
+          'O início da sessão foi marcado para antes do início da edição do evento',
           400,
         ),
       );
@@ -107,7 +109,7 @@ describe('PresentationBlockService', () => {
         }),
       ).rejects.toThrow(
         new AppException(
-          'Presentation block starts after event edition end date',
+          'O início da sessão foi marcado para depois do fim da edição do evento',
           400,
         ),
       );
@@ -128,7 +130,7 @@ describe('PresentationBlockService', () => {
         }),
       ).rejects.toThrow(
         new AppException(
-          'Presentation block end date is after event edition end date',
+          'O fim da sessão foi marcado para depois do fim da edição do evento',
           400,
         ),
       );
