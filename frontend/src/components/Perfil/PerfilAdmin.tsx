@@ -16,7 +16,7 @@ export default function PerfilAdmin() {
         </button>
         <ul className='dropdown-menu dropdown-menu-end border-3 border-light'>
           <li>
-            <Link className='dropdown-item' href='#'>
+            <Link className='dropdown-item' href='/Edicoes'>
               Cadastrar Evento
             </Link>
           </li>
@@ -26,7 +26,7 @@ export default function PerfilAdmin() {
             </Link>
           </li>
           <li>
-            <Link className='dropdown-item' href='#'>
+            <Link className='dropdown-item' href='/Apresentacoes'>
               Apresentações
             </Link>
           </li>
@@ -36,7 +36,7 @@ export default function PerfilAdmin() {
             </Link>
           </li>
           <li>
-            <Link className='dropdown-item' href='#'>
+            <Link className='dropdown-item' href='/Sessoes'>
               Sessões
             </Link>
           </li>
