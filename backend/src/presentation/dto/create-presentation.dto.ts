@@ -10,9 +10,11 @@ export class CreatePresentationDto {
   @IsNotEmpty()
   presentationBlockId: string;
 
-  @IsInt()
+  @IsInt({
+    message: 'A posição da apresentação deve ser um número inteiro.',
+  })
   @Min(0, {
-    message: 'A posição da apresentação deve ser um número inteiro positivo.',
+    message: 'A posição da apresentação deve ser um número não negativo.',
   })
   @IsNotEmpty()
   positionWithinBlock: number;
