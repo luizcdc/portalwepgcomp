@@ -112,7 +112,7 @@ model EventEdition {
   startDate                         DateTime          @map("start_date")
   endDate                           DateTime          @map("end_date")
   submissionDeadline                DateTime          @map("submission_deadline")
-  isActive                          Boolean           @default(true) @map("is_active")
+  isActive                          Boolean           @default(false) @map("is_active")
   isEvaluationRestrictToLoggedUsers Boolean           @default(true) @map("is_evaluation_restrict_to_logged_users")
   presentationDuration              Int               @default(20) @map("presentation_duration")
   presentationsPerPresentationBlock Int               @default(6) @map("presentations_per_presentation_block")
@@ -268,7 +268,7 @@ model Presentation {
   id                  String             @id @default(uuid()) @map("id")
   submissionId        String             @map("submission_id")
   presentationBlockId String             @map("presentation_block_id")
-  positionWithinBlock String             @map("position_within_block") @db.VarChar(255)
+  positionWithinBlock Int                @map("position_within_block") 
   status              PresentationStatus @map("status")
   createdAt           DateTime           @default(now()) @map("created_at")
   updatedAt           DateTime           @updatedAt @map("updated_at")
@@ -285,7 +285,7 @@ model CoAuthor {
   institution String     @map("institution") @db.VarChar(255)
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
-  submision   Submission @relation(fields: [submisionId], references: [id])
+  submision   Submission @relation(fields: [submisionId], references: [id], onDelete: Cascade)
 
   @@map("co_author")
 }
