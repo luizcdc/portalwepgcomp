@@ -1,15 +1,15 @@
-import { IsString, IsOptional, IsEnum, IsArray, IsUrl, MinLength } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsArray, IsUrl, MinLength, IsUUID } from 'class-validator';
 import { SubmissionStatus } from '@prisma/client';
 import { CoAuthorDto } from './co-author.dto';
 
 export class CreateSubmissionDto {
-  @IsString()
+  @IsUUID()
   advisorId: string;
 
-  @IsString()
+  @IsUUID()
   mainAuthorId: string;
 
-  @IsString()
+  @IsUUID()
   eventEditionId: string;
 
   @IsString()
@@ -18,7 +18,7 @@ export class CreateSubmissionDto {
 
   @IsString()
   @MinLength(10, { message: 'O resumo deve ter pelo menos 10 caracteres.' })
-  abstract: string;
+  abstractText: string;
 
   @IsString()
   pdfFile: string;

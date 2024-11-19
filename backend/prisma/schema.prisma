@@ -234,7 +234,7 @@ model Presentation {
   id                  String             @id @default(uuid())
   submissionId        String
   presentationBlockId String
-  positionWithinBlock String             @db.VarChar(255)
+  positionWithinBlock Int             
   status              PresentationStatus
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt

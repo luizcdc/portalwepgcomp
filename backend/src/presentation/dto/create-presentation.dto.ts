@@ -1,17 +1,21 @@
-import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsEnum, IsInt, IsUUID, Min } from 'class-validator';
 import { PresentationStatus } from '@prisma/client';
 
 export class CreatePresentationDto {
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   submissionId: string;
 
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   presentationBlockId: string;
 
-  @IsString()
-  positionWithinBlock: string;
+  @IsInt()
+  @Min(0, {
+    message: 'A posição da apresentação deve ser um número inteiro positivo.',
+  })
+  @IsNotEmpty()
+  positionWithinBlock: number;
 
   @IsEnum(PresentationStatus)
   @IsOptional()

@@ -16,7 +16,7 @@ export class SubmissionService {
     const { advisorId,
       mainAuthorId,
       eventEditionId,
-      title, abstract,
+      title, abstractText,
       pdfFile,
       phoneNumber,
       linkedinUrl,
@@ -70,7 +70,7 @@ export class SubmissionService {
         mainAuthorId,
         eventEditionId,
         title,
-        abstract,
+        abstract: abstractText,
         pdfFile,
         phoneNumber,
         linkedinUrl,
@@ -112,7 +112,7 @@ export class SubmissionService {
   }
 
   async update(id: string, updateSubmissionDto: UpdateSubmissionDto) {
-    const { advisorId, mainAuthorId, eventEditionId, title, abstract, pdfFile, phoneNumber, linkedinUrl, status } = updateSubmissionDto;
+    const { advisorId, mainAuthorId, eventEditionId, title, abstractText, pdfFile, phoneNumber, linkedinUrl, status } = updateSubmissionDto;
 
     const existingSubmission = await this.prismaClient.submission.findUnique({
       where: { id },
@@ -170,7 +170,7 @@ export class SubmissionService {
         mainAuthorId,
         eventEditionId,
         title,
-        abstract,
+        abstract: abstractText,
         pdfFile,
         phoneNumber,
         linkedinUrl,

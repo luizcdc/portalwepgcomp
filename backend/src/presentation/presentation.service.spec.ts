@@ -34,7 +34,7 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'nonexistentId',
         presentationBlockId: 'blockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue(null);
@@ -48,14 +48,14 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'existingSubmissionId',
         presentationBlockId: 'validBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue({
         id: 'anotherPresentationId',
         submissionId: 'anotherSubmissionId',
         presentationBlockId: 'otherValidBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       });
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({ id: '1' });
@@ -70,7 +70,7 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'validSubmissionId',
         presentationBlockId: 'nonexistentBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({ id: '1' });
@@ -86,7 +86,7 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'validSubmissionId',
         presentationBlockId: 'validBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({ id: '1' });
@@ -96,7 +96,7 @@ describe('PresentationService', () => {
           id: 'existingPresentationId',
           submissionId: 'anotherSubmissionId',
           presentationBlockId: 'validBlockId',
-          positionWithinBlock: '1',
+          positionWithinBlock: 1,
         });
 
       (prismaService.presentationBlock.findUnique as jest.Mock).mockResolvedValue({ id: '1' });
@@ -110,7 +110,7 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'validSubmissionId',
         presentationBlockId: 'validBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({ id: '1' });
@@ -120,7 +120,7 @@ describe('PresentationService', () => {
         id: 'newPresentationId',
         submissionId: 'validSubmissionId',
         presentationBlockId: 'validBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
         status: PresentationStatus.ToPresent,
       });
 
@@ -134,8 +134,8 @@ describe('PresentationService', () => {
   describe('findAll', () => {
     it('should return all presentations', async () => {
       const mockPresentations = [
-        { id: '1', submissionId: '1', presentationBlockId: '1', positionWithinBlock: '1', status: PresentationStatus.ToPresent },
-        { id: '2', submissionId: '2', presentationBlockId: '2', positionWithinBlock: '2', status: PresentationStatus.ToPresent },
+        { id: '1', submissionId: '1', presentationBlockId: '1', positionWithinBlock: 1, status: PresentationStatus.ToPresent },
+        { id: '2', submissionId: '2', presentationBlockId: '2', positionWithinBlock: 2, status: PresentationStatus.ToPresent },
       ];
 
       (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(mockPresentations);
@@ -149,7 +149,7 @@ describe('PresentationService', () => {
 
   describe('findOne', () => {
     it('should return a presentation by id', async () => {
-      const mockPresentation = { id: '1', submissionId: '1', presentationBlockId: '1', positionWithinBlock: '1', status: PresentationStatus.ToPresent };
+      const mockPresentation = { id: '1', submissionId: '1', presentationBlockId: '1', positionWithinBlock: 1, status: PresentationStatus.ToPresent };
 
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(mockPresentation);
 
@@ -173,7 +173,7 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'nonexistentId',
         presentationBlockId: 'blockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue(null);
@@ -188,7 +188,7 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'validSubmissionId',
         presentationBlockId: 'blockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(null);
@@ -202,7 +202,7 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'validSubmissionId',
         presentationBlockId: 'nonexistentBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue({ id: '1' });
@@ -218,7 +218,7 @@ describe('PresentationService', () => {
       const createPresentationDto: CreatePresentationDto = {
         submissionId: 'validSubmissionId',
         presentationBlockId: 'validBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       };
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
@@ -233,7 +233,7 @@ describe('PresentationService', () => {
         id: 'existingPresentationId',
         submissionId: 'validSubmissionId',
         presentationBlockId: 'validBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
       });
 
 
@@ -242,7 +242,7 @@ describe('PresentationService', () => {
           id: 'existingPresentationId',
           submissionId: 'anotherSubmissionId',
           presentationBlockId: 'validBlockId',
-          positionWithinBlock: '1',
+          positionWithinBlock: 1,
         });
 
       await expect(service.update('1', createPresentationDto)).rejects.toThrow(
@@ -254,20 +254,20 @@ describe('PresentationService', () => {
       const updatePresentationDto: CreatePresentationDto = {
         submissionId: 'validSubmissionId',
         presentationBlockId: 'validBlockId',
-        positionWithinBlock: '2',
+        positionWithinBlock: 2,
       };
 
       const existingPresentation = {
         id: '1',
         submissionId: 'validSubmissionId',
         presentationBlockId: 'validBlockId',
-        positionWithinBlock: '1',
+        positionWithinBlock: 1,
         status: PresentationStatus.ToPresent,
       };
 
       const updatedPresentation = {
         ...existingPresentation,
-        positionWithinBlock: '2',
+        positionWithinBlock: 2,
       };
 
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(existingPresentation);
@@ -279,7 +279,7 @@ describe('PresentationService', () => {
 
       const result = await service.update('1', updatePresentationDto);
 
-      expect(result.positionWithinBlock).toBe('2');
+      expect(result.positionWithinBlock).toBe(2);
     });
   });
 
@@ -295,7 +295,7 @@ describe('PresentationService', () => {
     it('should remove the presentation and return success message', async () => {
       const id = 'existingId';
 
-      const mockDeletedPresentation = { id: 'existingId', submissionId: '1', presentationBlockId: '1', positionWithinBlock: '1' };
+      const mockDeletedPresentation = { id: 'existingId', submissionId: '1', presentationBlockId: '1', positionWithinBlock: 1 };
 
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(mockDeletedPresentation);
 
