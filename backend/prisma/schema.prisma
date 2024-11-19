@@ -231,15 +231,17 @@ model PresentationBlock {
 }
 
 model Presentation {
-  id                  String             @id @default(uuid())
+  id                  String             @id @default(uuid()) @map("id")
   submissionId        String             @map("submission_id")
   presentationBlockId String             @map("presentation_block_id")
-  positionWithinBlock Int                @map("position_within_block")
+  positionWithinBlock Int                @map("position_within_block") 
   status              PresentationStatus @map("status")
   createdAt           DateTime           @default(now()) @map("created_at")
-  updatedAt           DateTime           @updatedAt  @map("updated_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
   submission          Submission         @relation(fields: [submissionId], references: [id])
   presentationBlock   PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
+
+  @@map("presentation")
 }
 
 model CoAuthor {
