@@ -2,8 +2,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import "./style.scss";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 export default function Header() {
+  const { signed, logout } = useContext(AuthContext);
+
   return (
     <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
@@ -55,15 +59,28 @@ export default function Header() {
                   Contato
                 </Link>
               </li>
-              <div className="vr text-black"></div>
-              <li className="nav-item">
-                <Link
-                  className="nav-link active text-black"
-                  aria-current="page"
-                  href="/Login"
-                >
-                  Login
-                </Link>
+              <div className='vr text-black'></div>
+              <li className='nav-item'>
+                { signed 
+                    ?
+                    <Link
+                      className='nav-link active text-black'
+                      aria-current='page'
+                      href='/Home'
+                      onClick={ logout }
+                    >
+                      Logout
+                    </Link>                    
+                    :
+                      <Link
+                      className='nav-link active text-black'
+                      aria-current='page'
+                      href='/Login'
+                    >
+                      Login                    
+                    </Link>
+                }
+                
               </li>
             </ul>
           </div>
