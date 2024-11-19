@@ -1,5 +1,6 @@
 .form-title {
-    font-size: 1.25rem;
+    font-size: 1.05rem;
+    color: #343A40;
 }
 
 .input-title {
@@ -10,16 +11,20 @@ input::placeholder {
     color: #ADB5BD !important;
 }
 
-a {
+.link {
+    font-size: 0.875rem;
     color: #090DF0;
 }
 
-.link {
-    font-size: 0.875rem;
+.button-password{
+    margin-top: 0.25rem;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 
-button {
+.button-primary {
     background-color: #0065A3 !important;
     font-size: 1rem;
     width: 7.938rem;
@@ -31,7 +36,7 @@ button {
 }
 
 hr {
-    border-width: 0.125rem;
+    border-width: 0.120rem;
     border-color: #FFA90F;
     border-style: solid;
 }

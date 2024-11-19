@@ -1,0 +1,58 @@
+.orientacoes {
+    width: 100%;
+    padding: 0 100px;
+}
+
+.text{
+    display: flex;
+    flex-Direction: column;
+    gap: 25px;
+    color: black;
+    margin-Left: 10px;
+    margin-Bottom: 200px;
+}
+
+.textSection{
+    display: flex;
+    flex-Direction: column;
+    gap: 10px;
+}
+
+.title{
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 45px;
+}
+
+.topic{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot{
+    width: 3px;
+    height: 3px;
+    border-Radius: 10px;
+    background-Color: black;
+}
+
+.line{
+    font-size: 16px;
+    line-height: 45px;
+}
+
+.link {
+    text-decoration: underline;
+}
+
+.blue {
+    color: #0065A3;
+}
+
+@media (max-width: 768px) {
+    .orientacoes {
+        padding: 0 10px;
+    }
+}

@@ -1,74 +1,85 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-
-import usePost from "@/services/usePost";
-import { useState } from "react";
+import { useContext } from "react";
 import "./style.scss";
-
-interface ILogin {
-    email: string;
-    password: string;
-}
+import { useForm } from "react-hook-form";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useRouter } from "next/navigation";
 
 export function FormLogin() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const { cadastrarDados, error, sucesso } = usePost();
+  const { register, handleSubmit} = useForm<UserLogin>();
+  const { singIn, signed } = useContext(AuthContext);
+  const router = useRouter();
 
-    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const usuario: ILogin = {
-            email: email,
-            password: password,
-        };
+  async function handleLogin(data: UserLogin ) {   
+    const { email, password }  = data;
+    
 
-        try {
-            cadastrarDados({ url: "auth/login", dados: usuario });
-        } catch (error) {
-            error && alert("Não foi possível realizar o login!");
-        }
-    };
+    const usuario: UserLogin = { email, password };
+
+    try {
+      await singIn(usuario);
+    } catch (error) {      
+
+    }
+  };
+
+  if(signed) {
+    router.push("/")
+  } else {
 
     return (
-        <form className="row g-3" onSubmit={handleLogin}>
-            <div className="col-12 mb-3">
-                <label className="form-label fw-bold form-title">
-                    E-mail
-                    <span className="text-danger ms-1">*</span>
-                </label>
-                <input
-                    type="email"
-                    className="form-control input-title"
-                    id="email"
-                    placeholder="exemplo@ufba.br"
-                    required
-                />
-            </div>
-            <div className="col-12 mb-3">
-                <label className="form-label fw-bold form-title">
-                    Senha
-                    <span className="text-danger ms-1">*</span>
-                </label>
-                <input
-                    type="password"
-                    className="form-control input-title"
-                    id="password"
-                    placeholder="digite sua senha"
-                    required
-                />
+      <form className="row g-3" onSubmit={handleSubmit(handleLogin)}>
+        <hr />
+        <div className="col-12 mb-3">
+          <label className="form-label fw-bold form-title">
+            E-mail
+            <span className="text-danger ms-1">*</span>
+          </label>
+          <input
+            type="email"
+            className="form-control input-title"
+            id="email"
+            placeholder="exemplo@ufba.br"
+            required
+            {...register("email")}
+          />
+        </div>
+        <div className="col-12 mb-3">
+          <label className="form-label fw-bold form-title">
+            Senha
+            <span className="text-danger ms-1">*</span>
+          </label>
+          <input
+            type="password"
+            className="form-control input-title"
+            id="password"
+            placeholder="digite sua senha"
+            required
+            {...register("password")}
+          />
 
-                <div className="text-end link">
-                    <a href="/AlterarSenha" className="link-underline link-underline-opacity-0">
-                        Esqueceu sua senha?
-                    </a>
-                </div>
-            </div>
-            <div className="d-grid gap-2 col-3 mx-auto">
-                <button type="submit" className="btn text-white fw-semibold">
-                    Entrar
-                </button>
-            </div>
-            <hr />
-        </form>
-    )
+          <div className="text-end link">
+            <button
+              data-bs-target="#alterarSenhaModal"
+              type="button"
+              data-bs-toggle="modal"
+              className="text-end link link-underline link-underline-opacity-0 button-password"
+            >
+              Esqueceu sua senha?
+            </button>
+          </div>
+        </div>
+        <div className="d-grid gap-2 col-3 mx-auto">
+          <button
+            type="submit"
+            className="btn text-white fw-semibold button-primary"
+          >
+            Entrar
+          </button>
+        </div>
+        <hr />
+      </form>
+    );
+  }
 }

@@ -17,17 +17,23 @@ enum Profile {
   DoctoralStudent
   Professor
   Listener
+
+  @@map("profile")
 }
 
 enum UserLevel {
   Superadmin
   Admin
   Default
+
+  @@map("user_level")
 }
 
 enum CommitteeLevel {
   Committee
   Coordinator
+
+  @@map("committee_level")
 }
 
 enum CommitteeRole {
@@ -36,18 +42,24 @@ enum CommitteeRole {
   AdministativeSupport
   Communication
   ITSupport
+
+  @@map("committee_role")
 }
 
 enum PresentationStatus {
   ToPresent
   Presented
   NotPresented
+
+  @@map("presentation_status")
 }
 
 enum SubmissionStatus {
   Submitted
   Confirmed
   Rejected
+  
+  @@map("submission_status")
 }
 
 enum PanelistStatus {
@@ -56,112 +68,125 @@ enum PanelistStatus {
   Rejected
   Present
   Missing
+
+  @@map("panelist_status")
 }
 
 enum PresentationBlockType {
   General
   Presentation
+
+  @@map("presentation_block_type")
 }
 
 model UserAccount {
-  id                     String            @id @default(uuid())
-  name                   String            @db.VarChar(255)
-  email                  String            @unique @db.VarChar(255)
-  password               String            @db.VarChar(255)
-  registrationNumber     String?           @unique @db.VarChar(20)
-  photoFilePath          String?           @db.VarChar(255)
-  profile                Profile           @default(DoctoralStudent)
-  level                  UserLevel         @default(Default)
-  isActive               Boolean           @default(true)
+  id                     String            @id @default(uuid()) @map("id")
+  name                   String            @map("name") @db.VarChar(255)
+  email                  String            @unique @map("email") @db.VarChar(255)
+  password               String            @map("password") @db.VarChar(255)
+  registrationNumber     String?           @unique @map("registration_number") @db.VarChar(20)
+  photoFilePath          String?           @map("photo_file_path") @db.VarChar(255)
+  profile                Profile           @default(DoctoralStudent) @map("profile")
+  level                  UserLevel         @default(Default) @map("level")
+  isActive               Boolean           @default(true) @map("is_active")
   advisorFor             Submission[]      @relation("AdvisorRelation")
   mainAuthored           Submission[]      @relation("MainAuthorRelation")
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
+  createdAt              DateTime          @default(now()) @map("created_at")
+  updatedAt              DateTime          @updatedAt @map("updated_at")
   committeeMemberships   CommitteeMember[]
   evaluations            Evaluation[]
   panelistAwards         AwardedPanelist[]
   panelistParticipations Panelist[]
+
+  @@map("user_account")
 }
 
 model EventEdition {
-  id                                String            @id @default(uuid())
-  name                              String            @db.VarChar(255)
-  description                       String            @db.Text
-  callForPapersText                 String            @db.Text
-  partnersText                      String            @db.Text
-  url                               String            @db.VarChar(255)
-  location                          String            @db.VarChar(255)
-  startDate                         DateTime
-  endDate                           DateTime
-  submissionDeadline                DateTime
-  isActive                          Boolean           @default(true)
-  isEvaluationRestrictToLoggedUsers Boolean           @default(true)
-  presentationDuration              Int               @default(20)
-  presentationsPerPresentationBlock Int               @default(6)
-  createdAt                         DateTime          @default(now())
-  updatedAt                         DateTime          @updatedAt
+  id                                String            @id @default(uuid()) @map("id")
+  name                              String            @map("name") @db.VarChar(255)
+  description                       String            @map("description") @db.Text
+  callForPapersText                 String            @map("call_for_papers_text") @db.Text
+  partnersText                      String            @map("partners_text") @db.Text
+  url                               String            @map("url") @db.VarChar(255)
+  location                          String            @map("location") @db.VarChar(255)
+  startDate                         DateTime          @map("start_date")
+  endDate                           DateTime          @map("end_date")
+  submissionDeadline                DateTime          @map("submission_deadline")
+  isActive                          Boolean           @default(false) @map("is_active")
+  isEvaluationRestrictToLoggedUsers Boolean           @default(true) @map("is_evaluation_restrict_to_logged_users")
+  presentationDuration              Int               @default(20) @map("presentation_duration")
+  presentationsPerPresentationBlock Int               @default(6) @map("presentations_per_presentation_block")
+  createdAt                         DateTime          @default(now()) @map("created_at")
+  updatedAt                         DateTime          @updatedAt @map("updated_at")
   submissions                       Submission[]
   committeeMembers                  CommitteeMember[]
   certificates                      Certificate[]
   awardedPanelists                  AwardedPanelist[]
   rooms                             Room[]
+
+  @@map("event_edition")
 }
 
 model CommitteeMember {
-  id             String         @id @default(uuid())
-  eventEditionId String
-  userId         String
-  level          CommitteeLevel
-  role           CommitteeRole
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id             String         @id @default(uuid()) @map("id")
+  eventEditionId String         @map("event_edition_id")
+  userId         String         @map("user_id")
+  level          CommitteeLevel @map("level")
+  role           CommitteeRole  @map("role")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
   eventEdition   EventEdition   @relation(fields: [eventEditionId], references: [id])
   user           UserAccount    @relation(fields: [userId], references: [id])
 
   @@unique([eventEditionId, userId])
+  @@map("committee_member")
 }
 
 model EvaluationCriteria {
-  id             String       @id @default(uuid())
-  eventEditionId String
-  title          String       @db.VarChar(255)
-  description    String       @db.Text
-  weightRadio    Float?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id             String       @id @default(uuid()) @map("id")
+  eventEditionId String       @map("event_edition_id")
+  title          String       @map("title") @db.VarChar(255)
+  description    String       @map("description") @db.Text
+  weightRadio    Float?       @map("weight_radio")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
   evaluations    Evaluation[]
+
+  @@map("evaluation_criteria")
 }
 
 model Evaluation {
-  id                   String             @id @default(uuid())
-  userId               String?
-  evaluationCriteriaId String
-  submissionId         String
-  score                Float
-  comments             String?            @db.Text
-  name                 String?            @db.VarChar(255)
-  email                String?            @db.VarChar(255)
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
+  id                   String             @id @default(uuid()) @map("id")
+  userId               String?            @map("user_id")
+  evaluationCriteriaId String             @map("evaluation_criteria_id")
+  submissionId         String             @map("submission_id")
+  score                Float              @map("score")
+  comments             String?            @map("comments") @db.Text
+  name                 String?            @map("name") @db.VarChar(255)
+  email                String?            @map("email") @db.VarChar(255)
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
   user                 UserAccount?       @relation(fields: [userId], references: [id])
   evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id])
   submission           Submission         @relation(fields: [submissionId], references: [id])
+
+  @@map("evaluation")
 }
 
 model Submission {
-  id             String           @id @default(uuid())
-  advisorId      String
-  mainAuthorId   String
-  eventEditionId String
-  title          String           @db.VarChar(255)
-  abstract       String           @db.Text
-  pdfFile        String           @db.VarChar(255)
-  phoneNumber    String           @db.VarChar(20)
-  linkedinUrl    String?          @db.VarChar(255)
-  ranking        Int?
-  status         SubmissionStatus
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id             String           @id @default(uuid()) @map("id")
+  advisorId      String           @map("advisor_id")
+  mainAuthorId   String           @map("main_author_id")
+  eventEditionId String           @map("event_edition_id")
+  title          String           @map("title") @db.VarChar(255)
+  abstract       String           @map("abstract") @db.Text
+  pdfFile        String           @map("pdf_file") @db.VarChar(255)
+  phoneNumber    String           @map("phone_number") @db.VarChar(20)
+  linkedinUrl    String?          @map("linkedin_url") @db.VarChar(255)
+  ranking        Int?             @map("ranking")
+  status         SubmissionStatus @map("status")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
   advisor        UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id])
   mainAuthor     UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id])
   eventEdition   EventEdition     @relation(fields: [eventEditionId], references: [id])
@@ -173,61 +198,70 @@ model Submission {
 }
 
 model Panelist {
-  id                  String            @id @default(uuid())
-  presentationBlockId String
-  userId              String
-  status              PanelistStatus    @default(Confirmed)
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  id                  String            @id @default(uuid()) @map("id")
+  presentationBlockId String            @map("presentation_block_id")
+  userId              String            @map("user_id")
+  status              PanelistStatus    @default(Confirmed) @map("status")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
   presentationBlock   PresentationBlock @relation(fields: [presentationBlockId], references: [id])
   user                UserAccount       @relation(fields: [userId], references: [id])
+
+  @@map("panelist")
 }
 
 model AwardedPanelist {
-  eventEditionId String
-  userId         String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  eventEditionId String       @map("event_edition_id")
+  userId         String       @map("user_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
   eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id])
   user           UserAccount  @relation(fields: [userId], references: [id])
 
   @@id([eventEditionId, userId])
+  @@map("awarded_panelist")
 }
 
 model Room {
-  id             String       @id @default(uuid())
-  eventEditionId String
-  name           String       @db.VarChar(255)
-  description    String?      @db.Text
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id             String       @id @default(uuid()) @map("id")
+  eventEditionId String       @map("event_edition_id")
+  name           String       @map("name") @db.VarChar(255)
+  description    String?      @map("description") @db.Text
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
   eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id])
+
+  @@map("room")
 }
 
 model Certificate {
-  id             String       @id @default(uuid())
-  eventEditionId String
-  name           String       @db.VarChar(255)
-  email          String       @db.VarChar(255)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id             String       @id @default(uuid()) @map("id")
+  eventEditionId String       @map("event_edition_id")
+  name           String       @map("name") @db.VarChar(255)
+  email          String       @map("email") @db.VarChar(255)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
   eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id])
+
+  @@map("certificate")
 }
 
 model PresentationBlock {
-  id             String                @id @default(uuid())
-  eventEditionId String
-  roomId         String?
-  type           PresentationBlockType
-  title          String?               @db.VarChar(255)
-  speakerName    String?               @db.VarChar(255)
-  startTime      DateTime
-  duration       Int
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  id             String                @id @default(uuid()) @map("id")
+  eventEditionId String                @map("event_edition_id")
+  roomId         String?               @map("room_id")
+  type           PresentationBlockType @map("type")
+  title          String?               @map("title") @db.VarChar(255)
+  speakerName    String?               @map("speaker_name") @db.VarChar(255)
+  startTime      DateTime              @map("start_time")
+  duration       Int                   @map("duration")
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
 
   presentations Presentation[]
   panelists     Panelist[]
+
+  @@map("presentation_block")
 }
 
 model Presentation {

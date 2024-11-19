@@ -1,0 +1,46 @@
+.button{
+    display: flex;
+    flex-Direction: row;
+    justify-Content: center;
+    align-Items: center;
+    margin-Bottom: 25px;
+    gap: 20px;
+}
+
+.buttonFalse{
+    border: solid;
+    border-Color: #FFA90F;
+    background-Color: white;
+    color: #FFA90F;
+    width: 190px;
+    border-Radius: 25px;
+    border-Width: 3px;
+    cursor: pointer;
+    display: flex;
+    align-Items: center;
+    justify-Content: center;
+    font-Weight: bold;
+    font-Size: 24px;
+}
+
+.buttonTrue{
+    border: solid;
+    border-Color: #FFA90F;
+    background-Color: #FFA90F;
+    color: white;
+    width: 190px;
+    border-Radius: 25px;
+    border-Width: 3px;
+    cursor: pointer;
+    display: flex;
+    align-Items: center;
+    justify-Content: center;
+    font-Weight: bold;
+    font-Size: 24px;
+}
+
+@media (max-width: 768px) {
+    .button {
+        padding: 0 10px;
+    }
+}
