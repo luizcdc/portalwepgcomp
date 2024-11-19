@@ -1,7 +1,7 @@
 .rating{
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 15px;
 }
 .star{
     cursor: pointer;
