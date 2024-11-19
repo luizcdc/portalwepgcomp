@@ -11,6 +11,7 @@ import { QueueModule } from './queue/queue.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PresentationModule } from './presentation/presentation.module';
 import { SubmissionModule } from './submission/submission.module';
+import { PresentationBlockModule } from './presentation-block/presentation-block.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SubmissionModule } from './submission/submission.module';
     ScheduleModule.forRoot(),
     PresentationModule,
     SubmissionModule,
+    PresentationBlockModule,
   ],
   controllers: [AppController],
   providers: [AppService],
