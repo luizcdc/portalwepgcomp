@@ -9,10 +9,10 @@ interface ModalComponentProps {
   id: string;
   loading: boolean;
   children: ReactNode[] | ReactNode;
-  labelConfirmButton: string;
-  colorButtonConfirm: string;
-  disabledConfirmButton: boolean;
-  onConfirm: () => void;
+  labelConfirmButton?: string;
+  colorButtonConfirm?: string;
+  disabledConfirmButton?: boolean;
+  onConfirm?: () => void;
 }
 
 export default function ModalComponent({
@@ -49,17 +49,19 @@ export default function ModalComponent({
                 {children}
               </div>
 
-              <div className="modal-footer content-modal-component">
-                <button
-                  type="button"
-                  className="btn btn-primary button-modal-component"
-                  onClick={() => onConfirm()}
-                  disabled={disabledConfirmButton}
-                  style={{ backgroundColor: colorButtonConfirm }}
-                >
-                  {labelConfirmButton}
-                </button>
-              </div>
+              {onConfirm && labelConfirmButton && (
+                <div className={`modal-footer content-modal-component`}>
+                  <button
+                    type="button"
+                    className="btn btn-primary button-modal-component"
+                    onClick={() => onConfirm()}
+                    disabled={disabledConfirmButton}
+                    style={{ backgroundColor: colorButtonConfirm }}
+                  >
+                    {labelConfirmButton}
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>

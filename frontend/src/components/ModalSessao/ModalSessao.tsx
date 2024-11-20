@@ -28,14 +28,7 @@ export default function ModalSessao() {
   const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(1);
 
   return (
-    <ModalComponent
-      id="sessaoModal"
-      loading={false}
-      labelConfirmButton="Salvar"
-      disabledConfirmButton={false}
-      colorButtonConfirm="#FFA90F"
-      onConfirm={() => {}}
-    >
+    <ModalComponent id="sessaoModal" loading={false}>
       <div className="modal-sessao px-5">
         <div className="col-12 mb-1">
           <label className="form-label fw-bold form-title">{tipo.label}</label>
@@ -48,6 +41,7 @@ export default function ModalSessao() {
                   id={`radio${op}-${i}`}
                   value={op}
                   name="radioTipoSessao"
+                  defaultChecked={!i}
                   onChange={() => setTipoSessao(SessaoTipoEnum[op])}
                 />
                 <label

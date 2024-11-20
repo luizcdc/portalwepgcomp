@@ -9,22 +9,23 @@ export default function Sessoes() {
   const { title, userArea, cardsMock, buttonList } = SessoesMock;
 
   return (
-    <ProtectedLayout>
-      <div
-        className="d-flex flex-column"
-        style={{
-          gap: "50px",
-        }}
-      >
-        <Listagem
-          title={title}
-          labelAddButton={userArea.add}
-          labelListCardsButton={buttonList}
-          searchPlaceholder={userArea.search}
-          cardsList={cardsMock}
-        />
-      </div>
+    // <ProtectedLayout>
+    <div
+      className="d-flex flex-column"
+      style={{
+        gap: "50px",
+      }}
+    >
+      <Listagem
+        idModal="sessaoModal"
+        title={title}
+        labelAddButton={userArea.add}
+        labelListCardsButton={buttonList}
+        searchPlaceholder={userArea.search}
+        cardsList={cardsMock}
+      />
       <ModalSessao />
-    </ProtectedLayout>
+    </div>
+    // </ProtectedLayout>
   );
 }

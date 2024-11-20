@@ -1,13 +1,85 @@
 "use client";
 
-import Calendar from "@/components/UI/calendar";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addDays } from "date-fns";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+
+import "./style.scss";
+
+export const formSessaoGeralSchema = z.object({
+  titulo: z.string({
+    required_error: "Título é obrigatório!",
+    invalid_type_error: "Campo inválido!",
+  }),
+
+  nome: z
+    .string({
+      invalid_type_error: "Campo inválido!",
+    })
+    .regex(/^[a-zA-ZÀ-ÿ]+$/, {
+      message: "O campo deve conter apenas letras.",
+    })
+    .optional(),
+
+  sala: z.string({
+    required_error: "Sala é obrigatória!",
+    invalid_type_error: "Campo inválido!",
+  }),
+
+  inicio: z
+    .string({
+      required_error: "Data e horário de início são obrigatórios!",
+      invalid_type_error: "Campo inválido!",
+    })
+    .datetime({
+      message: "Data ou horário inválidos!",
+    }),
+  final: z
+    .string({
+      required_error: "Data e horário de fim são obrigatórios!",
+      invalid_type_error: "Campo inválido!",
+    })
+    .datetime({
+      message: "Data ou horário inválidos!",
+    }),
+});
+
+export type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
 
 export default function FormSessaoGeral() {
-  const { formGeralFields } = ModalSessaoMock;
+  const { formGeralFields, confirmButton } = ModalSessaoMock;
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormSessaoGeralSchema>({
+    resolver: zodResolver(formSessaoGeralSchema),
+    defaultValues: {
+      inicio: null,
+      final: null,
+    },
+  });
+
+  const filterTimes = (time: Date) => {
+    const hour = time.getHours();
+    return hour < 12 && hour > 6;
+  };
+
+  const handleFormSessaoGeral = (data: FormSessaoGeralSchema) => {
+    console.log(data);
+  };
 
   return (
-    <form className="row g-3" onSubmit={() => {}}>
+    <form
+      className="row g-3 form-sessao-geral"
+      onSubmit={handleSubmit(handleFormSessaoGeral)}
+    >
       <div className="col-12 mb-1">
         <label className="form-label fw-bold form-title">
           {formGeralFields.titulo.label}
@@ -18,8 +90,9 @@ export default function FormSessaoGeral() {
           className="form-control input-title"
           id="titulo"
           placeholder={formGeralFields.titulo.placeholder}
+          {...register("titulo")}
         />
-        <p className="text-danger error-message"></p>
+        <p className="text-danger error-message">{errors.titulo?.message}</p>
       </div>
 
       <div className="col-12 mb-1">
@@ -31,8 +104,9 @@ export default function FormSessaoGeral() {
           className="form-control input-title"
           id="nome"
           placeholder={formGeralFields.nome.placeholder}
+          {...register("nome")}
         />
-        <p className="text-danger error-message"></p>
+        <p className="text-danger error-message">{errors.nome?.message}</p>
       </div>
 
       <div className="col-12 mb-1">
@@ -43,17 +117,16 @@ export default function FormSessaoGeral() {
           id="sala"
           className="form-select"
           aria-label="Default select example"
+          {...register("sala")}
         >
-          <option selected hidden>
-            {formGeralFields.sala.placeholder}
-          </option>
+          <option hidden>{formGeralFields.sala.placeholder}</option>
           {formGeralFields.sala.options?.map((op, i) => (
             <option id={`sala-op${i}`} key={op} value={op}>
               {op}
             </option>
           ))}
         </select>
-        <p className="text-danger error-message"></p>
+        <p className="text-danger error-message">{errors.sala?.message}</p>
       </div>
 
       <div className="col-12 mb-1">
@@ -64,24 +137,36 @@ export default function FormSessaoGeral() {
           {formGeralFields.inicio.label}
           <span className="text-danger ms-1 form-title">*</span>
         </label>
+
         <div className="input-group listagem-template-content-input">
-          <button
-            className="btn btn-outline-secondary"
-            type="button"
-            id="button-addon2"
-            disabled
-          >
-            <Calendar color={"#FFA90F"} />
-          </button>
-          <input
-            placeholder={formGeralFields.inicio.placeholder}
-            type="datetime-local"
-            className="form-control"
-            id="inicio"
-            aria-describedby="button-addon2"
+          <Controller
+            control={control}
+            name="inicio"
+            render={({ field }) => (
+              <DatePicker
+                id="inicio"
+                showIcon
+                onChange={(date) => {
+                  console.log(date);
+                  field.onChange(date);
+                }}
+                selected={field.value ? new Date(field.value) : null}
+                showTimeSelect
+                className="form-control datepicker"
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="dd/MM/yyyy HH:mm"
+                minDate={new Date()}
+                maxDate={addDays(new Date(), 3)}
+                isClearable
+                filterTime={filterTimes}
+                placeholderText={formGeralFields.inicio.placeholder}
+                toggleCalendarOnIconClick
+              />
+            )}
           />
         </div>
-        <p className="text-danger error-message"></p>
+        <p className="text-danger error-message">{errors.inicio?.message}</p>
       </div>
 
       <div className="col-12 mb-1">
@@ -92,24 +177,41 @@ export default function FormSessaoGeral() {
           {formGeralFields.final.label}
           <span className="text-danger ms-1 form-title">*</span>
         </label>
+
         <div className="input-group listagem-template-content-input">
-          <button
-            className="btn btn-outline-secondary"
-            type="button"
-            id="button-addon2"
-            disabled
-          >
-            <Calendar color={"#FFA90F"} />
-          </button>
-          <input
-            placeholder={formGeralFields.final.placeholder}
-            type="datetime-local"
-            className="form-control"
-            id="final"
-            aria-describedby="button-addon2"
+          <Controller
+            control={control}
+            name="final"
+            render={({ field }) => (
+              <DatePicker
+                id="final"
+                showIcon
+                onChange={(date) => field.onChange(date)}
+                selected={field.value ? new Date(field.value) : null}
+                showTimeSelect
+                className="form-control datepicker"
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="dd/MM/yyyy HH:mm"
+                minDate={new Date()}
+                maxDate={addDays(new Date(), 3)}
+                isClearable
+                filterTime={filterTimes}
+                placeholderText={formGeralFields.final.placeholder}
+                toggleCalendarOnIconClick
+              />
+            )}
           />
         </div>
-        <p className="text-danger error-message"></p>
+        <p className="text-danger error-message">{errors.final?.message}</p>
+      </div>
+      <div className="d-flex justify-content-center">
+        <button
+          type="submit"
+          className="btn btn-primary button-modal-component button-sessao-geral"
+        >
+          {confirmButton.label}
+        </button>
       </div>
     </form>
   );

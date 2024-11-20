@@ -1,10 +1,19 @@
 "use client";
 
-import Calendar from "@/components/UI/calendar";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
+import { addDays } from "date-fns";
+import { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function FormSessaoApresentacoes() {
   const { formApresentacoesFields } = ModalSessaoMock;
+  const [selectedDate, setSelectedDate] = useState<any>(null);
+
+  const filterTimes = (time: Date) => {
+    const hour = time.getHours();
+    return hour < 12 && hour > 6;
+  };
 
   return (
     <form className="row g-3" onSubmit={() => {}}>
@@ -60,20 +69,22 @@ export default function FormSessaoApresentacoes() {
           <span className="text-danger ms-1 form-title">*</span>
         </label>
         <div className="input-group listagem-template-content-input">
-          <button
-            className="btn btn-outline-secondary"
-            type="button"
-            id="button-addon2"
-            disabled
-          >
-            <Calendar color={"#FFA90F"} />
-          </button>
-          <input
-            placeholder={formApresentacoesFields.inicio.placeholder}
-            type="datetime-local"
-            className="form-control"
+          <DatePicker
             id="inicio"
-            aria-describedby="button-addon2"
+            showIcon
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            showTimeSelect
+            className="form-control"
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            dateFormat="dd/MM/yyyy HH:mm"
+            minDate={new Date()}
+            maxDate={addDays(new Date(), 3)}
+            isClearable
+            filterTime={filterTimes}
+            placeholderText={formApresentacoesFields.inicio.placeholder}
+            toggleCalendarOnIconClick
           />
         </div>
         <p className="text-danger error-message"></p>
