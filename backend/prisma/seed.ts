@@ -137,7 +137,7 @@ async function main() {
     data: {
       submissionId: submission.id,
       presentationBlockId: presentationBlock.id,
-      positionWithinBlock: '1',
+      positionWithinBlock: 1,
       status: PresentationStatus.ToPresent,
     },
   });
