@@ -1,13 +1,13 @@
 "use client"
 import { axiosInstance } from '@/utils/api';
 
-const baseUrl = "/session";
+const baseUrl = "/presentation-block";
 
 export const sessionApi = {
-    listSessions: async () => {
+    listSessions: async (idEdition: string) => {
         const instance = axiosInstance();
 
-        const { data } = await instance.get(`${baseUrl}`);
+        const { data } = await instance.get(`${baseUrl}/event-edition/${idEdition}`);
 
         return data;
     },
@@ -31,7 +31,7 @@ export const sessionApi = {
     updateSessionById: async (idSession: string, body: SessaoParams) => {
         const instance = axiosInstance();
 
-        const { data } = await instance.put(`${baseUrl}/${idSession}`, body);
+        const { data } = await instance.patch(`${baseUrl}/${idSession}`, body);
 
         return data;
     },
@@ -39,7 +39,7 @@ export const sessionApi = {
     deleteSessionById: async (idSession: string) => {
         const instance = axiosInstance();
 
-        const { data } = await instance.get(`${baseUrl}/${idSession}`);
+        const { data } = await instance.delete(`${baseUrl}/${idSession}`);
 
         return data;
     },
