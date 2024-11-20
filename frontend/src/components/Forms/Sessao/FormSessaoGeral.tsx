@@ -8,6 +8,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { useSession } from "@/hooks/useSession";
+
 import "./style.scss";
 
 const formSessaoGeralSchema = z.object({
@@ -53,6 +55,7 @@ const formSessaoGeralSchema = z.object({
 
 export default function FormSessaoGeral() {
   const { formGeralFields, confirmButton } = ModalSessaoMock;
+  const { createSession, updateSession, sessao } = useSession();
 
   type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
 
@@ -75,7 +78,26 @@ export default function FormSessaoGeral() {
   };
 
   const handleFormSessaoGeral = (data: FormSessaoGeralSchema) => {
-    console.log(data);
+    const { titulo, nome, sala, inicio, final } = data;
+
+    if (!titulo || !sala || !inicio || !final) {
+      throw new Error("Campos obrigatórios em branco.");
+    }
+
+    const body = {
+      titulo,
+      nome,
+      sala,
+      inicio,
+      final,
+    } as SessaoParams;
+
+    if (sessao?.id) {
+      updateSession(sessao?.id, body);
+      return;
+    }
+
+    createSession(body);
   };
 
   return (

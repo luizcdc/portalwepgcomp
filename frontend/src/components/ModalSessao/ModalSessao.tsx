@@ -8,11 +8,6 @@ import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import FormSessaoGeral from "../Forms/Sessao/FormSessaoGeral";
 import FormSessaoApresentacoes from "../Forms/Sessao/FormSessaoApresentacoes";
 
-enum SessaoTipoEnum {
-  "Sessão geral do evento" = 1,
-  "Sessão de apresentações" = 2,
-}
-
 export default function ModalSessao() {
   const { tipo } = ModalSessaoMock;
 
