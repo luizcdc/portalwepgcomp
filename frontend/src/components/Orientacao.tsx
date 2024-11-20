@@ -27,15 +27,16 @@ export default function Orientacao() {
           flexDirection: "column",
           alignItems: "center",
           gap: "25px",
-          textAlign: "center",
+          textAlign: "justify",
           fontSize: "18px",
+          maxWidth: "695px",
         }}
       >
         <div>
           Este evento é uma excelente oportunidade para estudantes apresentarem
-          e discutirem suas pesquisas, além de <br />
+          e discutirem suas pesquisas, além de
           receberem feedback valioso de colegas e professores.
-          <br /> Clique em Ver todas as orientações para ter mais informações
+          Clique em "Ver todas as orientações" para ter mais informações
           sobre o evento.
         </div>
 
