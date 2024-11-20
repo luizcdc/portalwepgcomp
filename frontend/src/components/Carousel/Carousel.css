@@ -1,6 +1,6 @@
 .carousel-component{
     p{
-        text-align: center;
+        text-align: justify;
 
         @media (max-width: 576px) {
             font-size: 1rem;

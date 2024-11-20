@@ -41,6 +41,7 @@
 .line{
     font-size: 16px;
     line-height: 45px;
+    text-align: justify;
 }
 
 .link {
