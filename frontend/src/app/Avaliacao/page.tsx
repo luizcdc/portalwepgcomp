@@ -3,6 +3,7 @@
 import Banner from "@/components/UI/Banner";
 import "./style.scss";
 import Rating from "@/components/Rating/Rating";
+import Image from "next/image";
 
 export default function Avaliacao(){
     return(
@@ -18,7 +19,13 @@ export default function Avaliacao(){
 
                 <div className="avalieElementos">
 
-                    <div className="avalieFoto"></div>
+                    <Image
+                        src={"/assets/images/person_icon.svg"}
+                        alt="ícone pessoa"
+                        width={65}
+                        height={65}
+                        priority={true}
+                    />
 
                     <div className="avalieIdentificador">
 

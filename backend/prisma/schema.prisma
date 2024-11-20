@@ -268,7 +268,7 @@ model Presentation {
   id                  String             @id @default(uuid()) @map("id")
   submissionId        String             @map("submission_id")
   presentationBlockId String             @map("presentation_block_id")
-  positionWithinBlock String             @map("position_within_block") @db.VarChar(255)
+  positionWithinBlock Int                @map("position_within_block") 
   status              PresentationStatus @map("status")
   createdAt           DateTime           @default(now()) @map("created_at")
   updatedAt           DateTime           @updatedAt @map("updated_at")
@@ -285,7 +285,7 @@ model CoAuthor {
   institution String     @map("institution") @db.VarChar(255)
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
-  submision   Submission @relation(fields: [submisionId], references: [id])
+  submision   Submission @relation(fields: [submisionId], references: [id], onDelete: Cascade)
 
   @@map("co_author")
 }
