@@ -13,15 +13,6 @@ enum SessaoTipoEnum {
   "Sessão de apresentações" = 2,
 }
 
-// const translateTipoEnum = (op: SessaoTipoEnum) => {
-//     const options = {
-//         [SessaoTipoEnum["Sessão de apresentações"]]: "Sessão de apresentações",
-//         [SessaoTipoEnum["Sessão geral do evento"]]: "Sessão geral do evento",
-//     };
-
-//     return options[op];
-// }
-
 export default function ModalSessao() {
   const { tipo } = ModalSessaoMock;
 
@@ -38,7 +29,7 @@ export default function ModalSessao() {
                 <input
                   type="radio"
                   className="form-check-input"
-                  id={`radio${op}-${i}`}
+                  id={`sessao-tipo-radio-${i}`}
                   value={op}
                   name="radioTipoSessao"
                   defaultChecked={!i}

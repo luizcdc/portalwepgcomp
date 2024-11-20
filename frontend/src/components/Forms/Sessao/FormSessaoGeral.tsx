@@ -10,7 +10,7 @@ import { z } from "zod";
 
 import "./style.scss";
 
-export const formSessaoGeralSchema = z.object({
+const formSessaoGeralSchema = z.object({
   titulo: z.string({
     required_error: "Título é obrigatório!",
     invalid_type_error: "Campo inválido!",
@@ -37,7 +37,9 @@ export const formSessaoGeralSchema = z.object({
     })
     .datetime({
       message: "Data ou horário inválidos!",
-    }),
+    })
+    .nullable(),
+
   final: z
     .string({
       required_error: "Data e horário de fim são obrigatórios!",
@@ -45,13 +47,14 @@ export const formSessaoGeralSchema = z.object({
     })
     .datetime({
       message: "Data ou horário inválidos!",
-    }),
+    })
+    .nullable(),
 });
-
-export type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
 
 export default function FormSessaoGeral() {
   const { formGeralFields, confirmButton } = ModalSessaoMock;
+
+  type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
 
   const {
     register,
@@ -77,7 +80,7 @@ export default function FormSessaoGeral() {
 
   return (
     <form
-      className="row g-3 form-sessao-geral"
+      className="row g-3 form-sessao"
       onSubmit={handleSubmit(handleFormSessaoGeral)}
     >
       <div className="col-12 mb-1">
@@ -88,7 +91,7 @@ export default function FormSessaoGeral() {
         <input
           type="text"
           className="form-control input-title"
-          id="titulo"
+          id="sg-titulo-input"
           placeholder={formGeralFields.titulo.placeholder}
           {...register("titulo")}
         />
@@ -102,7 +105,7 @@ export default function FormSessaoGeral() {
         <input
           type="text"
           className="form-control input-title"
-          id="nome"
+          id="sg-nome-input"
           placeholder={formGeralFields.nome.placeholder}
           {...register("nome")}
         />
@@ -114,9 +117,8 @@ export default function FormSessaoGeral() {
           {formGeralFields.sala.label}
         </label>
         <select
-          id="sala"
+          id="sg-sala-select"
           className="form-select"
-          aria-label="Default select example"
           {...register("sala")}
         >
           <option hidden>{formGeralFields.sala.placeholder}</option>
@@ -144,12 +146,9 @@ export default function FormSessaoGeral() {
             name="inicio"
             render={({ field }) => (
               <DatePicker
-                id="inicio"
+                id="sg-inicio-data"
                 showIcon
-                onChange={(date) => {
-                  console.log(date);
-                  field.onChange(date);
-                }}
+                onChange={(date) => field.onChange(date?.toISOString() || null)}
                 selected={field.value ? new Date(field.value) : null}
                 showTimeSelect
                 className="form-control datepicker"
@@ -184,9 +183,9 @@ export default function FormSessaoGeral() {
             name="final"
             render={({ field }) => (
               <DatePicker
-                id="final"
+                id="sg-final-data"
                 showIcon
-                onChange={(date) => field.onChange(date)}
+                onChange={(date) => field.onChange(date?.toISOString() || null)}
                 selected={field.value ? new Date(field.value) : null}
                 showTimeSelect
                 className="form-control datepicker"
@@ -208,6 +207,7 @@ export default function FormSessaoGeral() {
       <div className="d-flex justify-content-center">
         <button
           type="submit"
+          id="sg-submit-button"
           className="btn btn-primary button-modal-component button-sessao-geral"
         >
           {confirmButton.label}
