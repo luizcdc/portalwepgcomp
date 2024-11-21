@@ -8,7 +8,7 @@ export default function Edicoes() {
 
   return (
     <div
-      className="d-flex flex-column"
+      className='d-flex flex-column'
       style={{
         gap: "50px",
       }}
@@ -16,6 +16,7 @@ export default function Edicoes() {
       <Listagem
         title={title}
         labelAddButton={userArea.add}
+        navigate='/CadastroEdicao'
         labelListCardsButton={buttonList}
         searchPlaceholder={userArea.search}
         cardsList={cardsMock}

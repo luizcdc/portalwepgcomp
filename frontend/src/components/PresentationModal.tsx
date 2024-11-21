@@ -4,8 +4,8 @@ import Image from "next/image";
 import Star from "./UI/Star";
 import { useState } from "react";
 import Link from "next/link";
-import Linkedin from "@/public/assets/images/logo_linkedin.svg"
-import avaliar from "@/public/assets/images/avaliar.svg"
+import Linkedin from "@/public/assets/images/logo_linkedin.svg";
+import avaliar from "@/public/assets/images/avaliar.svg";
 
 interface presentationData {
   titulo: string;
@@ -23,10 +23,10 @@ export default function PresentationModal({
 }: {
   props: presentationData;
 }) {
-  const [favorite, setFavorite] = useState<boolean>(false)
+  const [favorite, setFavorite] = useState<boolean>(false);
 
-  function handleFavorite () {
-    setFavorite(!favorite)
+  function handleFavorite() {
+    setFavorite(!favorite);
   }
 
   return (
@@ -51,7 +51,7 @@ export default function PresentationModal({
         }}
       >
         <Image
-          src={'/assets/images/person_icon.svg'}
+          src={"/assets/images/person_icon.svg"}
           alt='PGCOMP Logo'
           width={110}
           height={110}
@@ -68,12 +68,13 @@ export default function PresentationModal({
           {props.titulo}
         </h3>
       </div>
-      <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-            }}
-        >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -97,14 +98,22 @@ export default function PresentationModal({
 
             <div> | </div>
             <div>{props.emailDoutorando}</div>
-            <div><Link href=""><Image src={Linkedin} width={22} height={22} alt="linkedin"/></Link></div>
+            <div>
+              <Link href=''>
+                <Image src={Linkedin} width={22} height={22} alt='linkedin' />
+              </Link>
+            </div>
           </div>
-          <h4 style={{ fontSize: "15px", fontWeight: "400", textAlign: "left" }}>
+          <h4
+            style={{ fontSize: "15px", fontWeight: "400", textAlign: "left" }}
+          >
             Orientador(a): {props.orientador}
           </h4>
         </div>
         <div>
-          <Link href=""><Image src={avaliar} width={40} height={25} alt="avaliar" /></Link>
+          <Link href='/Avaliacao'>
+            <Image src={avaliar} width={40} height={25} alt='avaliar' />
+          </Link>
         </div>
       </div>
       <div style={{ display: "flex", gap: "10px" }}>
@@ -120,8 +129,8 @@ export default function PresentationModal({
         >
           {props.date} - {props.local} - {props.time}
         </em>
-        <div onClick={handleFavorite} style={{cursor: "pointer"}}>
-          <Star color={favorite ? "#F17F0C" : "#D9D9D9"}/>
+        <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
+          <Star color={favorite ? "#F17F0C" : "#D9D9D9"} />
         </div>
       </div>
       <div
