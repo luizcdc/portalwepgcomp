@@ -15,6 +15,7 @@ async function bootstrap() {
       'Especificação e descrição das rotas da API do projeto PortalWEPGCOMP.',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
