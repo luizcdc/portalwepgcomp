@@ -7,11 +7,14 @@ import "./style.scss";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import FormSessaoGeral from "../Forms/Sessao/FormSessaoGeral";
 import FormSessaoApresentacoes from "../Forms/Sessao/FormSessaoApresentacoes";
+import { SessaoTipoEnum } from "@/enums/session";
 
 export default function ModalSessao() {
   const { tipo } = ModalSessaoMock;
 
-  const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(1);
+  const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(
+    SessaoTipoEnum.SessaoGeralDoEvento
+  );
 
   return (
     <ModalComponent id="sessaoModal" loading={false}>
@@ -42,11 +45,11 @@ export default function ModalSessao() {
           <p className="text-danger error-message"></p>
         </div>
 
-        {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] && (
+        {tipoSessao === SessaoTipoEnum.SessaoGeralDoEvento && (
           <FormSessaoGeral />
         )}
 
-        {tipoSessao === SessaoTipoEnum["Sessão de apresentações"] && (
+        {tipoSessao === SessaoTipoEnum.SessaoApresentacoes && (
           <FormSessaoApresentacoes />
         )}
       </div>

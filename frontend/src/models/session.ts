@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-enum SessaoTipoEnum {
-    "Sessão geral do evento" = 1,
-    "Sessão de apresentações" = 2,
-};
-
+type SessaoTipo = "Sessão geral do evento" | "Sessão de apresentacoes";
 interface SessaoParams {
-    tipo: SessaoTipoEnum;
+    tipo: SessaoTipo;
     sala: string;
     inicio: string;
     titulo?: string;
