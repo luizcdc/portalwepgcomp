@@ -12,7 +12,7 @@ const formCadastroSchema = z
         required_error: "Nome é obrigatório!",
         invalid_type_error: "Campo inválido!",
       })
-      .regex(/^[a-zA-ZÀ-ÿ]+$/, {
+      .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
         message: "O campo deve conter apenas letras.",
       }),
 
@@ -21,9 +21,7 @@ const formCadastroSchema = z
       invalid_type_error: "Campo inválido!",
     }),
 
-    matricula: z
-      .string()
-      .optional(),
+    matricula: z.string().optional(),
 
     email: z
       .string({
@@ -55,7 +53,11 @@ const formCadastroSchema = z
       });
     }
 
-    if (data.perfil !== "ouvinte" && data.matricula && data.matricula.length !== 10) {
+    if (
+      data.perfil !== "ouvinte" &&
+      data.matricula &&
+      data.matricula.length !== 10
+    ) {
       ctx.addIssue({
         path: ["matricula"],
         message: "A matrícula precisa ter 10 dígitos.",
@@ -63,10 +65,15 @@ const formCadastroSchema = z
       });
     }
 
-    if (data.perfil !== "ouvinte" && data.matricula && !/^\d{10}$/.test(data.matricula)) {
+    if (
+      data.perfil !== "ouvinte" &&
+      data.matricula &&
+      !/^\d{10}$/.test(data.matricula)
+    ) {
       ctx.addIssue({
         path: ["matricula"],
-        message: "A matrícula precisa conter apenas números e ter exatamente 10 dígitos.",
+        message:
+          "A matrícula precisa conter apenas números e ter exatamente 10 dígitos.",
         code: z.ZodIssueCode.custom,
       });
     }
@@ -74,7 +81,7 @@ const formCadastroSchema = z
   .refine((data) => data.senha === data.confirmaSenha, {
     message: "As senhas não conferem!",
     path: ["confirmaSenha"],
-  })
+  });
 
 export function FormCadastro() {
   const { registerUser } = useUsers();
@@ -271,8 +278,9 @@ export function FormCadastro() {
           </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"
-                }`}
+              className={`fw-semibold list-title ${
+                requisitos.minLength ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -282,8 +290,9 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.upperCase ? "text-success" : "text-danger"
-                }`}
+              className={`fw-semibold list-title ${
+                requisitos.upperCase ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.upperCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -293,8 +302,9 @@ export function FormCadastro() {
               1 letra maiúscula
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.lowerCase ? "text-success" : "text-danger"
-                }`}
+              className={`fw-semibold list-title ${
+                requisitos.lowerCase ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.lowerCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -304,8 +314,9 @@ export function FormCadastro() {
               1 letra minúscula
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"
-                }`}
+              className={`fw-semibold list-title ${
+                requisitos.number ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
@@ -315,8 +326,9 @@ export function FormCadastro() {
               4 números
             </li>
             <li
-              className={`fw-semibold list-title ${requisitos.specialChar ? "text-success" : "text-danger"
-                }`}
+              className={`fw-semibold list-title ${
+                requisitos.specialChar ? "text-success" : "text-danger"
+              }`}
             >
               {requisitos.specialChar ? (
                 <i className="bi bi-shield-fill-check" />
