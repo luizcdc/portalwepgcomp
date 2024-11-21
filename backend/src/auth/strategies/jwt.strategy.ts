@@ -7,14 +7,13 @@ import { jwtConstants } from '../constants';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Extrai o token do header Authorization: Bearer <token>
-      ignoreExpiration: false, // O token expira automaticamente
-      secretOrKey: jwtConstants.secret, // Use uma chave secreta no .env
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: jwtConstants.secret,
     });
   }
 
   async validate(payload: any) {
-    // Retorna os dados do payload (serão injetados no request.user)
     return {
       userId: payload.userId,
       email: payload.email,

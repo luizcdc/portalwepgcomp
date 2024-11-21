@@ -17,18 +17,18 @@ export class UserLevelGuard implements CanActivate {
       context.getHandler(),
     );
     if (!requiredLevels) {
-      return true; // Permite acesso se nenhum nível for especificado
+      return true;
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user; // Usuário validado pelo JwtStrategy
+    const user = request.user;
 
     if (!user) {
-      throw new ForbiddenException('User not authenticated');
+      throw new ForbiddenException('Usuário não autenticado');
     }
 
     if (!requiredLevels.includes(user.level)) {
-      throw new ForbiddenException('Access denied: insufficient permissions');
+      throw new ForbiddenException('Acesso negado: permissões insuficientes');
     }
 
     return true;
