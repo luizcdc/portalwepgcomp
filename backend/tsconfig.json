@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    "target": "esnext",
+    "lib": ["esnext"],
+    "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
