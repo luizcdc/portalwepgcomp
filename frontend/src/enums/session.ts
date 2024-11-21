@@ -1,4 +1,4 @@
 export enum SessaoTipoEnum {
-    SessaoGeralDoEvento = "Sessão geral do evento",
-    SessaoApresentacoes = "Sessão de apresentacoes"
+    "Sessão geral do evento" = 1,
+    "Sessão de apresentações" = 2
 }

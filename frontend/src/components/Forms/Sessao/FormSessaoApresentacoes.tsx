@@ -1,8 +1,11 @@
 "use client";
 
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
+import Select from "react-select";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
@@ -14,9 +17,14 @@ import "./style.scss";
 
 const formSessaoApresentacoesSchema = z.object({
   apresentacoes: z
-    .string({
-      invalid_type_error: "Campo inválido!",
-    })
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string({
+          invalid_type_error: "Campo inválido!",
+        }),
+      })
+    )
     .optional(),
 
   sala: z.string({
@@ -35,9 +43,14 @@ const formSessaoApresentacoesSchema = z.object({
     .nullable(),
 
   avaliadores: z
-    .string({
-      invalid_type_error: "Campo inválido!",
-    })
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string({
+          invalid_type_error: "Campo inválido!",
+        }),
+      })
+    )
     .optional(),
 });
 
@@ -57,10 +70,7 @@ export default function FormSessaoApresentacoes() {
   } = useForm<FormSessaoApresentacoesSchema>({
     resolver: zodResolver(formSessaoApresentacoesSchema),
     defaultValues: {
-      apresentacoes: "",
-      sala: "",
       inicio: null,
-      avaliadores: "",
     },
   });
 
@@ -79,10 +89,10 @@ export default function FormSessaoApresentacoes() {
     }
 
     const body = {
-      apresentacoes,
+      apresentacoes: apresentacoes?.map((v) => v.value) || [],
       sala,
       inicio,
-      avaliadores,
+      avaliadores: avaliadores?.map((v) => v.value) || [],
     } as SessaoParams;
 
     if (sessao?.id) {
@@ -102,20 +112,21 @@ export default function FormSessaoApresentacoes() {
         <label className="form-label fw-bold form-title">
           {formApresentacoesFields.apresentacoes.label}
         </label>
-        <select
-          id="sa-apresentacoes-select"
-          className="form-select"
-          {...register("apresentacoes")}
-        >
-          <option hidden>
-            {formApresentacoesFields.apresentacoes.placeholder}
-          </option>
-          {formApresentacoesFields.apresentacoes.options?.map((op, i) => (
-            <option id={`apresentacoes-op${i}`} key={op} value={op}>
-              {op}
-            </option>
-          ))}
-        </select>
+        <Controller
+          name="apresentacoes"
+          control={control}
+          render={({ field }) => (
+            <Select
+              {...field}
+              isMulti
+              id="sa-apresentacoes-select"
+              isClearable
+              placeholder={formApresentacoesFields.apresentacoes.placeholder}
+              options={formApresentacoesFields.apresentacoes.options}
+            />
+          )}
+        />
+
         <p className="text-danger error-message">
           {errors.apresentacoes?.message}
         </p>
@@ -133,11 +144,12 @@ export default function FormSessaoApresentacoes() {
         >
           <option hidden>{formApresentacoesFields.sala.placeholder}</option>
           {formApresentacoesFields.sala.options?.map((op, i) => (
-            <option id={`sala-op${i}`} key={op} value={op}>
-              {op}
+            <option id={`sala-op${i}`} key={op.value} value={op.value}>
+              {op.label}
             </option>
           ))}
         </select>
+
         <p className="text-danger error-message">{errors.sala?.message}</p>
       </div>
 
@@ -181,20 +193,20 @@ export default function FormSessaoApresentacoes() {
         <label className="form-label fw-bold form-title">
           {formApresentacoesFields.avaliadores.label}
         </label>
-        <select
-          id="sa-avaliadores-select"
-          className="form-select"
-          {...register("avaliadores")}
-        >
-          <option hidden>
-            {formApresentacoesFields.avaliadores.placeholder}
-          </option>
-          {formApresentacoesFields.avaliadores.options?.map((op, i) => (
-            <option id={`avaliadores-op${i}`} key={op} value={op}>
-              {op}
-            </option>
-          ))}
-        </select>
+        <Controller
+          name="avaliadores"
+          control={control}
+          render={({ field }) => (
+            <Select
+              {...field}
+              isMulti
+              id="sa-avaliadores-select"
+              isClearable
+              placeholder={formApresentacoesFields.avaliadores.placeholder}
+              options={formApresentacoesFields.avaliadores.options}
+            />
+          )}
+        />
         <p className="text-danger error-message">
           {errors.avaliadores?.message}
         </p>

@@ -13,7 +13,7 @@ export default function ModalSessao() {
   const { tipo } = ModalSessaoMock;
 
   const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(
-    SessaoTipoEnum.SessaoGeralDoEvento
+    SessaoTipoEnum["Sessão geral do evento"]
   );
 
   return (
@@ -45,11 +45,11 @@ export default function ModalSessao() {
           <p className="text-danger error-message"></p>
         </div>
 
-        {tipoSessao === SessaoTipoEnum.SessaoGeralDoEvento && (
+        {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] && (
           <FormSessaoGeral />
         )}
 
-        {tipoSessao === SessaoTipoEnum.SessaoApresentacoes && (
+        {tipoSessao === SessaoTipoEnum["Sessão de apresentações"] && (
           <FormSessaoApresentacoes />
         )}
       </div>

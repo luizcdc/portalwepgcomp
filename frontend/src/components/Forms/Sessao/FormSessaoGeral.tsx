@@ -145,8 +145,8 @@ export default function FormSessaoGeral() {
         >
           <option hidden>{formGeralFields.sala.placeholder}</option>
           {formGeralFields.sala.options?.map((op, i) => (
-            <option id={`sala-op${i}`} key={op} value={op}>
-              {op}
+            <option id={`sala-op${i}`} key={op.value} value={op.value}>
+              {op.label}
             </option>
           ))}
         </select>

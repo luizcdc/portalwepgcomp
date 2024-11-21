@@ -18,7 +18,10 @@ export const ModalSessaoMock = {
     sala: {
       label: "Sala do evento",
       placeholder: "Selecione a sala do evento",
-      options: ["Sala 1", "Sala 2"],
+      options: [
+        { label: "Sala 1", value: "Sala 1" },
+        { label: "Sala 2", value: "Sala 2" },
+      ],
     },
     inicio: {
       label: "Data e horário de início da sessão",
@@ -33,12 +36,18 @@ export const ModalSessaoMock = {
     apresentacoes: {
       label: "Apresentações",
       placeholder: "Selecione as apresentações",
-      options: ["Apresentação 1", "Apresentação 2"],
+      options: [
+        { label: "Apresentação 1", value: "Apresentação 1" },
+        { label: "Apresentação 2", value: "Apresentação 2" },
+      ],
     },
     sala: {
       label: "Sala do evento",
       placeholder: "Selecione a sala do evento",
-      options: ["Sala 1", "Sala 2"],
+      options: [
+        { label: "Sala 1", value: "Sala 1" },
+        { label: "Sala 2", value: "Sala 2" },
+      ],
     },
     inicio: {
       label: "Data e horário de início da sessão",
@@ -47,7 +56,10 @@ export const ModalSessaoMock = {
     avaliadores: {
       label: "Avaliadores",
       placeholder: "Selecione os avaliadores",
-      options: ["Avaliador 1", "Avaliador 2"],
+      options: [
+        { label: "Avaliador 1", value: "Avaliador 1" },
+        { label: "Avaliador 2", value: "Avaliador 2" },
+      ],
     },
   },
 };
