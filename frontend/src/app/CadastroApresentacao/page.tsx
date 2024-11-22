@@ -1,13 +1,13 @@
 "use client";
 
 import ModalCadastroApresentacao from "@/components/ModalCadastroApresentacao/ModalCadastroApresentacao";
-import { FormApresentacao } from "@/components/Forms/CadastroApresentacao/FormCadastroApresentacao";
+import { FormCadastroApresentacao } from "@/components/Forms/CadastroApresentacao/FormCadastroApresentacao";
 import "./style.scss";
 import { useUsers } from "@/hooks/useUsers";
 import LoadingPage from "@/components/LoadingPage";
 
 
-export default function Cadastro() {
+export default function CadastroApresentacao() {
   const { loadingCreateUser } = useUsers();
 
   return (
@@ -27,7 +27,7 @@ export default function Cadastro() {
             <br />
           </div>
           <div className="container d-flex justify-content-center mb-5">
-            <FormApresentacao />
+            <FormCadastroApresentacao />
           </div>
         </>
       )}

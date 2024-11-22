@@ -22,7 +22,7 @@ const formCadastroSchema = z.object({
 
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
-export function FormApresentacao() {
+export function FormCadastroApresentacao() {
   const [data, setdata] = useState<Date | null>(null);
 
   const {
