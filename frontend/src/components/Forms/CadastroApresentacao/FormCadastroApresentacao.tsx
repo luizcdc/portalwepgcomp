@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import "./style.scss";
 
 const formCadastroSchema = z.object({
@@ -23,9 +22,7 @@ const formCadastroSchema = z.object({
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
 export function FormCadastroApresentacao() {
-  const [data, setdata] = useState<Date | null>(null);
-
-  const {
+   const {
     register,
     handleSubmit,
     formState: { errors },
