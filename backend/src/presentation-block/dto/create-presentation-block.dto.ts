@@ -65,4 +65,18 @@ export class CreatePresentationBlockDto {
     message: 'A sessão não pode durar mais que 12 horas',
   })
   duration: number;
+
+  @IsOptional()
+  @IsUUID('4', {
+    each: true,
+    message: 'O ID de um dos avaliadores informados é inválido.',
+  })
+  panelists?: string[];
+
+  @IsOptional()
+  @IsUUID('4', {
+    each: true,
+    message: 'O ID de uma das apresentações informadas é inválido.',
+  })
+  presentations?: string[];
 }
