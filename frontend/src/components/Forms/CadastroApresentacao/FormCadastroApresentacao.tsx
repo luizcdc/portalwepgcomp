@@ -39,7 +39,7 @@ export function FormApresentacao() {
   };
 
   return (
-    <form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
+    <form className="row g-3 cadastroApresentacao" onSubmit={handleSubmit(onSubmit)}>
       <div className="col-12 mb-1">
         <label className="form-label fw-bold form-title">
           Tema da Pesquisa<span className="text-danger ms-1">*</span>

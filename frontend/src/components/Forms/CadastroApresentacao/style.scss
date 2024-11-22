@@ -1,32 +1,35 @@
-.form-title {
-    font-size: 1.25rem;
-}
+.cadastroApresentacao{
+        
+    .form-title {
+        font-size: 1.25rem;
+    }
 
-.input-title {
-    font-size: 0.9rem;
-}
+    .input-title {
+        font-size: 0.9rem;
+    }
 
-input::placeholder {
-    color: #ADB5BD !important;
-}
+    input::placeholder {
+        color: #ADB5BD !important;
+    }
 
-.paragraph-title,
-.list-title,
-.error-message {
-    font-size: 0.8rem;
+    .paragraph-title,
+    .list-title,
+    .error-message {
+        font-size: 0.8rem;
 
-}
+    }
 
-.paragraph-title {
-    color: #555555;
-}
+    .paragraph-title {
+        color: #555555;
+    }
 
 
-.submit-button {
-    background-color: #FFA90F;
-    margin-top: 50px;
-
-    &:hover {
+    .submit-button {
         background-color: #FFA90F;
+        margin-top: 50px;
+
+        &:hover {
+            background-color: #FFA90F;
+        }
     }
 }
