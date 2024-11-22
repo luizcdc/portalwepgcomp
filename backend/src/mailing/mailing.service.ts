@@ -6,7 +6,7 @@ import {
   DefaultEmailDto,
   DefaultEmailResponseDto,
 } from './mailing.dto';
-import { QueueService } from 'src/queue/queue.service';
+import { QueueService } from '../queue/queue.service';
 import { createTransport, Transporter } from 'nodemailer';
 
 @Injectable()

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MailingService } from './mailing.service';
 import { MailingController } from './mailing.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { queueConstants } from 'src/queue/constants';
+import { queueConstants } from '../queue/constants';
 
 @Module({
   imports: [
