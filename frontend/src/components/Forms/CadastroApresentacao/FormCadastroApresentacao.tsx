@@ -4,25 +4,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import "./style.scss";
 
 const formCadastroSchema = z.object({
-  titulo: z.string({invalid_type_error:"Campo Inválido"}).min(1, "O título/tema é obrigatório."),
-  abstract: z.string({invalid_type_error:"Campo Inválido"}).min(1, "O abstract é obrigatório"),
-  orientador: z.string({invalid_type_error:"Campo Inválido"}).min(1,"O nome do orientador é obrigatório."),
+  titulo: z.string({ invalid_type_error: "Campo Inválido" }).min(1, "O título/tema é obrigatório."),
+  abstract: z.string({ invalid_type_error: "Campo Inválido" }).min(1, "O abstract é obrigatório"),
+  orientador: z.string({ invalid_type_error: "Campo Inválido" }).min(1, "O nome do orientador é obrigatório."),
   coorientador: z.string().optional(),
   data: z.date().optional(),
   telefone: z
     .string()
     .regex(/^\d{10,11}$/, "O telefone deve conter 10 ou 11 dígitos."),
   linkedin: z
-    .string({required_error:"O link do LinkedIn é obrigatório."})
+    .string({ required_error: "O link do LinkedIn é obrigatório." })
     .url("Insira um link válido para o LinkedIn."),
   slide: z
-    .instanceof(File, {message: "O slide (PDF) é obrigatório."}),
+    .custom<File>((value) => value instanceof FileList && value.length > 0, {
+      message: "Arquivo obrigatório!",
+    })
+    .transform((value) => (value instanceof FileList ? value[0] : null))
+    .refine((file) => file !== null, { message: "Arquivo obrigatório!" }),
 });
 
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
 export function FormCadastroApresentacao() {
-   const {
+  const {
     register,
     handleSubmit,
     formState: { errors },
