@@ -1,11 +1,10 @@
 "use client";
 
-import ModalCadastroApresentacao from "@/components/ModalCadastroApresentacao/ModalCadastroApresentacao";
 import { FormCadastroApresentacao } from "@/components/Forms/CadastroApresentacao/FormCadastroApresentacao";
 import "./style.scss";
 import { useUsers } from "@/hooks/useUsers";
 import LoadingPage from "@/components/LoadingPage";
-
+import ModalCadastroApresentacao from "@/components/Modais/ModalCadastroApresentacao/ModalCadastroApresentacao";
 
 export default function CadastroApresentacao() {
   const { loadingCreateUser } = useUsers();

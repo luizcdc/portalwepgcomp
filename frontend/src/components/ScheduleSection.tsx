@@ -3,7 +3,7 @@ import ScheduleCard from "./ScheduleCard";
 import { useRef, useState } from "react";
 import Calendar from "./UI/calendar";
 import Modal from "./UI/Modal";
-import PresentationModal from "./PresentationModal";
+import PresentationModal from "./Modais/PresentationModal";
 import { MockupPresentention, MockupSchedule } from "./../mocks/Schedule";
 
 interface presentationData {
@@ -35,7 +35,7 @@ export default function ScheduleSection() {
 
   return (
     <div
-      id='Programacao'
+      id="Programacao"
       style={{
         width: "80vw",
         margin: "0 auto",
