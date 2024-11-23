@@ -71,8 +71,8 @@ export class PresentationBlockService {
 
       if (
         (createPresentationBlockDto.startTime >= block.startTime &&
-          createPresentationBlockDto.startTime <= blockEndTimeDate) ||
-        (endTimeDate >= block.startTime && endTimeDate <= blockEndTimeDate)
+          createPresentationBlockDto.startTime < blockEndTimeDate) ||
+        (endTimeDate > block.startTime && endTimeDate <= blockEndTimeDate)
       ) {
         throw new AppException(
           'A sessão informada se sobrepõe a outra sessão já existente',
