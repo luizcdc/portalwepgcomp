@@ -1,32 +1,15 @@
+import { premiacoesAvaliadoresMock, premiacoesBancaMock, premiacoesPublicoMock } from '@/mocks/Premiacao';
 import PremiacaoCategoria from './PremiacaoCategoria';
 
 export default function Premiacoes({ categoria }: { categoria: "banca" | "avaliadores" | "publico" }) {
-    const premiacoesPublico: { titulo: string; subtitulo: string; }[] = [
-        // { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-        // { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-        // { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-    ];
-
-    const premiacoesBanca: { titulo: string; subtitulo: string; }[] = [
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-    ];
-
-    const premiacoesAvaliadores: { titulo: string; subtitulo: string; }[] = [
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-        { titulo: 'Nome da apresentação', subtitulo: 'Nome do(a) autor(a)' },
-    ];
-
     const getAwards = () => {
         switch (categoria) {
-            case "publico":
-                return premiacoesPublico;
             case "banca":
-                return premiacoesBanca;
+                return premiacoesBancaMock;
             case "avaliadores":
-                return premiacoesAvaliadores;
+                return premiacoesAvaliadoresMock;
+            case "publico":
+                return premiacoesPublicoMock;
             default:
                 return [];
         }
