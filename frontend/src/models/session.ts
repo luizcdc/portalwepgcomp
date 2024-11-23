@@ -8,7 +8,7 @@ interface SessaoParams {
     startTime: string;
     title?: string;
     speakerName?: string;
-    duration?: string;
+    duration?: number;
     apresentacoes?: string[];
     avaliadores?: string[];
 }

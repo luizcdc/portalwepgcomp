@@ -39,7 +39,7 @@ export default function ModalComponent({
               <div className="modal-header header-modal-component">
                 <button
                   type="button"
-                  className="btn-close"
+                  className="btn-close close-button"
                   data-bs-dismiss="modal"
                   aria-label="Close"
                 ></button>

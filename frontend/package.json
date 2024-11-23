@@ -17,6 +17,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "next": "14.2.15",
     "react": "^18",
     "react-datepicker": "^7.5.0",

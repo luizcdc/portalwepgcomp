@@ -14,6 +14,7 @@ import { z } from "zod";
 import { useSession } from "@/hooks/useSession";
 
 import "./style.scss";
+import { formatOptions } from "@/utils/formatOptions";
 
 const formSessaoApresentacoesSchema = z.object({
   apresentacoes: z
@@ -55,7 +56,8 @@ const formSessaoApresentacoesSchema = z.object({
 });
 
 export default function FormSessaoApresentacoes() {
-  const { formApresentacoesFields, confirmButton } = ModalSessaoMock;
+  const { formApresentacoesFields, confirmButton, eventEditionId } =
+    ModalSessaoMock;
   const { createSession, updateSession, sessao } = useSession();
 
   type FormSessaoApresentacoesSchema = z.infer<
@@ -74,6 +76,21 @@ export default function FormSessaoApresentacoes() {
     },
   });
 
+  const salasOptions = formatOptions(
+    formApresentacoesFields.sala.options,
+    "name"
+  );
+
+  const apresentacoesOptions = formatOptions(
+    formApresentacoesFields.apresentacoes.options,
+    "name"
+  );
+
+  const avaliadoresOptions = formatOptions(
+    formApresentacoesFields.avaliadores.options,
+    "name"
+  );
+
   const filterTimes = (time: Date) => {
     const hour = time.getHours();
     return hour < 12 && hour > 6;
@@ -90,14 +107,12 @@ export default function FormSessaoApresentacoes() {
 
     const body = {
       type: "Presentation",
-      eventEditionId: "145",
+      eventEditionId,
       apresentacoes: apresentacoes?.map((v) => v.value) || [],
       roomId: sala,
       startTime: inicio,
       avaliadores: avaliadores?.map((v) => v.value) || [],
     } as SessaoParams;
-
-    console.log(body);
 
     if (sessao?.id) {
       updateSession(sessao?.id, body);
@@ -126,7 +141,7 @@ export default function FormSessaoApresentacoes() {
               id="sa-apresentacoes-select"
               isClearable
               placeholder={formApresentacoesFields.apresentacoes.placeholder}
-              options={formApresentacoesFields.apresentacoes.options}
+              options={apresentacoesOptions}
             />
           )}
         />
@@ -147,7 +162,7 @@ export default function FormSessaoApresentacoes() {
           {...register("sala")}
         >
           <option hidden>{formApresentacoesFields.sala.placeholder}</option>
-          {formApresentacoesFields.sala.options?.map((op, i) => (
+          {salasOptions?.map((op, i) => (
             <option id={`sala-op${i}`} key={op.value} value={op.value}>
               {op.label}
             </option>
@@ -207,7 +222,7 @@ export default function FormSessaoApresentacoes() {
               id="sa-avaliadores-select"
               isClearable
               placeholder={formApresentacoesFields.avaliadores.placeholder}
-              options={formApresentacoesFields.avaliadores.options}
+              options={avaliadoresOptions}
             />
           )}
         />

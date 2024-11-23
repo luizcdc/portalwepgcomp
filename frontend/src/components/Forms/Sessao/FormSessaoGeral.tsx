@@ -3,6 +3,7 @@
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
+import dayjs from "dayjs";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
@@ -11,6 +12,8 @@ import { z } from "zod";
 import { useSession } from "@/hooks/useSession";
 
 import "./style.scss";
+import { getDurationInMinutes } from "@/utils/formatDate";
+import { formatOptions } from "@/utils/formatOptions";
 
 const formSessaoGeralSchema = z.object({
   titulo: z.string({
@@ -54,7 +57,7 @@ const formSessaoGeralSchema = z.object({
 });
 
 export default function FormSessaoGeral() {
-  const { formGeralFields, confirmButton } = ModalSessaoMock;
+  const { formGeralFields, confirmButton, eventEditionId } = ModalSessaoMock;
   const { createSession, updateSession, sessao } = useSession();
 
   type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
@@ -72,6 +75,8 @@ export default function FormSessaoGeral() {
     },
   });
 
+  const roomsOptions = formatOptions(formGeralFields.sala.options, "name");
+
   const filterTimes = (time: Date) => {
     const hour = time.getHours();
     return hour < 12 && hour > 6;
@@ -84,13 +89,16 @@ export default function FormSessaoGeral() {
       throw new Error("Campos obrigatórios em branco.");
     }
 
+    const duration = getDurationInMinutes(inicio, final);
+
     const body = {
       type: "General",
+      eventEditionId,
       title: titulo,
       speakerName: nome,
       roomId: sala,
       startTime: inicio,
-      duration: final,
+      duration,
     } as SessaoParams;
 
     if (sessao?.id) {
@@ -107,7 +115,7 @@ export default function FormSessaoGeral() {
       onSubmit={handleSubmit(handleFormSessaoGeral)}
     >
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold form-title ">
           {formGeralFields.titulo.label}
           <span className="text-danger ms-1 form-title">*</span>
         </label>
@@ -145,7 +153,7 @@ export default function FormSessaoGeral() {
           {...register("sala")}
         >
           <option hidden>{formGeralFields.sala.placeholder}</option>
-          {formGeralFields.sala.options?.map((op, i) => (
+          {roomsOptions?.map((op, i) => (
             <option id={`sala-op${i}`} key={op.value} value={op.value}>
               {op.label}
             </option>
