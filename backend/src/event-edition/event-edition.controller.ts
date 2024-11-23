@@ -7,12 +7,20 @@ import {
   Patch,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { EventEditionService } from './event-edition.service';
 import { CreateEventEditionDto } from './dto/create-event-edition.dto';
-import { UpdateEventEditionDto } from './dto/upddate-event-edition.dto';
+import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserLevelGuard } from '../auth/guards/user-level.guard';
+import { UserLevel } from '@prisma/client';
+import { UserLevels } from '../auth/decorators/user-level.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('event')
+@UseGuards(JwtAuthGuard, UserLevelGuard)
 export class EventEditionController {
   constructor(private readonly eventEditionService: EventEditionService) {}
 
@@ -22,6 +30,7 @@ export class EventEditionController {
   }
 
   @Get()
+  @UserLevels(UserLevel.Superadmin)
   async getAll() {
     return await this.eventEditionService.getAll();
   }
