@@ -6,6 +6,8 @@ import {
   IsUrl,
   MaxLength,
   IsISO8601,
+  Min,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateEventEditionDto {
@@ -17,10 +19,12 @@ export class CreateEventEditionDto {
   description: string;
 
   @IsString()
-  callForPapersText: string;
+  @IsOptional()
+  callForPapersText?: string;
 
   @IsString()
-  partnersText: string;
+  @IsOptional()
+  partnersText?: string;
 
   @IsString()
   @IsUrl()
@@ -45,8 +49,14 @@ export class CreateEventEditionDto {
   isEvaluationRestrictToLoggedUsers?: boolean;
 
   @IsInt()
+  @Min(1)
   presentationDuration: number;
 
   @IsInt()
+  @Min(1)
   presentationsPerPresentationBlock: number;
+
+  @IsUUID()
+  @IsOptional()
+  coordinatorId?: string;
 }

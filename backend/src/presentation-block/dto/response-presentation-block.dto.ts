@@ -1,4 +1,9 @@
-import { PresentationBlock, PresentationBlockType } from '@prisma/client';
+import {
+  Panelist,
+  Presentation,
+  PresentationBlock,
+  PresentationBlockType,
+} from '@prisma/client';
 
 export class ResponsePresentationBlockDto {
   id: string;
@@ -9,10 +14,17 @@ export class ResponsePresentationBlockDto {
   speakerName?: string;
   startTime: Date;
   duration: number;
+  presentations: string[];
+  panelists: string[];
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(presentationBlock: PresentationBlock) {
+  constructor(
+    presentationBlock: PresentationBlock & {
+      presentations?: Presentation[];
+      panelists?: Panelist[];
+    },
+  ) {
     this.id = presentationBlock.id;
     this.eventEditionId = presentationBlock.eventEditionId;
     this.roomId = presentationBlock.roomId;
@@ -21,6 +33,13 @@ export class ResponsePresentationBlockDto {
     this.speakerName = presentationBlock.speakerName;
     this.startTime = presentationBlock.startTime;
     this.duration = presentationBlock.duration;
+
+    this.presentations =
+      presentationBlock.presentations.map((presentation) => presentation.id) ||
+      [];
+    this.panelists =
+      presentationBlock.panelists.map((panelist) => panelist.id) || [];
+
     this.createdAt = presentationBlock.createdAt;
     this.updatedAt = presentationBlock.updatedAt;
   }
