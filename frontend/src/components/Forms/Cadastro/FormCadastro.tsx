@@ -156,9 +156,9 @@ export function FormCadastro() {
   return (
     <form className="row" onSubmit={handleSubmit(handleFormCadastro)}>
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fs-5 fw-bold">
           Nome completo
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="text"
@@ -171,9 +171,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Perfil
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <div className="d-flex">
           <div className="form-check me-3">
@@ -226,10 +226,10 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Matrícula
           {perfil !== "ouvinte" && (
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className="text-danger ms-1 fs-5">*</span>
           )}
         </label>
         <input
@@ -243,9 +243,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           E-mail UFBA
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="email"
@@ -258,9 +258,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Senha
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="password"
@@ -342,9 +342,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-4">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Confirmação de senha
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="password"
