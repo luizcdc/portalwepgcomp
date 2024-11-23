@@ -18,30 +18,33 @@ export class CommitteeMemberController {
   ) {}
 
   @Post()
-  create(@Body() createCommitteeMemberDto: CreateCommitteeMemberDto) {
-    return this.committeeMemberService.create(createCommitteeMemberDto);
+  async create(@Body() createCommitteeMemberDto: CreateCommitteeMemberDto) {
+    return await this.committeeMemberService.create(createCommitteeMemberDto);
   }
 
   @Get()
-  findAll() {
-    return this.committeeMemberService.findAll();
+  async findAll() {
+    return await this.committeeMemberService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.committeeMemberService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.committeeMemberService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateCommitteeMemberDto: UpdateCommitteeMemberDto,
   ) {
-    return this.committeeMemberService.update(id, updateCommitteeMemberDto);
+    return await this.committeeMemberService.update(
+      id,
+      updateCommitteeMemberDto,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.committeeMemberService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.committeeMemberService.remove(id);
   }
 }

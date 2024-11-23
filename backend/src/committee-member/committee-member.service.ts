@@ -9,7 +9,7 @@ import { UpdateCommitteeMemberDto } from './dto/update-committee-member.dto';
 
 @Injectable()
 export class CommitteeMemberService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prismaClient: PrismaService) {}
 
   async create(createCommitteeMemberDto: CreateCommitteeMemberDto) {
     await this.validateEventEditionAndUser(
@@ -17,17 +17,17 @@ export class CommitteeMemberService {
       createCommitteeMemberDto.userId,
     );
 
-    return this.prisma.committeeMember.create({
+    return await this.prismaClient.committeeMember.create({
       data: createCommitteeMemberDto,
     });
   }
 
   async findAll() {
-    return this.prisma.committeeMember.findMany();
+    return await this.prismaClient.committeeMember.findMany();
   }
 
   async findOne(id: string) {
-    const committeeMember = await this.prisma.committeeMember.findUnique({
+    const committeeMember = await this.prismaClient.committeeMember.findUnique({
       where: { id },
     });
 
@@ -41,7 +41,7 @@ export class CommitteeMemberService {
   async update(id: string, updateCommitteeMemberDto: UpdateCommitteeMemberDto) {
     await this.findOne(id);
 
-    return this.prisma.committeeMember.update({
+    return await this.prismaClient.committeeMember.update({
       where: { id },
       data: updateCommitteeMemberDto,
     });
@@ -50,7 +50,7 @@ export class CommitteeMemberService {
   async remove(id: string) {
     await this.findOne(id);
 
-    return this.prisma.committeeMember.delete({
+    return await this.prismaClient.committeeMember.delete({
       where: { id },
     });
   }
@@ -59,7 +59,7 @@ export class CommitteeMemberService {
     eventEditionId: string,
     userId: string,
   ) {
-    const eventEdition = await this.prisma.eventEdition.findUnique({
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
       where: { id: eventEditionId },
     });
 
@@ -69,7 +69,7 @@ export class CommitteeMemberService {
       );
     }
 
-    const user = await this.prisma.userAccount.findUnique({
+    const user = await this.prismaClient.userAccount.findUnique({
       where: { id: userId },
     });
 
