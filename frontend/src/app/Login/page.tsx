@@ -1,8 +1,8 @@
 "use client";
 
 import { FormLogin } from "@/components/Forms/Login/FormLogin";
-import "./style.scss";
 import ModalAlterarSenha from "@/components/ModalAlterarSenha/ModalAlterarSenha";
+import "./style.scss";
 
 export default function Login() {
   return (
@@ -12,9 +12,9 @@ export default function Login() {
           WEPGCOMP
           <span className="ms-2">2025</span>
         </h1>
-        <h2 className="d-flex justify-content-center mb-4 fw-semibold fs-4">
+        <h4 className="d-flex justify-content-center mb-4 fw-semibold fs-4">
           Acesse sua conta
-        </h2>
+        </h4>
       </div>
 
       <div className="container d-flex flex-column">
