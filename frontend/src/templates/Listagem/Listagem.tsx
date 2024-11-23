@@ -31,12 +31,12 @@ export default function Listagem({
       <Banner title={title} />
       <div className="listagem-template-content">
         <div className="listagem-template-user-area">
-          <button    
+          <button
             type="button"
-            data-bs-toggle={idModal ? "modal" : undefined} 
+            data-bs-toggle={idModal ? "modal" : undefined}
             data-bs-target={idModal ? `#${idModal}` : undefined}
             onClick={idModal ? () => {} : onAddButtonClick}
-            >
+          >
             {labelAddButton}{" "}
             <Image src="/assets/images/add.svg" alt="" width={24} height={24} />
           </button>
@@ -69,7 +69,7 @@ export default function Listagem({
               title={card.name}
               subtitle={
                 title === "Sessões"
-                  ? `${formatDate(card.startAt, card.endAt)}`
+                  ? `${formatDate(card.startAt)}`
                   : card.subtitle
               }
               onClick={() => {}}
