@@ -33,7 +33,7 @@ export default function Premiacao() {
                     </div>
                 </div>
 
-                <div className="d-flex justify-content-center gap-4 mb-5">
+                <div className="d-flex justify-content-center gap-4">
                     <button
                         className={`btn d-flex justify-content-center align-items-center fw-semibold ${activeCategory === "banca" ? "click" : "unclick"}`}
                         onClick={() => handleChangeCategory("banca")}
