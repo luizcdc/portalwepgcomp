@@ -1,17 +1,8 @@
 import Image from 'next/image';
+
+import { PremiacaoListProps } from '@/models/premiacao';
+
 import './style.scss';
-
-interface PremiacaoItem {
-  titulo: string;
-  subtitulo: string;
-  nota: number;
-}
-
-interface PremiacaoListProps {
-  titulo: string;
-  descricao: string;
-  premiacoes: PremiacaoItem[];
-}
 
 export default function Premiacao({ titulo, descricao, premiacoes }: PremiacaoListProps) {
   return (
