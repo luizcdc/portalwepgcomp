@@ -1,3 +1,30 @@
 .premiacao-list {
     padding: 4rem;
+
+    .input-group {
+        .form-control {
+            max-height: 3rem;
+            max-width: 20rem;
+            border: 0.1rem solid #FFA90F !important;
+
+            &::placeholder {
+                color: #ADB5BD;
+            }
+
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+
+        .search-button {
+            max-width: 2.5rem;
+            max-height: 2.5rem;
+            background-color: #FFA90F;
+
+            &:hover {
+                background-color: #E68A00;
+            }
+        }
+    }
 }
