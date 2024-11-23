@@ -22,7 +22,7 @@ const formSessaoGeralSchema = z.object({
     .string({
       invalid_type_error: "Campo inválido!",
     })
-    .regex(/^[a-zA-ZÀ-ÿ]+$/, {
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
       message: "O campo deve conter apenas letras.",
     })
     .optional(),
@@ -85,6 +85,7 @@ export default function FormSessaoGeral() {
     }
 
     const body = {
+      type: "General",
       title: titulo,
       speakerName: nome,
       roomId: sala,

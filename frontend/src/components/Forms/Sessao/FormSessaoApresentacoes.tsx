@@ -90,12 +90,14 @@ export default function FormSessaoApresentacoes() {
 
     const body = {
       type: "Presentation",
-      eventEditionId: "",
+      eventEditionId: "145",
       apresentacoes: apresentacoes?.map((v) => v.value) || [],
       roomId: sala,
       startTime: inicio,
       avaliadores: avaliadores?.map((v) => v.value) || [],
     } as SessaoParams;
+
+    console.log(body);
 
     if (sessao?.id) {
       updateSession(sessao?.id, body);
