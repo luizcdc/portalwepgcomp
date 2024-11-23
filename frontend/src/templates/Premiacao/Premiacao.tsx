@@ -4,6 +4,7 @@ import './style.scss';
 interface PremiacaoItem {
   titulo: string;
   subtitulo: string;
+  nota: number;
 }
 
 interface PremiacaoListProps {
@@ -21,7 +22,7 @@ export default function Premiacao({ titulo, descricao, premiacoes }: PremiacaoLi
 
         {premiacoes.length === 0 ? (
           <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
-            <p className="empty-list mb-0">
+            <h4 className="empty-list mb-0">
               <Image
                 src="/assets/images/empty_box.svg"
                 alt="Lista vazia"
@@ -29,14 +30,17 @@ export default function Premiacao({ titulo, descricao, premiacoes }: PremiacaoLi
                 height={90}
               />
               Essa lista ainda está vazia
-            </p>
+            </h4>
           </div>
         ) : (
           premiacoes.map((item, index) => (
             <div key={index} className="d-flex align-items-center justify-content-between border border-3 border-solid custom-border p-3 mt-4 me-5">
               <div className="text-black">
-                <p className={`text-black fw-semibold ${!item.subtitulo ? 'mb-0' : ''}`}>{item.titulo}</p>
-                {item.subtitulo && <p className="text-black mb-0">{item.subtitulo}</p>}
+                <h6 className={`text-black fw-semibold ${!item.subtitulo ? 'mb-0' : ''}`}>{item.titulo}</h6>
+                {item.subtitulo && <h6 className="text-black mb-0">{item.subtitulo}</h6>}
+              </div>
+              <div className="text-end">
+                <h4 className="mb-0 text-black fw-bold">{item.nota}</h4>
               </div>
             </div>
           ))
