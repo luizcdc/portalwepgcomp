@@ -32,7 +32,6 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
         }
     };
 
-
     return (
         <div className="d-flex flex-column premiacao-list">
             <PremiacaoCategoria
