@@ -1,9 +1,9 @@
+import { useUsers } from "@/hooks/useUsers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
-import { useUsers } from "@/hooks/useUsers";
 
 const formAlterarSenhaSchema = z
   .object({
@@ -75,7 +75,7 @@ export function FormAlterarSenha({ params }) {
   };
 
   return (
-    <form className="row g-3" onSubmit={handleSubmit(handleFormCadastro)}>
+    <form className="row" onSubmit={handleSubmit(handleFormCadastro)}>
       <div className="col-12 mb-1">
         <label className="form-label fw-bold form-title">
           Senha
