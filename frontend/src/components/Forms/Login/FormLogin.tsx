@@ -73,7 +73,7 @@ export function FormLogin() {
         <div className="d-grid gap-2 col-3 mx-auto">
           <button
             type="submit"
-            className="btn text-white fw-semibold button-primary"
+            className="btn text-white fw-semibold fs-6 button-primary"
           >
             Entrar
           </button>
