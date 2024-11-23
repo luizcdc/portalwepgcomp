@@ -33,7 +33,7 @@ export class CreateUserDto {
   @Length(1, 255)
   password: string;
 
-  @ValidateIf(object => object.profile === Profile.DoctoralStudent)
+  @ValidateIf((object) => object.profile === Profile.DoctoralStudent)
   @IsString()
   @Length(1, 20)
   registrationNumber?: string;
@@ -53,4 +53,14 @@ export class CreateUserDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+}
+
+export class SetAdminDto {
+  @IsString()
+  @Length(36)
+  requestUserId: string;
+
+  @IsString()
+  @Length(36)
+  targetUserId: string;
 }

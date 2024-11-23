@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { CreateUserDto, Profile, UserLevel } from './dto/create-user.dto';
+import {
+  CreateUserDto,
+  Profile,
+  SetAdminDto,
+  UserLevel,
+} from './dto/create-user.dto';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -15,6 +20,8 @@ describe('UserController', () => {
           provide: UserService,
           useValue: {
             create: jest.fn(),
+            setAdmin: jest.fn(),
+            setSuperAdmin: jest.fn(),
           },
         },
       ],
@@ -60,6 +67,64 @@ describe('UserController', () => {
 
       expect(userService.create).toHaveBeenCalledWith(createUserDto);
       expect(result).toEqual(userResponse);
+    });
+  });
+
+  describe('set-admin', () => {
+    it('should set an user as admin and return the result', async () => {
+      const setAdminDto: SetAdminDto = {
+        requestUserId: 'c73c2c5a-b6ee-4d8e-a47a-5c159728f2ea',
+        targetUserId: '6047cb57-db11-4dc4-a305-33b86723dd09',
+      };
+
+      const setAdminResponse = {
+        id: '1',
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.Professor,
+        level: UserLevel.Admin,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      jest.spyOn(userService, 'setAdmin').mockResolvedValue(setAdminResponse);
+
+      const result = await controller.setAdmin(setAdminDto);
+
+      expect(userService.setAdmin).toHaveBeenCalledWith(setAdminDto);
+      expect(result).toEqual(setAdminResponse);
+    });
+  });
+
+  describe('set-super-admin', () => {
+    it('should set an user as super admin and return the result', async () => {
+      const setAdminDto: SetAdminDto = {
+        requestUserId: 'c73c2c5a-b6ee-4d8e-a47a-5c159728f2ea',
+        targetUserId: '6047cb57-db11-4dc4-a305-33b86723dd09',
+      };
+
+      const setSuperAdminResponse = {
+        id: '1',
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.Professor,
+        level: UserLevel.Admin,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      jest
+        .spyOn(userService, 'setSuperAdmin')
+        .mockResolvedValue(setSuperAdminResponse);
+
+      const result = await controller.setSuperAdmin(setAdminDto);
+
+      expect(userService.setSuperAdmin).toHaveBeenCalledWith(setAdminDto);
+      expect(result).toEqual(setSuperAdminResponse);
     });
   });
 });

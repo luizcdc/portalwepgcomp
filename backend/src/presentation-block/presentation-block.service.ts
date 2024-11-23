@@ -57,10 +57,61 @@ export class PresentationBlockService {
       );
     }
 
+    const { presentations, panelists, ...presentationBlockData } =
+      createPresentationBlockDto;
     const createdPresentationBlock =
       await this.prismaClient.presentationBlock.create({
-        data: createPresentationBlockDto,
+        data: presentationBlockData,
       });
+
+    // Assigning presentations to the block
+    if (presentations && presentations.length > 0) {
+      const presentationsExist = await this.prismaClient.presentation.findMany({
+        where: {
+          id: {
+            in: presentations,
+          },
+        },
+      });
+      if (presentationsExist.length !== presentations.length) {
+        throw new AppException(
+          'Uma das apresentações informadas não existe',
+          404,
+        );
+      }
+      await this.prismaClient.presentation.updateMany({
+        where: {
+          id: {
+            in: presentations,
+          },
+        },
+        data: {
+          presentationBlockId: createdPresentationBlock.id,
+        },
+      });
+    }
+
+    // Creating panelist records
+    if (panelists && panelists.length > 0) {
+      const panelistsExist = await this.prismaClient.userAccount.findMany({
+        where: {
+          id: {
+            in: panelists,
+          },
+        },
+      });
+
+      if (panelistsExist.length !== panelists.length) {
+        throw new AppException('Um dos avaliadores informados não existe', 404);
+      }
+
+      await this.prismaClient.panelist.createMany({
+        data: panelists.map((userId) => ({
+          userId,
+          presentationBlockId: createdPresentationBlock.id,
+        })),
+      });
+    }
 
     return createdPresentationBlock;
   }
@@ -68,6 +119,7 @@ export class PresentationBlockService {
   async findAll() {
     return await this.prismaClient.presentationBlock.findMany();
   }
+
   async findAllByEventEditionId(eventEditionId: string) {
     const presentationBlocks =
       await this.prismaClient.presentationBlock.findMany({
