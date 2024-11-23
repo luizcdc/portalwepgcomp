@@ -6,14 +6,42 @@
     padding: 4rem;
 }
 
-.user-area {
-    grid-template-columns: 1.5fr 3fr 4fr;
-}
-
 p {
-    font-size: 1.375rem;
+    font-size: 1.2rem;
 }
 
 li {
-    font-size: 1.25rem;
+    font-size: 1rem;
+}
+
+.btn {
+    width: 15.625rem;
+    height: 2.813rem;
+    border-radius: 0.625rem;
+
+}
+
+.click {
+    background-color: #FFA90F;
+    color: white;
+    border: none;
+    box-shadow: 0 0.25rem 0.5rem #0000001a;
+}
+
+.click:hover {
+    background-color: #E68A00;
+    transform: translateY(-0.125rem);
+}
+
+.unclick {
+    background-color: white;
+    color: #FFA90F;
+    border: 0.125rem solid #FFA90F;
+}
+
+.unclick:hover {
+    background-color: #FAFAFA;
+    color: #FFA90F;
+    border: 0.125rem solid #FFA90F;
+    transform: translateY(-0.125rem);
 }
