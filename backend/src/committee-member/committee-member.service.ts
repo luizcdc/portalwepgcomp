@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommitteeMemberDto } from './dto/create-committee-member.dto';
+import { ResponseCommitteeMemberDto } from './dto/response-committee-member.dto';
 import { UpdateCommitteeMemberDto } from './dto/update-committee-member.dto';
 
 @Injectable()
@@ -17,13 +18,23 @@ export class CommitteeMemberService {
       createCommitteeMemberDto.userId,
     );
 
-    return await this.prismaClient.committeeMember.create({
+    const created = await this.prismaClient.committeeMember.create({
       data: createCommitteeMemberDto,
     });
+    if (created == null) {
+      throw new BadRequestException(
+        'Não foi possível criar o membro da comissão',
+      );
+    } else {
+      return new ResponseCommitteeMemberDto(created);
+    }
   }
 
   async findAll() {
-    return await this.prismaClient.committeeMember.findMany();
+    const found = await this.prismaClient.committeeMember.findMany();
+    return found.map(
+      (committeeMember) => new ResponseCommitteeMemberDto(committeeMember),
+    );
   }
 
   async findOne(id: string) {
@@ -35,24 +46,24 @@ export class CommitteeMemberService {
       throw new NotFoundException('Membro da comissão não encontrado');
     }
 
-    return committeeMember;
+    return new ResponseCommitteeMemberDto(committeeMember);
   }
 
   async update(id: string, updateCommitteeMemberDto: UpdateCommitteeMemberDto) {
     await this.findOne(id);
-
-    return await this.prismaClient.committeeMember.update({
+    const result = await this.prismaClient.committeeMember.update({
       where: { id },
       data: updateCommitteeMemberDto,
     });
+    return new ResponseCommitteeMemberDto(result);
   }
 
   async remove(id: string) {
     await this.findOne(id);
-
-    return await this.prismaClient.committeeMember.delete({
+    const result = await this.prismaClient.committeeMember.delete({
       where: { id },
     });
+    return new ResponseCommitteeMemberDto(result);
   }
 
   private async validateEventEditionAndUser(

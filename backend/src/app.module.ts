@@ -12,6 +12,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { PresentationModule } from './presentation/presentation.module';
 import { SubmissionModule } from './submission/submission.module';
 import { PresentationBlockModule } from './presentation-block/presentation-block.module';
+import { CommitteeMemberModule } from './committee-member/committee-member.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PresentationBlockModule } from './presentation-block/presentation-block
     PresentationModule,
     SubmissionModule,
     PresentationBlockModule,
+    CommitteeMemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],
