@@ -35,7 +35,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const listSessions = async () => {
     setLoadingSessoesList(true);
     sessionApi
-      .listSessions()
+      .listSessions("")
       .then((response) => {
         setSessoesList(response);
         console.log("listado com sucesso");

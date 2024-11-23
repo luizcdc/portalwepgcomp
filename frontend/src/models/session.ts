@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-type SessaoTipo = "Sessão geral do evento" | "Sessão de apresentacoes";
+type SessaoTipo = "General" | "Presentation";
 interface SessaoParams {
-    tipo: SessaoTipo;
-    sala: string;
-    inicio: string;
-    titulo?: string;
-    nome?: string;
-    final?: string;
+    type: SessaoTipo;
+    eventEditionId: string;
+    roomId: string;
+    startTime: string;
+    title?: string;
+    speakerName?: string;
+    duration?: string;
     apresentacoes?: string[];
     avaliadores?: string[];
 }

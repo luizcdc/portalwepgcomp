@@ -89,9 +89,11 @@ export default function FormSessaoApresentacoes() {
     }
 
     const body = {
+      type: "Presentation",
+      eventEditionId: "",
       apresentacoes: apresentacoes?.map((v) => v.value) || [],
-      sala,
-      inicio,
+      roomId: sala,
+      startTime: inicio,
       avaliadores: avaliadores?.map((v) => v.value) || [],
     } as SessaoParams;
 

@@ -85,11 +85,11 @@ export default function FormSessaoGeral() {
     }
 
     const body = {
-      titulo,
-      nome,
-      sala,
-      inicio,
-      final,
+      title: titulo,
+      speakerName: nome,
+      roomId: sala,
+      startTime: inicio,
+      duration: final,
     } as SessaoParams;
 
     if (sessao?.id) {
