@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EventEditionService } from './event-edition.service';
 import { BadRequestException } from '@nestjs/common';
 import { CreateEventEditionDto } from './dto/create-event-edition.dto';
-import { UpdateEventEditionDto } from './dto/upddate-event-edition.dto';
+import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 
 describe('EventEditionService', () => {
@@ -18,6 +18,12 @@ describe('EventEditionService', () => {
       update: jest.fn(),
       delete: jest.fn(),
       updateMany: jest.fn(),
+    },
+    userAccount: {
+      findUnique: jest.fn(),
+    },
+    committeeMember: {
+      create: jest.fn(),
     },
     $transaction: jest.fn(),
   };
@@ -73,6 +79,107 @@ describe('EventEditionService', () => {
       expect(mockPrismaService.eventEdition.create).toHaveBeenCalledWith({
         data: createDto,
       });
+    });
+    it('should create an event edition and a committee member if coordinatorId is provided', async () => {
+      const createDto = new CreateEventEditionDto();
+      Object.assign(createDto, {
+        name: 'Event with Coordinator',
+        description: 'Event description',
+        callForPapersText: 'Call for Papers',
+        partnersText: 'Partners',
+        url: 'https://example2.com',
+        location: 'Location 2',
+        startDate: new Date(),
+        endDate: new Date(),
+        submissionDeadline: new Date(),
+        presentationDuration: 45,
+        presentationsPerPresentationBlock: 3,
+        coordinatorId: 'coordinator123',
+      });
+
+      const createdEvent = {
+        id: '2',
+        ...createDto,
+        isActive: false,
+        isEvaluationRestrictToLoggedUsers: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const coordinator = { id: 'coordinator123', name: 'Coordinator Name' };
+
+      mockPrismaService.eventEdition.create.mockResolvedValue(createdEvent);
+      mockPrismaService.userAccount.findUnique.mockResolvedValue(coordinator);
+      mockPrismaService.committeeMember.create.mockResolvedValue({
+        id: 'committee123',
+        eventEditionId: '2',
+        userId: 'coordinator123',
+        level: 'Coordinator',
+        role: 'OrganizingCommittee',
+      });
+
+      const result = await service.create(createDto);
+
+      expect(result).toEqual(new EventEditionResponseDto(createdEvent));
+      expect(mockPrismaService.eventEdition.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          name: 'Event with Coordinator',
+        }),
+      });
+      expect(mockPrismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: 'coordinator123' },
+      });
+      expect(mockPrismaService.committeeMember.create).toHaveBeenCalledWith({
+        data: {
+          eventEditionId: '2',
+          userId: 'coordinator123',
+          level: 'Coordinator',
+          role: 'OrganizingCommittee',
+        },
+      });
+    });
+    it('should create an event edition without creating a committee member if coordinatorId is invalid', async () => {
+      const createDto = new CreateEventEditionDto();
+      Object.assign(createDto, {
+        name: 'Event without Valid Coordinator',
+        coordinatorId: 'invalid123',
+      });
+
+      const createdEvent = {
+        id: '3',
+        ...createDto,
+        isActive: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockPrismaService.eventEdition.create.mockResolvedValue(createdEvent);
+      mockPrismaService.userAccount.findUnique.mockResolvedValue(null);
+
+      const result = await service.create(createDto);
+
+      expect(result).toEqual(new EventEditionResponseDto(createdEvent));
+      expect(mockPrismaService.eventEdition.create).toHaveBeenCalled();
+      expect(mockPrismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: 'invalid123' },
+      });
+      expect(mockPrismaService.committeeMember.create).not.toHaveBeenCalled();
+    });
+
+    it('should handle Prisma errors gracefully', async () => {
+      const createDto = new CreateEventEditionDto();
+      Object.assign(createDto, {
+        name: 'Event With Error',
+        description: 'Event description',
+      });
+
+      mockPrismaService.eventEdition.create.mockRejectedValue(
+        new Error('Database Error'),
+      );
+
+      await expect(service.create(createDto)).rejects.toThrow('Database Error');
+
+      expect(mockPrismaService.eventEdition.create).toHaveBeenCalled();
     });
   });
 

@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './exceptions/filter';
 import { Transport } from '@nestjs/microservices';
 import { queueConstants } from './queue/constants';
+import metadata from './metadata';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -17,6 +18,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
+  await SwaggerModule.loadPluginMetadata(metadata);
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory, {
     customSiteTitle: "Api Docs",

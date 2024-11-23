@@ -4,6 +4,7 @@ import { PresentationBlockService } from './presentation-block.service';
 import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto';
 import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto';
 import { ResponsePresentationBlockDto } from './dto/response-presentation-block.dto';
+import { PresentationBlockType } from '@prisma/client';
 
 describe('PresentationBlockController', () => {
   let controller: PresentationBlockController;
@@ -55,13 +56,25 @@ describe('PresentationBlockController', () => {
   describe('findAllByEventEditionId', () => {
     it('should return an array of presentation blocks', async () => {
       const eventEditionId = '123';
-      const mockPresentations = [
-        { id: '1', title: 'Test 1' },
-        { id: '2', title: 'Test 2' },
+      const mockPresentationBlocks = [
+        {
+          id: '1',
+          eventEditionId: eventEditionId,
+          type: PresentationBlockType.Presentation,
+          presentations: [],
+          panelists: [],
+        },
+        {
+          id: '2',
+          eventEditionId: eventEditionId,
+          type: PresentationBlockType.Presentation,
+          presentations: [],
+          panelists: [],
+        },
       ];
 
       mockPresentationBlockService.findAllByEventEditionId.mockResolvedValue(
-        mockPresentations,
+        mockPresentationBlocks,
       );
 
       const result = await controller.findAllByEventEditionId(eventEditionId);
@@ -78,9 +91,17 @@ describe('PresentationBlockController', () => {
   describe('findOne', () => {
     it('should return a presentation block when found', async () => {
       const id = '1';
-      const mockPresentation = { id, title: 'Test' };
+      const mockPresentationBlock = {
+        id,
+        eventEditionId: '123',
+        type: PresentationBlockType.Presentation,
+        presentations: [],
+        panelists: [],
+      };
 
-      mockPresentationBlockService.findOne.mockResolvedValue(mockPresentation);
+      mockPresentationBlockService.findOne.mockResolvedValue(
+        mockPresentationBlock,
+      );
 
       const result = await controller.findOne(id);
 
