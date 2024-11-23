@@ -1,4 +1,5 @@
 import { useUsers } from "@/hooks/useUsers";
+import { ProfileType } from "@/models/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -278,9 +279,8 @@ export function FormCadastro() {
           </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${
-                requisitos.minLength ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -290,9 +290,8 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.upperCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.upperCase ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.upperCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -302,9 +301,8 @@ export function FormCadastro() {
               1 letra maiúscula
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.lowerCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.lowerCase ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.lowerCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -314,9 +312,8 @@ export function FormCadastro() {
               1 letra minúscula
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.number ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
@@ -326,9 +323,8 @@ export function FormCadastro() {
               4 números
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.specialChar ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.specialChar ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.specialChar ? (
                 <i className="bi bi-shield-fill-check" />
