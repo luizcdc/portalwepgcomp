@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import Image from "next/image";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import "./protectedLayout.css";
 
@@ -7,7 +8,13 @@ export const ProtectedLayout = ({ children }: { children:  React.ReactNode}) => 
 
     
     if(!signed){
-        return <h1>Você não possui acesso!<p>Para acessar esta página, entre com sua conta em Login</p></h1>;
+        return <h1><Image
+        src={"/assets/images/emoji_frown.svg"}
+        alt="Emoji Triste"
+        width={60}
+        height={60}
+        />
+        Ops! Você não possui acesso!</h1>;
     }
 
     return children;

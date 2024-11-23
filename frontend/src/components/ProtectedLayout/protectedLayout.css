@@ -6,10 +6,6 @@ h1{
     font-size: 50px;
     color: #0066BA;
     margin-top: 90px;
-    margin-bottom: 210px;
-}
-p{
-    text-align: center;
-    font-size: 30px;
-    margin-top: 15px;
+    margin-bottom: 400px;
+    gap: 20px;
 }
