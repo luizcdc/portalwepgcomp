@@ -1,3 +1,10 @@
 footer {
     background-color: #AAAAAA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-text {
+    font-size: 1rem;
 }

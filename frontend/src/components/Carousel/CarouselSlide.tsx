@@ -1,8 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-
-import "./Carousel.css";
+import "./Carousel.scss";
 
 interface CarouselSlideProps {
   imageUrl: string;
@@ -18,7 +17,7 @@ export default function CarouselSlide({
   return (
     <div className={`carousel-item ${isActive ? "active" : ""} carousel-slide`}>
       <div
-        className="carousel-slide-content"
+        className='carousel-slide-content'
         style={{
           backgroundImage: `url(${imageUrl})`,
           backgroundSize: "cover",

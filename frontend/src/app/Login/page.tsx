@@ -1,7 +1,7 @@
 "use client";
 
 import { FormLogin } from "@/components/Forms/Login/FormLogin";
-import ModalAlterarSenha from "@/components/ModalAlterarSenha/ModalAlterarSenha";
+import ModalAlterarSenha from "@/components/Modals/ModalAlterarSenha/ModalAlterarSenha";
 import "./style.scss";
 
 export default function Login() {

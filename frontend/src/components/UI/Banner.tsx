@@ -11,7 +11,7 @@ export default function Banner({ title }: BannerProps) {
     <>
       <CarouselSlide imageUrl={"/assets/images/slide1.svg"} isActive>
         <h1
-        className="fw-bold text-center text-white"
+          className='fw-bold text-center text-white'
           style={{
             fontSize: "70px",
             lineHeight: "80px",
