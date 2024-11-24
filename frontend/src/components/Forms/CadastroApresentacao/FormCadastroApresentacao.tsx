@@ -1,6 +1,6 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import "./style.scss";
 
 const formCadastroSchema = z.object({
@@ -40,7 +40,7 @@ export function FormCadastroApresentacao() {
   };
 
   return (
-    <form className="row g-3 cadastroApresentacao" onSubmit={handleSubmit(onSubmit)}>
+    <form className="row cadastroApresentacao" onSubmit={handleSubmit(onSubmit)}>
       <div className="col-12 mb-1">
         <label className="form-label fw-bold form-title">
           Tema da Pesquisa<span className="text-danger ms-1">*</span>
