@@ -3,13 +3,15 @@ import {
   IsString,
   IsUUID,
   IsEnum,
-  IsISO8601,
   IsInt,
   Min,
   Max,
   MinLength,
+  IsNotEmpty,
+  isISO8601,
 } from 'class-validator';
-// import annotations from swagger
+
+import { Transform } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -45,13 +47,15 @@ export class CreatePresentationBlockDto {
   })
   speakerName?: string;
 
-  @IsISO8601(
-    {},
-    {
-      message:
-        'A data de início da sessão deve estar no formato ISO 8601 (yyyy-mm-ddThh:mm:ss).',
-    },
-  )
+  @IsNotEmpty()
+  @Transform(({ value }) => {
+    if (!isISO8601(value)) {
+      throw new Error(
+        'A data de início da sessão deve ser uma data válida no formato ISO8601.',
+      );
+    }
+    return new Date(value);
+  })
   startTime: Date;
 
   @IsInt({
