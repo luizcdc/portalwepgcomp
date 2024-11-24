@@ -17,13 +17,14 @@ export default function Sessoes() {
         }}
       >
         <Listagem
+          idModal='sessaoModal'
           title={title}
           labelAddButton={userArea.add}
-          navigate='#'
           labelListCardsButton={buttonList}
           searchPlaceholder={userArea.search}
           cardsList={cardsMock}
         />
+        <ModalSessao />
       </div>
     </ProtectedLayout>
   );

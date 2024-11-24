@@ -9,7 +9,6 @@ import Banner from "@/components/UI/Banner";
 interface ListagemProps {
   title: string;
   labelAddButton: string;
-  navigate: string;
   searchPlaceholder: string;
   cardsList: any[];
   labelListCardsButton?: string;
@@ -22,7 +21,6 @@ export default function Listagem({
   idModal,
   title,
   labelAddButton,
-  navigate,
   labelListCardsButton,
   searchPlaceholder,
   isMyPresentation,
@@ -40,7 +38,7 @@ export default function Listagem({
             data-bs-target={idModal ? `#${idModal}` : undefined}
             onClick={idModal ? () => {} : onAddButtonClick}
           >
-            {labelAddButton}{" "}
+            {labelAddButton}
             <Image src='/assets/images/add.svg' alt='' width={24} height={24} />
           </button>
           <div
