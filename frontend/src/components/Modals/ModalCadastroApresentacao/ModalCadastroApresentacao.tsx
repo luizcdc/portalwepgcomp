@@ -14,7 +14,7 @@ export default function ModalCadastroApresentacao() {
       colorButtonConfirm="#0065A3"
     >
       <div className="modal-cadastro-apresentacao">
-        <h1 className="d-flex justify-content-center mt-5 fw-normal title-cadastro-apresentacao">
+        <h1 className="title-cadastro-apresentacao">
           ATENÇÃO
         </h1>
 
@@ -22,13 +22,9 @@ export default function ModalCadastroApresentacao() {
 
         <div className="content-cadastro-apresentacao">
           <p>
-            A Comissão Organizadora do WEPGComp informa que poderá, a qualquer
-            momento, alterar o dia e o horário das apresentações, visando
-            otimizar a organização da programação do evento. Nos dias de
-            realização do evento, caso haja necessidade, as apresentações também
-            poderão ser antecipadas. Nesses casos, o apresentador será
-            previamente comunicado via telefone para garantir sua ciência e
-            adequada preparação para a nova programação.
+          Ao clicar em "Enviar", você declara estar ciente de que a Comissão Organizadora do WEPGCOMP poderá, a qualquer momento, alterar o dia e o horário das apresentações, visando otimizar a organização da programação do evento. 
+          Nos dias de realização do evento, caso haja necessidade, as apresentações também poderão ser antecipadas. 
+          Nesses casos, o apresentador será previamente comunicado via telefone para garantir sua ciência e adequada preparação para a nova programação.
           </p>
         </div>
       </div>
