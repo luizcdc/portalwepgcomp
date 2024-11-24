@@ -1,11 +1,11 @@
 export interface PresentationData {
-  id: string;
+  id?: string;
   titulo: string;
   doutorando: string;
-  emailDoutorando: string;
-  orientador: string;
-  date: string;
-  local: string;
-  time: string;
-  descricao: string;
+  emailDoutorando?: string;
+  orientador?: string;
+  date?: string;
+  local?: string;
+  time?: string;
+  descricao?: string;
 }
