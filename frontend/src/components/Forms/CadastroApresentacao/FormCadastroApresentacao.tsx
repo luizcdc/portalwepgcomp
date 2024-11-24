@@ -13,8 +13,9 @@ const formCadastroSchema = z.object({
     .string()
     .regex(/^\d{10,11}$/, "O telefone deve conter 10 ou 11 dígitos."),
   linkedin: z
-    .string({ required_error: "O link do LinkedIn é obrigatório." })
-    .url("Insira um link válido para o LinkedIn."),
+    .string()
+    .url("Insira um link válido para o LinkedIn.")
+    .optional(),
   slide: z
     .custom<File>((value) => value instanceof FileList && value.length > 0, {
       message: "Arquivo obrigatório!",
@@ -42,7 +43,7 @@ export function FormCadastroApresentacao() {
   return (
     <form className="row g-3 cadastroApresentacao" onSubmit={handleSubmit(onSubmit)}>
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label form-title">
           Tema da Pesquisa<span className="text-danger ms-1">*</span>
         </label>
         <input
@@ -55,7 +56,7 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label form-title">
           Abstract<span className="text-danger ms-1">*</span>
         </label>
         <textarea
@@ -67,7 +68,7 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label form-title">
           Nome do Orientador<span className="text-danger ms-1">*</span>
         </label>
         <input
@@ -80,7 +81,7 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label form-title">
           Nome do Coorientador
         </label>
         <input
@@ -92,7 +93,7 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label form-title">
           Sugestão de Data
         </label>
         <input
@@ -104,7 +105,7 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label form-title">
           Slide da Apresentação (PDF)<span className="text-danger ms-1">*</span>
         </label>
         <input
@@ -117,7 +118,7 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label form-title">
           Telefone do Apresentador<span className="text-danger ms-1">*</span>
         </label>
         <input
@@ -130,8 +131,8 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
-          LinkedIn<span className="text-danger ms-1">*</span>
+        <label className="form-label form-title">
+          LinkedIn
         </label>
         <input
           type="url"
@@ -150,9 +151,9 @@ export function FormCadastroApresentacao() {
           data-bs-target="#apresentacaoModal"
           type="submit"
           data-bs-toggle="modal"
-          className="btn text-white fs-5 fw-bold submit-button"
+          className="btn text-white fs-5 submit-button"
         >
-          Cadastrar Apresentação
+          Cadastrar
         </button>
       </div>
     </form>
