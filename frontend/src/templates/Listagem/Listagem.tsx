@@ -3,8 +3,6 @@
 import CardListagem from "@/components/CardListagem/CardListagem";
 import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-
 import "./style.scss";
 import Banner from "@/components/UI/Banner";
 
@@ -13,8 +11,9 @@ interface ListagemProps {
   labelAddButton: string;
   navigate: string;
   searchPlaceholder: string;
-  labelListCardsButton: string;
   cardsList: any[];
+  labelListCardsButton?: string;
+  isMyPresentation?: boolean;
   idModal?: string;
   onAddButtonClick?: () => void;
 }
@@ -26,14 +25,10 @@ export default function Listagem({
   navigate,
   labelListCardsButton,
   searchPlaceholder,
+  isMyPresentation,
   cardsList,
   onAddButtonClick,
 }: Readonly<ListagemProps>) {
-  const router = useRouter();
-  const handleNavigation = () => {
-    router.push(navigate);
-  };
-
   return (
     <div className='listagem-template'>
       <Banner title={title} />
@@ -48,7 +43,10 @@ export default function Listagem({
             {labelAddButton}{" "}
             <Image src='/assets/images/add.svg' alt='' width={24} height={24} />
           </button>
-          <div className='input-group listagem-template-content-input'>
+          <div
+            className='input-group listagem-template-content-input'
+            style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+          >
             <input
               placeholder={searchPlaceholder}
               type='text'
@@ -84,7 +82,10 @@ export default function Listagem({
             />
           ))}
         </div>
-        <button className='listagem-template-mais-cards text-white'>
+        <button
+          className='listagem-template-mais-cards'
+          style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+        >
           {labelListCardsButton}
 
           <Image
