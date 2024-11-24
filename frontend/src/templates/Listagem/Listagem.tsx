@@ -11,8 +11,9 @@ interface ListagemProps {
   title: string;
   labelAddButton: string;
   searchPlaceholder: string;
-  labelListCardsButton: string;
   cardsList: any[];
+  labelListCardsButton?: string;
+  isMyPresentation?: boolean;
   idModal?: string;
   onAddButtonClick?: () => void;
 }
@@ -23,6 +24,7 @@ export default function Listagem({
   labelAddButton,
   labelListCardsButton,
   searchPlaceholder,
+  isMyPresentation,
   cardsList,
   onAddButtonClick,
 }: Readonly<ListagemProps>) {
@@ -40,7 +42,10 @@ export default function Listagem({
             {labelAddButton}{" "}
             <Image src="/assets/images/add.svg" alt="" width={24} height={24} />
           </button>
-          <div className="input-group listagem-template-content-input">
+          <div
+            className="input-group listagem-template-content-input"
+            style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+          >
             <input
               placeholder={searchPlaceholder}
               type="text"
@@ -76,7 +81,10 @@ export default function Listagem({
             />
           ))}
         </div>
-        <button className="listagem-template-mais-cards">
+        <button
+          className="listagem-template-mais-cards"
+          style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+        >
           {labelListCardsButton}
 
           <Image
