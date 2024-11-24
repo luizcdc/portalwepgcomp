@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
 
 @Controller('users')
 export class UserController {
@@ -9,5 +9,15 @@ export class UserController {
   @Post('register')
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.userService.create(createUserDto);
+  }
+
+  @Post('set-admin')
+  async setAdmin(@Body() setAdminDto: SetAdminDto) {
+    return await this.userService.setAdmin(setAdminDto);
+  }
+
+  @Post('set-super-admin')
+  async setSuperAdmin(@Body() setAdminDto: SetAdminDto) {
+    return await this.userService.setSuperAdmin(setAdminDto);
   }
 }

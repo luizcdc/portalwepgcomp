@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useUsers } from "@/hooks/useUsers";
-import ModalComponent from "../UI/ModalComponent/ModalComponent";
 
 import "./style.scss";
+import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 
 export default function ModalAlterarSenha() {
   const [email, setEmail] = useState<string>("");
