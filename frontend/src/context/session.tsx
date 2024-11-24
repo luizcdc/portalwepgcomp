@@ -15,7 +15,7 @@ interface SessionProviderData {
   loadingSessao: boolean;
   sessoesList: Sessao[];
   sessao: Sessao | null;
-  listSessions: () => void;
+  listSessions: (eventEditionId: string) => Promise<Sessao[]>;
   getSessionById: (idSession: string) => void;
   createSession: (body: SessaoParams) => void;
   updateSession: (idSession: string, body: SessaoParams) => void;
@@ -32,10 +32,10 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const [sessoesList, setSessoesList] = useState<Sessao[]>([]);
   const [sessao, setSessao] = useState<Sessao | null>(null);
 
-  const listSessions = async () => {
+  const listSessions = async (eventEditionId: string) => {
     setLoadingSessoesList(true);
     sessionApi
-      .listSessions("")
+      .listSessions(eventEditionId)
       .then((response) => {
         setSessoesList(response);
         console.log("listado com sucesso");
@@ -115,7 +115,6 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .then((response) => {
         setSessao(response);
         console.log("atualizado com sucesso");
-        listSessions();
       })
       .catch((err) => {
         console.log(err);

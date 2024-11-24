@@ -13,8 +13,10 @@ interface ListagemProps {
   searchPlaceholder: string;
   labelListCardsButton: string;
   cardsList: any[];
+  searchValue?: string;
   idModal?: string;
   onAddButtonClick?: () => void;
+  onChangeSearchValue?: (value: string) => void;
 }
 
 export default function Listagem({
@@ -23,8 +25,10 @@ export default function Listagem({
   labelAddButton,
   labelListCardsButton,
   searchPlaceholder,
+  searchValue,
   cardsList,
   onAddButtonClick,
+  onChangeSearchValue,
 }: Readonly<ListagemProps>) {
   return (
     <div className="listagem-template">
@@ -40,27 +44,31 @@ export default function Listagem({
             {labelAddButton}{" "}
             <Image src="/assets/images/add.svg" alt="" width={24} height={24} />
           </button>
-          <div className="input-group listagem-template-content-input">
-            <input
-              placeholder={searchPlaceholder}
-              type="text"
-              className="form-control"
-              aria-label="Recipient's username"
-              aria-describedby="button-addon2"
-            />
-            <button
-              className="btn btn-outline-secondary"
-              type="button"
-              id="button-addon2"
-            >
-              <Image
-                src="/assets/images/search.svg"
-                alt=""
-                width={24}
-                height={24}
+          {onChangeSearchValue && (
+            <div className="input-group listagem-template-content-input">
+              <input
+                placeholder={searchPlaceholder}
+                type="text"
+                className="form-control"
+                aria-label="Recipient's username"
+                aria-describedby="button-addon2"
+                value={searchValue}
+                onChange={(e) => onChangeSearchValue(e.target.value)}
               />
-            </button>
-          </div>
+              <button
+                className="btn btn-outline-secondary"
+                type="button"
+                id="button-addon2"
+              >
+                <Image
+                  src="/assets/images/search.svg"
+                  alt=""
+                  width={24}
+                  height={24}
+                />
+              </button>
+            </div>
+          )}
         </div>
         <div className="listagem-template-cards">
           {cardsList?.map((card) => (

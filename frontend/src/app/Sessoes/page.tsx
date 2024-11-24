@@ -1,12 +1,29 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import ModalSessao from "@/components/Modais/ModalSessao/ModalSessao";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
+import { useSession } from "@/hooks/useSession";
 import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";
 
 export default function Sessoes() {
-  const { title, userArea, cardsMock, buttonList } = SessoesMock;
+  const { title, userArea, buttonList, eventEditionId } = SessoesMock;
+  const { listSessions, sessoesList } = useSession();
+
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [sessionsListValues, setSessionsListValues] =
+    useState<Sessao[]>(sessoesList);
+
+  useEffect(() => {
+    listSessions(eventEditionId);
+  }, []);
+
+  useEffect(() => {
+    const newSessionsList =
+      sessoesList?.filter((v) => v.title?.includes(searchValue.trim())) ?? [];
+    setSessionsListValues(newSessionsList);
+  }, [searchValue]);
 
   return (
     <ProtectedLayout>
@@ -22,7 +39,9 @@ export default function Sessoes() {
           labelAddButton={userArea.add}
           labelListCardsButton={buttonList}
           searchPlaceholder={userArea.search}
-          cardsList={cardsMock}
+          searchValue={searchValue}
+          onChangeSearchValue={(value) => setSearchValue(value)}
+          cardsList={sessionsListValues}
         />
         <ModalSessao />
       </div>
