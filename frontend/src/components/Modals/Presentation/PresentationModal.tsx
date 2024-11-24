@@ -7,7 +7,7 @@ import { useState } from "react";
 import { PresentationData } from "@/models/presentation";
 import avaliar from "@/public/assets/images/avaliar.svg";
 import Linkedin from "@/public/assets/images/logo_linkedin.svg";
-import Star from "./UI/Star";
+import Star from "../../UI/Star";
 
 export default function PresentationModal({
   props,
@@ -21,24 +21,17 @@ export default function PresentationModal({
   }
 
   return (
-    <div
+    <div className="d-flex align-items-start flex-column text-black"
       style={{
         padding: "0 25px 25px 25px",
-        display: "flex",
-        flexDirection: "column",
         gap: "10px",
-        alignItems: "flex-start",
-        color: "black",
       }}
     >
-      <div
+      <div className="d-flex align-items-center w-100"
         style={{
-          display: "flex",
-          alignItems: "center",
           gap: "15px",
           borderBottom: "1px solid #000000",
           paddingBottom: "15px",
-          width: "100%",
         }}
       >
         <Image
@@ -48,39 +41,24 @@ export default function PresentationModal({
           height={110}
           priority={true}
         />
-        <h3
+        <h3 className="fw-semibold text-start"
           style={{
             fontSize: "18px",
-            fontWeight: "600",
             lineHeight: "27px",
-            textAlign: "left",
           }}
         >
           {props.titulo}
         </h3>
       </div>
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        width: "100%",
-      }}
-      >
-        <div
+      <div className="d-flex justify-content-between w-100">
+        <div className="d-flex flex-column align-items-start fw-normal text-start"
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
             fontSize: "15px",
-            fontWeight: "400",
-            textAlign: "left",
             gap: "6px",
           }}
         >
-          <div
+          <div className="d-flex flex-row align-items-start"
             style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "flex-start",
               gap: "10px",
             }}
           >
@@ -90,7 +68,7 @@ export default function PresentationModal({
             <div>{props.emailDoutorando}</div>
             <div><Link href=""><Image src={Linkedin} width={22} height={22} alt="Linkedin" /></Link></div>
           </div>
-          <h4 style={{ fontSize: "15px", fontWeight: "400", textAlign: "left" }}>
+          <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
             Orientador(a): {props.orientador}
           </h4>
         </div>
@@ -98,14 +76,12 @@ export default function PresentationModal({
           <Link href={`/Avaliacao/${props.id}`}><Image src={avaliar} width={40} height={25} alt="Avaliar" /></Link>
         </div>
       </div>
-      <div style={{ display: "flex", gap: "10px" }}>
-        <em
+      <div className="d-flex" style={{ gap: "10px" }}>
+        <em className="m-0 text-white"
           style={{
             backgroundColor: "#F17F0C",
-            color: "white",
             borderRadius: "5px",
             padding: "4px 10px",
-            margin: "0px",
             fontSize: "15px",
           }}
         >
@@ -123,15 +99,13 @@ export default function PresentationModal({
         <strong>Abstract: </strong>
         {props.descricao}
       </div>
-      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        <button
+      <div className="d-flex justify-content-center w-100">
+        <button className="fw-semibold bg-white"
           style={{
             border: "2px solid #FFA90F",
             borderRadius: "20px",
             color: "#FFA90F",
             padding: "3px 20px",
-            backgroundColor: "white",
-            fontWeight: "semibold",
             width: "302px",
           }}
         >
