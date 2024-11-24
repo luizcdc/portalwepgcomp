@@ -2,6 +2,16 @@
 
     .header-modal-component{
         border: none;
+
+        .close-button{
+            width: 2rem;
+            height: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .close-buton::before {
+            transform: scale(1.5); 
+          }
     }
 
     .content-modal-component{
