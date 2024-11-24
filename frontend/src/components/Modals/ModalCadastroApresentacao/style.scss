@@ -2,15 +2,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-     
-    
-
+       
     .linha {
       width: 100%;
     }
     
     
-    .form-label-alterar-senha {
+    .form-label-cadastro-apresentacao{
       font-size: 1rem;
     }
     
@@ -22,5 +20,9 @@
 
     p {
       text-align: justify;
+    }
+
+    .title-cadastro-apresentacao {
+      font-weight: 700;
     }
 }
