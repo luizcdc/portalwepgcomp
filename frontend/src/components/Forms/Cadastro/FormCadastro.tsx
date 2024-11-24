@@ -1,4 +1,5 @@
 import { useUsers } from "@/hooks/useUsers";
+import { ProfileType } from "@/models/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -154,11 +155,11 @@ export function FormCadastro() {
   const perfil = watch("perfil");
 
   return (
-    <form className="row g-3" onSubmit={handleSubmit(handleFormCadastro)}>
+    <form className="row" onSubmit={handleSubmit(handleFormCadastro)}>
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fs-5 fw-bold">
           Nome completo
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="text"
@@ -171,9 +172,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Perfil
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <div className="d-flex">
           <div className="form-check me-3">
@@ -226,10 +227,10 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Matrícula
           {perfil !== "ouvinte" && (
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className="text-danger ms-1 fs-5">*</span>
           )}
         </label>
         <input
@@ -243,9 +244,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           E-mail UFBA
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="email"
@@ -258,9 +259,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Senha
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="password"
@@ -278,9 +279,8 @@ export function FormCadastro() {
           </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${
-                requisitos.minLength ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -290,9 +290,8 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.upperCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.upperCase ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.upperCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -302,9 +301,8 @@ export function FormCadastro() {
               1 letra maiúscula
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.lowerCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.lowerCase ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.lowerCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -314,9 +312,8 @@ export function FormCadastro() {
               1 letra minúscula
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.number ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
@@ -326,9 +323,8 @@ export function FormCadastro() {
               4 números
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.specialChar ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.specialChar ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.specialChar ? (
                 <i className="bi bi-shield-fill-check" />
@@ -342,9 +338,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-4">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Confirmação de senha
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="password"

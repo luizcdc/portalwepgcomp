@@ -1,7 +1,6 @@
 "use client";
 
-import ModalComponent from "../UI/ModalComponent/ModalComponent";
-
+import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import "./style.scss";
 
 export default function ModalCadastroApresentacao() {
