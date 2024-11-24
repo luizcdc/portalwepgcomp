@@ -1,7 +1,6 @@
 "use client";
 
-import ModalComponent from "../UI/ModalComponent/ModalComponent";
-
+import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import "./style.scss";
 
 export default function ModalCadastroApresentacao() {
@@ -23,10 +22,13 @@ export default function ModalCadastroApresentacao() {
 
         <div className="content-cadastro-apresentacao">
           <p>
-          A Comissão Organizadora do WEPGComp informa que poderá, a qualquer momento, 
-          alterar o dia e o horário das apresentações, visando otimizar a organização da programação do evento. 
-          Nos dias de realização do evento, caso haja necessidade, as apresentações também poderão ser antecipadas. 
-          Nesses casos, o apresentador será previamente comunicado via telefone para garantir sua ciência e adequada preparação para a nova programação.
+            A Comissão Organizadora do WEPGComp informa que poderá, a qualquer
+            momento, alterar o dia e o horário das apresentações, visando
+            otimizar a organização da programação do evento. Nos dias de
+            realização do evento, caso haja necessidade, as apresentações também
+            poderão ser antecipadas. Nesses casos, o apresentador será
+            previamente comunicado via telefone para garantir sua ciência e
+            adequada preparação para a nova programação.
           </p>
         </div>
       </div>

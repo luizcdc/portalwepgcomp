@@ -2,7 +2,7 @@
 
 import { FormLogin } from "@/components/Forms/Login/FormLogin";
 import "./style.scss";
-import ModalAlterarSenha from "@/components/ModalAlterarSenha/ModalAlterarSenha";
+import ModalAlterarSenha from "@/components/Modais/ModalAlterarSenha/ModalAlterarSenha";
 
 export default function Login() {
   return (
