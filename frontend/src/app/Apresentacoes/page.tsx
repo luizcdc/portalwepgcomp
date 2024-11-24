@@ -1,6 +1,6 @@
 "use client";
 
-import ModalCadastroApresentacao from "@/components/Modals/ModalCadastroApresentacao/ModalCadastroApresentacao";
+import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
 
@@ -15,13 +15,14 @@ export default function Apresentacoes() {
       }}
     >
       <Listagem
-        idModal='apresentacaoModal'
+        idModal='editarCadastroModal'
         title={title}
         labelAddButton={userArea.add}
         labelListCardsButton={buttonList}
         searchPlaceholder={userArea.search}
         cardsList={cardsMock}
       />
+      <ModalEditarCadastro />
     </div>
   );
 }

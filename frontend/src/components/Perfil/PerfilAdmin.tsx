@@ -31,7 +31,7 @@ export default function PerfilAdmin() {
             </Link>
           </li>
           <li>
-            <Link className='dropdown-item' href='#'>
+            <Link className='dropdown-item' href='/Premiacao'>
               Premiação
             </Link>
           </li>
