@@ -1,5 +1,6 @@
 "use client";
 
+import ModalSessao from "@/components/Modals/ModalSessao/ModalSessao";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";

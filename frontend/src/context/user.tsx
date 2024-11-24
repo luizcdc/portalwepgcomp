@@ -5,6 +5,7 @@
 import { userApi } from "@/services/user";
 import { createContext, ReactNode, useState } from "react";
 
+import { RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams, User } from "@/models/user";
 import { useRouter } from "next/navigation";
 
 interface UserProps {

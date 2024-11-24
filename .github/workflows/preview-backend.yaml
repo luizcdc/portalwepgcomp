@@ -1,0 +1,52 @@
+name: Vercel Preview Backend Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.BACKEND_DSV_VERCEL_PROJECT_ID }}
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - backend/**
+
+defaults:
+  run:
+    working-directory: backend
+    
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} 
+      - name: Clean modules
+        run: npm run clean
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} 
+      - name: Prepare environment variables
+        run: cp .env.development .env
+      - name: Execute migrations
+        env: 
+          POSTGRES_PASSWORD: ${{ secrets.BACKEND_DSV_POSTGRES_PASSWORD }}
+          DATABASE_URL: ${{ secrets.BACKEND_DSV_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.BACKEND_DSV_JWT_SECRET }}
+          MAIL_USER: ${{ secrets.BACKEND_DSV_MAIL_USER }}
+          MAIL_PASS: ${{ secrets.BACKEND_DSV_MAIL_PASS }}
+          QUEUE_URL: ${{ secrets.BACKEND_DSV_QUEUE_URL }}
+        run: npm run prisma:migrate
+      - name: Deploy Project Artifacts to Vercel
+        env: 
+          POSTGRES_PASSWORD: ${{ secrets.BACKEND_DSV_POSTGRES_PASSWORD }}
+          DATABASE_URL: ${{ secrets.BACKEND_DSV_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.BACKEND_DSV_JWT_SECRET }}
+          MAIL_USER: ${{ secrets.BACKEND_DSV_MAIL_USER }}
+          MAIL_PASS: ${{ secrets.BACKEND_DSV_MAIL_PASS }}
+          QUEUE_URL: ${{ secrets.BACKEND_DSV_QUEUE_URL }}
+        run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }} 

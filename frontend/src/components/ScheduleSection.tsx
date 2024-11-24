@@ -1,28 +1,19 @@
 "use client";
-import ScheduleCard from "./ScheduleCard";
 import { useRef, useState } from "react";
+
+import { MockupPresentention, MockupSchedule } from "@/mocks/Schedule";
+import { PresentationData } from "@/models/presentation";
+import PresentationModal from "./Modals/ModalApresentação/PresentationModal";
+import ScheduleCard from "./ScheduleCard";
 import Calendar from "./UI/calendar";
 import Modal from "./UI/Modal";
-import PresentationModal from "./PresentationModal";
-import { MockupPresentention, MockupSchedule } from "./../mocks/Schedule";
-
-interface presentationData {
-  titulo: string;
-  doutorando: string;
-  emailDoutorando: string;
-  orientador: string;
-  date: string;
-  local: string;
-  time: string;
-  descricao: string;
-}
 
 export default function ScheduleSection() {
   const [date, setDate] = useState<number>(0);
   //const [schedule, setSchedule] = useState<[]>()
   const openModal = useRef<HTMLButtonElement | null>(null);
   const [modalContent, setModalContent] =
-    useState<presentationData>(MockupPresentention);
+    useState<PresentationData>(MockupPresentention);
 
   function changeDate(date: number) {
     setDate(date);
@@ -44,34 +35,28 @@ export default function ScheduleSection() {
       }}
     >
       <div
+        className='d-flex flex-column w-100'
         style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
           gap: "15px",
         }}
       >
         <h1
+          className='fw-bold text-center'
           style={{
             fontSize: "50px",
-            fontWeight: "700",
             lineHeight: "50px",
-            textAlign: "center",
             color: "#054B75",
             marginBottom: "40px",
           }}
         >
           Programação
         </h1>
-        <div style={{ display: "flex", gap: "30px", justifyContent: "center" }}>
+        <div className='d-flex justify-content-center' style={{ gap: "30px" }}>
           <button
+            className='d-flex align-items-center fw-bold flex-start'
             style={{
               fontSize: "16px",
-              fontWeight: "700",
               lineHeight: "30px",
-              textAlign: "left",
-              display: "flex",
-              alignItems: "center",
               gap: "10px",
               backgroundColor: date == 0 ? "#FFA90F" : "white",
               color: date == 0 ? "white" : "#FFA90F",
@@ -85,13 +70,11 @@ export default function ScheduleSection() {
             12 de novembro
           </button>
           <button
+            className='d-flex text-start align-items-center'
             style={{
               fontSize: "16px",
               fontWeight: "700",
               lineHeight: "30px",
-              textAlign: "left",
-              display: "flex",
-              alignItems: "center",
               gap: "10px",
               backgroundColor: date == 1 ? "#FFA90F" : "white",
               color: date == 1 ? "white" : "#FFA90F",
@@ -105,13 +88,11 @@ export default function ScheduleSection() {
             13 de novembro
           </button>
           <button
+            className='d-flex align-items-center text-start'
             style={{
               fontSize: "16px",
               fontWeight: "700",
               lineHeight: "30px",
-              textAlign: "left",
-              display: "flex",
-              alignItems: "center",
               gap: "10px",
               backgroundColor: date == 2 ? "#FFA90F" : "white",
               color: date == 2 ? "white" : "#FFA90F",
@@ -126,14 +107,12 @@ export default function ScheduleSection() {
           </button>
         </div>
         <div
+          className='d-flex align-items-center w-100'
           style={{
-            display: "flex",
-            alignItems: "center",
             gap: "40px",
-            width: "100%",
           }}
         >
-          <p style={{ margin: "0", width: "44px" }}></p>
+          <p className='m-0' style={{ width: "44px" }}></p>
           <div
             style={{
               backgroundColor: "#0065A3",
@@ -144,46 +123,44 @@ export default function ScheduleSection() {
             }}
           >
             <p
+              className='fw-bold text-white m-0 text-center'
               style={{
-                color: "white",
                 fontSize: "13px",
-                fontWeight: "700",
                 lineHeight: "50px",
-                margin: "0",
-                textAlign: "center",
               }}
             >
               SALA A
             </p>
           </div>
-          <p style={{ margin: "0", width: "44px" }}></p>
+          <p className='m-0' style={{ width: "44px" }}></p>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className='d-flex flex-column' style={{ gap: "10px" }}>
           {MockupSchedule[date].map((item, index) => {
             return (
               <div
                 key={index + item.author}
+                className='d-flex align-items-center w-100'
                 style={{
-                  display: "flex",
-                  alignItems: "center",
                   gap: "40px",
-                  width: "100%",
                 }}
               >
-                <p style={{ margin: "0", width: "44px" }}>09:00</p>
+                <p className='m-0' style={{ width: "44px" }}>
+                  09:00
+                </p>
                 <ScheduleCard
                   type={item.type}
                   author={item.author}
                   title={item.title}
                   onClickEvent={() => openModalPresentation(item)}
                 />
-                <div style={{ margin: "0", width: "44px" }}></div>
+                <div className='m-0' style={{ width: "44px" }}></div>
               </div>
             );
           })}
         </div>
       </div>
+
       <Modal
         content={<PresentationModal props={modalContent} />}
         reference={openModal}

@@ -44,7 +44,6 @@ export class PresentationBlockService {
         400,
       );
     }
-    // duration is an int, in minutes. To add the minutes to the DateTime, we need to
 
     const endTime =
       createPresentationBlockDto.startTime.getTime() +
@@ -57,10 +56,88 @@ export class PresentationBlockService {
       );
     }
 
+    // For all presentationBlocks of the same event, none can overlap with the new one
+    const presentationBlocks =
+      await this.prismaClient.presentationBlock.findMany({
+        where: {
+          eventEditionId: createPresentationBlockDto.eventEditionId,
+        },
+      });
+
+    if (presentationBlocks != null) {
+      for (const block of presentationBlocks) {
+        const blockEndTime =
+          block.startTime.getTime() + block.duration * 1000 * 60;
+        const blockEndTimeDate = new Date(blockEndTime);
+
+        if (
+          (createPresentationBlockDto.startTime >= block.startTime &&
+            createPresentationBlockDto.startTime < blockEndTimeDate) ||
+          (endTimeDate > block.startTime && endTimeDate <= blockEndTimeDate)
+        ) {
+          throw new AppException(
+            'A sessão informada se sobrepõe a outra sessão já existente',
+            400,
+          );
+        }
+      }
+    }
+
+    const { presentations, panelists, ...presentationBlockData } =
+      createPresentationBlockDto;
     const createdPresentationBlock =
       await this.prismaClient.presentationBlock.create({
-        data: createPresentationBlockDto,
+        data: presentationBlockData,
       });
+
+    // Assigning presentations to the block
+    if (presentations && presentations.length > 0) {
+      const presentationsExist = await this.prismaClient.presentation.findMany({
+        where: {
+          id: {
+            in: presentations,
+          },
+        },
+      });
+      if (presentationsExist.length !== presentations.length) {
+        throw new AppException(
+          'Uma das apresentações informadas não existe',
+          404,
+        );
+      }
+      await this.prismaClient.presentation.updateMany({
+        where: {
+          id: {
+            in: presentations,
+          },
+        },
+        data: {
+          presentationBlockId: createdPresentationBlock.id,
+        },
+      });
+    }
+
+    // Creating panelist records
+    if (panelists && panelists.length > 0) {
+      const panelistsExist = await this.prismaClient.userAccount.findMany({
+        where: {
+          id: {
+            in: panelists,
+          },
+        },
+      });
+
+      if (panelistsExist.length !== panelists.length) {
+        throw new AppException('Um dos avaliadores informados não existe', 404);
+      }
+
+      await this.prismaClient.panelist.createMany({
+        data: panelists.map((userId) => ({
+          userId,
+          presentationBlockId: createdPresentationBlock.id,
+        })),
+      });
+    }
 
     return createdPresentationBlock;
   }
@@ -68,6 +145,7 @@ export class PresentationBlockService {
   async findAll() {
     return await this.prismaClient.presentationBlock.findMany();
   }
+
   async findAllByEventEditionId(eventEditionId: string) {
     const presentationBlocks =
       await this.prismaClient.presentationBlock.findMany({

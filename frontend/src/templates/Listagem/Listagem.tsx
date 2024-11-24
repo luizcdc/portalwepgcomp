@@ -15,15 +15,19 @@ interface ListagemProps {
   searchPlaceholder: string;
   labelListCardsButton: string;
   cardsList: any[];
+  idModal?: string;
+  onAddButtonClick?: () => void;
 }
 
 export default function Listagem({
+  idModal,
   title,
   labelAddButton,
   navigate,
   labelListCardsButton,
   searchPlaceholder,
   cardsList,
+  onAddButtonClick,
 }: Readonly<ListagemProps>) {
   const router = useRouter();
   const handleNavigation = () => {
@@ -35,8 +39,13 @@ export default function Listagem({
       <Banner title={title} />
       <div className='listagem-template-content'>
         <div className='listagem-template-user-area'>
-          <button onClick={handleNavigation}>
-            {labelAddButton}
+          <button
+            type='button'
+            data-bs-toggle={idModal ? "modal" : undefined}
+            data-bs-target={idModal ? `#${idModal}` : undefined}
+            onClick={idModal ? () => {} : onAddButtonClick}
+          >
+            {labelAddButton}{" "}
             <Image src='/assets/images/add.svg' alt='' width={24} height={24} />
           </button>
           <div className='input-group listagem-template-content-input'>
@@ -68,7 +77,7 @@ export default function Listagem({
               title={card.name}
               subtitle={
                 title === "Sessões"
-                  ? `${formatDate(card.startAt, card.endAt)}`
+                  ? `${formatDate(card.startAt)}`
                   : card.subtitle
               }
               onClick={() => {}}
