@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Rating from "@/components/Rating/Rating";
 import Banner from "@/components/UI/Banner";
 import { MockupDayOne, MockupDayThree, MockupDayTwo } from "@/mocks/Schedule";
-import { EvaluatePage } from "@/models/avaliacao";
+import { PresentationData } from "@/models/presentation";
 
 import "./style.scss";
 
@@ -23,7 +23,7 @@ const findPresentationById = (id: string) => {
 
 export default function AvaliacaoPage() {
     const pathname = usePathname();
-    const [presentation, setPresentation] = useState<EvaluatePage | null>(null);
+    const [presentation, setPresentation] = useState<PresentationData | null>(null);
 
     useEffect(() => {
         if (pathname) {
@@ -48,10 +48,8 @@ export default function AvaliacaoPage() {
     }
 
     return (
-        <div
+        <div className="d-flex flex-column"
             style={{
-                display: "flex",
-                flexDirection: "column",
                 gap: "10px",
             }}
         >
