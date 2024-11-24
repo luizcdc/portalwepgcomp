@@ -43,10 +43,6 @@ export default function AvaliacaoPage() {
         }
     }, [pathname]);
 
-    if (!presentation) {
-        return <div>Carregando...</div>;
-    }
-
     return (
         <div className="d-flex flex-column"
             style={{
@@ -66,8 +62,8 @@ export default function AvaliacaoPage() {
                     />
 
                     <div className="avalieIdentificador">
-                        <div className="avalieApresentador">{presentation.doutorando}</div>
-                        <div className="avaliePesquisa">{presentation.titulo}</div>
+                        <div className="avalieApresentador">{presentation?.doutorando}</div>
+                        <div className="avaliePesquisa">{presentation?.titulo}</div>
                     </div>
                 </div>
 
