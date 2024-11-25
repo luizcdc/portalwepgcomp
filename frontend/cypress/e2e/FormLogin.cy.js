@@ -11,6 +11,20 @@ describe('Componente do Formulário de Login', () => {
       cy.get('button[type="submit"]').should('exist').and('contain', 'Entrar');
     });
   
+    it('Não deve permitir o login com credenciais inválidas', () => {
+      // Preencher o formulário com dados inválidos
+      cy.get('input#email').type('joao.silva@ufba.br');
+      cy.get('input#password').type('SenhaInvalida123!');
+      cy.get('button[type="submit"]').click();
+
+      cy.contains('Email ou senha inválido').should('be.visible');
+
+    });
+  
+    it('Deve exibir o botão "Esqueceu sua senha?"', () => {
+      cy.get('.button-password').should('exist').and('contain', 'Esqueceu sua senha?');
+    });
+      
     it('Deve permitir o login com credenciais válidas de doutorando', function () {
       const { doutorando } = this.userData;
   
@@ -41,20 +55,6 @@ describe('Componente do Formulário de Login', () => {
       cy.get('button[type="submit"]').click();
   
       cy.url().should('eq', Cypress.config().baseUrl + '/');
-    });
-  
-    it('Não deve permitir o login com credenciais inválidas', () => {
-      // Preencher o formulário com dados inválidos
-      cy.get('input#email').type('usuario.invalido@ufba.br');
-      cy.get('input#password').type('SenhaInvalida123!');
-      cy.get('button[type="submit"]').click();
-      //TO-DO: Validar mensagem informando ao usuário que suas credenciais estão inválidas
-      // Verificar que o redirecionamento não ocorreu
-      cy.url().should('include', '/Login');
-    });
-  
-    it('Deve exibir o botão "Esqueceu sua senha?"', () => {
-      cy.get('.button-password').should('exist').and('contain', 'Esqueceu sua senha?');
     });
   });
   

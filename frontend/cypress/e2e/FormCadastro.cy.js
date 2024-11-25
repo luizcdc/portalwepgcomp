@@ -3,41 +3,50 @@ describe('Componente do Formulário de Cadastro', () => {
       cy.visit('/Cadastro');
       cy.fixture('usuarios').as('userData');
     });
-    //TO-DO: descomentar testes abaixo após resolução do 'bug'
-    // it('Deve validar campos obrigatórios e regras do formulário', () => {
-    //   // Tenta enviar o formulário vazio
-    //   cy.get('button[type="submit"]').click();
+
+    it('Deve validar campos obrigatórios', () => {
+      // Tenta enviar o formulário vazio
+      cy.get('button[type="submit"]').click();
   
-    //   // Valida mensagens de erro
-    //   cy.contains('Nome é obrigatório!').should('be.visible');
-    //   cy.contains('A escolha do perfil é obrigatória!').should('be.visible');
-    //   cy.contains('E-mail é obrigatório!').should('be.visible');
-    //   cy.contains('Senha é obrigatória!').should('be.visible');
-    //   cy.contains('Confirmação de senha é obrigatória!').should('be.visible');
-    // });
+      // Valida mensagens de erro
+      cy.contains('O nome é obrigatório.').should('be.visible');
+      cy.contains('O email é obrigatório.').should('be.visible');
+      cy.contains('A senha é obrigatória e deve ter, pelo menos, 8 caracteres.').should('be.visible');
+      cy.contains('Confirmação de senha é obrigatória!').should('be.visible');
+    });
   
-    // it('Deve validar o formato do e-mail', () => {
-    //   cy.get('#email').type('email-invalido');
-    //   cy.get('button[type="submit"]').click();
+    it('Deve validar o formato do e-mail', () => {
+      cy.get('button[type="submit"]').click();
+      cy.get('#email').type('email-invalido');
   
-    //   cy.contains('E-mail inválido!').should('be.visible');
-    // });
+      cy.contains('E-mail inválido!').should('be.visible');
+    });
 
     it('Deve validar o formato da matrícula', () => {
       cy.get('input[value="doutorando"]').check();
       cy.get('#matricula').type('abcdefg123');
       cy.get('button[type="submit"]').click();
-      cy.contains('A matrícula precisa conter apenas números e ter exatamente 10 dígitos.').should('be.visible');
+      cy.contains('A matrícula precisa conter apenas números e ter menos de 20 dígitos.').should('be.visible');
     });
   
-    it('Deve validar o preenchimento da matrícula para perfis de doutorandos', () => {
+    it('Deve validar o preenchimento da matrícula para perfil de doutorando', () => {
       // Seleciona o perfil de doutorando
       cy.get('input[value="doutorando"]').check();
   
       // Tenta enviar o formulário sem matrícula
       cy.get('button[type="submit"]').click();
   
-      cy.contains('A matrícula precisa ser preenchida corretamente!').should('be.visible');
+      cy.contains('A matrícula é obrigatória.').should('be.visible');
+    });
+
+    it('Deve validar o preenchimento da matrícula para perfil de professor', () => {
+      // Seleciona o perfil de doutorando
+      cy.get('input[value="professor"]').check();
+  
+      // Tenta enviar o formulário sem matrícula
+      cy.get('button[type="submit"]').click();
+  
+      cy.contains('A matrícula é obrigatória.').should('be.visible');
     });
   
     it('Deve verificar que as senhas coincidem', () => {
@@ -58,8 +67,8 @@ describe('Componente do Formulário de Cadastro', () => {
       cy.get('#confirmaSenha').type(doutorando.senha);
   
       cy.get('button[type="submit"]').click();
-      //TO-DO: descomentar a linha abaixo quando o toast de sucesso for implementado
-      // cy.contains('Cadastro realizado com sucesso!').should('be.visible');
+
+      cy.contains('Cadastro realizado com sucesso!').should('be.visible');
       // Checando se foi redirecionado para a página de Login
       cy.url().should('include', '/Login');
     });
@@ -74,8 +83,8 @@ describe('Componente do Formulário de Cadastro', () => {
       cy.get('#confirmaSenha').type(professor.senha);
   
       cy.get('button[type="submit"]').click();
-      //TO-DO: descomentar a linha abaixo quando o toast de sucesso for implementado
-      // cy.contains('Cadastro realizado com sucesso!').should('be.visible');
+
+      cy.contains('Cadastro realizado com sucesso!').should('be.visible');
       cy.url().should('include', '/Login');
     });
   
@@ -88,8 +97,8 @@ describe('Componente do Formulário de Cadastro', () => {
       cy.get('#confirmaSenha').type(ouvinte.senha);
   
       cy.get('button[type="submit"]').click();
-      //TO-DO: descomentar a linha abaixo quando o toast de sucesso for implementado
-      // cy.contains('Cadastro realizado com sucesso!').should('be.visible');
+
+      cy.contains('Cadastro realizado com sucesso!').should('be.visible');
       cy.url().should('include', '/Login');
     });
   });

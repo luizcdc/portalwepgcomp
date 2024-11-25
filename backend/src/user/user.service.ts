@@ -22,11 +22,11 @@ export class UserService {
     }
 
     if (
-      (createUserDto.profile === 'DoctoralStudent' || !createUserDto.profile) &&
+      (createUserDto.profile !== 'Listener' || !createUserDto.profile) &&
       !createUserDto.registrationNumber
     ) {
       throw new AppException(
-        'O número de matrícula é obrigatório para estudantes de doutorado.',
+        'O número de matrícula é obrigatório para estudantes de doutorado e professores.',
         400,
       );
     }
