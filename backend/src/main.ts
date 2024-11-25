@@ -17,7 +17,7 @@ async function bootstrap() {
       'http://localhost:3000'
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
-  });  
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Documentação de Rotas do PortalWEPGCOMP')
