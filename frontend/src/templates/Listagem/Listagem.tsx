@@ -3,7 +3,6 @@
 import CardListagem from "@/components/CardListagem/CardListagem";
 import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
-
 import "./style.scss";
 import Banner from "@/components/UI/Banner";
 
@@ -11,9 +10,10 @@ interface ListagemProps {
   title: string;
   labelAddButton: string;
   searchPlaceholder: string;
-  labelListCardsButton: string;
   cardsList: any[];
   searchValue?: string;
+  labelListCardsButton?: string;
+  isMyPresentation?: boolean;
   idModal?: string;
   onAddButtonClick?: () => void;
   onChangeSearchValue?: (value: string) => void;
@@ -26,6 +26,7 @@ export default function Listagem({
   labelListCardsButton,
   searchPlaceholder,
   searchValue,
+  isMyPresentation,
   cardsList,
   onAddButtonClick,
   onChangeSearchValue,
@@ -41,11 +42,14 @@ export default function Listagem({
             data-bs-target={idModal ? `#${idModal}` : undefined}
             onClick={idModal ? () => {} : onAddButtonClick}
           >
-            {labelAddButton}{" "}
+            {labelAddButton}
             <Image src="/assets/images/add.svg" alt="" width={24} height={24} />
           </button>
           {onChangeSearchValue && (
-            <div className="input-group listagem-template-content-input">
+            <div
+              className="input-group listagem-template-content-input"
+              style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+            >
               <input
                 placeholder={searchPlaceholder}
                 type="text"
@@ -55,6 +59,7 @@ export default function Listagem({
                 value={searchValue}
                 onChange={(e) => onChangeSearchValue(e.target.value)}
               />
+
               <button
                 className="btn btn-outline-secondary"
                 type="button"
@@ -84,7 +89,10 @@ export default function Listagem({
             />
           ))}
         </div>
-        <button className="listagem-template-mais-cards">
+        <button
+          className="listagem-template-mais-cards"
+          style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+        >
           {labelListCardsButton}
 
           <Image

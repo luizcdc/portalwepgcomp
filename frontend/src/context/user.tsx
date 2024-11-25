@@ -4,7 +4,6 @@
 
 import { userApi } from "@/services/user";
 import { createContext, ReactNode, useState } from "react";
-
 import { useRouter } from "next/navigation";
 
 interface UserProps {

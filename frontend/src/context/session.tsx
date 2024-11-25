@@ -15,7 +15,7 @@ interface SessionProviderData {
   loadingSessao: boolean;
   sessoesList: Sessao[];
   sessao: Sessao | null;
-  listSessions: (eventEditionId: string) => Promise<Sessao[]>;
+  listSessions: (eventEditionId: string) => void;
   getSessionById: (idSession: string) => void;
   createSession: (body: SessaoParams) => void;
   updateSession: (idSession: string, body: SessaoParams) => void;

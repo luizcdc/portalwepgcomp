@@ -1,35 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useContext } from "react";
-import "./style.scss";
-import { useForm } from "react-hook-form";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { useForm } from "react-hook-form";
+import "./style.scss";
 
 export function FormLogin() {
-  const { register, handleSubmit} = useForm<UserLogin>();
+  const { register, handleSubmit } = useForm<UserLogin>();
   const { singIn, signed } = useContext(AuthContext);
   const router = useRouter();
 
-  async function handleLogin(data: UserLogin ) {   
-    const { email, password }  = data;
-    
+  async function handleLogin(data: UserLogin) {
+    const { email, password } = data;
 
     const usuario: UserLogin = { email, password };
 
     try {
       await singIn(usuario);
-    } catch (error) {      
+    } catch (error) {}
+  }
 
-    }
-  };
-
-  if(signed) {
-    router.push("/")
+  if (signed) {
+    router.push("/");
   } else {
-
     return (
-      <form className="row g-3" onSubmit={handleSubmit(handleLogin)}>
+      <form className="row" onSubmit={handleSubmit(handleLogin)}>
         <hr />
         <div className="col-12 mb-3">
           <label className="form-label fw-bold form-title">
@@ -73,7 +69,7 @@ export function FormLogin() {
         <div className="d-grid gap-2 col-3 mx-auto">
           <button
             type="submit"
-            className="btn text-white fw-semibold button-primary"
+            className="btn text-white fw-semibold fs-6 button-primary"
           >
             Entrar
           </button>

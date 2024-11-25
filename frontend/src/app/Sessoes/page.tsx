@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ModalSessao from "@/components/Modais/ModalSessao/ModalSessao";
+
+import ModalSessao from "@/components/Modals/ModalSessao/ModalSessao";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { useSession } from "@/hooks/useSession";
 import { SessoesMock } from "@/mocks/Sessoes";
