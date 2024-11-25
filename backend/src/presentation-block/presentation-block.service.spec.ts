@@ -463,6 +463,10 @@ describe('PresentationBlockService', () => {
         where: {
           eventEditionId,
         },
+        include: {
+          presentations: true,
+          panelists: true,
+        },
       });
 
       // Verify the result is correct
