@@ -174,25 +174,26 @@ model Evaluation {
 }
 
 model Submission {
-  id             String           @id @default(uuid()) @map("id")
-  advisorId      String           @map("advisor_id")
-  mainAuthorId   String           @map("main_author_id")
-  eventEditionId String           @map("event_edition_id")
-  title          String           @map("title") @db.VarChar(255)
-  abstract       String           @map("abstract") @db.Text
-  pdfFile        String           @map("pdf_file") @db.VarChar(255)
-  phoneNumber    String           @map("phone_number") @db.VarChar(20)
-  linkedinUrl    String?          @map("linkedin_url") @db.VarChar(255)
-  ranking        Int?             @map("ranking")
-  status         SubmissionStatus @map("status")
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  advisor        UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id])
-  mainAuthor     UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id])
-  eventEdition   EventEdition     @relation(fields: [eventEditionId], references: [id])
-  Evaluation     Evaluation[]
-  Presentation   Presentation[]
-  CoAuthor       CoAuthor[]
+  id              String           @id @default(uuid()) @map("id")
+  advisorId       String           @map("advisor_id")
+  mainAuthorId    String           @map("main_author_id")
+  eventEditionId  String           @map("event_edition_id")
+  title           String           @map("title") @db.VarChar(255)
+  abstract        String           @map("abstract") @db.Text
+  pdfFile         String           @map("pdf_file") @db.VarChar(255)
+  phoneNumber     String           @map("phone_number") @db.VarChar(20)
+  linkedinUrl     String?          @map("linkedin_url") @db.VarChar(255)
+  AudienceRanking Int?             @map("audience_ranking")
+  PanelistRanking Int?             @map("panelist_ranking")
+  status          SubmissionStatus @map("status")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  advisor         UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id])
+  mainAuthor      UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id])
+  eventEdition    EventEdition     @relation(fields: [eventEditionId], references: [id])
+  Evaluation      Evaluation[]
+  Presentation    Presentation[]
+  CoAuthor        CoAuthor[]
 
   @@map("submission")
 }
