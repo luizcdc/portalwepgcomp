@@ -54,8 +54,8 @@ export default function Listagem({
                 placeholder={searchPlaceholder}
                 type="text"
                 className="form-control"
-                aria-label="Recipient's username"
-                aria-describedby="button-addon2"
+                aria-label="campo de busca"
+                aria-describedby="botao-busca"
                 value={searchValue}
                 onChange={(e) => onChangeSearchValue(e.target.value)}
               />
@@ -63,7 +63,7 @@ export default function Listagem({
               <button
                 className="btn btn-outline-secondary"
                 type="button"
-                id="button-addon2"
+                id="botao-busca"
               >
                 <Image
                   src="/assets/images/search.svg"
@@ -76,22 +76,39 @@ export default function Listagem({
           )}
         </div>
         <div className="listagem-template-cards">
-          {cardsList?.map((card) => (
-            <CardListagem
-              key={card.name}
-              title={card.name}
-              subtitle={
-                title === "Sessões"
-                  ? `${formatDate(card.startAt)}`
-                  : card.subtitle
-              }
-              onClick={() => {}}
-            />
-          ))}
+          {!!cardsList.length &&
+            cardsList?.map((card) => (
+              <CardListagem
+                key={card.name}
+                title={card.name}
+                subtitle={
+                  title === "Sessões"
+                    ? `${formatDate(card.startAt)}`
+                    : card.subtitle
+                }
+                onClick={() => {}}
+              />
+            ))}
+          {!cardsList.length && (
+            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+              <h4 className="empty-list mb-0">
+                <Image
+                  src="/assets/images/empty_box.svg"
+                  alt="Lista vazia"
+                  width={90}
+                  height={90}
+                />
+                Essa lista ainda está vazia
+              </h4>
+            </div>
+          )}
         </div>
         <button
           className="listagem-template-mais-cards"
-          style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+          style={{
+            visibility:
+              isMyPresentation || cardsList.length <= 4 ? "hidden" : "visible",
+          }}
         >
           {labelListCardsButton}
 

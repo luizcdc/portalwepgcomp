@@ -31,16 +31,18 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const singIn = async ({ email, password }) => {
-    const response = await LoginRequest(email, password);
+    await LoginRequest(email, password)
+      .then((response) => {
+        const payload = response.token;
+        setUser(payload);
+        api.defaults.headers.common["Authorization"] = `Bearer ${payload}`;
+        setTokenLocaStorage(payload);
+      })
+      .catch((err) => {
+        setUser(null);
 
-    if (!response) {
-      alert(response || "Error");
-    } else {
-      const payload = response.token;
-      setUser(payload);
-      api.defaults.headers.common["Authorization"] = `Bearer ${payload}`;
-      setTokenLocaStorage(payload);
-    }
+        alert(err.response.data.message);
+      });
   };
 
   function logout() {

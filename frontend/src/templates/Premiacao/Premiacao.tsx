@@ -8,7 +8,7 @@ export default function Premiacao({
   premiacoes,
 }: PremiacaoListProps) {
   return (
-    <div className="d-grid gap-3 mb-5">
+    <div className="d-grid gap-3 mb-5 premiacao">
       <div className="ms-5">
         <h1 className="fw-bold title">{titulo}</h1>
         <h5 className="text-black">{descricao}</h5>

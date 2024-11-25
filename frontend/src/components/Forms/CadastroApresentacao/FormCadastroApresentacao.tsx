@@ -1,21 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { usePathname } from "next/navigation";
 import "./style.scss";
 
 const formCadastroSchema = z.object({
-  titulo: z.string({ invalid_type_error: "Campo Inválido" }).min(1, "O título/tema é obrigatório."),
-  abstract: z.string({ invalid_type_error: "Campo Inválido" }).min(1, "O abstract é obrigatório"),
-  orientador: z.string({ invalid_type_error: "Campo Inválido" }).min(1, "O nome do orientador é obrigatório."),
+  titulo: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "O título/tema é obrigatório."),
+  abstract: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "O abstract é obrigatório"),
+  orientador: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "O nome do orientador é obrigatório."),
   coorientador: z.string().optional(),
   data: z.date().optional(),
   telefone: z
     .string()
     .regex(/^\d{10,11}$/, "O telefone deve conter 10 ou 11 dígitos."),
-  linkedin: z
-    .string()
-    .url("Insira um link válido para o LinkedIn.")
-    .optional(),
+  linkedin: z.string().url("Insira um link válido para o LinkedIn.").optional(),
   slide: z
     .custom<File>((value) => value instanceof FileList && value.length > 0, {
       message: "Arquivo obrigatório!",
@@ -27,6 +31,7 @@ const formCadastroSchema = z.object({
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
 export function FormCadastroApresentacao() {
+  const pathname = usePathname();
   const {
     register,
     handleSubmit,
@@ -41,7 +46,10 @@ export function FormCadastroApresentacao() {
   };
 
   return (
-    <form className="row cadastroApresentacao" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="row cadastroApresentacao"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="col-12 mb-1">
         <label className="form-label form-title">
           Tema da Pesquisa<span className="text-danger ms-1">*</span>
@@ -77,13 +85,13 @@ export function FormCadastroApresentacao() {
           placeholder="Insira o nome do orientador"
           {...register("orientador")}
         />
-        <p className="text-danger error-message">{errors.orientador?.message}</p>
+        <p className="text-danger error-message">
+          {errors.orientador?.message}
+        </p>
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Nome do Coorientador
-        </label>
+        <label className="form-label form-title">Nome do Coorientador</label>
         <input
           type="text"
           className="form-control input-title"
@@ -93,9 +101,7 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Sugestão de Data
-        </label>
+        <label className="form-label form-title">Sugestão de Data</label>
         <input
           type="date"
           className="form-control input-title"
@@ -131,9 +137,7 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          LinkedIn
-        </label>
+        <label className="form-label form-title">LinkedIn</label>
         <input
           type="url"
           className="form-control input-title"
@@ -153,7 +157,7 @@ export function FormCadastroApresentacao() {
           data-bs-toggle="modal"
           className="btn text-white fs-5 submit-button"
         >
-          Cadastrar
+          {pathname.includes("Cadastro") ? "Cadastrar" : "Alterar"}
         </button>
       </div>
     </form>

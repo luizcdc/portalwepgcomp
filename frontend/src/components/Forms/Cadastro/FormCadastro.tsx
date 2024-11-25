@@ -8,10 +8,8 @@ import "./style.scss";
 const formCadastroSchema = z
   .object({
     nome: z
-      .string({
-        required_error: "Nome é obrigatório!",
-        invalid_type_error: "Campo inválido!",
-      })
+      .string({ invalid_type_error: "Campo Inválido" })
+      .min(1, "O nome é obrigatório.")
       .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
         message: "O campo deve conter apenas letras.",
       }),
@@ -25,30 +23,34 @@ const formCadastroSchema = z
 
     email: z
       .string({
-        required_error: "E-mail é obrigatório!",
         invalid_type_error: "Campo inválido!",
       })
+      .min(1, "O email é obrigatório.")
       .email({
         message: "E-mail inválido!",
       }),
 
     senha: z
       .string({
-        required_error: "Senha é obrigatória!",
         invalid_type_error: "Campo inválido",
       })
-      .min(8, { message: "A senha deve ter, pelo menos, 8 caracteres." }),
+      .min(8, {
+        message: "A senha é obrigatória e deve ter, pelo menos, 8 caracteres.",
+      }),
 
-    confirmaSenha: z.string({
-      required_error: "Confirmação de senha é obrigatória!",
-      invalid_type_error: "Campo inválido",
-    }),
+    confirmaSenha: z
+      .string({
+        invalid_type_error: "Campo inválido",
+      })
+      .min(1, {
+        message: "Confirmação de senha é obrigatória!",
+      }),
   })
   .superRefine((data, ctx) => {
     if (data.perfil !== "ouvinte" && !data.matricula) {
       ctx.addIssue({
         path: ["matricula"],
-        message: "A matrícula precisa ser preenchida corretamente!",
+        message: "A matrícula é obrigatória.",
         code: z.ZodIssueCode.custom,
       });
     }
@@ -56,11 +58,11 @@ const formCadastroSchema = z
     if (
       data.perfil !== "ouvinte" &&
       data.matricula &&
-      data.matricula.length !== 10
+      data.matricula.length > 20
     ) {
       ctx.addIssue({
         path: ["matricula"],
-        message: "A matrícula precisa ter 10 dígitos.",
+        message: "A matrícula tem limite de 20 dígitos.",
         code: z.ZodIssueCode.custom,
       });
     }
@@ -68,12 +70,12 @@ const formCadastroSchema = z
     if (
       data.perfil !== "ouvinte" &&
       data.matricula &&
-      !/^\d{10}$/.test(data.matricula)
+      !/^\d{1,19}$/.test(data.matricula)
     ) {
       ctx.addIssue({
         path: ["matricula"],
         message:
-          "A matrícula precisa conter apenas números e ter exatamente 10 dígitos.",
+          "A matrícula precisa conter apenas números e ter menos de 20 dígitos.",
         code: z.ZodIssueCode.custom,
       });
     }
