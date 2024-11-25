@@ -1,8 +1,10 @@
-import { useUsers } from "@/hooks/useUsers";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { useUsers } from "@/hooks/useUsers";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import "./style.scss";
 
 const formCadastroSchema = z
@@ -148,7 +150,7 @@ export function FormCadastro() {
       minLength: value.length >= 8,
       upperCase: /[A-Z]/.test(value),
       lowerCase: /[a-z]/.test(value),
-      number: /\d{4,}/.test(value),
+      number: /\d.*\d.*\d.*\d/.test(value),
       specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
     });
   };
@@ -280,9 +282,8 @@ export function FormCadastro() {
           </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${
-                requisitos.minLength ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -292,9 +293,8 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.upperCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.upperCase ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.upperCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -304,9 +304,8 @@ export function FormCadastro() {
               1 letra maiúscula
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.lowerCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.lowerCase ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.lowerCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -316,9 +315,8 @@ export function FormCadastro() {
               1 letra minúscula
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.number ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
@@ -328,9 +326,8 @@ export function FormCadastro() {
               4 números
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.specialChar ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.specialChar ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.specialChar ? (
                 <i className="bi bi-shield-fill-check" />
@@ -363,7 +360,7 @@ export function FormCadastro() {
       <div className="d-grid gap-2 col-3 mx-auto">
         <button
           type="submit"
-          className="btn text-white fs-5 fw-bold submit-button"
+          className="btn fw-bold fs-5 text-white submit-button"
         >
           Cadastrar
         </button>
