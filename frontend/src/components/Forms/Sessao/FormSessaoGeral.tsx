@@ -2,7 +2,6 @@
 
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDays } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
@@ -185,8 +184,8 @@ export default function FormSessaoGeral() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                minDate={new Date()}
-                maxDate={addDays(new Date(), 3)}
+                // minDate={new Date()}
+                // maxDate={addDays(new Date(), 3)}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formGeralFields.inicio.placeholder}
@@ -222,8 +221,8 @@ export default function FormSessaoGeral() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                minDate={new Date()}
-                maxDate={addDays(new Date(), 3)}
+                // minDate={new Date()}
+                // maxDate={addDays(new Date(), 3)}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formGeralFields.final.placeholder}

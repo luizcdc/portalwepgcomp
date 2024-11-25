@@ -1,17 +1,17 @@
-import { useUsers } from "@/hooks/useUsers";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { useUsers } from "@/hooks/useUsers";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import "./style.scss";
 
 const formCadastroSchema = z
   .object({
     nome: z
-      .string({
-        required_error: "Nome é obrigatório!",
-        invalid_type_error: "Campo inválido!",
-      })
+      .string({ invalid_type_error: "Campo Inválido" })
+      .min(1, "O nome é obrigatório.")
       .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
         message: "O campo deve conter apenas letras.",
       }),
@@ -25,30 +25,34 @@ const formCadastroSchema = z
 
     email: z
       .string({
-        required_error: "E-mail é obrigatório!",
         invalid_type_error: "Campo inválido!",
       })
+      .min(1, "O email é obrigatório.")
       .email({
         message: "E-mail inválido!",
       }),
 
     senha: z
       .string({
-        required_error: "Senha é obrigatória!",
         invalid_type_error: "Campo inválido",
       })
-      .min(8, { message: "A senha deve ter, pelo menos, 8 caracteres." }),
+      .min(8, {
+        message: "A senha é obrigatória e deve ter, pelo menos, 8 caracteres.",
+      }),
 
-    confirmaSenha: z.string({
-      required_error: "Confirmação de senha é obrigatória!",
-      invalid_type_error: "Campo inválido",
-    }),
+    confirmaSenha: z
+      .string({
+        invalid_type_error: "Campo inválido",
+      })
+      .min(1, {
+        message: "Confirmação de senha é obrigatória!",
+      }),
   })
   .superRefine((data, ctx) => {
     if (data.perfil !== "ouvinte" && !data.matricula) {
       ctx.addIssue({
         path: ["matricula"],
-        message: "A matrícula precisa ser preenchida corretamente!",
+        message: "A matrícula é obrigatória.",
         code: z.ZodIssueCode.custom,
       });
     }
@@ -56,11 +60,11 @@ const formCadastroSchema = z
     if (
       data.perfil !== "ouvinte" &&
       data.matricula &&
-      data.matricula.length !== 10
+      data.matricula.length > 20
     ) {
       ctx.addIssue({
         path: ["matricula"],
-        message: "A matrícula precisa ter 10 dígitos.",
+        message: "A matrícula tem limite de 20 dígitos.",
         code: z.ZodIssueCode.custom,
       });
     }
@@ -68,12 +72,12 @@ const formCadastroSchema = z
     if (
       data.perfil !== "ouvinte" &&
       data.matricula &&
-      !/^\d{10}$/.test(data.matricula)
+      !/^\d{1,19}$/.test(data.matricula)
     ) {
       ctx.addIssue({
         path: ["matricula"],
         message:
-          "A matrícula precisa conter apenas números e ter exatamente 10 dígitos.",
+          "A matrícula precisa conter apenas números e ter menos de 20 dígitos.",
         code: z.ZodIssueCode.custom,
       });
     }
@@ -146,7 +150,7 @@ export function FormCadastro() {
       minLength: value.length >= 8,
       upperCase: /[A-Z]/.test(value),
       lowerCase: /[a-z]/.test(value),
-      number: /\d{4,}/.test(value),
+      number: /\d.*\d.*\d.*\d/.test(value),
       specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
     });
   };
@@ -154,11 +158,11 @@ export function FormCadastro() {
   const perfil = watch("perfil");
 
   return (
-    <form className="row g-3" onSubmit={handleSubmit(handleFormCadastro)}>
+    <form className="row" onSubmit={handleSubmit(handleFormCadastro)}>
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fs-5 fw-bold">
           Nome completo
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="text"
@@ -171,9 +175,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Perfil
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <div className="d-flex">
           <div className="form-check me-3">
@@ -226,10 +230,10 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Matrícula
           {perfil !== "ouvinte" && (
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className="text-danger ms-1 fs-5">*</span>
           )}
         </label>
         <input
@@ -243,9 +247,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           E-mail UFBA
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="email"
@@ -258,9 +262,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Senha
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="password"
@@ -278,9 +282,8 @@ export function FormCadastro() {
           </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${
-                requisitos.minLength ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -290,9 +293,8 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.upperCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.upperCase ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.upperCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -302,9 +304,8 @@ export function FormCadastro() {
               1 letra maiúscula
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.lowerCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.lowerCase ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.lowerCase ? (
                 <i className="bi bi-shield-fill-check" />
@@ -314,9 +315,8 @@ export function FormCadastro() {
               1 letra minúscula
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.number ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
@@ -326,9 +326,8 @@ export function FormCadastro() {
               4 números
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.specialChar ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.specialChar ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.specialChar ? (
                 <i className="bi bi-shield-fill-check" />
@@ -342,9 +341,9 @@ export function FormCadastro() {
       </div>
 
       <div className="col-12 mb-4">
-        <label className="form-label fw-bold form-title">
+        <label className="form-label fw-bold fs-5">
           Confirmação de senha
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
           type="password"
@@ -361,7 +360,7 @@ export function FormCadastro() {
       <div className="d-grid gap-2 col-3 mx-auto">
         <button
           type="submit"
-          className="btn text-white fs-5 fw-bold submit-button"
+          className="btn fw-bold fs-5 text-white submit-button"
         >
           Cadastrar
         </button>
