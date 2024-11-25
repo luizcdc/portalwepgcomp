@@ -86,11 +86,6 @@ npm run start-frontend
 
 ```
 
-## Ambientes da aplicação
-
-PRODUÇÃO - <a href="https://portal-wepgcomp-client.vercel.app" target="_blank">WEPGCOMP Produção</a>
-DESENVOLVIMENTO - <a href="https://portal-wepgcomp-client-development.vercel.app" target="_blank">WEPGCOMP Desenvolvimento</a>
-
 ## Ambientes
 
 - **Frontend**
@@ -98,10 +93,10 @@ DESENVOLVIMENTO - <a href="https://portal-wepgcomp-client-development.vercel.app
 - Desenvolvimento: https://portal-wepgcomp-client-development.vercel.app
 
 - **Backend**
-- Produção: https://portal-wepgcomp-api-development.vercel.app
-- Swagger produção: https://portal-wepgcomp-api-development.vercel.app/docs
-- Desenvolvimento: https://portal-wepgcomp-api.vercel.app
-- Swagger desenvolvimento: https://portal-wepgcomp-api.vercel.app/docs
+- Produção: https://portal-wepgcomp-api.vercel.app
+- Swagger produção: https://portal-wepgcomp-api.vercel.app/docs
+- Desenvolvimento: https://portal-wepgcomp-api-development.vercel.app
+- Swagger desenvolvimento: https://portal-wepgcomp-api-development.vercel.app/docs
 
 ## Colaboradores
 
