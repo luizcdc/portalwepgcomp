@@ -307,4 +307,110 @@ describe('PresentationService', () => {
       expect(prismaService.presentation.delete).toHaveBeenCalledWith({ where: { id } });
     });
   });
+
+  describe('listUserPresentations', () => {
+    it('should return presentations for a given user', async () => {
+      const userId = 'user-id';
+      const mockSubmissions = [
+        {
+          id: 'submission-1',
+          Presentation: [
+            { id: 'presentation-1', positionWithinBlock: 1 },
+            { id: 'presentation-2', positionWithinBlock: 2 },
+          ],
+        },
+        {
+          id: 'submission-2',
+          Presentation: [{ id: 'presentation-3', positionWithinBlock: 1 }],
+        },
+      ];
+
+      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(mockSubmissions);
+
+      const presentations = await service.listUserPresentations(userId);
+
+      expect(presentations).toEqual([
+        { id: 'presentation-1', positionWithinBlock: 1 },
+        { id: 'presentation-2', positionWithinBlock: 2 },
+        { id: 'presentation-3', positionWithinBlock: 1 },
+      ]);
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { mainAuthorId: userId },
+        include: { Presentation: true },
+      });
+    });
+
+    it('should return an empty array if no submissions are found', async () => {
+      const userId = 'user-id';
+
+      (prismaService.submission.findMany as jest.Mock).mockResolvedValue([]);
+
+      const presentations = await service.listUserPresentations(userId);
+
+      expect(presentations).toEqual([]);
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { mainAuthorId: userId },
+        include: { Presentation: true },
+      });
+    });
+  });
+
+  describe('updatePresentationForUser', () => {
+    it('should update a presentation if it belongs to the user', async () => {
+      const userId = 'user-id';
+      const presentationId = 'presentation-id';
+      const updateDto = { positionWithinBlock: 2 };
+
+      const mockPresentation = {
+        id: presentationId,
+        submission: { mainAuthorId: userId },
+      };
+
+      const updatedPresentation = {
+        id: presentationId,
+        positionWithinBlock: 2,
+      };
+
+      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(mockPresentation);
+      (prismaService.presentation.update as jest.Mock).mockResolvedValue(updatedPresentation);
+
+      const result = await service.updatePresentationForUser(
+        userId,
+        presentationId,
+        updateDto,
+      );
+
+      expect(result).toEqual(updatedPresentation);
+      expect(prismaService.presentation.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: presentationId,
+          submission: { mainAuthorId: userId },
+        },
+      });
+      expect(prismaService.presentation.update).toHaveBeenCalledWith({
+        where: { id: presentationId },
+        data: updateDto,
+      });
+    });
+
+    it('should throw an error if presentation does not belong to the user', async () => {
+      const userId = 'user-id';
+      const presentationId = 'presentation-id';
+      const updateDto = { positionWithinBlock: 2 };
+
+      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(
+        service.updatePresentationForUser(userId, presentationId, updateDto),
+      ).rejects.toThrow(
+        new AppException('Apresentação não encontrada ou não pertence ao usuário.', 404),
+      );
+      expect(prismaService.presentation.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: presentationId,
+          submission: { mainAuthorId: userId },
+        },
+      });
+    });
+  });
 });
