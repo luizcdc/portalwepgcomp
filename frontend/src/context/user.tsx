@@ -55,7 +55,8 @@ export const UserProvider = ({ children }: UserProps) => {
       showAlert({
         icon: "error",
         title: "Erro ao cadastrar usuário",
-        text: err.response?.data?.message || "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!"
+        text: err.response?.data?.message || "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+        confirmButtonText: 'Retornar',
       });
     } finally {
       setLoadingCreateUser(false);
@@ -84,7 +85,8 @@ export const UserProvider = ({ children }: UserProps) => {
       showAlert({
         icon: "error",
         title: "Erro ao enviar e-mail",
-        text: err.response?.data?.message || "Ocorreu um erro ao enviar o e-mail."
+        text: err.response?.data?.message || "Ocorreu um erro ao enviar o e-mail.",
+        confirmButtonText: 'Retornar',
       });
     } finally {
       setLoadingSendEmail(false);
@@ -93,7 +95,7 @@ export const UserProvider = ({ children }: UserProps) => {
 
   const resetPassword = async (body: ResetPasswordParams) => {
     setLoadingResetPassword(true);
-    
+
     try {
       const response = await userApi.resetPassword(body);
       setUser(response);
@@ -112,7 +114,8 @@ export const UserProvider = ({ children }: UserProps) => {
       showAlert({
         icon: "error",
         title: "Erro ao alterar senha",
-        text: err.response?.data?.message || "Ocorreu um erro ao tentar alterar sua senha. Tente novamente!"
+        text: err.response?.data?.message || "Ocorreu um erro ao tentar alterar sua senha. Tente novamente!",
+        confirmButtonText: 'Retornar',
       });
     } finally {
       setLoadingResetPassword(false);
