@@ -9,13 +9,13 @@ export default function Apresentacoes() {
 
   return (
     <div
-      className='d-flex flex-column'
+      className="d-flex flex-column"
       style={{
         gap: "50px",
       }}
     >
       <Listagem
-        idModal='editarCadastroModal'
+        idModal="editarApresentacaoModal"
         title={title}
         labelAddButton={userArea.add}
         labelListCardsButton={buttonList}

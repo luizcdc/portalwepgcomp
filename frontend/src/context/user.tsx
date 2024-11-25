@@ -4,8 +4,6 @@
 
 import { userApi } from "@/services/user";
 import { createContext, ReactNode, useState } from "react";
-
-import { RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams, User } from "@/models/user";
 import { useRouter } from "next/navigation";
 
 interface UserProps {
@@ -46,10 +44,9 @@ export const UserProvider = ({ children }: UserProps) => {
         router.push("/Login");
       })
       .catch((err) => {
-        console.log(err);
         setUser(null);
-        console.log("erro ao criar");
-        alert("Erro ao tentar cadastrar!");
+
+        alert(err.response.data.message);
       })
       .finally(() => {
         setLoadingCreateUser(false);
@@ -67,10 +64,8 @@ export const UserProvider = ({ children }: UserProps) => {
         router.push("/Login");
       })
       .catch((err) => {
-        console.log(err);
         setUser(null);
-        alert("Erro ao enviar email!");
-        console.log("erro ao enviar");
+        alert(err.response.data.message);
       })
       .finally(() => {
         setLoadingSendEmail(false);
@@ -88,10 +83,8 @@ export const UserProvider = ({ children }: UserProps) => {
         router.push("/Login");
       })
       .catch((err) => {
-        console.log(err);
         setUser(null);
-        console.log("erro ao enviar");
-        alert("Erro ao alterar senha!");
+        alert(err.response.data.message);
       })
       .finally(() => {
         setLoadingResetPassword(false);

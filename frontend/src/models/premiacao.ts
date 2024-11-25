@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // Component
-export type PremiacaoCategoriaProps = {
+type PremiacaoCategoriaProps = {
     titulo: string;
     descricao: string;
     premiacoes: { titulo: string; subtitulo: string; nota: number }[];
@@ -12,7 +14,7 @@ interface PremiacaoItem {
     nota: number;
 }
 
-export interface PremiacaoListProps {
+interface PremiacaoListProps {
     titulo: string;
     descricao: string;
     premiacoes: PremiacaoItem[];

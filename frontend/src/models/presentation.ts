@@ -1,4 +1,5 @@
-export interface PresentationData {
+/* eslint-disable @typescript-eslint/no-unused-vars */
+interface PresentationData {
   id?: string;
   titulo: string;
   doutorando: string;
