@@ -14,7 +14,7 @@ async function bootstrap() {
     origin: [
       'https://portal-wepgcomp-client-development.vercel.app',
       'https://portal-wepgcomp-client.vercel.app',
-      'http://localhost:3000'
+      `http://localhost:${process.env.FRONTEND_LOCAL_PORT}`
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
   });
