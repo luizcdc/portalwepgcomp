@@ -19,6 +19,13 @@ export class SubmissionController {
     return this.submissionService.findAllByEventEditionId(eventEditionId);
   }
 
+  @Get('without-presentation')
+  findAllWithoutPresentation(
+    @Param('eventEditionId') eventEditionId: string
+  ) {
+    return this.submissionService.findAllWithoutPresentation(eventEditionId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.submissionService.findOne(id);

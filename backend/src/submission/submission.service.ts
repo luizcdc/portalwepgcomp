@@ -87,6 +87,17 @@ export class SubmissionService {
     });
   }
 
+  async findAllWithoutPresentation(eventEditionId: string) {
+    return await this.prismaClient.submission.findMany({
+      where: {
+        eventEditionId,
+      },
+      include: {
+        Presentation: true,
+      },
+    }).then(submissions => submissions.filter(submission => submission.Presentation.length === 0)); // Filter submissions without presentations
+  }
+
   async findOne(id: string) {
     const submission = await this.prismaClient.submission.findUnique({
         where: { id },

@@ -106,6 +106,7 @@ export class PresentationService {
       positionWithinBlock,
       status,
     } = createPresentationWithSubmissionDto;
+
   
     // Attempt to create the submission
     let createdSubmission;
