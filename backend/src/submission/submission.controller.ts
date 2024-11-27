@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
-import { CoAuthorDto } from './dto/co-author.dto';
 
 @Controller('submission')
 export class SubmissionController {
@@ -14,8 +13,10 @@ export class SubmissionController {
   }
 
   @Get()
-  findAll() {
-    return this.submissionService.findAll();
+  findAll(
+    @Param('eventEditionId') eventEditionId: string,
+  ) {
+    return this.submissionService.findAllByEventEditionId(eventEditionId);
   }
 
   @Get(':id')
@@ -26,14 +27,6 @@ export class SubmissionController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSubmissionDto: UpdateSubmissionDto) {
     return this.submissionService.update(id, updateSubmissionDto);
-  }
-
-  @Patch(':submissionId/co-authors')
-  async updateCoAuthors(
-    @Param('submissionId') submissionId: string,
-    @Body() coAuthors: CoAuthorDto[],
-  ) {
-    return await this.submissionService.updateCoAuthors(submissionId, coAuthors);
   }
 
   @Delete(':id')

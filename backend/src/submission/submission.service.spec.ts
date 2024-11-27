@@ -48,7 +48,7 @@ describe('SubmissionService', () => {
         pdfFile: 'file.pdf',
         phoneNumber: '1234567890',
         status: SubmissionStatus.Submitted,
-        coAuthors: [],
+        coAdvisor: 'co-advisor-id',
       };
 
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
@@ -76,9 +76,8 @@ describe('SubmissionService', () => {
         abstractText: 'Test Abstract',
         pdfFile: 'pdf-file.pdf',
         phoneNumber: '123456789',
-        linkedinUrl: 'https://linkedin.com/in/test',
         status: SubmissionStatus.Submitted,
-        coAuthors: [],
+        coAdvisor: 'co-advisor-id',
       };
 
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([]);
@@ -104,7 +103,7 @@ describe('SubmissionService', () => {
         pdfFile: 'file.pdf',
         phoneNumber: '1234567890',
         status: SubmissionStatus.Submitted,
-        coAuthors: [],
+        coAdvisor: 'co-advisor-id',
       };
 
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([{ id: 'author123' }]);
@@ -124,7 +123,7 @@ describe('SubmissionService', () => {
         pdfFile: 'file.pdf',
         phoneNumber: '1234567890',
         status: SubmissionStatus.Submitted,
-        coAuthors: [],
+        coAdvisor: 'co-advisor-id',
       };
 
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
@@ -253,36 +252,13 @@ describe('SubmissionService', () => {
     });
   });
 
-  describe('updateCoAuthors', () => {
-    it('should update co-authors successfully', async () => {
-      const coAuthors = [{ name: 'Co-author 1', institution: 'University 1' }];
-      const submissionId = 'submission123';
-
-      (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({ id: submissionId });
-      (prismaService.coAuthor.deleteMany as jest.Mock).mockResolvedValue({ count: 1 });
-      (prismaService.coAuthor.createMany as jest.Mock).mockResolvedValue({ count: 1 });
-
-      const result = await service.updateCoAuthors(submissionId, coAuthors);
-      expect(result.count).toBeGreaterThan(0);
-    });
-
-    it('should throw error if submission not found for co-authors', async () => {
-      (prismaService.submission.findUnique as jest.Mock).mockResolvedValue(null);
-
-      await expect(service.updateCoAuthors('invalidId', [])).rejects.toThrow(
-        new AppException('Submissão não encontrada.', 404),
-      );
-    });
-  });
-
   describe('remove', () => {
     it('should remove a submission successfully', async () => {
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({ id: 'submission123' });
       (prismaService.submission.delete as jest.Mock).mockResolvedValue({});
 
       const result = await service.remove('submission123');
-      expect(result).toHaveProperty('message');
-      expect(result.message).toBe('Apresentação removida com sucesso.');
+      expect(result).toEqual({});
     });
 
     it('should throw error if submission not found for removal', async () => {

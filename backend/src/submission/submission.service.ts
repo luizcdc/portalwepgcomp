@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
-import { CoAuthorDto } from './dto/co-author.dto';
 import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmissionStatus } from '@prisma/client';
@@ -19,9 +18,8 @@ export class SubmissionService {
       title, abstractText,
       pdfFile,
       phoneNumber,
-      linkedinUrl,
       status,
-      coAuthors } = createSubmissionDto;
+      coAdvisor } = createSubmissionDto;
 
     const users = await this.prismaClient.userAccount.findMany({
       where: {
@@ -73,37 +71,25 @@ export class SubmissionService {
         abstract: abstractText,
         pdfFile,
         phoneNumber,
-        linkedinUrl,
         status: submissionStatus,
-        CoAuthor: {
-          create: (coAuthors || []).map(coAuthor => ({
-            name: coAuthor.name,
-            institution: coAuthor.institution,
-          })),
-        },
-      },
-      include: {
-        CoAuthor: true,
+        coAdvisor, 
       },
     });
 
     return createdSubmission;
   }
 
-  async findAll() {
+  async findAllByEventEditionId(eventEditionId: string) {
     return await this.prismaClient.submission.findMany({
-        include: {
-            CoAuthor: true,  
-        },
+      where: {
+        eventEditionId,
+      },
     });
 }
 
   async findOne(id: string) {
     const submission = await this.prismaClient.submission.findUnique({
         where: { id },
-        include: {
-            CoAuthor: true,
-        },
     });
 
     if (!submission) throw new AppException('Submissão não encontrada.', 404);
@@ -112,7 +98,7 @@ export class SubmissionService {
   }
 
   async update(id: string, updateSubmissionDto: UpdateSubmissionDto) {
-    const { advisorId, mainAuthorId, eventEditionId, title, abstractText, pdfFile, phoneNumber, linkedinUrl, status } = updateSubmissionDto;
+    const { advisorId, mainAuthorId, eventEditionId, title, abstractText, pdfFile, phoneNumber, status, coAdvisor } = updateSubmissionDto;
 
     const existingSubmission = await this.prismaClient.submission.findUnique({
       where: { id },
@@ -173,49 +159,23 @@ export class SubmissionService {
         abstract: abstractText,
         pdfFile,
         phoneNumber,
-        linkedinUrl,
         status: submissionStatus,
+        coAdvisor,
       },
     });
   }
 
-  async updateCoAuthors(submissionId: string, coAuthors: CoAuthorDto[]) {
-    const submissionExists = await this.prismaClient.submission.findUnique({
-      where: { id: submissionId },
-    });
-
-    if (!submissionExists) {
-      throw new AppException('Submissão não encontrada.', 404);
-    }
-
-    await this.prismaClient.coAuthor.deleteMany({
-      where: { submisionId: submissionId },
-    });
-
-
-    return await this.prismaClient.coAuthor.createMany({
-      data: coAuthors.map((coAuthor) => ({
-        submisionId: submissionId,
-        name: coAuthor.name,
-        institution: coAuthor.institution,
-      })),
-    });
-  }
-
   async remove(id: string) {
-    const submissionExists = await this.prismaClient.submission.findUnique({
+    const submission = await this.prismaClient.submission.findUnique({
       where: { id },
     });
 
-    if (!submissionExists) {
+    if (!submission) {
       throw new AppException('Submissão não encontrada.', 404);
     }
 
-    await this.prismaClient.submission.delete({
+    return this.prismaClient.submission.delete({
       where: { id },
     });
-
-    return { message: 'Apresentação removida com sucesso.' };
-
   }
 }

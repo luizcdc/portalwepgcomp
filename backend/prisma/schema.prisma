@@ -182,8 +182,8 @@ model Submission {
   abstract       String           @map("abstract") @db.Text
   pdfFile        String           @map("pdf_file") @db.VarChar(255)
   phoneNumber    String           @map("phone_number") @db.VarChar(20)
-  linkedinUrl    String?          @map("linkedin_url") @db.VarChar(255)
   ranking        Int?             @map("ranking")
+  coAdvisor      String?          @map("co_advisor") @db.VarChar(255)
   status         SubmissionStatus @map("status")
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
@@ -192,7 +192,6 @@ model Submission {
   eventEdition   EventEdition     @relation(fields: [eventEditionId], references: [id])
   Evaluation     Evaluation[]
   Presentation   Presentation[]
-  CoAuthor       CoAuthor[]
 
   @@map("submission")
 }
@@ -276,16 +275,4 @@ model Presentation {
   presentationBlock   PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
 
   @@map("presentation")
-}
-
-model CoAuthor {
-  id          String     @id @default(uuid()) @map("id")
-  submisionId String     @map("submision_id")
-  name        String     @map("name") @db.VarChar(255)
-  institution String     @map("institution") @db.VarChar(255)
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-  submision   Submission @relation(fields: [submisionId], references: [id], onDelete: Cascade)
-
-  @@map("co_author")
 }
