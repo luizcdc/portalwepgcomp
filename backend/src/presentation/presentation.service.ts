@@ -63,7 +63,7 @@ export class PresentationService {
     const blockDuration = presentationBlockExists.duration;
     const presentationDuration = eventEdition.presentationDuration;
 
-    const maxPositionWithinBlock = Math.floor(blockDuration / presentationDuration);
+    const maxPositionWithinBlock = Math.floor(blockDuration / presentationDuration) - 1;
     if (positionWithinBlock > maxPositionWithinBlock) {
       throw new AppException('Posição de apresentação inválida.', 400);
     }
@@ -104,7 +104,7 @@ export class PresentationService {
       coAdvisor,
       presentationBlockId,
       positionWithinBlock,
-      status
+      status,
     } = createPresentationWithSubmissionDto;
   
     // Attempt to create the submission
@@ -126,6 +126,13 @@ export class PresentationService {
         throw error;
       }
       throw new AppException('Erro ao criar a submissão.', 500);
+    }
+  
+    // Check if presentationBlockId and positionWithinBlock are provided
+    if (!presentationBlockId || positionWithinBlock === undefined) {
+      return {
+        submission: createdSubmission,
+      };
     }
   
     // Determine presentation status
@@ -152,7 +159,7 @@ export class PresentationService {
       presentation: createdPresentation,
     };
   }
-
+  
   async findAllByEventEditionId(eventEditionId: string) {
     const presentations = await this.prismaClient.presentation.findMany({
       where: {
@@ -182,66 +189,88 @@ export class PresentationService {
 
   async update(id: string, updatePresentationDto: UpdatePresentationDto) {
     const { submissionId, presentationBlockId, positionWithinBlock, status } = updatePresentationDto;
-
+  
     const existingPresentation = await this.prismaClient.presentation.findUnique({
       where: { id },
     });
-
+  
     const duplicatePresentation = await this.prismaClient.presentation.findFirst({
       where: {
         submissionId: submissionId,
         NOT: { id },
       },
     });
-
+  
     if (duplicatePresentation) {
       throw new AppException('Apresentação já cadastrada.', 400);
     }
-
+  
     if (!existingPresentation) throw new AppException('Apresentação não encontrada.', 404);
-
+  
+    // Validate submission if it is being updated
     if (submissionId) {
       const submissionExists = await this.prismaClient.submission.findUnique({
         where: {
           id: submissionId,
         },
-      })
-
+      });
+  
       if (!submissionExists) {
         throw new AppException('Submissão não encontrada.', 404);
       }
     }
-
+  
+    // Validate presentation block if it is being updated
     if (presentationBlockId) {
       const presentationBlockExists = await this.prismaClient.presentationBlock.findUnique({
         where: {
           id: presentationBlockId,
         },
-      })
-
+      });
+  
       if (!presentationBlockExists) {
         throw new AppException('Bloco de apresentação não encontrado.', 404);
       }
+  
+      // Fetch the event edition for the block to check the presentation duration
+      const eventEdition = await this.prismaClient.eventEdition.findUnique({
+        where: { id: presentationBlockExists.eventEditionId },
+      });
+  
+      if (!eventEdition) {
+        throw new AppException('Evento não encontrado.', 404);
+      }
+  
+      const blockDuration = presentationBlockExists.duration;
+      const presentationDuration = eventEdition.presentationDuration;
+  
+      // Calculate the max position within the block
+      const maxPositionWithinBlock = Math.floor(blockDuration / presentationDuration) - 1;
+      if (positionWithinBlock > maxPositionWithinBlock) {
+        throw new AppException('Posição de apresentação inválida.', 400);
+      }
     }
-
+  
+    // Check if the updated position overlaps with another presentation
     if (positionWithinBlock) {
       const presentationOverlaps = await this.prismaClient.presentation.findFirst({
         where: {
           presentationBlockId: presentationBlockId,
           positionWithinBlock: positionWithinBlock,
+          NOT: { id }, // Ensure the update does not conflict with the existing record
         },
       });
-
+  
       if (presentationOverlaps) {
         throw new AppException('Posição de apresentação já ocupada.', 400);
       }
     }
-
+  
     const updatedPresentation = await this.prismaClient.presentation.update({
       where: { id },
       data: updatePresentationDto,
     });
-
+  
     return updatedPresentation;
   }
 

@@ -1,6 +1,8 @@
-import { IsString, IsOptional, IsEnum,  MinLength, IsUUID, IsNotEmpty, IsInt, Min } from 'class-validator';
-import { SubmissionStatus } from '@prisma/client';
-import { PresentationStatus } from '@prisma/client';
+import { 
+  IsString, IsOptional, IsEnum, MinLength, 
+  IsUUID, IsNotEmpty, IsInt, Min, Matches 
+} from 'class-validator';
+import { SubmissionStatus, PresentationStatus } from '@prisma/client';
 
 export class CreatePresentationWithSubmissionDto {
   @IsUUID()
@@ -21,13 +23,14 @@ export class CreatePresentationWithSubmissionDto {
   abstractText: string;
 
   @IsString()
+  @Matches(/\.(pdf)$/i, { message: 'O arquivo deve ser um PDF válido.' })
   pdfFile: string;
 
   @IsString()
-  @IsNotEmpty()
+  @Matches(/^\+?[1-9]\d{1,14}$/, { message: 'Número de telefone inválido.' })
   phoneNumber: string;
 
-  @IsEnum(SubmissionStatus, { message: 'Status de submissão inválido.' })
+  @IsEnum(SubmissionStatus)
   submissionStatus: SubmissionStatus;
 
   @IsString()
@@ -35,8 +38,8 @@ export class CreatePresentationWithSubmissionDto {
   coAdvisor?: string;
 
   @IsUUID()
-  @IsNotEmpty()
-  presentationBlockId: string;
+  @IsOptional()
+  presentationBlockId?: string;
 
   @IsInt({
     message: 'A posição da apresentação deve ser um número inteiro.',
@@ -44,8 +47,8 @@ export class CreatePresentationWithSubmissionDto {
   @Min(0, {
     message: 'A posição da apresentação deve ser um número não negativo.',
   })
-  @IsNotEmpty()
-  positionWithinBlock: number;
+  @IsOptional()
+  positionWithinBlock?: number;
 
   @IsEnum(PresentationStatus)
   @IsOptional()

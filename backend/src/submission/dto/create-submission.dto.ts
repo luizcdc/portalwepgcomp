@@ -26,7 +26,7 @@ export class CreateSubmissionDto {
   @IsNotEmpty()
   phoneNumber: string;
 
-  @IsEnum(SubmissionStatus, { message: 'Status de submissão inválido.' })
+  @IsEnum(SubmissionStatus)
   status: SubmissionStatus;
 
   @IsString()

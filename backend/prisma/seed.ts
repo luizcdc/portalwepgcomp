@@ -142,14 +142,6 @@ async function main() {
     },
   });
 
-  // Seed for CoAuthor
-  await prisma.coAuthor.create({
-    data: {
-      submisionId: submission.id,
-      name: 'Jane Doe',
-      institution: 'University of ABC',
-    },
-  });
 
   console.log('Seeding completed.');
 }

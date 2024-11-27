@@ -85,7 +85,7 @@ export class SubmissionService {
         eventEditionId,
       },
     });
-}
+  }
 
   async findOne(id: string) {
     const submission = await this.prismaClient.submission.findUnique({
