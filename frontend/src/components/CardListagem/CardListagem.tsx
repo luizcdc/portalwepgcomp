@@ -3,17 +3,20 @@
 import Image from "next/image";
 
 import "./style.scss";
+import Star from "../UI/Star";
 
 interface CardListagem {
   title: string;
   subtitle: string;
   onClick: () => void;
+  showFavorite?: boolean;
 }
 
 export default function CardListagem({
   title,
   subtitle,
   onClick,
+  showFavorite,
 }: Readonly<CardListagem>) {
   return (
     <div className="card-listagem">
@@ -22,7 +25,7 @@ export default function CardListagem({
         <p>{subtitle}</p>
       </div>
       <button onClick={onClick}>
-        <Image src="/assets/images/edit.svg" alt="" width={50} height={50} />
+        {showFavorite ? <Star color={"#F17F0C"} /> : <Image src="/assets/images/edit.svg" alt="" width={50} height={50} />}
       </button>
     </div>
   );
