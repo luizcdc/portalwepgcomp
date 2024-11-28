@@ -139,6 +139,66 @@ describe('SubmissionService', () => {
     });
   });
 
+  describe('findAllByEventEditionId', () => {
+    it('should return submissions by event edition id', async () => {
+      const eventEditionId = 'event123';
+      const submissions = [
+        { id: 'submission123', title: 'Test Submission 1', eventEditionId: eventEditionId },
+        { id: 'submission124', title: 'Test Submission 2', eventEditionId: eventEditionId },
+      ];
+  
+      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(submissions);
+  
+      const result = await service.findAllByEventEditionId(eventEditionId);
+  
+      expect(result).toEqual(submissions);
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { eventEditionId },
+      });
+    });
+  
+    it('should return an empty array if no submissions are found', async () => {
+      const eventEditionId = 'event123';
+  
+      (prismaService.submission.findMany as jest.Mock).mockResolvedValue([]);
+  
+      const result = await service.findAllByEventEditionId(eventEditionId);
+  
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('findAllWithoutPresentation', () => {
+    it('should return submissions without presentation', async () => {
+      const eventEditionId = 'event123';
+      const submissions = [
+        { id: 'submission123', title: 'Test Submission 1', status: SubmissionStatus.Submitted, eventEditionId: eventEditionId, Presentation: [] },
+        { id: 'submission124', title: 'Test Submission 2', status: SubmissionStatus.Submitted, eventEditionId: eventEditionId, Presentation: [] },
+      ];
+  
+      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(submissions);
+  
+      const result = await service.findAllWithoutPresentation(eventEditionId);
+  
+      expect(result).toEqual(submissions);
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { eventEditionId: eventEditionId },
+        include: {
+          Presentation: true,
+        },
+      });
+    });
+  
+    it('should return an empty array if no submissions are found', async () => {
+      const eventEditionId = 'event123';
+      (prismaService.submission.findMany as jest.Mock).mockResolvedValue([]);
+  
+      const result = await service.findAllWithoutPresentation(eventEditionId);
+  
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('findOne', () => {
     it('should find a submission by id', async () => {
       const submission = { id: 'submission123', title: 'Test Submission' };

@@ -90,7 +90,7 @@ export class SubmissionService {
   async findAllWithoutPresentation(eventEditionId: string) {
     return await this.prismaClient.submission.findMany({
       where: {
-        eventEditionId,
+        eventEditionId: eventEditionId,
       },
       include: {
         Presentation: true,
