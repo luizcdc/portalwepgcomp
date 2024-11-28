@@ -1,6 +1,6 @@
 import { 
   IsString, IsOptional, IsEnum, MinLength, 
-  IsUUID, IsNotEmpty, IsInt, Min, Matches 
+  IsUUID, IsNotEmpty, IsInt, Min 
 } from 'class-validator';
 import { SubmissionStatus, PresentationStatus } from '@prisma/client';
 
@@ -23,11 +23,10 @@ export class CreatePresentationWithSubmissionDto {
   abstractText: string;
 
   @IsString()
-  @Matches(/\.(pdf)$/i, { message: 'O arquivo deve ser um PDF válido.' })
   pdfFile: string;
 
   @IsString()
-  @Matches(/^\+?[1-9]\d{1,14}$/, { message: 'Número de telefone inválido.' })
+  @IsNotEmpty()
   phoneNumber: string;
 
   @IsEnum(SubmissionStatus)
