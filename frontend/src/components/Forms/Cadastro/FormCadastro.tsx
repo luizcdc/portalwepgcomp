@@ -6,7 +6,6 @@ import { useUsers } from "@/hooks/useUsers";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import "./style.scss";
-import PasswordEye from "@/components/UI/PasswordEye";
 
 const formCadastroSchema = z
   .object({
@@ -158,9 +157,6 @@ export function FormCadastro() {
 
   const perfil = watch("perfil");
 
-  const [eye1, setEye1] = useState(false);
-  const [eye2, setEye2] = useState(false);
-
   return (
     <form className="row" onSubmit={handleSubmit(handleFormCadastro)}>
       <div className="col-12 mb-1">
@@ -270,20 +266,15 @@ export function FormCadastro() {
           Senha
           <span className="text-danger ms-1 fs-5">*</span>
         </label>
-        <div className="password-input">
-          <input
-            type={eye1? "text": "password"}
-            className="form-control input-title"
-            id="senha"
-            placeholder="Insira sua senha"
-            {...register("senha")}
-            value={senha}
-            onChange={handleChangeSenha}
-          />
-          <div className="eye" onClick={() => setEye1(!eye1)}>
-            <PasswordEye color={eye1==false?"black":"blue"}/>
-          </div>
-        </div>
+        <input
+          type="password"
+          className="form-control input-title"
+          id="senha"
+          placeholder="Insira sua senha"
+          {...register("senha")}
+          value={senha}
+          onChange={handleChangeSenha}
+        />
         <p className="text-danger error-message">{errors.senha?.message}</p>
         <div className="mt-3">
           <p className="mb-1 fw-semibold paragraph-title">
@@ -354,18 +345,13 @@ export function FormCadastro() {
           Confirmação de senha
           <span className="text-danger ms-1 fs-5">*</span>
         </label>
-        <div className="password-input">
-          <input
-            type={eye2? "text": "password"}
-            className="form-control input-title"
-            id="confirmaSenha"
-            placeholder="Insira sua senha novamente"
-            {...register("confirmaSenha")}
-          />
-          <div className="eye" onClick={() => setEye2(!eye2)}>
-            <PasswordEye color={eye2==false?"black":"blue"}/>
-          </div>
-        </div>
+        <input
+          type="password"
+          className="form-control input-title"
+          id="confirmaSenha"
+          placeholder="Insira sua senha novamente"
+          {...register("confirmaSenha")}
+        />
         <p className="text-danger error-message">
           {errors.confirmaSenha?.message}
         </p>
