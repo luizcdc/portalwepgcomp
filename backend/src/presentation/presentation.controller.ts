@@ -36,8 +36,11 @@ export class PresentationController {
     return this.presentationService.update(id, updatePresentationDto);
   }
 
-  @Patch(':id/with-submission')
-  updateWithSubmission(@Param('id') id: string, @Body() updatePresentationWithSubmissionDto: UpdatePresentationWithSubmissionDto) {
+  @Patch('with-submission/:id')
+  updateWithSubmission(
+    @Param('id') id: string, 
+    @Body() updatePresentationWithSubmissionDto: UpdatePresentationWithSubmissionDto
+    ) {
     return this.presentationService.updateWithSubmission(id, updatePresentationWithSubmissionDto);
   }
 

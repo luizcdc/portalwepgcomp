@@ -149,6 +149,9 @@ export class PresentationService {
         status: presentationStatus,
       });
     } catch (error) {
+      // Rool back the submission creation
+      await this.submissionService.remove(createdSubmission.id);
+
       if (error instanceof AppException) {
         throw error;
       }
