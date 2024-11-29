@@ -205,6 +205,7 @@ describe('SubmissionService', () => {
         },
       ];
 
+      // Mocking the database query to match the correct structure
       (prismaService.submission.findMany as jest.Mock).mockResolvedValue(
         submissions,
       );
@@ -213,10 +214,26 @@ describe('SubmissionService', () => {
 
       expect(result).toEqual(submissions);
       expect(prismaService.submission.findMany).toHaveBeenCalledWith({
-        where: { eventEditionId: eventEditionId },
-        include: {
-          Presentation: true,
+        where: {
+          eventEditionId: eventEditionId,
+          Presentation: {
+            none: {},
+          },
         },
+        orderBy: [
+          {
+            proposedPresentationBlockId: {
+              nulls: 'last',
+              sort: 'asc',
+            },
+          },
+          {
+            proposedPositionWithinBlock: {
+              nulls: 'last',
+              sort: 'asc',
+            },
+          },
+        ],
       });
     });
 

@@ -90,6 +90,7 @@ describe('PresentationService', () => {
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: '1',
+        status: SubmissionStatus.Confirmed,
       });
       (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(
         null,
@@ -112,6 +113,7 @@ describe('PresentationService', () => {
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: '1',
+        status: SubmissionStatus.Confirmed,
       });
 
       (prismaService.presentation.findFirst as jest.Mock).mockResolvedValueOnce(
@@ -154,6 +156,7 @@ describe('PresentationService', () => {
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: '1',
+        status: SubmissionStatus.Confirmed,
       });
       (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(
         null,
@@ -203,7 +206,7 @@ describe('PresentationService', () => {
         abstractText: 'Abstract text',
         pdfFile: 'path/to/pdf',
         phoneNumber: '123456789',
-        submissionStatus: SubmissionStatus.Submitted,
+        submissionStatus: SubmissionStatus.Confirmed,
         coAdvisor: 'coAdvisor1',
         presentationBlockId: 'block1',
         positionWithinBlock: 1,
@@ -223,6 +226,7 @@ describe('PresentationService', () => {
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: 'submission1',
+        status: SubmissionStatus.Confirmed,
       });
       (
         prismaService.presentationBlock.findUnique as jest.Mock
@@ -257,7 +261,7 @@ describe('PresentationService', () => {
         abstractText: 'Abstract text',
         pdfFile: 'path/to/pdf',
         phoneNumber: '123456789',
-        submissionStatus: SubmissionStatus.Submitted,
+        submissionStatus: SubmissionStatus.Confirmed,
         coAdvisor: 'coAdvisor1',
       };
 
@@ -298,7 +302,7 @@ describe('PresentationService', () => {
         abstractText: 'Abstract text',
         pdfFile: 'path/to/pdf',
         phoneNumber: '123456789',
-        submissionStatus: SubmissionStatus.Submitted,
+        submissionStatus: SubmissionStatus.Confirmed,
         coAdvisor: 'coAdvisor1',
         presentationBlockId: 'block1',
         positionWithinBlock: 1,
@@ -454,6 +458,7 @@ describe('PresentationService', () => {
       });
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: '1',
+        status: SubmissionStatus.Confirmed,
       });
       (
         prismaService.presentationBlock.findUnique as jest.Mock
@@ -473,6 +478,7 @@ describe('PresentationService', () => {
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: 'validSubmissionId',
+        status: SubmissionStatus.Confirmed,
       });
 
       (
@@ -537,6 +543,7 @@ describe('PresentationService', () => {
       );
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: 'validSubmissionId',
+        status: SubmissionStatus.Confirmed,
       });
       (
         prismaService.presentationBlock.findUnique as jest.Mock
@@ -564,7 +571,7 @@ describe('PresentationService', () => {
         abstractText: 'Updated abstract',
         pdfFile: 'path/to/new/pdf',
         phoneNumber: '987654321',
-        submissionStatus: SubmissionStatus.Submitted,
+        submissionStatus: SubmissionStatus.Confirmed,
         coAdvisor: 'newCoAdvisor',
         presentationBlockId: 'newBlock',
         positionWithinBlock: 2,
@@ -589,6 +596,7 @@ describe('PresentationService', () => {
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: 'submission1',
+        status: SubmissionStatus.Confirmed,
       });
       (
         prismaService.presentationBlock.findUnique as jest.Mock
@@ -622,7 +630,7 @@ describe('PresentationService', () => {
         abstractText: 'Updated abstract',
         pdfFile: 'path/to/new/pdf',
         phoneNumber: '987654321',
-        submissionStatus: SubmissionStatus.Submitted,
+        submissionStatus: SubmissionStatus.Confirmed,
         coAdvisor: 'newCoAdvisor',
         presentationBlockId: 'newBlock',
         positionWithinBlock: 2,
@@ -648,7 +656,7 @@ describe('PresentationService', () => {
         abstractText: 'Updated abstract',
         pdfFile: 'path/to/new/pdf',
         phoneNumber: '987654321',
-        submissionStatus: SubmissionStatus.Submitted,
+        submissionStatus: SubmissionStatus.Confirmed,
         coAdvisor: 'newCoAdvisor',
         presentationBlockId: 'newBlock',
         positionWithinBlock: 2,
