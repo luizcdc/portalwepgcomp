@@ -40,7 +40,7 @@ export default function Endereco() {
       <div>
         <MapContainer
           center={[-13.0, -38.507]}
-          zoom={30}
+          zoom={15}
           placeholder={<MapPlaceholder />}
           style={{
             height: "180px",

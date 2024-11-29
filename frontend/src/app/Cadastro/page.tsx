@@ -9,7 +9,7 @@ export default function Cadastro() {
   const { loadingCreateUser } = useUsers();
 
   return (
-    <div className="container d-flex flex-column flex-grow-1 text-black">
+    <div className="container d-flex flex-column flex-grow-1 text-black cadastro">
       {loadingCreateUser && <LoadingPage />}
       {!loadingCreateUser && (
         <>

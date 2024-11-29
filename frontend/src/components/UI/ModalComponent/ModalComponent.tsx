@@ -38,6 +38,7 @@ export default function ModalComponent({
             <>
               <div className="modal-header header-modal-component">
                 <button
+                  id="close-modal"
                   type="button"
                   className="btn-close close-button"
                   data-bs-dismiss="modal"

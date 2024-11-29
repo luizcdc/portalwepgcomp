@@ -47,6 +47,10 @@
         .listagem-template-cards{
             display: grid;
             gap: 1rem;
+
+            .empty-list {
+                color: #555555;
+            }
         }
 
         .listagem-template-mais-cards{
@@ -56,6 +60,7 @@
             font-weight: 800;
             border: none;
             background-color: #FFA90F;
+            color: white;
             padding: 0.5rem 1rem;
             border-radius: 1.875rem;
 

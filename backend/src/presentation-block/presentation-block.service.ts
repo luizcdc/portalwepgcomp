@@ -44,7 +44,6 @@ export class PresentationBlockService {
         400,
       );
     }
-    // duration is an int, in minutes. To add the minutes to the DateTime, we need to
 
     const endTime =
       createPresentationBlockDto.startTime.getTime() +
@@ -55,6 +54,33 @@ export class PresentationBlockService {
         'O fim da sessão foi marcado para depois do fim da edição do evento',
         400,
       );
+    }
+
+    // For all presentationBlocks of the same event, none can overlap with the new one
+    const presentationBlocks =
+      await this.prismaClient.presentationBlock.findMany({
+        where: {
+          eventEditionId: createPresentationBlockDto.eventEditionId,
+        },
+      });
+
+    if (presentationBlocks != null) {
+      for (const block of presentationBlocks) {
+        const blockEndTime =
+          block.startTime.getTime() + block.duration * 1000 * 60;
+        const blockEndTimeDate = new Date(blockEndTime);
+
+        if (
+          (createPresentationBlockDto.startTime >= block.startTime &&
+            createPresentationBlockDto.startTime < blockEndTimeDate) ||
+          (endTimeDate > block.startTime && endTimeDate <= blockEndTimeDate)
+        ) {
+          throw new AppException(
+            'A sessão informada se sobrepõe a outra sessão já existente',
+            400,
+          );
+        }
+      }
     }
 
     const { presentations, panelists, ...presentationBlockData } =
@@ -125,6 +151,10 @@ export class PresentationBlockService {
       await this.prismaClient.presentationBlock.findMany({
         where: {
           eventEditionId,
+        },
+        include: {
+          presentations: true,
+          panelists: true,
         },
       });
 

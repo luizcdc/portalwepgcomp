@@ -1,0 +1,12 @@
+.dropdown-item:hover {
+    background-color: #019A34;
+    color: white;
+}
+
+.dropdown-item{
+    display: flex;
+    align-items:flex-start;
+    flex-direction: column;
+    gap:15px;
+    font-weight: lighter;
+}

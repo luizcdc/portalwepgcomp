@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Orientacao() {
   return (
     <div
@@ -75,7 +77,7 @@ export default function Orientacao() {
         </div>
       </div>
 
-      <div
+      <Link
         style={{
           border: "solid",
           borderColor: "white",
@@ -90,10 +92,12 @@ export default function Orientacao() {
           fontWeight: "600",
           marginTop: "40px",
           fontSize: "18px",
+          color: "white",
         }}
+        href='/Orientacoes'
       >
         Ver todas as orientações
-      </div>
+      </Link>
     </div>
   );
 }
