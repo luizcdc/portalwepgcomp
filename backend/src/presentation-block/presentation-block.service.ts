@@ -152,6 +152,10 @@ export class PresentationBlockService {
         where: {
           eventEditionId,
         },
+        include: {
+          presentations: true,
+          panelists: true,
+        },
       });
 
     return presentationBlocks;

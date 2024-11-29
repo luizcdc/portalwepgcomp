@@ -22,6 +22,11 @@ export class AuthService {
 
   async signIn(data: SignInDto): Promise<{ token: string }> {
     const user = await this.userService.findByEmail(data.email);
+
+    if (!user) {
+      throw new AppException('Email ou senha inválido', 400);
+    }
+
     if (!(await bcrypt.compare(data.password, user.password))) {
       throw new AppException('Email ou senha inválido', 400);
     }
