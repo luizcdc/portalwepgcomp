@@ -33,8 +33,9 @@ describe('Componente do Formulário de Login', () => {
       cy.get('input#password').type(doutorando.senha);
       cy.get('button[type="submit"]').click();
   
-      // Verificar redirecionamento após o login
-      cy.url().should('eq', Cypress.config().baseUrl + '/');
+      cy.contains('Login realizado com sucesso!').should('be.visible');
+      // Verifica redirecionamento
+      cy.location('pathname').should('eq', '/');
     });
   
     it('Deve permitir o login com credenciais válidas de professor', function () {
@@ -43,8 +44,9 @@ describe('Componente do Formulário de Login', () => {
       cy.get('input#email').type(professor.email);
       cy.get('input#password').type(professor.senha);
       cy.get('button[type="submit"]').click();
-  
-      cy.url().should('eq', Cypress.config().baseUrl + '/');
+
+      cy.contains('Login realizado com sucesso!').should('be.visible');
+      cy.location('pathname').should('eq', '/');
     });
   
     it('Deve permitir o login com credenciais válidas de ouvinte', function () {
@@ -54,7 +56,8 @@ describe('Componente do Formulário de Login', () => {
       cy.get('input#password').type(ouvinte.senha);
       cy.get('button[type="submit"]').click();
   
-      cy.url().should('eq', Cypress.config().baseUrl + '/');
+      cy.contains('Login realizado com sucesso!').should('be.visible');
+      cy.location('pathname').should('eq', '/');
     });
   });
   
