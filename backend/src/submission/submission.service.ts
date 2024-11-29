@@ -6,32 +6,35 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SubmissionStatus } from '@prisma/client';
 import { Profile } from '@prisma/client';
 
-
 @Injectable()
 export class SubmissionService {
-  constructor(private prismaClient: PrismaService) { }
+  constructor(private prismaClient: PrismaService) {}
 
   async create(createSubmissionDto: CreateSubmissionDto) {
-    const { advisorId,
+    const {
+      advisorId,
       mainAuthorId,
       eventEditionId,
-      title, abstractText,
+      title,
+      abstractText,
       pdfFile,
       phoneNumber,
+      proposedPresentationBlockId,
+      proposedPositionWithinBlock,
       status,
-      coAdvisor } = createSubmissionDto;
+      coAdvisor,
+    } = createSubmissionDto;
 
     const users = await this.prismaClient.userAccount.findMany({
       where: {
-        OR: [
-          { id: advisorId },
-          { id: mainAuthorId },
-        ],
+        OR: [{ id: advisorId }, { id: mainAuthorId }],
       },
     });
 
-    const advisorExists = users.some(user => user.id === advisorId && user.profile === Profile.Professor);
-    const mainAuthorExists = users.some(user => user.id === mainAuthorId);
+    const advisorExists = users.some(
+      (user) => user.id === advisorId && user.profile === Profile.Professor,
+    );
+    const mainAuthorExists = users.some((user) => user.id === mainAuthorId);
 
     if (advisorId && !advisorExists) {
       throw new AppException('Orientador não encontrado.', 404);
@@ -41,15 +44,19 @@ export class SubmissionService {
       throw new AppException('Autor principal não encontrado.', 404);
     }
 
-    const mainAuthorAlreadySubmitted = await this.prismaClient.submission.findFirst({
-      where: {
-        mainAuthorId,
-        eventEditionId,
-      },
-    });
+    const mainAuthorAlreadySubmitted =
+      await this.prismaClient.submission.findFirst({
+        where: {
+          mainAuthorId,
+          eventEditionId,
+        },
+      });
 
     if (mainAuthorAlreadySubmitted) {
-      throw new AppException('Autor principal já submeteu uma apresentação para esta edição do evento.', 400);
+      throw new AppException(
+        'Autor principal já submeteu uma apresentação para esta edição do evento.',
+        400,
+      );
     }
 
     const eventEditionExists = await this.prismaClient.eventEdition.findUnique({
@@ -62,6 +69,45 @@ export class SubmissionService {
 
     const submissionStatus = status || SubmissionStatus.Submitted;
 
+    if (
+      proposedPresentationBlockId &&
+      proposedPositionWithinBlock !== undefined
+    ) {
+      const presentationBlockExists =
+        await this.prismaClient.presentationBlock.findUnique({
+          where: { id: proposedPresentationBlockId },
+        });
+
+      if (!presentationBlockExists) {
+        throw new AppException('Bloco de apresentação não encontrado.', 404);
+      }
+
+      const blockDuration = presentationBlockExists.duration;
+      const presentationDuration = eventEditionExists.presentationDuration;
+
+      const maxPositionWithinBlock =
+        Math.floor(blockDuration / presentationDuration) - 1;
+      if (proposedPositionWithinBlock > maxPositionWithinBlock) {
+        throw new AppException('Posição de apresentação inválida.', 400);
+      }
+
+      const presentationExists = await this.prismaClient.presentation.findFirst(
+        {
+          where: {
+            presentationBlockId: proposedPresentationBlockId,
+            positionWithinBlock: proposedPositionWithinBlock,
+          },
+        },
+      );
+
+      if (presentationExists) {
+        throw new AppException(
+          'Já existe uma apresentação aceita nesta posição do bloco.',
+          400,
+        );
+      }
+    }
+
     const createdSubmission = await this.prismaClient.submission.create({
       data: {
         advisorId,
@@ -71,8 +117,10 @@ export class SubmissionService {
         abstract: abstractText,
         pdfFile,
         phoneNumber,
+        proposedPresentationBlockId,
+        proposedPositionWithinBlock,
         status: submissionStatus,
-        coAdvisor, 
+        coAdvisor,
       },
     });
 
@@ -88,19 +136,25 @@ export class SubmissionService {
   }
 
   async findAllWithoutPresentation(eventEditionId: string) {
-    return await this.prismaClient.submission.findMany({
-      where: {
-        eventEditionId: eventEditionId,
-      },
-      include: {
-        Presentation: true,
-      },
-    }).then(submissions => submissions.filter(submission => submission.Presentation.length === 0)); // Filter submissions without presentations
+    return await this.prismaClient.submission
+      .findMany({
+        where: {
+          eventEditionId: eventEditionId,
+        },
+        include: {
+          Presentation: true,
+        },
+      })
+      .then((submissions) =>
+        submissions.filter(
+          (submission) => submission.Presentation.length === 0,
+        ),
+      ); // Filter submissions without presentations
   }
 
   async findOne(id: string) {
     const submission = await this.prismaClient.submission.findUnique({
-        where: { id },
+      where: { id },
     });
 
     if (!submission) throw new AppException('Submissão não encontrada.', 404);
@@ -109,7 +163,17 @@ export class SubmissionService {
   }
 
   async update(id: string, updateSubmissionDto: UpdateSubmissionDto) {
-    const { advisorId, mainAuthorId, eventEditionId, title, abstractText, pdfFile, phoneNumber, status, coAdvisor } = updateSubmissionDto;
+    const {
+      advisorId,
+      mainAuthorId,
+      eventEditionId,
+      title,
+      abstractText,
+      pdfFile,
+      phoneNumber,
+      status,
+      coAdvisor,
+    } = updateSubmissionDto;
 
     const existingSubmission = await this.prismaClient.submission.findUnique({
       where: { id },
@@ -136,23 +200,28 @@ export class SubmissionService {
         throw new AppException('Autor principal não encontrado.', 404);
       }
 
-      const mainAuthorAlreadySubmitted = await this.prismaClient.submission.findFirst({
-        where: {
-          mainAuthorId,
-          eventEditionId: existingSubmission.eventEditionId,
-          NOT: { id },
-        },
-      });
+      const mainAuthorAlreadySubmitted =
+        await this.prismaClient.submission.findFirst({
+          where: {
+            mainAuthorId,
+            eventEditionId: existingSubmission.eventEditionId,
+            NOT: { id },
+          },
+        });
 
       if (mainAuthorAlreadySubmitted) {
-        throw new AppException('Autor principal já submeteu uma apresentação para esta edição do evento.', 400);
+        throw new AppException(
+          'Autor principal já submeteu uma apresentação para esta edição do evento.',
+          400,
+        );
       }
     }
 
     if (eventEditionId) {
-      const eventEditionExists = await this.prismaClient.eventEdition.findUnique({
-        where: { id: eventEditionId },
-      });
+      const eventEditionExists =
+        await this.prismaClient.eventEdition.findUnique({
+          where: { id: eventEditionId },
+        });
       if (!eventEditionExists) {
         throw new AppException('Edição do evento não encontrada.', 404);
       }

@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsEnum,  MinLength, IsUUID, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  MinLength,
+  IsUUID,
+  IsNotEmpty,
+  IsInt,
+  Min,
+} from 'class-validator';
 import { SubmissionStatus } from '@prisma/client';
 
 export class CreateSubmissionDto {
@@ -25,6 +34,17 @@ export class CreateSubmissionDto {
   @IsString()
   @IsNotEmpty()
   phoneNumber: string;
+
+  @IsUUID()
+  proposedPresentationBlockId?: string;
+
+  @IsInt({
+    message: 'A posição da apresentação deve ser um número inteiro.',
+  })
+  @Min(0, {
+    message: 'A posição da apresentação deve ser um número não negativo.',
+  })
+  proposedPositionWithinBlock?: number;
 
   @IsEnum(SubmissionStatus)
   status: SubmissionStatus;
