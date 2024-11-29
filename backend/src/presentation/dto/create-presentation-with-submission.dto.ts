@@ -1,6 +1,12 @@
-import { 
-  IsString, IsOptional, IsEnum, MinLength, 
-  IsUUID, IsNotEmpty, IsInt, Min 
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  MinLength,
+  IsUUID,
+  IsNotEmpty,
+  IsInt,
+  Min,
 } from 'class-validator';
 import { SubmissionStatus, PresentationStatus } from '@prisma/client';
 

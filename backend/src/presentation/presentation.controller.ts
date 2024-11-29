@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PresentationService } from './presentation.service';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { UpdatePresentationDto } from './dto/update-presentation.dto';
@@ -15,14 +23,17 @@ export class PresentationController {
   }
 
   @Post('with-submission')
-  createWithSubmission(@Body() createPresentationWithSubmissionDto: CreatePresentationWithSubmissionDto) {
-    return this.presentationService.createWithSubmission(createPresentationWithSubmissionDto);
+  createWithSubmission(
+    @Body()
+    createPresentationWithSubmissionDto: CreatePresentationWithSubmissionDto,
+  ) {
+    return this.presentationService.createWithSubmission(
+      createPresentationWithSubmissionDto,
+    );
   }
 
   @Get()
-  findAll(
-    @Param('eventEditionId') eventEditionId: string,
-  ) {
+  findAll(@Param('eventEditionId') eventEditionId: string) {
     return this.presentationService.findAllByEventEditionId(eventEditionId);
   }
 
@@ -32,16 +43,23 @@ export class PresentationController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePresentationDto: UpdatePresentationDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePresentationDto: UpdatePresentationDto,
+  ) {
     return this.presentationService.update(id, updatePresentationDto);
   }
 
   @Patch('with-submission/:id')
   updateWithSubmission(
-    @Param('id') id: string, 
-    @Body() updatePresentationWithSubmissionDto: UpdatePresentationWithSubmissionDto
-    ) {
-    return this.presentationService.updateWithSubmission(id, updatePresentationWithSubmissionDto);
+    @Param('id') id: string,
+    @Body()
+    updatePresentationWithSubmissionDto: UpdatePresentationWithSubmissionDto,
+  ) {
+    return this.presentationService.updateWithSubmission(
+      id,
+      updatePresentationWithSubmissionDto,
+    );
   }
 
   @Delete(':id')

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  Delete,
+} from '@nestjs/common';
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
@@ -13,17 +22,21 @@ export class SubmissionController {
   }
 
   @Get()
-  findAll(
-    @Param('eventEditionId') eventEditionId: string,
-  ) {
+  findAll(@Param('eventEditionId') eventEditionId: string) {
     return this.submissionService.findAllByEventEditionId(eventEditionId);
   }
 
   @Get('without-presentation')
-  findAllWithoutPresentation(
-    @Param('eventEditionId') eventEditionId: string
+  async findAllWithoutPresentation(
+    @Query('eventEditionId') eventEditionId: string,
+    @Query('orderByProposedPresentation')
+    orderByProposedPresentation: string = 'false',
   ) {
-    return this.submissionService.findAllWithoutPresentation(eventEditionId);
+    const orderBy = orderByProposedPresentation === 'false' ? false : true; // Convert query param to boolean
+    return this.submissionService.findAllWithoutPresentation(
+      eventEditionId,
+      orderBy,
+    );
   }
 
   @Get(':id')
@@ -32,7 +45,10 @@ export class SubmissionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubmissionDto: UpdateSubmissionDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateSubmissionDto: UpdateSubmissionDto,
+  ) {
     return this.submissionService.update(id, updateSubmissionDto);
   }
 
@@ -40,5 +56,4 @@ export class SubmissionController {
   remove(@Param('id') id: string) {
     return this.submissionService.remove(id);
   }
-
 }

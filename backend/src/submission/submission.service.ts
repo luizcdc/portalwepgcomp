@@ -135,21 +135,26 @@ export class SubmissionService {
     });
   }
 
-  async findAllWithoutPresentation(eventEditionId: string) {
-    return await this.prismaClient.submission
-      .findMany({
-        where: {
-          eventEditionId: eventEditionId,
+  async findAllWithoutPresentation(
+    eventEditionId: string,
+    orderByProposedPresentation: boolean = true,
+  ) {
+    const submissions = await this.prismaClient.submission.findMany({
+      where: {
+        eventEditionId: eventEditionId,
+        Presentation: {
+          none: {},
         },
-        include: {
-          Presentation: true,
-        },
-      })
-      .then((submissions) =>
-        submissions.filter(
-          (submission) => submission.Presentation.length === 0,
-        ),
-      ); // Filter submissions without presentations
+      },
+      orderBy: orderByProposedPresentation
+        ? [
+            { proposedPresentationBlockId: { sort: 'asc', nulls: 'last' } },
+            { proposedPositionWithinBlock: { sort: 'asc', nulls: 'last' } },
+          ]
+        : undefined, // No sorting when false
+    });
+
+    return submissions;
   }
 
   async findOne(id: string) {
@@ -171,6 +176,8 @@ export class SubmissionService {
       abstractText,
       pdfFile,
       phoneNumber,
+      proposedPresentationBlockId,
+      proposedPositionWithinBlock,
       status,
       coAdvisor,
     } = updateSubmissionDto;
@@ -227,6 +234,55 @@ export class SubmissionService {
       }
     }
 
+    if (
+      proposedPresentationBlockId &&
+      proposedPositionWithinBlock !== undefined
+    ) {
+      const proposedPresentationBlockExists =
+        await this.prismaClient.presentationBlock.findUnique({
+          where: { id: proposedPresentationBlockId },
+        });
+
+      if (!proposedPresentationBlockExists) {
+        throw new AppException('Bloco de apresentação não encontrado.', 404);
+      }
+
+      // Fetch the event edition for the block to check the presentation duration
+      const eventEdition = await this.prismaClient.eventEdition.findUnique({
+        where: { id: proposedPresentationBlockExists.eventEditionId },
+      });
+
+      if (!eventEdition) {
+        throw new AppException('Edição do evento não encontrada.', 404);
+      }
+
+      const blockDuration = proposedPresentationBlockExists.duration;
+      const presentationDuration = eventEdition.presentationDuration;
+
+      const maxPositionWithinBlock =
+        Math.floor(blockDuration / presentationDuration) - 1;
+      if (proposedPositionWithinBlock > maxPositionWithinBlock) {
+        throw new AppException('Posição de apresentação inválida.', 400);
+      }
+
+      const presentationExists = await this.prismaClient.presentation.findFirst(
+        {
+          where: {
+            presentationBlockId: proposedPresentationBlockId,
+            positionWithinBlock: proposedPositionWithinBlock,
+            NOT: { submissionId: id },
+          },
+        },
+      );
+
+      if (presentationExists) {
+        throw new AppException(
+          'Já existe uma apresentação aceita nesta posição do bloco.',
+          400,
+        );
+      }
+    }
+
     const submissionStatus = status || SubmissionStatus.Submitted;
 
     return this.prismaClient.submission.update({
@@ -239,6 +295,8 @@ export class SubmissionService {
         abstract: abstractText,
         pdfFile,
         phoneNumber,
+        proposedPresentationBlockId,
+        proposedPositionWithinBlock,
         status: submissionStatus,
         coAdvisor,
       },
