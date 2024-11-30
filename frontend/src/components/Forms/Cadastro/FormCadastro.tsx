@@ -231,26 +231,29 @@ export function FormCadastro() {
         <p className='text-danger error-message'>{errors.perfil?.message}</p>
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label fw-bold fs-5'>
-          Matrícula
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold fs-5">
+          {perfil === "professor" ? "Matrícula SIAPE" : "Matrícula"}
           {perfil !== "ouvinte" && (
-            <span className='text-danger ms-1 fs-5'>*</span>
+            <span className="text-danger ms-1 fs-5">*</span>
           )}
         </label>
         <input
-          type='text'
-          className='form-control input-title'
-          id='matricula'
-          placeholder='Insira sua matrícula'
+          type="text"
+          className="form-control input-title"
+          id="matricula"
+          placeholder={
+            perfil === "professor" ? "Insira sua matrícula SIAPE" : "Insira sua matrícula"
+          }
           {...register("matricula")}
         />
-        <p className='text-danger error-message'>{errors.matricula?.message}</p>
+        <p className="text-danger error-message">{errors.matricula?.message}</p>
       </div>
+
 
       <div className='col-12 mb-1'>
         <label className='form-label fw-bold fs-5'>
-          E-mail UFBA
+        E-mail {perfil !== "ouvinte" && "UFBA"}
           <span className='text-danger ms-1 fs-5'>*</span>
         </label>
         <input
