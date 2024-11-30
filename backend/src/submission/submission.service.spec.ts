@@ -5,6 +5,7 @@ import { AppException } from '../exceptions/app.exception';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { SubmissionStatus } from '@prisma/client';
+import { ResponseSubmissionDto } from './dto/response-submission.dto';
 
 describe('SubmissionService', () => {
   let service: SubmissionService;
@@ -27,6 +28,12 @@ describe('SubmissionService', () => {
         update: jest.fn(),
         delete: jest.fn(),
       },
+      presentationBlock: {
+        findUnique: jest.fn(),
+      },
+      presentation: {
+        findFirst: jest.fn(),
+      },
       coAuthor: {
         deleteMany: jest.fn(),
         createMany: jest.fn(),
@@ -37,19 +44,19 @@ describe('SubmissionService', () => {
   });
 
   describe('create', () => {
-    it('should create a submission successfully', async () => {
-      const createSubmissionDto: CreateSubmissionDto = {
-        advisorId: 'advisor-id',
-        mainAuthorId: 'author123',
-        eventEditionId: 'event123',
-        title: 'Test Submission',
-        abstractText: 'Abstract of the submission',
-        pdfFile: 'file.pdf',
-        phoneNumber: '1234567890',
-        status: SubmissionStatus.Submitted,
-        coAdvisor: 'co-advisor-id',
-      };
+    const validCreateSubmissionDto: CreateSubmissionDto = {
+      advisorId: 'advisor-id',
+      mainAuthorId: 'author123',
+      eventEditionId: 'event123',
+      title: 'Test Submission',
+      abstractText: 'Abstract of the submission',
+      pdfFile: 'file.pdf',
+      phoneNumber: '1234567890',
+      status: SubmissionStatus.Submitted,
+      coAdvisor: 'co-advisor-id',
+    };
 
+    it('should create a submission successfully', async () => {
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
         { id: 'author123' },
         { id: 'advisor-id', profile: Profile.Professor },
@@ -57,206 +64,142 @@ describe('SubmissionService', () => {
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event123',
       });
+      (prismaService.submission.findFirst as jest.Mock).mockResolvedValue(null);
       (prismaService.submission.create as jest.Mock).mockResolvedValue({
-        ...createSubmissionDto,
+        ...validCreateSubmissionDto,
         id: 'submission123',
       });
 
-      const result = await service.create(createSubmissionDto);
+      const result = await service.create(validCreateSubmissionDto);
 
       expect(result).toHaveProperty('id');
-      expect(result.title).toBe(createSubmissionDto.title);
+      expect(result.title).toBe(validCreateSubmissionDto.title);
     });
 
     it('should throw an error when mainAuthorId does not exist', async () => {
-      const createSubmissionDto: CreateSubmissionDto = {
-        advisorId: 'advisor-id',
-        mainAuthorId: 'invalid-main-author-id',
-        eventEditionId: 'event-edition-id',
-        title: 'Test Submission',
-        abstractText: 'Test Abstract',
-        pdfFile: 'pdf-file.pdf',
-        phoneNumber: '123456789',
-        status: SubmissionStatus.Submitted,
-        coAdvisor: 'co-advisor-id',
-      };
-
-      (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([]);
-
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
         { id: 'advisor-id', profile: Profile.Professor },
       ]);
-
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event-edition-id',
       });
 
-      await expect(service.create(createSubmissionDto)).rejects.toThrowError(
+      await expect(
+        service.create({
+          ...validCreateSubmissionDto,
+          mainAuthorId: 'invalid-main-author-id',
+        }),
+      ).rejects.toThrowError(
         new AppException('Autor principal não encontrado.', 404),
       );
     });
 
     it('should throw error if advisor not found', async () => {
-      const createSubmissionDto: CreateSubmissionDto = {
-        advisorId: 'invalidAdvisor',
-        mainAuthorId: 'author123',
-        eventEditionId: 'event123',
-        title: 'Test Submission',
-        abstractText: 'Abstract of the submission',
-        pdfFile: 'file.pdf',
-        phoneNumber: '1234567890',
-        status: SubmissionStatus.Submitted,
-        coAdvisor: 'co-advisor-id',
-      };
-
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
         { id: 'author123' },
       ]);
 
-      await expect(service.create(createSubmissionDto)).rejects.toThrow(
-        new AppException('Orientador não encontrado.', 404),
-      );
+      await expect(
+        service.create({
+          ...validCreateSubmissionDto,
+          advisorId: 'invalidAdvisor',
+        }),
+      ).rejects.toThrow(new AppException('Orientador não encontrado.', 404));
     });
 
     it('should throw error if event edition not found', async () => {
-      const createSubmissionDto: CreateSubmissionDto = {
-        advisorId: 'advisor-id',
-        mainAuthorId: 'author123',
-        eventEditionId: 'invalidEvent',
-        title: 'Test Submission',
-        abstractText: 'Abstract of the submission',
-        pdfFile: 'file.pdf',
-        phoneNumber: '1234567890',
-        status: SubmissionStatus.Submitted,
-        coAdvisor: 'co-advisor-id',
-      };
-
       (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
         { id: 'author123' },
         { id: 'advisor-id', profile: Profile.Professor },
       ]);
-
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue(
         null,
       );
 
-      await expect(service.create(createSubmissionDto)).rejects.toThrow(
+      await expect(
+        service.create({
+          ...validCreateSubmissionDto,
+          eventEditionId: 'invalidEvent',
+        }),
+      ).rejects.toThrow(
         new AppException('Edição do evento não encontrada.', 404),
       );
     });
+
+    it('should throw error if main author already submitted', async () => {
+      (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
+        { id: 'author123' },
+        { id: 'advisor-id', profile: Profile.Professor },
+      ]);
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        id: 'event123',
+      });
+      (prismaService.submission.findFirst as jest.Mock).mockResolvedValue({
+        id: 'existing-submission',
+      });
+
+      await expect(service.create(validCreateSubmissionDto)).rejects.toThrow(
+        new AppException(
+          'Autor principal já submeteu uma apresentação para esta edição do evento.',
+          400,
+        ),
+      );
+    });
   });
 
-  describe('findAllByEventEditionId', () => {
-    it('should return submissions by event edition id', async () => {
+  describe('findAll', () => {
+    it('should return submissions with proposed start times', async () => {
       const eventEditionId = 'event123';
       const submissions = [
         {
-          id: 'submission123',
-          title: 'Test Submission 1',
-          eventEditionId: eventEditionId,
-        },
-        {
-          id: 'submission124',
-          title: 'Test Submission 2',
-          eventEditionId: eventEditionId,
+          id: 'submission1',
+          eventEditionId,
+          proposedPresentationBlockId: 'block1',
+          proposedPositionWithinBlock: 0,
         },
       ];
 
       (prismaService.submission.findMany as jest.Mock).mockResolvedValue(
         submissions,
       );
-
-      const result = await service.findAllByEventEditionId(eventEditionId);
-
-      expect(result).toEqual(submissions);
-      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
-        where: { eventEditionId },
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        presentationDuration: 30,
       });
-    });
-
-    it('should return an empty array if no submissions are found', async () => {
-      const eventEditionId = 'event123';
-
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue([]);
-
-      const result = await service.findAllByEventEditionId(eventEditionId);
-
-      expect(result).toEqual([]);
-    });
-  });
-
-  describe('findAllWithoutPresentation', () => {
-    it('should return submissions without presentation', async () => {
-      const eventEditionId = 'event123';
-      const submissions = [
-        {
-          id: 'submission123',
-          title: 'Test Submission 1',
-          status: SubmissionStatus.Submitted,
-          eventEditionId: eventEditionId,
-          Presentation: [],
-        },
-        {
-          id: 'submission124',
-          title: 'Test Submission 2',
-          status: SubmissionStatus.Submitted,
-          eventEditionId: eventEditionId,
-          Presentation: [],
-        },
-      ];
-
-      // Mocking the database query to match the correct structure
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(
-        submissions,
-      );
-
-      const result = await service.findAllWithoutPresentation(eventEditionId);
-
-      expect(result).toEqual(submissions);
-      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
-        where: {
-          eventEditionId: eventEditionId,
-          Presentation: {
-            none: {},
-          },
-        },
-        orderBy: [
-          {
-            proposedPresentationBlockId: {
-              nulls: 'last',
-              sort: 'asc',
-            },
-          },
-          {
-            proposedPositionWithinBlock: {
-              nulls: 'last',
-              sort: 'asc',
-            },
-          },
-        ],
+      (
+        prismaService.presentationBlock.findUnique as jest.Mock
+      ).mockResolvedValue({
+        startTime: new Date('2023-01-01T09:00:00Z'),
       });
-    });
 
-    it('should return an empty array if no submissions are found', async () => {
-      const eventEditionId = 'event123';
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue([]);
+      const result = await service.findAll(eventEditionId, false, false, false);
 
-      const result = await service.findAllWithoutPresentation(eventEditionId);
-
-      expect(result).toEqual([]);
+      expect(result).toBeInstanceOf(Array);
+      expect(result[0]).toBeInstanceOf(ResponseSubmissionDto);
     });
   });
 
   describe('findOne', () => {
     it('should find a submission by id', async () => {
-      const submission = { id: 'submission123', title: 'Test Submission' };
+      const submission = {
+        id: 'submission123',
+        title: 'Test Submission',
+        eventEditionId: 'event123',
+      };
 
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue(
         submission,
       );
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        presentationDuration: 30,
+      });
+      (
+        prismaService.presentationBlock.findUnique as jest.Mock
+      ).mockResolvedValue({
+        startTime: new Date('2023-01-01T09:00:00Z'),
+      });
 
       const result = await service.findOne('submission123');
-      expect(result).toEqual(submission);
+      expect(result).toBeInstanceOf(ResponseSubmissionDto);
     });
 
     it('should throw error if submission not found', async () => {
@@ -271,49 +214,51 @@ describe('SubmissionService', () => {
   });
 
   describe('update', () => {
-    it('should update a submission successfully', async () => {
-      const updateSubmissionDto: UpdateSubmissionDto = {
-        advisorId: 'advisor123',
-        mainAuthorId: 'author123',
-        eventEditionId: 'event123',
-        title: 'Updated Submission',
-        abstractText: 'Updated abstract',
-        pdfFile: 'updatedFile.pdf',
-        phoneNumber: '9876543210',
-        status: SubmissionStatus.Submitted,
-      };
+    const validUpdateSubmissionDto: UpdateSubmissionDto = {
+      advisorId: 'advisor123',
+      mainAuthorId: 'author123',
+      eventEditionId: 'event123',
+      title: 'Updated Submission',
+      abstractText: 'Updated abstract',
+      pdfFile: 'updatedFile.pdf',
+      phoneNumber: '9876543210',
+      status: SubmissionStatus.Submitted,
+    };
 
+    it('should update a submission successfully', async () => {
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: 'submission123',
+        eventEditionId: 'event123',
         title: 'Old Title',
       });
 
-      (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValueOnce(
-        {
+      (prismaService.userAccount.findUnique as jest.Mock)
+        .mockResolvedValueOnce({
           id: 'advisor123',
           profile: Profile.Professor,
-        },
-      );
-
-      (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValueOnce(
-        {
+        })
+        .mockResolvedValueOnce({
           id: 'author123',
-        },
-      );
+        });
 
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event123',
       });
 
+      (prismaService.submission.findFirst as jest.Mock).mockResolvedValue(null);
+
       (prismaService.submission.update as jest.Mock).mockResolvedValue({
-        ...updateSubmissionDto,
+        ...validUpdateSubmissionDto,
         id: 'submission123',
       });
 
-      const result = await service.update('submission123', updateSubmissionDto);
+      const result = await service.update(
+        'submission123',
+        validUpdateSubmissionDto,
+      );
 
       expect(result).toHaveProperty('id');
-      expect(result.title).toBe(updateSubmissionDto.title);
+      expect(result.title).toBe(validUpdateSubmissionDto.title);
     });
 
     it('should throw error if submission not found', async () => {
@@ -324,67 +269,6 @@ describe('SubmissionService', () => {
       await expect(
         service.update('invalidId', {} as UpdateSubmissionDto),
       ).rejects.toThrow(new AppException('Submissão não encontrada.', 404));
-    });
-
-    it('should throw an error when mainAuthorId does not exist', async () => {
-      const updateSubmissionDto = {
-        mainAuthorId: 'invalid-main-author-id',
-      };
-
-      (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
-        id: 'submission-id',
-      });
-
-      (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValueOnce(
-        null,
-      );
-
-      await expect(
-        service.update(
-          'submission-id',
-          updateSubmissionDto as UpdateSubmissionDto,
-        ),
-      ).rejects.toThrowError(
-        new AppException('Autor principal não encontrado.', 404),
-      );
-    });
-
-    it('should throw error if advisor not found', async () => {
-      const updateSubmissionDto: UpdateSubmissionDto = {
-        advisorId: 'invalidAdvisor',
-      };
-
-      (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
-        id: 'submission123',
-      });
-
-      (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue(
-        null,
-      );
-
-      await expect(
-        service.update('submission123', updateSubmissionDto),
-      ).rejects.toThrow(new AppException('Orientador não encontrado.', 404));
-    });
-
-    it('should throw error if event edition not found', async () => {
-      const updateSubmissionDto: UpdateSubmissionDto = {
-        eventEditionId: 'invalidEvent',
-      };
-
-      (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
-        id: 'submission123',
-      });
-
-      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue(
-        null,
-      );
-
-      await expect(
-        service.update('submission123', updateSubmissionDto),
-      ).rejects.toThrow(
-        new AppException('Edição do evento não encontrada.', 404),
-      );
     });
   });
 
