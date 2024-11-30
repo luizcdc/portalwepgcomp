@@ -130,6 +130,14 @@ describe('AuthService', () => {
         mockUser.password,
       );
     });
+
+    it('should throw an exception if user is not found', async () => {
+      jest.spyOn(userService, 'findByEmail').mockResolvedValue(undefined);
+
+      await expect(
+        authService.signIn({ email: 'test@example.com', password: 'password' }),
+      ).rejects.toThrow(AppException);
+    });
   });
 
   describe('forgotPassword', () => {
