@@ -9,7 +9,7 @@ import "./style.scss";
 const formCadastroSchema = z.object({
   titulo: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "O título/tema é obrigatório."),
+    .min(1, "O título é obrigatório."),
   abstract: z
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "O abstract é obrigatório"),
@@ -18,10 +18,9 @@ const formCadastroSchema = z.object({
     .min(1, "O nome do orientador é obrigatório."),
   coorientador: z.string().optional(),
   data: z.date().optional(),
-  telefone: z
+  celular: z
     .string()
-    .regex(/^\d{10,11}$/, "O telefone deve conter 10 ou 11 dígitos."),
-  linkedin: z.string().url("Insira um link válido para o LinkedIn.").optional(),
+    .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos."),
   slide: z
     .custom<File>((value) => value instanceof FileList && value.length > 0, {
       message: "Arquivo obrigatório!",
@@ -54,12 +53,12 @@ export function FormCadastroApresentacao() {
     >
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
-          Tema da Pesquisa<span className='text-danger ms-1'>*</span>
+          Título da pesquisa<span className='text-danger ms-1'>*</span>
         </label>
         <input
           type='text'
           className='form-control input-title'
-          placeholder='Insira o título ou tema da pesquisa'
+          placeholder='Insira o título da pesquisa'
           {...register("titulo")}
         />
         <p className='text-danger error-message'>{errors.titulo?.message}</p>
@@ -79,21 +78,23 @@ export function FormCadastroApresentacao() {
 
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
-          Nome do Orientador<span className='text-danger ms-1'>*</span>
+          Nome do orientador<span className='text-danger ms-1'>*</span>
         </label>
-        <input
-          type='text'
-          className='form-control input-title'
-          placeholder='Insira o nome do orientador'
-          {...register("orientador")}
-        />
+          <select
+            className="form-control input-title"
+            {...register("orientador")}
+          >
+            <option value="">Selecione o nome do orientador</option>
+            <option value="orientador1">orientador 1</option>
+
+          </select>
         <p className='text-danger error-message'>
           {errors.orientador?.message}
         </p>
       </div>
 
       <div className='col-12 mb-1'>
-        <label className='form-label form-title'>Nome do Coorientador</label>
+        <label className='form-label form-title'>Nome do coorientador</label>
         <input
           type='text'
           className='form-control input-title'
@@ -103,18 +104,18 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className='col-12 mb-1'>
-        <label className='form-label form-title'>Sugestão de Data</label>
+        <label className='form-label form-title'>Sugestão de data</label>
         <input
           type='date'
           className='form-control input-title'
-          placeholder='Insira a sugestão de uma data'
+          placeholder='Insira a sugestão de uma data para a apresentação'
           {...register("data")}
         />
       </div>
 
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
-          Slide da Apresentação (PDF)<span className='text-danger ms-1'>*</span>
+          Slide da apresentação <span className="txt-min">(PDF)</span><span className='text-danger ms-1'>*</span>
         </label>
         <input
           type='file'
@@ -125,28 +126,16 @@ export function FormCadastroApresentacao() {
         <p className='text-danger error-message'>{errors.slide?.message}</p>
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>
-          Telefone do Apresentador<span className='text-danger ms-1'>*</span>
+      <div className="col-12 mb-1">
+        <label className="form-label form-title">
+          Celular <span className="txt-min">(preferência WhatsApp)</span><span className="text-danger ms-1">*</span>
         </label>
-        <input
-          type='text'
-          className='form-control input-title'
-          placeholder='Insira o número de telefone'
-          {...register("telefone")}
+        <input 
+          className="form-control input-title"
+          placeholder="(XX) XXXXX-XXXX"
+          {...register("celular")}
         />
-        <p className='text-danger error-message'>{errors.telefone?.message}</p>
-      </div>
-
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>LinkedIn</label>
-        <input
-          type='url'
-          className='form-control input-title'
-          placeholder='Insira o link do LinkedIn'
-          {...register("linkedin")}
-        />
-        <p className='text-danger error-message'>{errors.linkedin?.message}</p>
+        <p className="text-danger error-message">{errors.celular?.message}</p>
       </div>
 
       <br />
