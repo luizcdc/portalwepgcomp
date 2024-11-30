@@ -22,6 +22,7 @@ describe('UserController', () => {
             create: jest.fn(),
             setAdmin: jest.fn(),
             setSuperAdmin: jest.fn(),
+            remove: jest.fn(),
           },
         },
       ],
@@ -125,6 +126,23 @@ describe('UserController', () => {
 
       expect(userService.setSuperAdmin).toHaveBeenCalledWith(setAdminDto);
       expect(result).toEqual(setSuperAdminResponse);
+    });
+  });
+
+  describe('remove', () => {
+    it('should remove a user by ID', async () => {
+      const userId = '1234';
+
+      const removeResponse = {
+        success: true,
+        message: 'Cadastro de Usuário removido com sucesso.',
+      };
+
+      jest.spyOn(userService, 'remove').mockResolvedValue(removeResponse);
+      const result = await controller.remove(userId);
+
+      expect(userService.remove).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(removeResponse);
     });
   });
 });
