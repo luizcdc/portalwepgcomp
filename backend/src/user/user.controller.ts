@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
@@ -37,5 +38,11 @@ export class UserController {
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   async remove(@Param('id') id: string) {
     return await this.userService.remove(id);
+  }
+
+  @Patch('activate/:id')
+  @UserLevels(UserLevel.Superadmin)
+  async activateUser(@Param('id') id: string) {
+    return this.userService.activateProfessor(id);
   }
 }
