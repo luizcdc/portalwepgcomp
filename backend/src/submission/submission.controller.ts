@@ -11,6 +11,7 @@ import {
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
+import { ResponseSubmissionDto } from './dto/response-submission.dto';
 
 @Controller('submission')
 export class SubmissionController {
@@ -22,20 +23,22 @@ export class SubmissionController {
   }
 
   @Get()
-  findAll(@Param('eventEditionId') eventEditionId: string) {
-    return this.submissionService.findAllByEventEditionId(eventEditionId);
-  }
-
-  @Get('without-presentation')
-  async findAllWithoutPresentation(
+  findAll(
     @Query('eventEditionId') eventEditionId: string,
+    @Query('withoutPresentation') withoutPresentation: string = 'false',
     @Query('orderByProposedPresentation')
     orderByProposedPresentation: string = 'false',
-  ) {
-    const orderBy = orderByProposedPresentation === 'false' ? false : true; // Convert query param to boolean
-    return this.submissionService.findAllWithoutPresentation(
+    @Query('showConfirmedOnly') showConfirmedOnly: string = 'false',
+  ): Promise<ResponseSubmissionDto[]> {
+    const withoutPresentationFlag = withoutPresentation === 'true'; // Convert to boolean
+    const orderByFlag = orderByProposedPresentation === 'true';
+    const showConfirmedOnlyFlag = showConfirmedOnly === 'true';
+
+    return this.submissionService.findAll(
       eventEditionId,
-      orderBy,
+      withoutPresentationFlag,
+      orderByFlag,
+      showConfirmedOnlyFlag,
     );
   }
 

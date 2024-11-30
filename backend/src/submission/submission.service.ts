@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
+import { ResponseSubmissionDto } from './dto/response-submission.dto';
 import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmissionStatus } from '@prisma/client';
@@ -127,24 +128,17 @@ export class SubmissionService {
     return createdSubmission;
   }
 
-  async findAllByEventEditionId(eventEditionId: string) {
-    return await this.prismaClient.submission.findMany({
-      where: {
-        eventEditionId,
-      },
-    });
-  }
-
-  async findAllWithoutPresentation(
+  async findAll(
     eventEditionId: string,
-    orderByProposedPresentation: boolean = true,
-  ) {
+    withoutPresentation: boolean,
+    orderByProposedPresentation: boolean,
+    showConfirmedOnly: boolean, // New parameter to filter confirmed submissions
+  ): Promise<ResponseSubmissionDto[]> {
     const submissions = await this.prismaClient.submission.findMany({
       where: {
         eventEditionId: eventEditionId,
-        Presentation: {
-          none: {},
-        },
+        ...(withoutPresentation && { Presentation: { none: {} } }),
+        ...(showConfirmedOnly && { status: SubmissionStatus.Confirmed }), // Filter for confirmed submissions
       },
       orderBy: orderByProposedPresentation
         ? [
@@ -154,17 +148,87 @@ export class SubmissionService {
         : undefined, // No sorting when false
     });
 
-    return submissions;
+    const result: ResponseSubmissionDto[] = [];
+
+    // calculate the proposed start time for each submission that has a proposed block
+    for (const submission of submissions) {
+      const eventEdition = await this.prismaClient.eventEdition.findUnique({
+        where: { id: submission.eventEditionId },
+        select: { presentationDuration: true },
+      });
+
+      const presentationBlock = submission.proposedPresentationBlockId
+        ? await this.prismaClient.presentationBlock.findUnique({
+            where: { id: submission.proposedPresentationBlockId },
+            select: { startTime: true },
+          })
+        : null;
+
+      const presentationDurationMinutes =
+        eventEdition?.presentationDuration || 0;
+
+      let proposedStartTime: Date | null = null;
+
+      if (
+        presentationBlock?.startTime &&
+        submission.proposedPositionWithinBlock !== null &&
+        submission.proposedPositionWithinBlock !== undefined
+      ) {
+        proposedStartTime = new Date(presentationBlock.startTime);
+        const additionalMinutes =
+          submission.proposedPositionWithinBlock * presentationDurationMinutes;
+
+        // Add the additional minutes
+        proposedStartTime.setMinutes(
+          proposedStartTime.getMinutes() + additionalMinutes,
+        );
+      }
+
+      result.push(new ResponseSubmissionDto(submission, proposedStartTime));
+    }
+
+    return result;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<ResponseSubmissionDto> {
     const submission = await this.prismaClient.submission.findUnique({
       where: { id },
     });
 
-    if (!submission) throw new AppException('Submissão não encontrada.', 404);
+    if (!submission) {
+      throw new AppException('Submissão não encontrada.', 404);
+    }
 
-    return submission;
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: { id: submission.eventEditionId },
+      select: { presentationDuration: true },
+    });
+
+    const presentationBlock = submission.proposedPresentationBlockId
+      ? await this.prismaClient.presentationBlock.findUnique({
+          where: { id: submission.proposedPresentationBlockId },
+          select: { startTime: true },
+        })
+      : null;
+
+    const presentationDurationMinutes = eventEdition?.presentationDuration || 0;
+    let proposedStartTime: Date | null = null;
+
+    if (
+      presentationBlock?.startTime &&
+      submission.proposedPositionWithinBlock !== null &&
+      submission.proposedPositionWithinBlock !== undefined
+    ) {
+      proposedStartTime = new Date(presentationBlock.startTime);
+      const additionalMinutes =
+        submission.proposedPositionWithinBlock * presentationDurationMinutes;
+      proposedStartTime.setMinutes(
+        proposedStartTime.getMinutes() + additionalMinutes,
+      );
+    }
+
+    // Return the DTO
+    return new ResponseSubmissionDto(submission, proposedStartTime);
   }
 
   async update(id: string, updateSubmissionDto: UpdateSubmissionDto) {
