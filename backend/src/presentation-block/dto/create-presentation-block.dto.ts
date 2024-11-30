@@ -65,10 +65,17 @@ export class CreatePresentationBlockDto {
   @Min(5, {
     message: 'A sessão deve ter no mínimo 5 minutos de duração',
   })
+  @IsOptional()
   @Max(720, {
     message: 'A sessão não pode durar mais que 12 horas',
   })
-  duration: number;
+  duration?: number;
+
+  @IsOptional()
+  @Min(1, {
+    message: 'O número de apresentações deve ser no mínimo 1.',
+  })
+  numPresentations?: number;
 
   @IsOptional()
   @IsUUID('4', {
