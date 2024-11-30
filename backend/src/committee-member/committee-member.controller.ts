@@ -23,8 +23,8 @@ export class CommitteeMemberController {
   }
 
   @Get()
-  async findAll() {
-    return await this.committeeMemberService.findAll();
+  async findAll(@Param('eventEditionId') eventEditionId: string) {
+    return await this.committeeMemberService.findAll(eventEditionId);
   }
 
   @Get(':id')
@@ -40,6 +40,20 @@ export class CommitteeMemberController {
     return await this.committeeMemberService.update(
       id,
       updateCommitteeMemberDto,
+    );
+  }
+
+  @Patch()
+  async updateByUserAndEvent(
+    @Param('userId') userId: string,
+    @Param('eventEditionId') eventEditionId: string,
+    @Body() updateCommitteeMemberDto: UpdateCommitteeMemberDto,
+  ) {
+    return await this.committeeMemberService.update(
+      null,
+      updateCommitteeMemberDto,
+      userId,
+      eventEditionId,
     );
   }
 

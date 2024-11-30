@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommitteeMemberDto } from './dto/create-committee-member.dto';
 import { ResponseCommitteeMemberDto } from './dto/response-committee-member.dto';
 import { UpdateCommitteeMemberDto } from './dto/update-committee-member.dto';
+import { UserLevel, CommitteeLevel } from '@prisma/client';
 
 @Injectable()
 export class CommitteeMemberService {
@@ -18,20 +19,112 @@ export class CommitteeMemberService {
       createCommitteeMemberDto.userId,
     );
 
-    const created = await this.prismaClient.committeeMember.create({
-      data: createCommitteeMemberDto,
-    });
-    if (created == null) {
-      throw new BadRequestException(
-        'Não foi possível criar o membro da comissão',
-      );
-    } else {
+    return await this.prismaClient.$transaction(async (prisma) => {
+      if (createCommitteeMemberDto.level === CommitteeLevel.Coordinator) {
+        const currentCoordinator = await prisma.committeeMember.findFirst({
+          where: {
+            eventEditionId: createCommitteeMemberDto.eventEditionId,
+            level: CommitteeLevel.Coordinator,
+          },
+        });
+
+        if (currentCoordinator) {
+          await prisma.committeeMember.delete({
+            where: { id: currentCoordinator.id },
+          });
+        }
+      }
+
+      const created = await prisma.committeeMember.create({
+        data: createCommitteeMemberDto,
+      });
+      if (created) {
+        await this.promoteUser(
+          createCommitteeMemberDto.userId,
+          createCommitteeMemberDto.level,
+        );
+      }
+
+      if (!created) {
+        throw new BadRequestException(
+          'Não foi possível criar o membro da comissão',
+        );
+      }
+
       return new ResponseCommitteeMemberDto(created);
-    }
+    });
+    // before
+    //   async create(createCommitteeMemberDto: CreateCommitteeMemberDto) {
+    //   await this.validateEventEditionAndUser(
+    //     createCommitteeMemberDto.eventEditionId,
+    //     createCommitteeMemberDto.userId,
+    //   );
+
+    //   const created = await this.prismaClient.committeeMember.create({
+    //     data: createCommitteeMemberDto,
+    //   });
+
+    //   if (createCommitteeMemberDto.level === CommitteeLevel.Coordinator) {
+    //     // Although two users can't be coordinators at the same time,
+    //     // once a coordinator, the user doesn't stop being a superadmin
+    //     const currentCoordinator =
+    //       await this.prismaClient.committeeMember.findFirst({
+    //         where: {
+    //           eventEditionId: createCommitteeMemberDto.eventEditionId,
+    //           level: CommitteeLevel.Coordinator,
+    //         },
+    //       });
+
+    //     if (currentCoordinator) {
+    //       await this.prismaClient.committeeMember.delete({
+    //         where: { id: currentCoordinator.id },
+    //       });
+    //     }
+    //   }
+
+    //   await this.promoteUser(
+    //     createCommitteeMemberDto.userId,
+    //     createCommitteeMemberDto.level,
+    //   );
+
+    //   if (created == null) {
+    //     throw new BadRequestException(
+    //       'Não foi possível criar o membro da comissão',
+    //     );
+    //   } else {
+    //     return new ResponseCommitteeMemberDto(created);
+    //   }
+    // }
   }
 
-  async findAll() {
-    const found = await this.prismaClient.committeeMember.findMany();
+  private async promoteUser(userId: string, committeeLevel: CommitteeLevel) {
+    await this.prismaClient.userAccount.update({
+      where: { id: userId },
+      data: {
+        level:
+          committeeLevel === CommitteeLevel.Coordinator
+            ? UserLevel.Superadmin
+            : UserLevel.Admin,
+      },
+    });
+  }
+
+  private async demoteUser(userId: string, committeeLevel: CommitteeLevel) {
+    await this.prismaClient.userAccount.update({
+      where: { id: userId },
+      data: {
+        level:
+          committeeLevel === CommitteeLevel.Coordinator
+            ? UserLevel.Superadmin
+            : UserLevel.Default,
+      },
+    });
+  }
+
+  async findAll(eventEditionId: string) {
+    const found = await this.prismaClient.committeeMember.findMany({
+      where: { eventEditionId },
+    });
     return found.map(
       (committeeMember) => new ResponseCommitteeMemberDto(committeeMember),
     );
@@ -49,21 +142,78 @@ export class CommitteeMemberService {
     return new ResponseCommitteeMemberDto(committeeMember);
   }
 
-  async update(id: string, updateCommitteeMemberDto: UpdateCommitteeMemberDto) {
-    await this.findOne(id);
+  async update(
+    id: string | null,
+    updateCommitteeMemberDto: UpdateCommitteeMemberDto,
+    userId?: string,
+    eventEditionId?: string,
+  ) {
+    let committeeMember;
+
+    if (id) {
+      committeeMember = await this.findOne(id);
+    } else if (userId && eventEditionId) {
+      // no need to call this.validateEventEditionAndUser because
+      // we're already querying for it anyway
+      committeeMember = await this.getCommitteeMember(userId, eventEditionId);
+
+      if (!committeeMember) {
+        throw new NotFoundException('Membro da comissão não encontrado');
+      }
+    } else {
+      throw new BadRequestException(
+        'ID ou userId e eventEditionId são necessários',
+      );
+    }
+
     const result = await this.prismaClient.committeeMember.update({
-      where: { id },
+      where: { id: committeeMember.id },
       data: updateCommitteeMemberDto,
     });
+
     return new ResponseCommitteeMemberDto(result);
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
+  async remove(id: string, userId?: string, eventEditionId?: string) {
+    let committeeMember;
+    if (id) {
+      committeeMember = await this.prismaClient.committeeMember.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!committeeMember) {
+        throw new NotFoundException('Membro da comissão não encontrado');
+      }
+    } else if (userId && eventEditionId) {
+      // no need to call this.validateEventEditionAndUser because
+      // we're already querying for it anyway
+      committeeMember = await this.getCommitteeMember(userId, eventEditionId);
+      id = committeeMember.id;
+    }
+    await this.demoteUser(
+      committeeMember.userId,
+      committeeMember.committeeLevel,
+    );
     const result = await this.prismaClient.committeeMember.delete({
       where: { id },
     });
     return new ResponseCommitteeMemberDto(result);
+  }
+
+  private async getCommitteeMember(userId: string, eventEditionId: string) {
+    const committeeMember = await this.prismaClient.committeeMember.findFirst({
+      where: {
+        userId,
+        eventEditionId,
+      },
+    });
+
+    if (!committeeMember) {
+      throw new NotFoundException('Membro da comissão não encontrado');
+    }
+
+    return committeeMember;
   }
 
   private async validateEventEditionAndUser(

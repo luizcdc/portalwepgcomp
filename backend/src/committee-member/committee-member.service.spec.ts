@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommitteeMemberDto } from './dto/create-committee-member.dto';
 import { UpdateCommitteeMemberDto } from './dto/update-committee-member.dto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { CommitteeLevel, CommitteeRole } from '@prisma/client';
+import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
 
 describe('CommitteeMemberService', () => {
   let service: CommitteeMemberService;
@@ -67,6 +67,13 @@ describe('CommitteeMemberService', () => {
       prismaService.committeeMember.create = jest
         .fn()
         .mockResolvedValue(createDto);
+      prismaService.userAccount.update = jest.fn().mockResolvedValue(null);
+      prismaService.committeeMember.findFirst = jest.fn().mockResolvedValue({
+        id: '1',
+      });
+      prismaService.$transaction = jest.fn().mockImplementation((callback) => {
+        return callback(prismaService);
+      });
 
       const result = await service.create(createDto);
 
@@ -102,7 +109,15 @@ describe('CommitteeMemberService', () => {
       prismaService.userAccount.findUnique = jest
         .fn()
         .mockResolvedValue({ id: 'user-123' });
+      prismaService.userAccount.update = jest.fn().mockResolvedValue(null);
       prismaService.committeeMember.create = jest.fn().mockResolvedValue(null);
+      prismaService.committeeMember.findFirst = jest.fn().mockResolvedValue({
+        id: '1',
+      });
+      // mock $transaction and the callback function
+      prismaService.$transaction = jest.fn().mockImplementation((callback) => {
+        return callback(prismaService);
+      });
 
       await expect(service.create(createDto)).rejects.toThrow(
         BadRequestException,
@@ -112,12 +127,15 @@ describe('CommitteeMemberService', () => {
 
   describe('findAll', () => {
     it('should return an array of committee members', async () => {
-      const expectedResult = [{ id: '1' }, { id: '2' }];
+      const expectedResult = [
+        { id: '1', eventEditionId: '1' },
+        { id: '3', eventEditionId: '1' },
+      ];
       prismaService.committeeMember.findMany = jest
         .fn()
         .mockResolvedValue(expectedResult);
 
-      const result = await service.findAll();
+      const result = await service.findAll('1');
 
       expect(result).toEqual(expectedResult.map(expect.objectContaining));
     });
@@ -183,13 +201,28 @@ describe('CommitteeMemberService', () => {
 
   describe('remove', () => {
     it('should remove a committee member', async () => {
-      const existingMember = { id: '1' };
+      const existingMember = {
+        id: '1',
+        eventEditionId: '1',
+        userId: '1',
+        level: CommitteeLevel.Committee,
+        role: CommitteeRole.OrganizingCommittee,
+      };
+      const existingUser = { id: '1', level: UserLevel.Admin };
       prismaService.committeeMember.findUnique = jest
         .fn()
         .mockResolvedValue(existingMember);
       prismaService.committeeMember.delete = jest
         .fn()
         .mockResolvedValue(existingMember);
+
+      prismaService.committeeMember.findFirst = jest
+        .fn()
+        .mockResolvedValue(existingMember);
+
+      prismaService.userAccount.update = jest
+        .fn()
+        .mockResolvedValue(existingUser);
 
       const result = await service.remove('1');
 
@@ -201,6 +234,9 @@ describe('CommitteeMemberService', () => {
 
     it('should throw NotFoundException if committee member not found', async () => {
       prismaService.committeeMember.findUnique = jest
+        .fn()
+        .mockResolvedValue(null);
+      prismaService.committeeMember.findFirst = jest
         .fn()
         .mockResolvedValue(null);
 

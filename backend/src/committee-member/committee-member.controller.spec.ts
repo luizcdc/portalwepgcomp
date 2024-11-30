@@ -63,13 +63,28 @@ describe('CommitteeMemberController', () => {
 
   describe('findAll', () => {
     it('should return an array of committee members', async () => {
-      const expectedResult = [{ id: '1' }, { id: '2' }];
-      mockCommitteeMemberService.findAll.mockResolvedValue(expectedResult);
+      const allCommitteeMembers = [
+        { id: '1', eventEditionId: '1' },
+        { id: '3', eventEditionId: '1' },
+        { id: '2', eventEditionId: '2' },
+      ];
+      const expectedResult = [
+        { id: '1', eventEditionId: '1' },
+        { id: '3', eventEditionId: '1' },
+      ];
+      mockCommitteeMemberService.findAll.mockImplementation(
+        (eventEditionId: string) =>
+          Promise.resolve(
+            allCommitteeMembers.filter(
+              (member) => member.eventEditionId === eventEditionId,
+            ),
+          ),
+      );
 
-      const result = await controller.findAll();
+      const result = await controller.findAll('1');
 
       expect(result).toEqual(expectedResult);
-      expect(service.findAll).toHaveBeenCalled();
+      expect(service.findAll).toHaveBeenCalledWith('1');
     });
   });
 
