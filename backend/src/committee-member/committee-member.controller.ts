@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CommitteeMemberService } from './committee-member.service';
 import { CreateCommitteeMemberDto } from './dto/create-committee-member.dto';
@@ -23,7 +24,7 @@ export class CommitteeMemberController {
   }
 
   @Get()
-  async findAll(@Param('eventEditionId') eventEditionId: string) {
+  async findAll(@Query('eventEditionId') eventEditionId: string) {
     return await this.committeeMemberService.findAll(eventEditionId);
   }
 
@@ -45,8 +46,8 @@ export class CommitteeMemberController {
 
   @Patch()
   async updateByUserAndEvent(
-    @Param('userId') userId: string,
-    @Param('eventEditionId') eventEditionId: string,
+    @Query('userId') userId: string,
+    @Query('eventEditionId') eventEditionId: string,
     @Body() updateCommitteeMemberDto: UpdateCommitteeMemberDto,
   ) {
     return await this.committeeMemberService.update(
@@ -64,8 +65,8 @@ export class CommitteeMemberController {
 
   @Delete()
   async removeByUserAndEvent(
-    @Param('userId') userId: string,
-    @Param('eventEditionId') eventEditionId: string,
+    @Query('userId') userId: string,
+    @Query('eventEditionId') eventEditionId: string,
   ) {
     return await this.committeeMemberService.remove(
       null,

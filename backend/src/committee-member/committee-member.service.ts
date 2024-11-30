@@ -34,10 +34,16 @@ export class CommitteeMemberService {
           });
         }
       }
-
-      const created = await prisma.committeeMember.create({
-        data: createCommitteeMemberDto,
-      });
+      let created = null;
+      try {
+        created = await prisma.committeeMember.create({
+          data: createCommitteeMemberDto,
+        });
+      } catch (error) {
+        return new BadRequestException(
+          'Não foi possível criar o membro da comissão: ' + error,
+        );
+      }
       if (created) {
         await this.promoteUser(
           createCommitteeMemberDto.userId,
@@ -53,48 +59,6 @@ export class CommitteeMemberService {
 
       return new ResponseCommitteeMemberDto(created);
     });
-    // before
-    //   async create(createCommitteeMemberDto: CreateCommitteeMemberDto) {
-    //   await this.validateEventEditionAndUser(
-    //     createCommitteeMemberDto.eventEditionId,
-    //     createCommitteeMemberDto.userId,
-    //   );
-
-    //   const created = await this.prismaClient.committeeMember.create({
-    //     data: createCommitteeMemberDto,
-    //   });
-
-    //   if (createCommitteeMemberDto.level === CommitteeLevel.Coordinator) {
-    //     // Although two users can't be coordinators at the same time,
-    //     // once a coordinator, the user doesn't stop being a superadmin
-    //     const currentCoordinator =
-    //       await this.prismaClient.committeeMember.findFirst({
-    //         where: {
-    //           eventEditionId: createCommitteeMemberDto.eventEditionId,
-    //           level: CommitteeLevel.Coordinator,
-    //         },
-    //       });
-
-    //     if (currentCoordinator) {
-    //       await this.prismaClient.committeeMember.delete({
-    //         where: { id: currentCoordinator.id },
-    //       });
-    //     }
-    //   }
-
-    //   await this.promoteUser(
-    //     createCommitteeMemberDto.userId,
-    //     createCommitteeMemberDto.level,
-    //   );
-
-    //   if (created == null) {
-    //     throw new BadRequestException(
-    //       'Não foi possível criar o membro da comissão',
-    //     );
-    //   } else {
-    //     return new ResponseCommitteeMemberDto(created);
-    //   }
-    // }
   }
 
   private async promoteUser(userId: string, committeeLevel: CommitteeLevel) {
@@ -170,6 +134,10 @@ export class CommitteeMemberService {
       where: { id: committeeMember.id },
       data: updateCommitteeMemberDto,
     });
+
+    if (updateCommitteeMemberDto.level) {
+      await this.promoteUser(result.userId, result.level);
+    }
 
     return new ResponseCommitteeMemberDto(result);
   }
