@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { options } from "./../../../mocks/Forms";
 import "./style.scss";

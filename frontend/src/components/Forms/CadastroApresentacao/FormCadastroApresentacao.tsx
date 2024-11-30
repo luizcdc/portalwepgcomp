@@ -1,3 +1,5 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -47,115 +49,115 @@ export function FormCadastroApresentacao() {
 
   return (
     <form
-      className="row cadastroApresentacao"
+      className='row cadastroApresentacao'
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Tema da Pesquisa<span className="text-danger ms-1">*</span>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
+          Tema da Pesquisa<span className='text-danger ms-1'>*</span>
         </label>
         <input
-          type="text"
-          className="form-control input-title"
-          placeholder="Insira o título ou tema da pesquisa"
+          type='text'
+          className='form-control input-title'
+          placeholder='Insira o título ou tema da pesquisa'
           {...register("titulo")}
         />
-        <p className="text-danger error-message">{errors.titulo?.message}</p>
+        <p className='text-danger error-message'>{errors.titulo?.message}</p>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Abstract<span className="text-danger ms-1">*</span>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
+          Abstract<span className='text-danger ms-1'>*</span>
         </label>
         <textarea
-          className="form-control input-title"
-          placeholder="Insira o resumo da pesquisa"
+          className='form-control input-title'
+          placeholder='Insira o resumo da pesquisa'
           {...register("abstract")}
         />
-        <p className="text-danger error-message">{errors.abstract?.message}</p>
+        <p className='text-danger error-message'>{errors.abstract?.message}</p>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Nome do Orientador<span className="text-danger ms-1">*</span>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
+          Nome do Orientador<span className='text-danger ms-1'>*</span>
         </label>
         <input
-          type="text"
-          className="form-control input-title"
-          placeholder="Insira o nome do orientador"
+          type='text'
+          className='form-control input-title'
+          placeholder='Insira o nome do orientador'
           {...register("orientador")}
         />
-        <p className="text-danger error-message">
+        <p className='text-danger error-message'>
           {errors.orientador?.message}
         </p>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">Nome do Coorientador</label>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>Nome do Coorientador</label>
         <input
-          type="text"
-          className="form-control input-title"
-          placeholder="Insira o nome do coorientador"
+          type='text'
+          className='form-control input-title'
+          placeholder='Insira o nome do coorientador'
           {...register("coorientador")}
         />
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">Sugestão de Data</label>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>Sugestão de Data</label>
         <input
-          type="date"
-          className="form-control input-title"
-          placeholder="Insira a sugestão de uma data"
+          type='date'
+          className='form-control input-title'
+          placeholder='Insira a sugestão de uma data'
           {...register("data")}
         />
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Slide da Apresentação (PDF)<span className="text-danger ms-1">*</span>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
+          Slide da Apresentação (PDF)<span className='text-danger ms-1'>*</span>
         </label>
         <input
-          type="file"
-          className="form-control input-title"
-          accept=".pdf"
+          type='file'
+          className='form-control input-title'
+          accept='.pdf'
           {...register("slide")}
         />
-        <p className="text-danger error-message">{errors.slide?.message}</p>
+        <p className='text-danger error-message'>{errors.slide?.message}</p>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Telefone do Apresentador<span className="text-danger ms-1">*</span>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
+          Telefone do Apresentador<span className='text-danger ms-1'>*</span>
         </label>
         <input
-          type="text"
-          className="form-control input-title"
-          placeholder="Insira o número de telefone"
+          type='text'
+          className='form-control input-title'
+          placeholder='Insira o número de telefone'
           {...register("telefone")}
         />
-        <p className="text-danger error-message">{errors.telefone?.message}</p>
+        <p className='text-danger error-message'>{errors.telefone?.message}</p>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">LinkedIn</label>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>LinkedIn</label>
         <input
-          type="url"
-          className="form-control input-title"
-          placeholder="Insira o link do LinkedIn"
+          type='url'
+          className='form-control input-title'
+          placeholder='Insira o link do LinkedIn'
           {...register("linkedin")}
         />
-        <p className="text-danger error-message">{errors.linkedin?.message}</p>
+        <p className='text-danger error-message'>{errors.linkedin?.message}</p>
       </div>
 
       <br />
       <br />
 
-      <div className="d-grid gap-2 col-3 mx-auto">
+      <div className='d-grid gap-2 col-3 mx-auto'>
         <button
-          data-bs-target="#apresentacaoModal"
-          type="submit"
-          data-bs-toggle="modal"
-          className="btn text-white fs-5 submit-button"
+          data-bs-target='#apresentacaoModal'
+          type='submit'
+          data-bs-toggle='modal'
+          className='btn text-white fs-5 submit-button'
         >
           {pathname.includes("Cadastro") ? "Cadastrar" : "Alterar"}
         </button>
