@@ -19,12 +19,7 @@ export default function Apresentacoes() {
   }, [searchValue]);
 
   return (
-    <div
-      className="d-flex flex-column"
-      style={{
-        gap: "50px",
-      }}
-    >
+    <div className="d-flex flex-column listagem">
       <Listagem
         idModal="editarApresentacaoModal"
         title={title}
