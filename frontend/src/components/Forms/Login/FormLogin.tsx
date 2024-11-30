@@ -2,11 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import PasswordEye from "@/components/UI/PasswordEye";
 
 import "./style.scss";
 
@@ -40,8 +39,6 @@ export function FormLogin() {
   });
   const { singIn, signed } = useContext(AuthContext);
   const router = useRouter();
-
-  const [eye, setEye] = useState(false);
 
   async function handleLogin(data: UserLogin) {
     const { email, password } = data;
@@ -78,18 +75,13 @@ export function FormLogin() {
             Senha
             <span className="text-danger ms-1">*</span>
           </label>
-          <div className="password-input">
-            <input
-              type={eye? "text": "password"}
-              className="form-control input-title"
-              id="password"
-              placeholder="digite sua senha"
-              {...register("password")}
-            />
-            <div className="eye" onClick={() => setEye(!eye)}>
-              <PasswordEye color={eye==false?"black":"blue"}/>
-            </div>
-          </div>
+          <input
+            type="password"
+            className="form-control input-title"
+            id="password"
+            placeholder="digite sua senha"
+            {...register("password")}
+          />
           <p className="text-danger error-message">
             {errors.password?.message}
           </p>
