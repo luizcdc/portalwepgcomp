@@ -1,7 +1,4 @@
 "use client";
-// import { Modal } from "bootstrap";
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { createContext, ReactNode, useState } from "react";
 
@@ -74,10 +71,6 @@ export const SessionProvider = ({ children }: SessionProps) => {
 
   const createSession = async (body: SessaoParams) => {
     setLoadingSessao(true);
-    // const modalElement = document.getElementById("sessaoModal");
-    // const modalElementButton = document.getElementById(
-    //   "close-modal"
-    // ) as HTMLButtonElement;
 
     sessionApi
       .createSession(body)
@@ -90,16 +83,6 @@ export const SessionProvider = ({ children }: SessionProps) => {
           timer: 3000,
           showConfirmButton: false,
         });
-
-        // if (modalElement) {
-        //   const bootstrapModal =
-        //     Modal.getInstance(modalElement) || new Modal(modalElement);
-        //   bootstrapModal.hide();
-        // }
-
-        // if (modalElementButton) {
-        //   modalElementButton.click();
-        // }
       })
       .catch((err) => {
         console.log(err.response.data.message);
