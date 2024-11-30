@@ -55,7 +55,7 @@ export class SubmissionService {
 
     if (mainAuthorAlreadySubmitted) {
       throw new AppException(
-        'Autor principal já submeteu uma apresentação para esta edição do evento.',
+        'Autor principal já enviou uma submissão para esta edição do evento.',
         400,
       );
     }
