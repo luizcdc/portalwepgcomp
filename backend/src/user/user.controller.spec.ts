@@ -22,6 +22,7 @@ describe('UserController', () => {
             create: jest.fn(),
             setAdmin: jest.fn(),
             setSuperAdmin: jest.fn(),
+            activateProfessor: jest.fn(),
           },
         },
       ],
@@ -127,4 +128,34 @@ describe('UserController', () => {
       expect(result).toEqual(setSuperAdminResponse);
     });
   });
+
+  describe('activateUser', () => {
+    it('should activate a user and return the result', async () => {
+      // Arrange
+      const userId = '1234';
+      const expectedResponse = {
+        id: '1234',
+        name: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        password: 'password123',
+        registrationNumber: 'REG12345',
+        photoFilePath: 'photo/url/path',
+        profile: Profile.Professor,
+        level: UserLevel.Admin,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      jest
+        .spyOn(userService, 'activateProfessor')
+        .mockResolvedValue(expectedResponse);
+
+      const result = await controller.activateUser(userId);
+
+      expect(userService.activateProfessor).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(expectedResponse);
+    });
+  });
+
 });
