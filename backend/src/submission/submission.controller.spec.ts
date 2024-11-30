@@ -7,12 +7,12 @@ describe('SubmissionController', () => {
   let service: SubmissionService;
 
   const mockSubmissionService = {
-    create:  jest.fn().mockResolvedValue({}),
+    create: jest.fn().mockResolvedValue({}),
     findAll: jest.fn().mockResolvedValue([]),
     findOne: jest.fn().mockResolvedValue([]),
-    update:  jest.fn().mockResolvedValue([]),
-    remove:  jest.fn().mockResolvedValue([]),
-  }
+    update: jest.fn().mockResolvedValue([]),
+    remove: jest.fn().mockResolvedValue([]),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,7 +21,7 @@ describe('SubmissionController', () => {
         {
           provide: SubmissionService,
           useValue: mockSubmissionService,
-          },
+        },
       ],
     }).compile();
 

@@ -1,8 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  Delete,
+} from '@nestjs/common';
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
-import { CoAuthorDto } from './dto/co-author.dto';
+import { ResponseSubmissionDto } from './dto/response-submission.dto';
 
 @Controller('submission')
 export class SubmissionController {
@@ -14,8 +23,23 @@ export class SubmissionController {
   }
 
   @Get()
-  findAll() {
-    return this.submissionService.findAll();
+  findAll(
+    @Query('eventEditionId') eventEditionId: string,
+    @Query('withoutPresentation') withoutPresentation: string = 'false',
+    @Query('orderByProposedPresentation')
+    orderByProposedPresentation: string = 'false',
+    @Query('showConfirmedOnly') showConfirmedOnly: string = 'false',
+  ): Promise<ResponseSubmissionDto[]> {
+    const withoutPresentationFlag = withoutPresentation === 'true'; // Convert to boolean
+    const orderByFlag = orderByProposedPresentation === 'true';
+    const showConfirmedOnlyFlag = showConfirmedOnly === 'true';
+
+    return this.submissionService.findAll(
+      eventEditionId,
+      withoutPresentationFlag,
+      orderByFlag,
+      showConfirmedOnlyFlag,
+    );
   }
 
   @Get(':id')
@@ -24,21 +48,15 @@ export class SubmissionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubmissionDto: UpdateSubmissionDto) {
-    return this.submissionService.update(id, updateSubmissionDto);
-  }
-
-  @Patch(':submissionId/co-authors')
-  async updateCoAuthors(
-    @Param('submissionId') submissionId: string,
-    @Body() coAuthors: CoAuthorDto[],
+  update(
+    @Param('id') id: string,
+    @Body() updateSubmissionDto: UpdateSubmissionDto,
   ) {
-    return await this.submissionService.updateCoAuthors(submissionId, coAuthors);
+    return this.submissionService.update(id, updateSubmissionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.submissionService.remove(id);
   }
-
 }
