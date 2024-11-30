@@ -116,8 +116,33 @@ describe('CommitteeMemberController', () => {
     });
   });
 
+  describe('updateByUserAndEvent', () => {
+    it('should update a committee member by userId and eventEditionId', async () => {
+      const updateDto: UpdateCommitteeMemberDto = {
+        level: CommitteeLevel.Committee,
+        role: CommitteeRole.StudentVolunteers,
+      };
+      const expectedResult = { id: '1', ...updateDto };
+      mockCommitteeMemberService.update.mockResolvedValue(expectedResult);
+
+      const result = await controller.updateByUserAndEvent(
+        'user-123',
+        'event-123',
+        updateDto,
+      );
+
+      expect(result).toEqual(expectedResult);
+      expect(service.update).toHaveBeenCalledWith(
+        null,
+        updateDto,
+        'user-123',
+        'event-123',
+      );
+    });
+  });
+
   describe('remove', () => {
-    it('should remove a committee member', async () => {
+    it('should remove a committee member by id', async () => {
       const expectedResult = { id: '1' };
       mockCommitteeMemberService.remove.mockResolvedValue(expectedResult);
 
@@ -125,6 +150,23 @@ describe('CommitteeMemberController', () => {
 
       expect(result).toEqual(expectedResult);
       expect(service.remove).toHaveBeenCalledWith('1');
+    });
+
+    it('should remove a committee member by userId and eventEditionId', async () => {
+      const expectedResult = { id: '1' };
+      mockCommitteeMemberService.remove.mockResolvedValue(expectedResult);
+
+      const result = await controller.removeByUserAndEvent(
+        'user-123',
+        'event-123',
+      );
+
+      expect(result).toEqual(expectedResult);
+      expect(service.remove).toHaveBeenCalledWith(
+        null,
+        'user-123',
+        'event-123',
+      );
     });
   });
 });

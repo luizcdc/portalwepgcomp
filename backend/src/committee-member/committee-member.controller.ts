@@ -61,4 +61,16 @@ export class CommitteeMemberController {
   async remove(@Param('id') id: string) {
     return await this.committeeMemberService.remove(id);
   }
+
+  @Delete()
+  async removeByUserAndEvent(
+    @Param('userId') userId: string,
+    @Param('eventEditionId') eventEditionId: string,
+  ) {
+    return await this.committeeMemberService.remove(
+      null,
+      userId,
+      eventEditionId,
+    );
+  }
 }
