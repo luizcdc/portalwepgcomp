@@ -27,6 +27,7 @@ describe('UserService', () => {
               setAdmin: jest.fn(),
               isAdmin: jest.fn(),
               setSuperAdmin: jest.fn(),
+              delete: jest.fn(),
             },
           },
         },
@@ -600,63 +601,59 @@ describe('UserService', () => {
     });
   });
 
-  describe('isAdmin', () => {
-    it('should return false if user level is not admin', () => {
-      const userMock = {
-        id: '1',
-        name: 'John',
-        email: 'user@example.com',
-        registrationNumber: '2021001',
-        photoFilePath: null,
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        password: 'abcde',
-      };
+  describe('remove', () => {
+    it('should remove a user if the user exists', async () => {
+      const userId = '123';
+      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue({
+        id: userId,
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+      });
+      prismaService.userAccount.delete = jest.fn().mockResolvedValue(undefined);
 
-      const result = service.isAdmin(userMock);
+      const result = await service.remove(userId);
 
-      expect(result).toEqual(false);
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+      expect(prismaService.userAccount.delete).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+      expect(result).toEqual({
+        message: 'Cadastro de Usuário removido com sucesso.',
+      });
     });
 
-    it('should return true if user level is admin', () => {
-      const userMock = {
-        id: '1',
-        name: 'John',
-        email: 'user@example.com',
-        registrationNumber: '2021001',
-        photoFilePath: null,
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Admin,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        password: 'abcde',
-      };
+    it('should throw an AppException if the user does not exist', async () => {
+      const userId = 'nonexistent-id';
+      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(null);
 
-      const result = service.isAdmin(userMock);
+      await expect(service.remove(userId)).rejects.toThrow(
+        new AppException('Usuário não encontrado.', 404),
+      );
 
-      expect(result).toEqual(true);
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+      expect(prismaService.userAccount.delete).not.toHaveBeenCalled();
     });
   });
 
   describe('activateProfessor', () => {
     it('should throw an AppException if user is not found', async () => {
       prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(null);
-  
+
       const userId = 'nonexistent-user-id';
-  
+
       await expect(service.activateProfessor(userId)).rejects.toThrow(
         new AppException('Usuário não encontrado', 404),
       );
-  
+
       expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
         where: { id: userId },
       });
     });
-  
+
     it('should throw an AppException if user is not a professor', async () => {
       const userMock = {
         id: '1',
@@ -667,20 +664,22 @@ describe('UserService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-  
-      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(userMock);
-  
+
+      prismaService.userAccount.findUnique = jest
+        .fn()
+        .mockResolvedValue(userMock);
+
       const userId = '1';
-  
+
       await expect(service.activateProfessor(userId)).rejects.toThrow(
         new AppException('Este usuário não é um professor', 403),
       );
-  
+
       expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
         where: { id: userId },
       });
     });
-  
+
     it('should throw an AppException if user is already active', async () => {
       const userMock = {
         id: '1',
@@ -691,20 +690,22 @@ describe('UserService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-  
-      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(userMock);
-  
+
+      prismaService.userAccount.findUnique = jest
+        .fn()
+        .mockResolvedValue(userMock);
+
       const userId = '1';
-  
+
       await expect(service.activateProfessor(userId)).rejects.toThrow(
         new AppException('O usuário já está ativo', 409),
       );
-  
+
       expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
         where: { id: userId },
       });
     });
-  
+
     it('should update the user to active if conditions are met', async () => {
       const userMock = {
         id: '1',
@@ -715,30 +716,34 @@ describe('UserService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-  
+
       const updatedUserMock = {
         ...userMock,
         isActive: true,
       };
-  
-      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(userMock);
-      prismaService.userAccount.update = jest.fn().mockResolvedValue(updatedUserMock);
-  
+
+      prismaService.userAccount.findUnique = jest
+        .fn()
+        .mockResolvedValue(userMock);
+
+      prismaService.userAccount.update = jest
+        .fn()
+        .mockResolvedValue(updatedUserMock);
+
       const userId = '1';
-  
+
       const result = await service.activateProfessor(userId);
-  
+
       expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
         where: { id: userId },
       });
-  
+
       expect(prismaService.userAccount.update).toHaveBeenCalledWith({
         where: { id: userId },
         data: { isActive: true },
       });
-  
+
       expect(result).toEqual(updatedUserMock);
     });
   });
-    
 });

@@ -175,6 +175,26 @@ export class UserService {
     }
   }
 
+  async remove(id: string) {
+    const userExists = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!userExists) {
+      throw new AppException('Usuário não encontrado.', 404);
+    }
+
+    await this.prismaClient.userAccount.delete({
+      where: {
+        id,
+      },
+    });
+
+    return { message: 'Cadastro de Usuário removido com sucesso.' };
+  }
+
   async activateProfessor(userId: string) {
     const user = await this.prismaClient.userAccount.findUnique({
       where: { id: userId },
