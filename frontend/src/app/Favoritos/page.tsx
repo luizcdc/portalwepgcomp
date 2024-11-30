@@ -1,15 +1,15 @@
 "use client";
 
+import PresentationModal from "@/components/Modals/ModalApresentação/PresentationModal";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { FavoritosMock } from "@/mocks/Favoritos";
 import { MockupPresentention } from "@/mocks/Schedule";
 import Listagem from "@/templates/Listagem/Listagem";
-import { useRouter } from "next/navigation";
+import Modal from "../../components/UI/Modal";
 import { useEffect, useRef, useState } from "react";
 
 export default function Favoritos() {
   const { title, userArea, cardsMock } = FavoritosMock;
-  const router = useRouter();
   const openModal = useRef<HTMLButtonElement | null>(null);
 
   const [searchValue, setSearchValue] = useState<string>("");
@@ -26,7 +26,7 @@ export default function Favoritos() {
     useState<PresentationData>(MockupPresentention);
 
   function openModalPresentation(item) {
-    setModalContent({ ...modalContent, doutorando: item.author });
+    setModalContent({ ...modalContent, ...item });
     openModal.current?.click();
   }
 
@@ -49,6 +49,11 @@ export default function Favoritos() {
           onClickItem={(item) => openModalPresentation(item)}
         />
       </div>
+
+      <Modal
+        content={<PresentationModal props={modalContent} />}
+        reference={openModal}
+      />
     </ProtectedLayout>
   );
 }

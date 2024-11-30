@@ -92,7 +92,8 @@ export default function Listagem({
                     ? `${formatDate(card.startAt)}`
                     : card.subtitle
                 }
-                onClick={() => onClickItem && onClickItem(card)}
+                onClick={() => {}}
+                onClickItem={() => onClickItem && onClickItem(card)}
               />
             ))}
           {!!cardsList.length && isFavorites &&
@@ -106,7 +107,8 @@ export default function Listagem({
                     : card.subtitle
                 }
                 showFavorite
-                onClick={() => onClickItem && onClickItem(card)}
+                onClick={() => {}}
+                onClickItem={() => onClickItem && onClickItem(card)}
               />
             ))}
           {!cardsList.length && (
