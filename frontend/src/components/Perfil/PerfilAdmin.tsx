@@ -1,8 +1,11 @@
 "use client";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
 
 export default function PerfilAdmin() {
+  const { logout } = useContext(AuthContext);
   return (
     <>
       <li className='dropdown'>
@@ -38,6 +41,16 @@ export default function PerfilAdmin() {
           <li>
             <Link className='dropdown-item' href='/Sessoes'>
               Sessões
+            </Link>
+          </li>
+          <li>
+            <Link
+              className='nav-link active text-black'
+              aria-current='page'
+              href='/Home'
+              onClick={logout}
+            >
+              Sair
             </Link>
           </li>
         </ul>
