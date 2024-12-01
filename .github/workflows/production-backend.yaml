@@ -29,7 +29,6 @@ jobs:
           envkey_POSTGRES_DB: "wepgcomp"
           envkey_POSTGRES_USER: "root"
           envkey_POSTGRES_PORT: "5432"
-          envkey_JWT_SECRET: "jwtsecret"
           envkey_MAIL_HOST: "smtp.sendgrid.net"
           envkey_MAIL_PORT: "587"
           envkey_ORGANIZER_EMAIL: "wepgcompportal@gmail.com"
