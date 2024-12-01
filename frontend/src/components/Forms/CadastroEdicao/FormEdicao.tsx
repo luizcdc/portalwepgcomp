@@ -243,46 +243,44 @@ export function FormEdicao() {
           <span className='text-danger ms-1 form-title'>*</span>
         </label>
         <div className='d-flex flex-row justify-content-start gap-2 '>
-                  <Controller
-                  name="inicio"
-          control={control}
-          render={({ field }) => (
-
-            <DatePicker
-            id="ed-inicio-data"
+          <Controller
+            name='inicio'
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                id='ed-inicio-data'
                 showIcon
                 onChange={(date) => field.onChange(date?.toISOString() || null)}
                 selected={field.value ? new Date(field.value) : null}
-                className="form-control datepicker"
-                dateFormat="dd/MM/yyyy"
+                className='form-control datepicker'
+                dateFormat='dd/MM/yyyy'
                 minDate={new Date()}
                 maxDate={addDays(new Date(), 3)}
                 isClearable
                 toggleCalendarOnIconClick
-            />
-          )}
-                  />
+              />
+            )}
+          />
           <p className='text-danger error-message'>{errors.inicio?.message}</p>
 
-                   <Controller
-                  name="final"
-          control={control}
-          render={({ field }) => (
-
-            <DatePicker
-            id="ed-final-data"
+          <Controller
+            name='final'
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                id='ed-final-data'
                 showIcon
                 onChange={(date) => field.onChange(date?.toISOString() || null)}
                 selected={field.value ? new Date(field.value) : null}
-                className="form-control datepicker"
-                dateFormat="dd/MM/yyyy"
+                className='form-control datepicker'
+                dateFormat='dd/MM/yyyy'
                 minDate={new Date()}
                 maxDate={addDays(new Date(), 3)}
                 isClearable
                 toggleCalendarOnIconClick
-            />
-          )}
-                  />
+              />
+            )}
+          />
           <p className='text-danger error-message'>{errors.final?.message}</p>
         </div>
       </div>
@@ -310,47 +308,51 @@ export function FormEdicao() {
             <span className='text-danger ms-1 form-title'>*</span>
           </label>
           <Controller
-          name="coordenador"
-          control={control}
-          render={({ field }) => (
-          <Select
-            id='ed-select'
-            isMulti
-            options={options}
-            value={selectedOptions}
-            onChange={handleChange}
-            placeholder='Escolha o(s) usuário(s)'
-            className='basic-multi-select'
-            classNamePrefix='select'
-          />
-          )}
+            name='coordenador'
+            control={control}
+            render={({ field }) => (
+              <Select
+                id='ed-select'
+                isMulti
+                options={options}
+                value={selectedOptions}
+                onChange={handleChange}
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
+              />
+            )}
           />
 
-          <p className='text-danger error-message'>{errors.coordenador?.message}</p>
+          <p className='text-danger error-message'>
+            {errors.coordenador?.message}
+          </p>
         </div>
         <div className='col-12 mb-1'>
           <label className='form-label  form-title'>
             Comissão organizadora
             <span className='text-danger ms-1 form-title'>*</span>
           </label>
-<Controller
-          name="comissao"
-          control={control}
-          render={({ field }) => (
-          <Select
-          {...field}
-            id='ed-select'
-            isMulti
-            options={options}
-            value={selectedOptions}
-            onChange={handleChange}
-            placeholder='Escolha o(s) usuário(s)'
-            className='basic-multi-select'
-            classNamePrefix='select'
+          <Controller
+            name='comissao'
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id='ed-select'
+                isMulti
+                options={options}
+                value={selectedOptions}
+                onChange={handleChange}
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
+              />
+            )}
           />
-           )}
-          />
-          <p className='text-danger error-message'>{errors.comissao?.message}</p>
+          <p className='text-danger error-message'>
+            {errors.comissao?.message}
+          </p>
         </div>
         <div className='col-12 mb-1'>
           <label className='form-label  form-title'>
@@ -358,22 +360,21 @@ export function FormEdicao() {
             <span className='text-danger ms-1 form-title'>*</span>
           </label>
           <Controller
-          name="apoio"
-          control={control}
-          render={({ field }) => (
-          <Select
-          {...field}
-            id='ed-select'
-            isMulti
-            options={options}
-            value={selectedOptions}
-            onChange={handleChange}
-            placeholder='Escolha o(s) usuário(s)'
-            className='basic-multi-select'
-            classNamePrefix='select'
-          />
-
-          )}
+            name='apoio'
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id='ed-select'
+                isMulti
+                options={options}
+                value={selectedOptions}
+                onChange={handleChange}
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
+              />
+            )}
           />
 
           <p className='text-danger error-message'>{errors.apoio?.message}</p>
@@ -429,70 +430,69 @@ export function FormEdicao() {
             <p className='text-danger error-message'></p>
           </div>
         </div>
+      </div>
 
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
+          Duração das apresentações
+          <span className='text-danger ms-1 form-title'>*</span>
+        </label>
+        <input
+          type='text'
+          className='form-control input-title'
+          id='duracaoSessao'
+          placeholder='ex: 20 minutos, ou seja, 12 minutos + 5 para perguntas + 3 para organização da próxima apresentação'
+          {...register("duracao")}
+        />
+        <p className='text-danger error-message'>{errors.duracao?.message}</p>
+      </div>
+
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
+          Texto da Chamada para Submissão de Trabalhos
+          <span className='text-danger ms-1 form-title'>*</span>
+        </label>
+        <input
+          type='text'
+          className='form-control input-title'
+          id='submissao'
+          placeholder='Digite o texto aqui'
+          {...register("submissao")}
+        />
+        <p className='text-danger error-message'>{errors.submissao?.message}</p>
+      </div>
+
+      <div className='d-flex flex-column justify-content-start align-items-center gap-4'>
         <div className='col-12 mb-1'>
           <label className='form-label form-title'>
-            Duração das apresentações
+            Data limite para a submissão
             <span className='text-danger ms-1 form-title'>*</span>
           </label>
-          <input
-            type='text'
-            className='form-control input-title'
-            id='duracaoSessao'
-            placeholder='ex: 20 minutos, ou seja, 12 minutos + 5 para perguntas + 3 para organização da próxima apresentação'
-            {...register("duracao")}
-          />
-          <p className='text-danger error-message'>{errors.duracao?.message}</p>
-        </div>
-
-        <div className='col-12 mb-1'>
-          <label className='form-label form-title'>
-            Texto da Chamada para Submissão de Trabalhos
-            <span className='text-danger ms-1 form-title'>*</span>
-          </label>
-          <input
-            type='text'
-            className='form-control input-title'
-            id='submissao'
-            placeholder='Digite o texto aqui'
-            {...register("submissao")}
-          />
-          <p className='text-danger error-message'>
-            {errors.submissao?.message}
-          </p>
-        </div>
-
-        <div className='d-flex flex-row justify-content-start align-items-center gap-4'>
-          <div className='col-12 mb-1'>
-            <label className='form-label form-title'>
-              Data limite para a submissão
-              <span className='text-danger ms-1 form-title'>*</span>
-            </label>
-              <Controller
-                control={control}
-                name='limite'
-                render={({ field }) => (
-                  <DatePicker
-                    id='ed-deadline-data'
-                    showIcon
-                    onChange={(date) =>
-                      field.onChange(date?.toISOString() || null)
-                    }
-                    selected={field.value ? new Date(field.value) : null}
-                    className='form-control datepicker'
-                    dateFormat='dd/MM/yyyy'
-                    minDate={new Date()}
-                    maxDate={addDays(new Date(), 3)}
-                    isClearable
-                    toggleCalendarOnIconClick
-                  />
-                )}
-              />
-            <p className='text-danger error-message'>
-              {errors.limite?.message}
-            </p>
+          <div className='input-group listagem-template-content-input w-100'>
+            <Controller
+              control={control}
+              name='limite'
+              render={({ field }) => (
+                <DatePicker
+                  id='ed-deadline-data'
+                  showIcon
+                  onChange={(date) =>
+                    field.onChange(date?.toISOString() || null)
+                  }
+                  selected={field.value ? new Date(field.value) : null}
+                  className='form-control datepicker'
+                  dateFormat='dd/MM/yyyy'
+                  minDate={new Date()}
+                  maxDate={addDays(new Date(), 3)}
+                  isClearable
+                  toggleCalendarOnIconClick
+                />
+              )}
+            />
           </div>
+          <p className='text-danger error-message'>{errors.limite?.message}</p>
         </div>
+      </div>
 
       <div className='d-grid gap-2 col-3 mx-auto'>
         <button type='submit' className='btn text-white fs-5 submit-button'>

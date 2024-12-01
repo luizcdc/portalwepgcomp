@@ -24,7 +24,7 @@ export default function PerfilOuvinte() {
             </Link>
           </li>
           <li>
-            <Link className='dropdown-item' href='#'>
+            <Link className='dropdown-item' href='/Favoritos'>
               Favoritos
             </Link>
           </li>

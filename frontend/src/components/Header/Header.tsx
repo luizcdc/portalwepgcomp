@@ -35,7 +35,7 @@ export default function Header() {
 
   function perfil() {
     if (!user) return null;
-
+    console.log(user);
     switch (user) {
       case "ouvinte":
         return <PerfilOuvinte />;
