@@ -35,12 +35,7 @@ export default function PerfilOuvinte() {
           </li>
           <li>
             <li>
-              <Link
-                className='nav-link active text-black'
-                aria-current='page'
-                href='/Home'
-                onClick={logout}
-              >
+              <Link className='dropdown-item' href='/Home' onClick={logout}>
                 Sair
               </Link>
             </li>
