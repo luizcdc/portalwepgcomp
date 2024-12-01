@@ -1,12 +1,10 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import { userApi } from "@/services/user";
+import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useState } from "react";
 
-import { RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams, User } from "@/models/user";
-import { useRouter } from "next/navigation";
+import { useSweetAlert } from "@/hooks/useAlert";
+import { userApi } from "@/services/user";
 
 interface UserProps {
   children: ReactNode;
@@ -33,69 +31,95 @@ export const UserProvider = ({ children }: UserProps) => {
     useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
+  const { showAlert } = useSweetAlert();
   const router = useRouter();
 
   const registerUser = async (body: RegisterUserParams) => {
     setLoadingCreateUser(true);
-    userApi
-      .registerUser(body)
-      .then((response) => {
-        setUser(response);
-        console.log("criado");
-        alert("Cadastro realizado com sucesso!");
-        router.push("/Login");
-      })
-      .catch((err) => {
-        console.log(err);
-        setUser(null);
-        console.log("erro ao criar");
-        alert("Erro ao tentar cadastrar!");
-      })
-      .finally(() => {
-        setLoadingCreateUser(false);
+
+    try {
+      const response = await userApi.registerUser(body);
+      setUser(response);
+
+      showAlert({
+        icon: "success",
+        title: "Cadastro realizado com sucesso!",
+        timer: 3000,
+        showConfirmButton: false,
       });
+
+      router.push("/Login");
+    } catch (err: any) {
+      setUser(null);
+
+      showAlert({
+        icon: "error",
+        title: "Erro ao cadastrar usuário",
+        text: err.response?.data?.message || "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+        confirmButtonText: 'Retornar',
+      });
+    } finally {
+      setLoadingCreateUser(false);
+    }
   };
 
   const resetPasswordSendEmail = async (body: ResetPasswordSendEmailParams) => {
     setLoadingSendEmail(true);
-    userApi
-      .resetPasswordSendEmail(body)
-      .then((response) => {
-        setUser(response);
-        alert("Email enviado com sucesso!");
-        console.log("Email enviado");
-        router.push("/Login");
-      })
-      .catch((err) => {
-        console.log(err);
-        setUser(null);
-        alert("Erro ao enviar email!");
-        console.log("erro ao enviar");
-      })
-      .finally(() => {
-        setLoadingSendEmail(false);
+
+    try {
+      const response = await userApi.resetPasswordSendEmail(body);
+      setUser(response);
+
+      showAlert({
+        icon: "success",
+        title: "E-mail enviado com sucesso!",
+        text: "Confira o e-mail cadastrado para redefinir a senha.",
+        timer: 3000,
+        showConfirmButton: false,
       });
+
+      router.push("/Login");
+    } catch (err: any) {
+      setUser(null);
+
+      showAlert({
+        icon: "error",
+        title: "Erro ao enviar e-mail",
+        text: err.response?.data?.message || "Ocorreu um erro ao enviar o e-mail.",
+        confirmButtonText: 'Retornar',
+      });
+    } finally {
+      setLoadingSendEmail(false);
+    }
   };
 
   const resetPassword = async (body: ResetPasswordParams) => {
     setLoadingResetPassword(true);
-    userApi
-      .resetPassword(body)
-      .then((response) => {
-        setUser(response);
-        console.log("Senha alterada");
-        alert("Senha alterada com sucesso!");
-        router.push("/Login");
-      })
-      .catch((err) => {
-        console.log(err);
-        setUser(null);
-        console.log("erro ao enviar");
-        alert("Erro ao alterar senha!");
-      })
-      .finally(() => {
-        setLoadingResetPassword(false);
+
+    try {
+      const response = await userApi.resetPassword(body);
+      setUser(response);
+
+      showAlert({
+        icon: "success",
+        title: "Senha alterada com sucesso!",
+        timer: 3000,
+        showConfirmButton: false,
       });
+
+      router.push("/Login");
+    } catch (err: any) {
+      setUser(null);
+
+      showAlert({
+        icon: "error",
+        title: "Erro ao alterar senha",
+        text: err.response?.data?.message || "Ocorreu um erro ao tentar alterar sua senha. Tente novamente!",
+        confirmButtonText: 'Retornar',
+      });
+    } finally {
+      setLoadingResetPassword(false);
+    }
   };
 
   return (

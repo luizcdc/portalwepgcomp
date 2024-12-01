@@ -1,12 +1,14 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import { PremiacaoListProps } from '@/models/premiacao';
+import "./style.scss";
 
-import './style.scss';
-
-export default function Premiacao({ titulo, descricao, premiacoes }: PremiacaoListProps) {
+export default function Premiacao({
+  titulo,
+  descricao,
+  premiacoes,
+}: PremiacaoListProps) {
   return (
-    <div className="d-grid gap-3 mb-5">
+    <div className="d-grid gap-3 mb-5 premiacao">
       <div className="ms-5">
         <h1 className="fw-bold title">{titulo}</h1>
         <h5 className="text-black">{descricao}</h5>
@@ -25,10 +27,21 @@ export default function Premiacao({ titulo, descricao, premiacoes }: PremiacaoLi
           </div>
         ) : (
           premiacoes.map((item, index) => (
-            <div key={index} className="d-flex align-items-center justify-content-between border border-3 border-solid custom-border p-3 mt-4 me-5">
+            <div
+              key={index}
+              className="d-flex align-items-center justify-content-between border border-3 border-solid custom-border p-3 mt-4 me-5"
+            >
               <div className="text-black">
-                <h6 className={`text-black fw-semibold ${!item.subtitulo ? 'mb-0' : ''}`}>{item.titulo}</h6>
-                {item.subtitulo && <h6 className="text-black mb-0">{item.subtitulo}</h6>}
+                <h6
+                  className={`text-black fw-semibold ${
+                    !item.subtitulo ? "mb-0" : ""
+                  }`}
+                >
+                  {item.titulo}
+                </h6>
+                {item.subtitulo && (
+                  <h6 className="text-black mb-0">{item.subtitulo}</h6>
+                )}
               </div>
               <div className="text-end">
                 <h4 className="mb-0 text-black fw-bold">{item.nota}</h4>

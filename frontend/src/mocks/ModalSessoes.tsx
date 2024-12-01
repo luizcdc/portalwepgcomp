@@ -2,7 +2,7 @@ export const ModalSessaoMock = {
   confirmButton: {
     label: "Salvar",
   },
-  eventEditionId: "61300cbf-7bc2-41e9-9563-639c6ac02f40",
+  eventEditionId: "e691f604-ea01-4ffa-9f77-3df417490ca2",
   tipo: {
     label: "Tipo de sessão",
     options: [
@@ -24,8 +24,8 @@ export const ModalSessaoMock = {
       placeholder: "Selecione a sala do evento",
       options: [
         {
-          id: "33e6d1b8-d11a-4d3c-92c5-0571d233ddf7",
-          eventEditionId: "61300cbf-7bc2-41e9-9563-639c6ac02f40",
+          id: "d513f05b-0968-4bd7-8bd3-c0c1256b1892",
+          eventEditionId: "e691f604-ea01-4ffa-9f77-3df417490ca2",
           name: "Main Conference Hall",
           description: "The main hall for presentations.",
           createdAt: "2024-11-21T01:43:06.611Z",
@@ -48,10 +48,10 @@ export const ModalSessaoMock = {
       placeholder: "Selecione as apresentações",
       options: [
         {
-          id: "61ea4792-8115-4abd-889f-15afb4e1ef51",
+          id: "1b9eed95-4ccc-4afe-96f9-d95f36700a81",
           name: "Apresentação 1",
-          submissionId: "781c52ba-9718-47e8-a14f-59cfacc6d7ff",
-          presentationBlockId: "840af921-dd38-4d89-b5df-891df656fa4c",
+          submissionId: "4eaa2ad4-eb6c-46cf-9406-e9047f8d7227",
+          presentationBlockId: "fbf8f163-51f8-4287-b290-698f0dd75b62",
           positionWithinBlock: 1,
           status: "ToPresent",
           createdAt: "2024-11-21T01:43:06.618Z",
@@ -64,8 +64,8 @@ export const ModalSessaoMock = {
       placeholder: "Selecione a sala do evento",
       options: [
         {
-          id: "33e6d1b8-d11a-4d3c-92c5-0571d233ddf7",
-          eventEditionId: "61300cbf-7bc2-41e9-9563-639c6ac02f40",
+          id: "d513f05b-0968-4bd7-8bd3-c0c1256b1892",
+          eventEditionId: "e691f604-ea01-4ffa-9f77-3df417490ca2",
           name: "Main Conference Hall",
           description: "The main hall for presentations.",
           createdAt: "2024-11-21T01:43:06.611Z",
@@ -82,9 +82,9 @@ export const ModalSessaoMock = {
       placeholder: "Selecione os avaliadores",
       options: [
         {
-          id: "aced8c8c-e597-4fd7-872d-97cb543830e9",
-          eventEditionId: "61300cbf-7bc2-41e9-9563-639c6ac02f40",
-          userEd: "c73c2c5a-b6ee-4d8e-a47a-5c159728f2ea",
+          id: "151fde49-1fa2-4f7b-95ef-1f51a73e8ff6",
+          eventEditionId: "e691f604-ea01-4ffa-9f77-3df417490ca2",
+          userId: "4feb98ae-62c0-4ae2-a594-a8f45593515c",
           level: "Committee",
           name: "Avaliador 1",
           role: "ITSupport",

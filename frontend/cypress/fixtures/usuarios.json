@@ -1,0 +1,22 @@
+{
+  "doutorando": {
+    "nome": "João da Silva",
+    "perfil": "doutorando",
+    "matricula": "1234567890",
+    "email": "joao.silva@ufba.br",
+    "senha": "SenhaValida1234!"
+  },
+  "professor": {
+    "nome": "Maria Santos",
+    "perfil": "professor",
+    "matricula": "9876543210",
+    "email": "maria.santos@ufba.br",
+    "senha": "SenhaValida5678!"
+  },
+  "ouvinte": {
+    "nome": "Carlos Oliveira",
+    "perfil": "ouvinte",
+    "email": "carlos.oliveira@ufba.br",
+    "senha": "SenhaValida9012!"
+  }
+}

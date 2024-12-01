@@ -1,6 +1,8 @@
-export type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-export interface RegisterUserParams {
+type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
+
+interface RegisterUserParams {
     name: string,
     email: string,
     password: string,
@@ -11,23 +13,23 @@ export interface RegisterUserParams {
     registrationNumber?: string
 }
 
-export interface User extends RegisterUserParams{
+interface User extends RegisterUserParams{
     id: string,
     createdAt: string;
     deletedAt: string;
     updatedAt: string;
 }
 
-export interface ResetPasswordSendEmailParams {
+interface ResetPasswordSendEmailParams {
     email: string,
 }
 
-export interface ResetPasswordParams {
+interface ResetPasswordParams {
     token: string,
     newPassword: string,
 }
 
-export interface UserLogin {
+interface UserLogin {
     email: string,
     password: string
 }

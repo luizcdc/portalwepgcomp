@@ -14,7 +14,7 @@ interface SessaoParams {
 }
 
 interface Sessao extends SessaoParams {
-    id: string,
+    id: string;
     createdAt: string;
     deletedAt: string;
     updatedAt: string;

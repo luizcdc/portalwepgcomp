@@ -1,3 +1,5 @@
+"use client";
+
 import  Axios from "axios";
 
 

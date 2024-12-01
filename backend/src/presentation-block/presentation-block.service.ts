@@ -3,17 +3,42 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto';
 import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto';
+import { PresentationBlockType } from '@prisma/client';
 
 @Injectable()
 export class PresentationBlockService {
   constructor(private readonly prismaClient: PrismaService) {}
 
   async create(createPresentationBlockDto: CreatePresentationBlockDto) {
+    if (
+      createPresentationBlockDto.type === PresentationBlockType.General &&
+      createPresentationBlockDto.duration == null
+    ) {
+      throw new AppException(
+        'A duração da sessão geral deve ser informada',
+        400,
+      );
+    } else if (
+      createPresentationBlockDto.type === PresentationBlockType.Presentation &&
+      createPresentationBlockDto.numPresentations == null
+    ) {
+      throw new AppException(
+        'O número de apresentações deve ser informado para sessões de apresentação',
+        400,
+      );
+    }
     const eventEdition = await this.prismaClient.eventEdition.findUnique({
       where: {
         id: createPresentationBlockDto.eventEditionId,
       },
     });
+    if (typeof createPresentationBlockDto.duration != 'number') {
+      createPresentationBlockDto.duration =
+        createPresentationBlockDto.numPresentations *
+        eventEdition.presentationDuration;
+    } else {
+      createPresentationBlockDto.numPresentations = 0;
+    }
 
     if (eventEdition == null) {
       throw new AppException('Edição do evento não encontrada', 404);
@@ -83,15 +108,27 @@ export class PresentationBlockService {
       }
     }
 
-    const { presentations, panelists, ...presentationBlockData } =
-      createPresentationBlockDto;
+    const {
+      presentations,
+      panelists,
+      numPresentations,
+      ...presentationBlockData
+    } = createPresentationBlockDto;
     const createdPresentationBlock =
       await this.prismaClient.presentationBlock.create({
-        data: presentationBlockData,
+        data: {
+          ...presentationBlockData,
+          duration: createPresentationBlockDto.duration,
+        },
       });
 
     // Assigning presentations to the block
-    if (presentations && presentations.length > 0) {
+    if (
+      createPresentationBlockDto.type === PresentationBlockType.Presentation &&
+      presentations &&
+      presentations.length > 0 &&
+      presentations.length <= numPresentations
+    ) {
       const presentationsExist = await this.prismaClient.presentation.findMany({
         where: {
           id: {
@@ -151,6 +188,10 @@ export class PresentationBlockService {
       await this.prismaClient.presentationBlock.findMany({
         where: {
           eventEditionId,
+        },
+        include: {
+          presentations: true,
+          panelists: true,
         },
       });
 

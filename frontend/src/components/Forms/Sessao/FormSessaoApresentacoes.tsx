@@ -3,7 +3,6 @@
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDays } from "date-fns";
 import Select from "react-select";
 
 import DatePicker from "react-datepicker";
@@ -195,8 +194,8 @@ export default function FormSessaoApresentacoes() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                minDate={new Date()}
-                maxDate={addDays(new Date(), 3)}
+                // minDate={new Date()}
+                // maxDate={addDays(new Date(), 3)}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formApresentacoesFields.inicio.placeholder}

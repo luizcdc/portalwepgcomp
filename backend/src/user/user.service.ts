@@ -22,11 +22,11 @@ export class UserService {
     }
 
     if (
-      (createUserDto.profile === 'DoctoralStudent' || !createUserDto.profile) &&
+      (createUserDto.profile !== 'Listener' || !createUserDto.profile) &&
       !createUserDto.registrationNumber
     ) {
       throw new AppException(
-        'O número de matrícula é obrigatório para estudantes de doutorado.',
+        'O número de matrícula é obrigatório para estudantes de doutorado e professores.',
         400,
       );
     }
@@ -173,6 +173,53 @@ export class UserService {
 
       throw new Error(e);
     }
+  }
+
+  async remove(id: string) {
+    const userExists = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!userExists) {
+      throw new AppException('Usuário não encontrado.', 404);
+    }
+
+    await this.prismaClient.userAccount.delete({
+      where: {
+        id,
+      },
+    });
+
+    return { message: 'Cadastro de Usuário removido com sucesso.' };
+  }
+
+  async activateProfessor(userId: string) {
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new AppException('Usuário não encontrado', 404);
+    }
+
+    if (user.profile !== 'Professor') {
+      throw new AppException('Este usuário não é um professor', 403);
+    }
+
+    if (user.isActive) {
+      throw new AppException('O usuário já está ativo', 409);
+    }
+
+    const updatedUser = await this.prismaClient.userAccount.update({
+      where: { id: userId },
+      data: {
+        isActive: true,
+      },
+    });
+
+    return updatedUser;
   }
 
   isAdmin(user: UserAccount): boolean {

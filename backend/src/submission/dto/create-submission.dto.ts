@@ -1,6 +1,14 @@
-import { IsString, IsOptional, IsEnum, IsArray, IsUrl, MinLength, IsUUID, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  MinLength,
+  IsUUID,
+  IsNotEmpty,
+  IsInt,
+  Min,
+} from 'class-validator';
 import { SubmissionStatus } from '@prisma/client';
-import { CoAuthorDto } from './co-author.dto';
 
 export class CreateSubmissionDto {
   @IsUUID()
@@ -27,14 +35,21 @@ export class CreateSubmissionDto {
   @IsNotEmpty()
   phoneNumber: string;
 
-  @IsOptional()
-  @IsUrl({}, { message: 'A URL do LinkedIn não é válida.' })
-  linkedinUrl?: string;
+  @IsUUID()
+  proposedPresentationBlockId?: string;
 
-  @IsEnum(SubmissionStatus, { message: 'Status de submissão inválido.' })
+  @IsInt({
+    message: 'A posição da apresentação deve ser um número inteiro.',
+  })
+  @Min(0, {
+    message: 'A posição da apresentação deve ser um número não negativo.',
+  })
+  proposedPositionWithinBlock?: number;
+
+  @IsEnum(SubmissionStatus)
   status: SubmissionStatus;
 
-  @IsArray()
+  @IsString()
   @IsOptional()
-  coAuthors?: CoAuthorDto[];
+  coAdvisor?: string;
 }

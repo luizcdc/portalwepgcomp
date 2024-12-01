@@ -47,6 +47,10 @@
         .listagem-template-cards{
             display: grid;
             gap: 1rem;
+
+            .empty-list {
+                color: #555555;
+            }
         }
 
         .listagem-template-mais-cards{

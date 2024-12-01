@@ -4,11 +4,39 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import "./style.scss";
-import { UserLogin } from "@/models/user";
+
+const formLoginSchema = z.object({
+  email: z
+    .string({
+      invalid_type_error: "Campo inválido!",
+    })
+    .min(1, "Verifique seu email")
+    .email({
+      message: "Verifique seu email",
+    }),
+  password: z
+    .string({
+      invalid_type_error: "Campo inválido",
+    })
+    .min(1, {
+      message: "Verifique sua senha",
+    }),
+});
+
+type FormLoginSchema = z.infer<typeof formLoginSchema>;
 
 export function FormLogin() {
-  const { register, handleSubmit } = useForm<UserLogin>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormLoginSchema>({
+    resolver: zodResolver(formLoginSchema),
+  });
   const { singIn, signed } = useContext(AuthContext);
   const router = useRouter();
 
@@ -26,51 +54,53 @@ export function FormLogin() {
     router.push("/");
   } else {
     return (
-      <form className='row' onSubmit={handleSubmit(handleLogin)}>
+      <form className="row login" onSubmit={handleSubmit(handleLogin)}>
         <hr />
-        <div className='col-12 mb-3'>
-          <label className='form-label fw-bold form-title'>
+        <div className="col-12 mb-3">
+          <label className="form-label fw-bold form-title">
             E-mail
-            <span className='text-danger ms-1'>*</span>
+            <span className="text-danger ms-1">*</span>
           </label>
           <input
-            type='email'
-            className='form-control input-title'
-            id='email'
-            placeholder='exemplo@ufba.br'
-            required
+            type="email"
+            className="form-control input-title"
+            id="email"
+            placeholder="exemplo@ufba.br"
             {...register("email")}
           />
+          <p className="text-danger error-message">{errors.email?.message}</p>
         </div>
-        <div className='col-12 mb-3'>
-          <label className='form-label fw-bold form-title'>
+        <div className="col-12 mb-3">
+          <label className="form-label fw-bold form-title">
             Senha
-            <span className='text-danger ms-1'>*</span>
+            <span className="text-danger ms-1">*</span>
           </label>
           <input
-            type='password'
-            className='form-control input-title'
-            id='password'
-            placeholder='digite sua senha'
-            required
+            type="password"
+            className="form-control input-title"
+            id="password"
+            placeholder="digite sua senha"
             {...register("password")}
           />
+          <p className="text-danger error-message">
+            {errors.password?.message}
+          </p>
 
-          <div className='text-end link'>
+          <div className="text-end link">
             <button
-              data-bs-target='#alterarSenhaModal'
-              type='button'
-              data-bs-toggle='modal'
-              className='text-end link link-underline link-underline-opacity-0 button-password'
+              data-bs-target="#alterarSenhaModal"
+              type="button"
+              data-bs-toggle="modal"
+              className="text-end link link-underline link-underline-opacity-0 button-password"
             >
               Esqueceu sua senha?
             </button>
           </div>
         </div>
-        <div className='d-grid gap-2 col-3 mx-auto'>
+        <div className="d-grid gap-2 col-3 mx-auto mb-4">
           <button
-            type='submit'
-            className='btn text-white fw-semibold fs-6 button-primary'
+            type="submit"
+            className="btn text-white fw-semibold fs-6 button-primary"
           >
             Entrar
           </button>

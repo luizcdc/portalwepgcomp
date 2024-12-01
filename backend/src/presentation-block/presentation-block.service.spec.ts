@@ -251,8 +251,8 @@ describe('PresentationBlockService', () => {
       const result = await service.create({
         eventEditionId: '123',
         startTime: now,
-        duration: 5,
         type: PresentationBlockType.Presentation,
+        numPresentations: 3,
       });
 
       expect(result).toEqual(presentationBlock);
@@ -284,8 +284,8 @@ describe('PresentationBlockService', () => {
       const result = await service.create({
         eventEditionId: '123',
         startTime: now,
-        duration: 5,
         type: PresentationBlockType.Presentation,
+        numPresentations: 3,
         panelists: ['user1', 'user2'],
       });
 
@@ -315,8 +315,8 @@ describe('PresentationBlockService', () => {
         service.create({
           eventEditionId: '123',
           startTime: now,
-          duration: 5,
           type: PresentationBlockType.Presentation,
+          numPresentations: 1,
           panelists: ['user1', 'user2'],
         }),
       ).rejects.toThrow(
@@ -351,7 +351,7 @@ describe('PresentationBlockService', () => {
       const result = await service.create({
         eventEditionId: '123',
         startTime: now,
-        duration: 5,
+        numPresentations: 2,
         type: PresentationBlockType.Presentation,
         presentations: ['pres1', 'pres2'],
       });
@@ -380,12 +380,51 @@ describe('PresentationBlockService', () => {
         service.create({
           eventEditionId: '123',
           startTime: now,
-          duration: 5,
           type: PresentationBlockType.Presentation,
+          numPresentations: 2,
           presentations: ['pres1', 'pres2'],
         }),
       ).rejects.toThrow(
         new AppException('Uma das apresentações informadas não existe', 404),
+      );
+    });
+    it('should throw an AppException if trying to create a General block with only numPresentations', async () => {
+      const now = new Date();
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        startDate: new Date(now.getTime() - 2),
+        endDate: new Date(now.getTime() + 5 * 60 * 1000),
+      });
+
+      await expect(
+        service.create({
+          eventEditionId: '123',
+          startTime: now,
+          type: PresentationBlockType.General,
+          numPresentations: 2,
+        }),
+      ).rejects.toThrow(
+        new AppException('A duração da sessão geral deve ser informada', 400),
+      );
+    });
+    it('should throw an AppException if trying to create a Presentation block with only duration', async () => {
+      const now = new Date();
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        startDate: new Date(now.getTime() - 2),
+        endDate: new Date(now.getTime() + 5 * 60 * 1000),
+      });
+
+      await expect(
+        service.create({
+          eventEditionId: '123',
+          startTime: now,
+          duration: 5,
+          type: PresentationBlockType.Presentation,
+        }),
+      ).rejects.toThrow(
+        new AppException(
+          'O número de apresentações deve ser informado para sessões de apresentação',
+          400,
+        ),
       );
     });
   });
@@ -462,6 +501,10 @@ describe('PresentationBlockService', () => {
       expect(prismaService.presentationBlock.findMany).toHaveBeenCalledWith({
         where: {
           eventEditionId,
+        },
+        include: {
+          presentations: true,
+          panelists: true,
         },
       });
 

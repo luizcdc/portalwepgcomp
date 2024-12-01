@@ -22,6 +22,8 @@ describe('UserController', () => {
             create: jest.fn(),
             setAdmin: jest.fn(),
             setSuperAdmin: jest.fn(),
+            remove: jest.fn(),
+            activateProfessor: jest.fn(),
           },
         },
       ],
@@ -125,6 +127,52 @@ describe('UserController', () => {
 
       expect(userService.setSuperAdmin).toHaveBeenCalledWith(setAdminDto);
       expect(result).toEqual(setSuperAdminResponse);
+    });
+  });
+
+  describe('remove', () => {
+    it('should remove a user by ID', async () => {
+      const userId = '1234';
+
+      const removeResponse = {
+        success: true,
+        message: 'Cadastro de Usuário removido com sucesso.',
+      };
+
+      jest.spyOn(userService, 'remove').mockResolvedValue(removeResponse);
+      const result = await controller.remove(userId);
+
+      expect(userService.remove).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(removeResponse);
+    });
+  });
+
+  describe('activateUser', () => {
+    it('should activate a user and return the result', async () => {
+      // Arrange
+      const userId = '1234';
+      const expectedResponse = {
+        id: '1234',
+        name: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        password: 'password123',
+        registrationNumber: 'REG12345',
+        photoFilePath: 'photo/url/path',
+        profile: Profile.Professor,
+        level: UserLevel.Admin,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      jest
+        .spyOn(userService, 'activateProfessor')
+        .mockResolvedValue(expectedResponse);
+
+      const result = await controller.activateUser(userId);
+
+      expect(userService.activateProfessor).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(expectedResponse);
     });
   });
 });

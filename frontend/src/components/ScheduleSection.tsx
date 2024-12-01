@@ -2,7 +2,6 @@
 import { useRef, useState } from "react";
 
 import { MockupPresentention, MockupSchedule } from "@/mocks/Schedule";
-import { PresentationData } from "@/models/presentation";
 import PresentationModal from "./Modals/ModalApresentação/PresentationModal";
 import ScheduleCard from "./ScheduleCard";
 import Calendar from "./UI/calendar";
@@ -26,7 +25,7 @@ export default function ScheduleSection() {
 
   return (
     <div
-      id='Programacao'
+      id="Programacao"
       style={{
         width: "80vw",
         margin: "0 auto",
@@ -35,13 +34,13 @@ export default function ScheduleSection() {
       }}
     >
       <div
-        className='d-flex flex-column w-100'
+        className="d-flex flex-column w-100"
         style={{
           gap: "15px",
         }}
       >
         <h1
-          className='fw-bold text-center'
+          className="fw-bold text-center"
           style={{
             fontSize: "50px",
             lineHeight: "50px",
@@ -51,9 +50,9 @@ export default function ScheduleSection() {
         >
           Programação
         </h1>
-        <div className='d-flex justify-content-center' style={{ gap: "30px" }}>
+        <div className="d-flex justify-content-center" style={{ gap: "30px" }}>
           <button
-            className='d-flex align-items-center fw-bold flex-start'
+            className="d-flex align-items-center fw-bold flex-start"
             style={{
               fontSize: "16px",
               lineHeight: "30px",
@@ -70,7 +69,7 @@ export default function ScheduleSection() {
             12 de novembro
           </button>
           <button
-            className='d-flex text-start align-items-center'
+            className="d-flex text-start align-items-center"
             style={{
               fontSize: "16px",
               fontWeight: "700",
@@ -88,7 +87,7 @@ export default function ScheduleSection() {
             13 de novembro
           </button>
           <button
-            className='d-flex align-items-center text-start'
+            className="d-flex align-items-center text-start"
             style={{
               fontSize: "16px",
               fontWeight: "700",
@@ -107,12 +106,12 @@ export default function ScheduleSection() {
           </button>
         </div>
         <div
-          className='d-flex align-items-center w-100'
+          className="d-flex align-items-center w-100"
           style={{
             gap: "40px",
           }}
         >
-          <p className='m-0' style={{ width: "44px" }}></p>
+          <p className="m-0" style={{ width: "44px" }}></p>
           <div
             style={{
               backgroundColor: "#0065A3",
@@ -123,7 +122,7 @@ export default function ScheduleSection() {
             }}
           >
             <p
-              className='fw-bold text-white m-0 text-center'
+              className="fw-bold text-white m-0 text-center"
               style={{
                 fontSize: "13px",
                 lineHeight: "50px",
@@ -132,20 +131,20 @@ export default function ScheduleSection() {
               SALA A
             </p>
           </div>
-          <p className='m-0' style={{ width: "44px" }}></p>
+          <p className="m-0" style={{ width: "44px" }}></p>
         </div>
 
-        <div className='d-flex flex-column' style={{ gap: "10px" }}>
+        <div className="d-flex flex-column" style={{ gap: "10px" }}>
           {MockupSchedule[date].map((item, index) => {
             return (
               <div
                 key={index + item.author}
-                className='d-flex align-items-center w-100'
+                className="d-flex align-items-center w-100"
                 style={{
                   gap: "40px",
                 }}
               >
-                <p className='m-0' style={{ width: "44px" }}>
+                <p className="m-0" style={{ width: "44px" }}>
                   09:00
                 </p>
                 <ScheduleCard
@@ -154,7 +153,7 @@ export default function ScheduleSection() {
                   title={item.title}
                   onClickEvent={() => openModalPresentation(item)}
                 />
-                <div className='m-0' style={{ width: "44px" }}></div>
+                <div className="m-0" style={{ width: "44px" }}></div>
               </div>
             );
           })}
