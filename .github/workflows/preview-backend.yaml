@@ -20,9 +20,20 @@ defaults:
     working-directory: backend
     
 jobs:
-  Create-envfile:
+  Deploy-Production:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        
     steps:
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} 
+      - name: Clean modules
+        run: npm run clean
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v2.0
         with:
@@ -39,21 +50,6 @@ jobs:
           envkey_MAIL_PORT: "587"
           envkey_ORGANIZER_EMAIL: "wepgcompportal@gmail.com"
           file_name: .env
-
-  Deploy-Production:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x]
-        
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} 
-      - name: Clean modules
-        run: npm run clean
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} 
       - name: Execute migrations
