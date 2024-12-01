@@ -2,12 +2,12 @@ name: Vercel Preview Backend Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.BACKEND_DSV_VERCEL_PROJECT_ID }}
-  POSTGRES_PASSWORD: ${{ secrets.BACKEND_PRD_POSTGRES_PASSWORD }}
-  DATABASE_URL: ${{ secrets.BACKEND_PRD_DATABASE_URL }}
-  JWT_SECRET: ${{ secrets.BACKEND_PRD_JWT_SECRET }}
-  MAIL_USER: ${{ secrets.BACKEND_PRD_MAIL_USER }}
-  MAIL_PASS: ${{ secrets.BACKEND_PRD_MAIL_PASS }}
-  QUEUE_URL: ${{ secrets.BACKEND_PRD_QUEUE_URL }}
+  POSTGRES_PASSWORD: ${{ secrets.BACKEND_DSV_POSTGRES_PASSWORD }}
+  DATABASE_URL: ${{ secrets.BACKEND_DSV_DATABASE_URL }}
+  JWT_SECRET: ${{ secrets.BACKEND_DSV_JWT_SECRET }}
+  MAIL_USER: ${{ secrets.BACKEND_DSV_MAIL_USER }}
+  MAIL_PASS: ${{ secrets.BACKEND_DSV_MAIL_PASS }}
+  QUEUE_URL: ${{ secrets.BACKEND_DSV_QUEUE_URL }}
 on:
   push:
     branches:
