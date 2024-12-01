@@ -5,9 +5,9 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
-import PerfilOuvinte from "../Perfil/PerfilOuvinte";
+//import PerfilOuvinte from "../Perfil/PerfilOuvinte";
 import PerfilAdmin from "../Perfil/PerfilAdmin";
-import PerfilDoutorando from "../Perfil/PerfilDoutorando";
+//import PerfilDoutorando from "../Perfil/PerfilDoutorando";
 import "./style.scss";
 
 export default function Header() {
@@ -33,7 +33,7 @@ export default function Header() {
     }
   };
 
-  function perfil() {
+  /*function perfil() {
     if (!user) return null;
     console.log(user);
     switch (user) {
@@ -46,7 +46,7 @@ export default function Header() {
       default:
         return null;
     }
-  }
+  }*/
 
   useEffect(() => {
     const currentPath = pathname;
@@ -138,7 +138,7 @@ export default function Header() {
               <div className='vr text-black'></div>
               <li className='nav-item'>
                 {signed ? (
-                  perfil()
+                  <PerfilAdmin />
                 ) : (
                   <Link
                     className='nav-link active text-black'
