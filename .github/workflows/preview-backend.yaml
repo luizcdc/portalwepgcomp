@@ -32,6 +32,7 @@ jobs:
           envkey_MAIL_HOST: "smtp.sendgrid.net"
           envkey_MAIL_PORT: "587"
           envkey_ORGANIZER_EMAIL: "wepgcompportal@gmail.com"
+          directory: backend
           file_name: .env
 
   Deploy-Production:
