@@ -8,15 +8,17 @@ import Banner from "@/components/UI/Banner";
 
 interface ListagemProps {
   title: string;
-  labelAddButton: string;
+  labelAddButton?: string;
   searchPlaceholder: string;
   cardsList: any[];
   searchValue?: string;
   labelListCardsButton?: string;
   isMyPresentation?: boolean;
+  isFavorites?: boolean;
   idModal?: string;
   onAddButtonClick?: () => void;
   onChangeSearchValue?: (value: string) => void;
+  onClickItem?: (value: string) => void;
 }
 
 export default function Listagem({
@@ -27,24 +29,28 @@ export default function Listagem({
   searchPlaceholder,
   searchValue,
   isMyPresentation,
+  isFavorites,
   cardsList,
   onAddButtonClick,
   onChangeSearchValue,
+  onClickItem,
 }: Readonly<ListagemProps>) {
   return (
     <div className="listagem-template">
       <Banner title={title} />
       <div className="listagem-template-content">
         <div className="listagem-template-user-area">
-          <button
-            type="button"
-            data-bs-toggle={idModal ? "modal" : undefined}
-            data-bs-target={idModal ? `#${idModal}` : undefined}
-            onClick={idModal ? () => {} : onAddButtonClick}
-          >
-            {labelAddButton}
-            <Image src="/assets/images/add.svg" alt="" width={24} height={24} />
-          </button>
+          {labelAddButton ? 
+              <button
+              type="button"
+              data-bs-toggle={idModal ? "modal" : undefined}
+              data-bs-target={idModal ? `#${idModal}` : undefined}
+              onClick={idModal ? () => {} : onAddButtonClick}
+            >
+              {labelAddButton}
+              <Image src="/assets/images/add.svg" alt="" width={24} height={24} />
+            </button>  : ""        
+          }
           {onChangeSearchValue && (
             <div
               className="input-group listagem-template-content-input"
@@ -76,7 +82,7 @@ export default function Listagem({
           )}
         </div>
         <div className="listagem-template-cards">
-          {!!cardsList.length &&
+          {!!cardsList.length && !isFavorites &&
             cardsList?.map((card) => (
               <CardListagem
                 key={card.name}
@@ -87,6 +93,22 @@ export default function Listagem({
                     : card.subtitle
                 }
                 onClick={() => {}}
+                onClickItem={() => onClickItem && onClickItem(card)}
+              />
+            ))}
+          {!!cardsList.length && isFavorites &&
+            cardsList?.map((card) => (
+              <CardListagem
+                key={card.name}
+                title={card.name}
+                subtitle={
+                  title === "Sessões"
+                    ? `${formatDate(card.startAt)}`
+                    : card.subtitle
+                }
+                showFavorite
+                onClick={() => {}}
+                onClickItem={() => onClickItem && onClickItem(card)}
               />
             ))}
           {!cardsList.length && (

@@ -8,9 +8,9 @@ import {
   IsInt,
   Min,
 } from 'class-validator';
-import { SubmissionStatus } from '@prisma/client';
+import { SubmissionStatus, PresentationStatus } from '@prisma/client';
 
-export class CreateSubmissionDto {
+export class CreatePresentationWithSubmissionDto {
   @IsUUID()
   advisorId: string;
 
@@ -35,8 +35,16 @@ export class CreateSubmissionDto {
   @IsNotEmpty()
   phoneNumber: string;
 
+  @IsEnum(SubmissionStatus)
+  submissionStatus: SubmissionStatus;
+
+  @IsString()
+  @IsOptional()
+  coAdvisor?: string;
+
   @IsUUID()
-  proposedPresentationBlockId?: string;
+  @IsOptional()
+  presentationBlockId?: string;
 
   @IsInt({
     message: 'A posição da apresentação deve ser um número inteiro.',
@@ -44,12 +52,10 @@ export class CreateSubmissionDto {
   @Min(0, {
     message: 'A posição da apresentação deve ser um número não negativo.',
   })
-  proposedPositionWithinBlock?: number;
-
-  @IsEnum(SubmissionStatus)
-  status: SubmissionStatus;
-
-  @IsString()
   @IsOptional()
-  coAdvisor?: string;
+  positionWithinBlock?: number;
+
+  @IsEnum(PresentationStatus)
+  @IsOptional()
+  status?: PresentationStatus;
 }

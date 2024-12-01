@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsOptional, IsEnum, IsInt, IsUUID, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsEnum,
+  IsInt,
+  IsUUID,
+  Min,
+} from 'class-validator';
 import { PresentationStatus } from '@prisma/client';
 
 export class CreatePresentationDto {

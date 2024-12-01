@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
+import HtmlEditorComponent from "./HtmlEditorComponent/HtmlEditorComponent";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -17,6 +18,11 @@ function MapPlaceholder() {
 }
 
 export default function Endereco() {
+  const [content, setContent] = useState("");
+
+  const latitude = -13.0;
+  const longitude = -38.507;
+
   return (
     <div
       style={{
@@ -27,19 +33,16 @@ export default function Endereco() {
         color: "white",
       }}
     >
-      <div className='fs-1 fw-bold'>Local do Evento</div>
+      <div className="fs-1 fw-bold">Local do Evento</div>
 
-      <div className='fs-6'>
-        <div className='fw-bold'>Instituto de Computação da UFBA - PAF 2</div>
-        <div>Avenida Milton Santos, s/n - Campus de Ondina</div>
-        <div>CEP 40.170-110, Salvador - Bahia.</div>
-      </div>
-
-      <div className='fs-6'>E-mail: ceapg-ic@ufba.br</div>
+      <HtmlEditorComponent
+        content={content}
+        onChange={(newValue) => setContent(newValue)}
+      />
 
       <div>
         <MapContainer
-          center={[-13.0, -38.507]}
+          center={[latitude, longitude]}
           zoom={15}
           placeholder={<MapPlaceholder />}
           style={{
@@ -50,7 +53,7 @@ export default function Endereco() {
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
         </MapContainer>
       </div>
