@@ -34,6 +34,8 @@ jobs:
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} 
       - name: Clean modules
         run: npm run clean
+      - name: Create .env
+        run: touch .env
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v2.0
         with:
@@ -51,7 +53,7 @@ jobs:
           envkey_ORGANIZER_EMAIL: "wepgcompportal@gmail.com"
           file_name: .env
           some_other_variable: foobar
-          directory: <directory_name>
+          directory: backend
           fail_on_empty: false
           sort_keys: false
       - name: Build Project Artifacts
