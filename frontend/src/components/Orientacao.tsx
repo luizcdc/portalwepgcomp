@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import HtmlEditorComponent from "./HtmlEditorComponent/HtmlEditorComponent";
 
 export default function Orientacao() {
+  const [content, setContent] = useState("");
+
   return (
     <div
-      id='Orientacao'
+      id="Orientacao"
       style={{
         backgroundImage: `url(/assets/images/background_orientacao.svg)`,
         backgroundSize: "cover",
@@ -21,61 +25,12 @@ export default function Orientacao() {
         color: "white",
       }}
     >
-      <div className='text-white text-center fs-1 fw-bold'>Orientações</div>
+      <div className="text-white text-center fs-1 fw-bold">Orientações</div>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "25px",
-          textAlign: "justify",
-          fontSize: "18px",
-          maxWidth: "695px",
-        }}
-      >
-        <div>
-          Este evento é uma excelente oportunidade para estudantes apresentarem
-          e discutirem suas pesquisas, além de
-          receberem feedback valioso de colegas e professores.
-          Clique em "Ver todas as orientações" para ter mais informações
-          sobre o evento.
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div className='fw-bold'>Datas Importantes:</div>
-
-          <div className='d-flex flex-direction-row align-items-center gap-2'>
-            <div
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "10px",
-                backgroundColor: "white",
-              }}
-            ></div>
-            <div>Data limite para submissão: 27 de outubro de 2025.</div>
-          </div>
-
-          <div className='d-flex flex-direction-row align-items-center gap-2'>
-            <div
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "10px",
-                backgroundColor: "white",
-              }}
-            ></div>
-            <div>O evento será realizado de 12 a 14 de novembro de 2025.</div>
-          </div>
-        </div>
-      </div>
+      <HtmlEditorComponent
+        content={content}
+        onChange={(newValue) => setContent(newValue)}
+      />
 
       <Link
         style={{
@@ -94,7 +49,7 @@ export default function Orientacao() {
           fontSize: "18px",
           color: "white",
         }}
-        href='/Orientacoes'
+        href="/Orientacoes"
       >
         Ver todas as orientações
       </Link>
