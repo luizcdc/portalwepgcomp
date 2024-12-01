@@ -50,6 +50,10 @@ jobs:
           envkey_MAIL_PORT: "587"
           envkey_ORGANIZER_EMAIL: "wepgcompportal@gmail.com"
           file_name: .env
+          some_other_variable: foobar
+          directory: <directory_name>
+          fail_on_empty: false
+          sort_keys: false
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} 
       - name: Execute migrations
