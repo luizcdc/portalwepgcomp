@@ -8,6 +8,7 @@ env:
   MAIL_USER: ${{ secrets.BACKEND_DSV_MAIL_USER }}
   MAIL_PASS: ${{ secrets.BACKEND_DSV_MAIL_PASS }}
   QUEUE_URL: ${{ secrets.BACKEND_DSV_QUEUE_URL }}
+  VERCEL_URL: https://portal-wepgcomp-api-development.vercel.app
 on:
   push:
     branches:
