@@ -7,7 +7,7 @@ import { Transport } from '@nestjs/microservices';
 import { queueConstants } from './queue/constants';
 import metadata from './metadata';
 
-export function bootstrap() {
+export default function bootstrap() {
   NestFactory.create(AppModule).then((app) => {
     app.enableCors({
       origin: [
