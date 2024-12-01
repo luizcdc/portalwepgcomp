@@ -18,6 +18,7 @@ interface ListagemProps {
   idModal?: string;
   onAddButtonClick?: () => void;
   onChangeSearchValue?: (value: string) => void;
+  onClickItem?: (value: string) => void;
 }
 
 export default function Listagem({
@@ -32,6 +33,7 @@ export default function Listagem({
   cardsList,
   onAddButtonClick,
   onChangeSearchValue,
+  onClickItem,
 }: Readonly<ListagemProps>) {
   return (
     <div className="listagem-template">
@@ -91,6 +93,7 @@ export default function Listagem({
                     : card.subtitle
                 }
                 onClick={() => {}}
+                onClickItem={() => onClickItem && onClickItem(card)}
               />
             ))}
           {!!cardsList.length && isFavorites &&
@@ -105,6 +108,7 @@ export default function Listagem({
                 }
                 showFavorite
                 onClick={() => {}}
+                onClickItem={() => onClickItem && onClickItem(card)}
               />
             ))}
           {!cardsList.length && (
