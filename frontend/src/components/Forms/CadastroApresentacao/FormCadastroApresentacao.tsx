@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 import "./style.scss";
@@ -17,7 +19,7 @@ const formCadastroSchema = z.object({
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "O nome do orientador é obrigatório."),
   coorientador: z.string().optional(),
-  data: z.date().optional(),
+  data: z.string().optional(),
   celular: z
     .string()
     .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos."),
@@ -35,6 +37,7 @@ export function FormCadastroApresentacao() {
   const pathname = usePathname();
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<formCadastroSchema>({
@@ -81,11 +84,12 @@ export function FormCadastroApresentacao() {
           Nome do orientador<span className='text-danger ms-1'>*</span>
         </label>
           <select
+            id="orientador-select"
             className="form-control input-title"
             {...register("orientador")}
           >
             <option value="">Selecione o nome do orientador</option>
-            <option value="orientador1">orientador 1</option>
+            <option value="orientador1">Fred Durão</option>
 
           </select>
         <p className='text-danger error-message'>
@@ -105,12 +109,24 @@ export function FormCadastroApresentacao() {
 
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>Sugestão de data</label>
-        <input
-          type='date'
-          className='form-control input-title'
-          placeholder='Insira a sugestão de uma data para a apresentação'
-          {...register("data")}
-        />
+
+        <div className="input-group listagem-template-content-input">
+        <Controller
+            control={control}
+            name="data"
+            render={({ field }) => (
+              <DatePicker
+                id="sa-inicio-data"
+                onChange={(date) => field.onChange(date?.toISOString() || null)}
+                selected={field.value ? new Date(field.value) : null}
+                className="form-control datepicker"
+                dateFormat="dd/MM/yyyy"
+                isClearable
+                placeholderText={'Insira a sugestão de uma data para a apresentação'}
+              />
+            )}
+          />
+        </div>
       </div>
 
       <div className='col-12 mb-1'>
