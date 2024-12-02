@@ -53,7 +53,9 @@ export const AuthProvider = ({ children }) => {
 
       showAlert({
         icon: "error",
-        text: err.response?.data?.message || "Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde!",
+        text:
+          err.response?.data?.message ||
+          "Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
     }
