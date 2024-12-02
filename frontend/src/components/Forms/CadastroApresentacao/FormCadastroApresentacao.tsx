@@ -2,10 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
+import { useContext } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { SubmissionContext } from "@/context/submission";
+import { useSweetAlert } from "@/hooks/useAlert";
+import { SubmissionParams } from "@/models/submission";
+
 import "./style.scss";
 
 const formCadastroSchema = z.object({
@@ -35,6 +41,9 @@ type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
 export function FormCadastroApresentacao() {
   const pathname = usePathname();
+  const { createSubmission } = useContext(SubmissionContext);
+  const { showAlert } = useSweetAlert();
+
   const {
     register,
     control,
@@ -44,9 +53,30 @@ export function FormCadastroApresentacao() {
     resolver: zodResolver(formCadastroSchema),
   });
 
-  const onSubmit = (data: formCadastroSchema) => {
-    console.log("Dados enviados:", { ...data, data });
-    alert("Cadastro realizado com sucesso!");
+  const onSubmit = async (data: formCadastroSchema) => {
+    const submissionData: SubmissionParams = {
+      title: data.titulo,
+      abstractText: data.abstract,
+      advisorId: data.orientador,
+      coAdvisor: data.coorientador || "",
+      dateSuggestion: data.data ? new Date(data.data) : undefined,
+      pdfFile: data.slide ? data.slide.name : "",
+      phoneNumber: data.celular,
+    };
+
+    try {
+      await createSubmission(submissionData);
+    } catch (err: any) {
+      console.error("Erro ao cadastrar:", err);
+      showAlert({
+        icon: "error",
+        title: "Erro ao cadastrar apresentação",
+        text:
+          err.response?.data?.message ||
+          "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+        confirmButtonText: "Retornar",
+      });
+    }
   };
 
   return (
@@ -83,15 +113,15 @@ export function FormCadastroApresentacao() {
         <label className='form-label form-title'>
           Nome do orientador<span className='text-danger ms-1'>*</span>
         </label>
-          <select
-            id="orientador-select"
-            className="form-control input-title"
-            {...register("orientador")}
-          >
-            <option value="">Selecione o nome do orientador</option>
-            <option value="orientador1">Fred Durão</option>
+        <select
+          id="orientador-select"
+          className="form-control input-title"
+          {...register("orientador")}
+        >
+          <option value="">Selecione o nome do orientador</option>
+          <option value="orientador1">Fred Durão</option>
 
-          </select>
+        </select>
         <p className='text-danger error-message'>
           {errors.orientador?.message}
         </p>
@@ -111,7 +141,7 @@ export function FormCadastroApresentacao() {
         <label className='form-label form-title'>Sugestão de data</label>
 
         <div className="input-group listagem-template-content-input">
-        <Controller
+          <Controller
             control={control}
             name="data"
             render={({ field }) => (
@@ -146,7 +176,7 @@ export function FormCadastroApresentacao() {
         <label className="form-label form-title">
           Celular <span className="txt-min">(preferência WhatsApp)</span><span className="text-danger ms-1">*</span>
         </label>
-        <input 
+        <input
           className="form-control input-title"
           placeholder="(XX) XXXXX-XXXX"
           {...register("celular")}
