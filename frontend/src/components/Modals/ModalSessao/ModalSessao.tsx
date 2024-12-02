@@ -7,35 +7,50 @@ import { SessaoTipoEnum } from "@/enums/session";
 import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import FormSessaoApresentacoes from "@/components/Forms/Sessao/FormSessaoApresentacoes";
 import FormSessaoGeral from "@/components/Forms/Sessao/FormSessaoGeral";
+import { useSession } from "@/hooks/useSession";
 
 export default function ModalSessao() {
   const { tipo } = ModalSessaoMock;
+  const { sessao, setSessao } = useSession();
 
   const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(
-    SessaoTipoEnum["Sessão geral do evento"]
+    sessao?.type === SessaoTipoEnum["Sessão geral do evento"]
+      ? SessaoTipoEnum["Sessão geral do evento"]
+      : SessaoTipoEnum["Sessão de apresentações"]
   );
 
   return (
-    <ModalComponent id='sessaoModal' loading={false}>
-      <div className='modal-sessao px-5'>
-        <div className='col-12 mb-1'>
-          <label className='form-label fw-bold form-title tipo-sessao'>
+    <ModalComponent
+      id="sessaoModal"
+      loading={false}
+      onClose={() => {
+        setSessao(null);
+        setTipoSessao(SessaoTipoEnum["Sessão geral do evento"]);
+      }}
+    >
+      <div className="modal-sessao px-5">
+        <div className="col-12 mb-1">
+          <label className="form-label fw-bold form-title tipo-sessao">
             {tipo.label}
           </label>
-          <div className='d-flex'>
+          <div className="d-flex">
             {tipo.options?.map((op, i) => (
-              <div className='form-check me-3' key={`radio${op.value}-${i}`}>
+              <div className="form-check me-3" key={`radio${op.value}-${i}`}>
                 <input
-                  type='radio'
-                  className='form-check-input'
+                  type="radio"
+                  className="form-check-input"
                   id={`sessao-tipo-radio-${i}`}
                   value={op.value}
-                  name='radioTipoSessao'
-                  defaultChecked={!i}
+                  name="radioTipoSessao"
+                  checked={sessao?.id ? sessao.type === op.value : undefined}
+                  defaultChecked={
+                    op.value === SessaoTipoEnum["Sessão geral do evento"]
+                  }
+                  disabled={!!sessao?.id}
                   onChange={() => setTipoSessao(op.value as SessaoTipoEnum)}
                 />
                 <label
-                  className='form-check-label fw-bold input-title'
+                  className="form-check-label fw-bold input-title"
                   htmlFor={`radio${op}-${i}`}
                 >
                   {op.label}
@@ -43,7 +58,7 @@ export default function ModalSessao() {
               </div>
             ))}
           </div>
-          <p className='text-danger error-message'></p>
+          <p className="text-danger error-message"></p>
         </div>
 
         {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] && (
