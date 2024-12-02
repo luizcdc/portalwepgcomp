@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 import "./style.scss";
@@ -9,7 +11,7 @@ import "./style.scss";
 const formCadastroSchema = z.object({
   titulo: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "O título/tema é obrigatório."),
+    .min(1, "O título é obrigatório."),
   abstract: z
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "O abstract é obrigatório"),
@@ -17,11 +19,10 @@ const formCadastroSchema = z.object({
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "O nome do orientador é obrigatório."),
   coorientador: z.string().optional(),
-  data: z.date().optional(),
-  telefone: z
+  data: z.string().optional(),
+  celular: z
     .string()
-    .regex(/^\d{10,11}$/, "O telefone deve conter 10 ou 11 dígitos."),
-  linkedin: z.string().url("Insira um link válido para o LinkedIn.").optional(),
+    .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos."),
   slide: z
     .custom<File>((value) => value instanceof FileList && value.length > 0, {
       message: "Arquivo obrigatório!",
@@ -36,6 +37,7 @@ export function FormCadastroApresentacao() {
   const pathname = usePathname();
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<formCadastroSchema>({
@@ -54,12 +56,12 @@ export function FormCadastroApresentacao() {
     >
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
-          Tema da Pesquisa<span className='text-danger ms-1'>*</span>
+          Título da pesquisa<span className='text-danger ms-1'>*</span>
         </label>
         <input
           type='text'
           className='form-control input-title'
-          placeholder='Insira o título ou tema da pesquisa'
+          placeholder='Insira o título da pesquisa'
           {...register("titulo")}
         />
         <p className='text-danger error-message'>{errors.titulo?.message}</p>
@@ -79,21 +81,24 @@ export function FormCadastroApresentacao() {
 
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
-          Nome do Orientador<span className='text-danger ms-1'>*</span>
+          Nome do orientador<span className='text-danger ms-1'>*</span>
         </label>
-        <input
-          type='text'
-          className='form-control input-title'
-          placeholder='Insira o nome do orientador'
-          {...register("orientador")}
-        />
+          <select
+            id="orientador-select"
+            className="form-control input-title"
+            {...register("orientador")}
+          >
+            <option value="">Selecione o nome do orientador</option>
+            <option value="orientador1">Fred Durão</option>
+
+          </select>
         <p className='text-danger error-message'>
           {errors.orientador?.message}
         </p>
       </div>
 
       <div className='col-12 mb-1'>
-        <label className='form-label form-title'>Nome do Coorientador</label>
+        <label className='form-label form-title'>Nome do coorientador</label>
         <input
           type='text'
           className='form-control input-title'
@@ -103,18 +108,30 @@ export function FormCadastroApresentacao() {
       </div>
 
       <div className='col-12 mb-1'>
-        <label className='form-label form-title'>Sugestão de Data</label>
-        <input
-          type='date'
-          className='form-control input-title'
-          placeholder='Insira a sugestão de uma data'
-          {...register("data")}
-        />
+        <label className='form-label form-title'>Sugestão de data</label>
+
+        <div className="input-group listagem-template-content-input">
+        <Controller
+            control={control}
+            name="data"
+            render={({ field }) => (
+              <DatePicker
+                id="sa-inicio-data"
+                onChange={(date) => field.onChange(date?.toISOString() || null)}
+                selected={field.value ? new Date(field.value) : null}
+                className="form-control datepicker"
+                dateFormat="dd/MM/yyyy"
+                isClearable
+                placeholderText={'Insira a sugestão de uma data para a apresentação'}
+              />
+            )}
+          />
+        </div>
       </div>
 
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
-          Slide da Apresentação (PDF)<span className='text-danger ms-1'>*</span>
+          Slide da apresentação <span className="txt-min">(PDF)</span><span className='text-danger ms-1'>*</span>
         </label>
         <input
           type='file'
@@ -125,28 +142,16 @@ export function FormCadastroApresentacao() {
         <p className='text-danger error-message'>{errors.slide?.message}</p>
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>
-          Telefone do Apresentador<span className='text-danger ms-1'>*</span>
+      <div className="col-12 mb-1">
+        <label className="form-label form-title">
+          Celular <span className="txt-min">(preferência WhatsApp)</span><span className="text-danger ms-1">*</span>
         </label>
-        <input
-          type='text'
-          className='form-control input-title'
-          placeholder='Insira o número de telefone'
-          {...register("telefone")}
+        <input 
+          className="form-control input-title"
+          placeholder="(XX) XXXXX-XXXX"
+          {...register("celular")}
         />
-        <p className='text-danger error-message'>{errors.telefone?.message}</p>
-      </div>
-
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>LinkedIn</label>
-        <input
-          type='url'
-          className='form-control input-title'
-          placeholder='Insira o link do LinkedIn'
-          {...register("linkedin")}
-        />
-        <p className='text-danger error-message'>{errors.linkedin?.message}</p>
+        <p className="text-danger error-message">{errors.celular?.message}</p>
       </div>
 
       <br />
