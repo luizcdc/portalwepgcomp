@@ -11,7 +11,7 @@ import PerfilAdmin from "../Perfil/PerfilAdmin";
 import "./style.scss";
 
 export default function Header() {
-  const { signed, user } = useContext(AuthContext);
+  const { signed } = useContext(AuthContext);
 
   type MenuItem =
     | "inicio"
