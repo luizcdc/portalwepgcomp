@@ -14,43 +14,42 @@ import { getDurationInMinutes } from "@/utils/formatDate";
 import { formatOptions } from "@/utils/formatOptions";
 
 const formSessaoGeralSchema = z.object({
-  titulo: z.string({
-    required_error: "Título é obrigatório!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  titulo: z
+    .string({
+      invalid_type_error: "Campo inválido!",
+    })
+    .min(1, "Título é obrigatório."),
 
   nome: z
     .string({
       invalid_type_error: "Campo inválido!",
     })
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
-      message: "O campo deve conter apenas letras.",
-    })
     .optional(),
 
-  sala: z.string({
-    required_error: "Sala é obrigatória!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  sala: z
+    .string({
+      invalid_type_error: "Campo inválido!",
+    })
+    .min(1, "Sala é obrigatória!"),
 
   inicio: z
     .string({
-      required_error: "Data e horário de início são obrigatórios!",
       invalid_type_error: "Campo inválido!",
     })
     .datetime({
       message: "Data ou horário inválidos!",
     })
+    .min(1, "Data e horário de início são obrigatórios!")
     .nullable(),
 
   final: z
     .string({
-      required_error: "Data e horário de fim são obrigatórios!",
       invalid_type_error: "Campo inválido!",
     })
     .datetime({
       message: "Data ou horário inválidos!",
     })
+    .min(1, "Data e horário de final são obrigatórios!")
     .nullable(),
 });
 
@@ -60,6 +59,19 @@ export default function FormSessaoGeral() {
 
   type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
 
+  const defaultValues = sessao?.id
+    ? {
+        titulo: sessao?.title ?? "",
+        nome: sessao?.speakerName ?? "",
+        sala: sessao?.roomId ?? "",
+        inicio: sessao?.startTime ?? null,
+        final: sessao?.startTime ?? null,
+      }
+    : {
+        inicio: null,
+        final: null,
+      };
+
   const {
     register,
     control,
@@ -67,10 +79,7 @@ export default function FormSessaoGeral() {
     formState: { errors },
   } = useForm<FormSessaoGeralSchema>({
     resolver: zodResolver(formSessaoGeralSchema),
-    defaultValues: {
-      inicio: null,
-      final: null,
-    },
+    defaultValues,
   });
 
   const roomsOptions = formatOptions(formGeralFields.sala.options, "name");

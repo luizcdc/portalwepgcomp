@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, ReactNode, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 
 import { sessionApi } from "@/services/sessions";
 import { useSweetAlert } from "@/hooks/useAlert";
@@ -14,6 +20,7 @@ interface SessionProviderData {
   loadingSessao: boolean;
   sessoesList: Sessao[];
   sessao: Sessao | null;
+  setSessao: Dispatch<SetStateAction<Sessao | null>>;
   listSessions: (eventEditionId: string) => void;
   getSessionById: (idSession: string) => void;
   createSession: (body: SessaoParams) => void;
@@ -39,7 +46,6 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .listSessions(eventEditionId)
       .then((response) => {
         setSessoesList(response);
-        console.log("listado com sucesso");
       })
       .catch((err) => {
         console.log(err);
@@ -126,16 +132,29 @@ export const SessionProvider = ({ children }: SessionProps) => {
     sessionApi
       .deleteSessionById(idSession)
       .then((response) => {
-        setSessao(response);
-        console.log("atualizado com sucesso");
+        console.log(response);
+
+        showAlert({
+          icon: "success",
+          title: "Sessão deletada com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+
+        listSessions("e691f604-ea01-4ffa-9f77-3df417490ca2");
       })
       .catch((err) => {
-        console.log(err);
-        setSessao(null);
-        console.log("erro ao deletar");
-        alert("Erro ao tentar deletar!");
+        showAlert({
+          icon: "error",
+          title: "Erro ao deletar sessão",
+          text:
+            err.response?.data?.message ||
+            "Ocorreu um erro durante a deleção. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
       })
       .finally(() => {
+        setSessao(null);
         setLoadingSessao(false);
       });
   };
@@ -146,6 +165,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
         loadingSessao,
         loadingSessoesList,
         sessao,
+        setSessao,
         sessoesList,
         listSessions,
         getSessionById,
