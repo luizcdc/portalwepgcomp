@@ -226,6 +226,22 @@ export class PresentationBlockService {
         'Informe ou duração ou número de apresentações, não ambos',
         400,
       );
+    } else if (
+      updatePresentationBlockDto.duration != null &&
+      updatePresentationBlockDto.type === PresentationBlockType.Presentation
+    ) {
+      throw new AppException(
+        'A duração não pode ser especificada para sessões de apresentação, apenas número de apresentações',
+        400,
+      );
+    } else if (
+      updatePresentationBlockDto.numPresentations != null &&
+      updatePresentationBlockDto.type === PresentationBlockType.General
+    ) {
+      throw new AppException(
+        'O número de apresentações não pode ser especificado para sessões gerais, apenas a duração',
+        400,
+      );
     }
     if (updatePresentationBlockDto.duration == null) {
       const presentationBlock =
