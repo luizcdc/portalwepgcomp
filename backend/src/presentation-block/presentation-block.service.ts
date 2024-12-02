@@ -191,19 +191,134 @@ export class PresentationBlockService {
         },
         include: {
           presentations: true,
-          panelists: true,
+          panelists: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
 
-    return presentationBlocks;
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: {
+        id: eventEditionId,
+      },
+    });
+
+    if (!eventEdition) {
+      throw new Error('Edição do evento não encontrada');
+    }
+
+    const presentationDuration = eventEdition.presentationDuration;
+
+    const blocksWithAvailablePositions = presentationBlocks.map((block) => {
+      if (block.type === 'Presentation') {
+        const totalPositions = Math.floor(
+          block.duration / presentationDuration,
+        );
+        const occupiedPositions = block.presentations.map(
+          (p) => p.positionWithinBlock,
+        );
+        const availablePositionsWithinBlock = [];
+
+        for (let i = 0; i < totalPositions; i++) {
+          if (!occupiedPositions.includes(i)) {
+            const positionStartTime = new Date(block.startTime);
+            positionStartTime.setMinutes(
+              positionStartTime.getMinutes() + i * presentationDuration,
+            );
+
+            availablePositionsWithinBlock.push({
+              positionWithinBlock: i,
+              startTime: positionStartTime,
+            });
+          }
+        }
+
+        return {
+          ...block,
+          availablePositionsWithinBlock,
+        };
+      }
+
+      return {
+        ...block,
+        availablePositionsWithinBlock: [],
+      };
+    });
+
+    return blocksWithAvailablePositions;
   }
 
   async findOne(id: string) {
-    return await this.prismaClient.presentationBlock.findUnique({
+    const presentationBlock =
+      await this.prismaClient.presentationBlock.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          presentations: true,
+          panelists: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+
+    if (!presentationBlock) {
+      throw new Error('Presentation block not found');
+    }
+
+    // Fetch the associated event edition to get presentation duration
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
       where: {
-        id,
+        id: presentationBlock.eventEditionId,
       },
     });
+
+    if (!eventEdition) {
+      throw new Error('Event edition not found');
+    }
+
+    const presentationDuration = eventEdition.presentationDuration;
+
+    // Calculate available positions if block type is Presentation
+    if (presentationBlock.type === 'Presentation') {
+      const totalPositions = Math.floor(
+        presentationBlock.duration / presentationDuration,
+      );
+
+      const occupiedPositions = presentationBlock.presentations.map(
+        (p) => p.positionWithinBlock,
+      );
+
+      const availablePositionsWithinBlock = [];
+
+      for (let i = 0; i < totalPositions; i++) {
+        if (!occupiedPositions.includes(i)) {
+          const positionStartTime = new Date(presentationBlock.startTime);
+          positionStartTime.setMinutes(
+            positionStartTime.getMinutes() + i * presentationDuration,
+          );
+
+          availablePositionsWithinBlock.push({
+            positionWithinBlock: i,
+            startTime: positionStartTime,
+          });
+        }
+      }
+
+      return {
+        ...presentationBlock,
+        availablePositionsWithinBlock,
+      };
+    }
+
+    return {
+      ...presentationBlock,
+      availablePositionsWithinBlock: [],
+    };
   }
 
   async update(
