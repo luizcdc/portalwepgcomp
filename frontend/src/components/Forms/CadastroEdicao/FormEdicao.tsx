@@ -288,12 +288,10 @@ export function FormEdicao() {
           <Controller
             name='inicio'
             control={control}
-            render={({ field }) => (
+            render={() => (
               <DatePicker
                 id='ed-inicio-data'
                 showIcon
-                onChange={(date) => field.onChange(date?.toISOString() || null)}
-                selected={field.value ? new Date(field.value) : null}
                 className='form-control datepicker'
                 dateFormat='dd/MM/yyyy'
                 minDate={new Date()}
@@ -309,12 +307,10 @@ export function FormEdicao() {
           <Controller
             name='final'
             control={control}
-            render={({ field }) => (
+            render={() => (
               <DatePicker
                 id='ed-final-data'
                 showIcon
-                onChange={(date) => field.onChange(date?.toISOString() || null)}
-                selected={field.value ? new Date(field.value) : null}
                 className='form-control datepicker'
                 dateFormat='dd/MM/yyyy'
                 minDate={new Date()}
@@ -378,9 +374,8 @@ export function FormEdicao() {
           <Controller
             name='comissao'
             control={control}
-            render={({ field }) => (
+            render={() => (
               <Select
-                {...field}
                 id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
