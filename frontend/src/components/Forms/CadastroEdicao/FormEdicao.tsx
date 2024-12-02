@@ -359,8 +359,6 @@ export function FormEdicao() {
                 id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                value={selectedOptions}
-                onChange={handleChange}
                 placeholder='Escolha o(s) usuário(s)'
                 className='basic-multi-select'
                 classNamePrefix='select'
@@ -386,8 +384,6 @@ export function FormEdicao() {
                 id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                value={selectedOptions}
-                onChange={handleChange}
                 placeholder='Escolha o(s) usuário(s)'
                 className='basic-multi-select'
                 classNamePrefix='select'
@@ -406,14 +402,11 @@ export function FormEdicao() {
           <Controller
             name='apoio'
             control={control}
-            render={({ field }) => (
+            render={() => (
               <Select
-                {...field}
                 id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                value={selectedOptions}
-                onChange={handleChange}
                 placeholder='Escolha o(s) usuário(s)'
                 className='basic-multi-select'
                 classNamePrefix='select'
@@ -432,14 +425,11 @@ export function FormEdicao() {
           <Controller
             name='apoioAd'
             control={control}
-            render={({ field }) => (
+            render={() => (
               <Select
-                {...field}
                 id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                value={selectedOptions}
-                onChange={handleChange}
                 placeholder='Escolha o(s) usuário(s)'
                 className='basic-multi-select'
                 classNamePrefix='select'
@@ -458,14 +448,11 @@ export function FormEdicao() {
           <Controller
             name='comunicacao'
             control={control}
-            render={({ field }) => (
+            render={() => (
               <Select
-                {...field}
                 id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                value={selectedOptions}
-                onChange={handleChange}
                 placeholder='Escolha o(s) usuário(s)'
                 className='basic-multi-select'
                 classNamePrefix='select'
@@ -486,9 +473,8 @@ export function FormEdicao() {
           <Controller
             name='estudantes'
             control={control}
-            render={({ field }) => (
+            render={() => (
               <Select
-                {...field}
                 id='ed-select'
                 isMulti
                 options={options}
