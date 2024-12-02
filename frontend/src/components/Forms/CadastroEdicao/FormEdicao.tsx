@@ -8,18 +8,16 @@ import { addDays } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { options } from "./../../../mocks/Forms";
-import "./style.scss";
+import { formatOptions } from "@/utils/formatOptions";
 import { useEdicao } from "@/hooks/useEdicao";
+import { ModalSessaoMock } from "@/mocks/ModalSessoes";
+import "./style.scss";
 
 const formEdicaoSchema = z.object({
-  titulo: z
-    .string({
-      required_error: "Nome do evento é obrigatório!",
-      invalid_type_error: "Campo inválido!",
-    })
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
-      message: "O campo deve conter apenas letras.",
-    }),
+  titulo: z.string({
+    required_error: "Nome do evento é obrigatório!",
+    invalid_type_error: "Campo inválido!",
+  }),
 
   descricao: z
     .string({
@@ -92,6 +90,39 @@ const formEdicaoSchema = z.object({
     )
     .optional(),
 
+  apoioAd: z
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string({
+          invalid_type_error: "Campo inválido!",
+        }),
+      })
+    )
+    .optional(),
+
+  comunicacao: z
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string({
+          invalid_type_error: "Campo inválido!",
+        }),
+      })
+    )
+    .optional(),
+
+  estudantes: z
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string({
+          invalid_type_error: "Campo inválido!",
+        }),
+      })
+    )
+    .optional(),
+
   salas: z.string().optional(),
   sessoes: z.string().optional(),
   duracao: z.string().optional(),
@@ -141,10 +172,12 @@ export function FormEdicao() {
     },
   });
 
-  const filterTimes = (time: Date) => {
-    const hour = time.getHours();
-    return hour < 12 && hour > 6;
-  };
+  const { formApresentacoesFields, confirmButton } = ModalSessaoMock;
+
+  const avaliadoresOptions = formatOptions(
+    formApresentacoesFields.avaliadores.options,
+    "name"
+  );
 
   const handleFormEdicao = (data: FormEdicaoSchema) => {
     const {
@@ -156,6 +189,9 @@ export function FormEdicao() {
       coordenador,
       comissao,
       apoio,
+      apoioAd,
+      comunicacao,
+      estudantes,
       salas,
       sessoes,
       duracao,
@@ -163,7 +199,7 @@ export function FormEdicao() {
       limite,
     } = data;
 
-    if (
+    /*if (
       !titulo ||
       !descricao ||
       !inicio ||
@@ -172,6 +208,9 @@ export function FormEdicao() {
       !coordenador ||
       !comissao ||
       !apoio ||
+      !apoioAd ||
+      !comunicacao ||
+      !estudantes ||
       !salas ||
       !sessoes ||
       !duracao ||
@@ -179,7 +218,7 @@ export function FormEdicao() {
       !limite
     ) {
       throw new Error("Campos obrigatórios em branco.");
-    }
+    }*/
 
     const body = {
       name: titulo,
@@ -188,6 +227,9 @@ export function FormEdicao() {
       coordinatorId: coordenador?.map((v) => v.value) || [],
       comissao: comissao?.map((v) => v.value) || [],
       apoio: apoio?.map((v) => v.value) || [],
+      apoioAd: apoioAd?.map((v) => v.value) || [],
+      comunicacao: comunicacao?.map((v) => v.value) || [],
+      estudantes: estudantes?.map((v) => v.value) || [],
       presentationDuration: duracao,
       salas: salas,
       sessoes: sessoes,
@@ -256,6 +298,7 @@ export function FormEdicao() {
                 dateFormat='dd/MM/yyyy'
                 minDate={new Date()}
                 maxDate={addDays(new Date(), 3)}
+                placeholderText={formApresentacoesFields.inicio.placeholder}
                 isClearable
                 toggleCalendarOnIconClick
               />
@@ -276,6 +319,7 @@ export function FormEdicao() {
                 dateFormat='dd/MM/yyyy'
                 minDate={new Date()}
                 maxDate={addDays(new Date(), 3)}
+                placeholderText={formApresentacoesFields.inicio.placeholder}
                 isClearable
                 toggleCalendarOnIconClick
               />
@@ -314,7 +358,7 @@ export function FormEdicao() {
               <Select
                 id='ed-select'
                 isMulti
-                options={options}
+                options={avaliadoresOptions}
                 value={selectedOptions}
                 onChange={handleChange}
                 placeholder='Escolha o(s) usuário(s)'
@@ -341,7 +385,7 @@ export function FormEdicao() {
                 {...field}
                 id='ed-select'
                 isMulti
-                options={options}
+                options={avaliadoresOptions}
                 value={selectedOptions}
                 onChange={handleChange}
                 placeholder='Escolha o(s) usuário(s)'
@@ -356,11 +400,91 @@ export function FormEdicao() {
         </div>
         <div className='col-12 mb-1'>
           <label className='form-label  form-title'>
-            Apoio
+            Apoio TI
             <span className='text-danger ms-1 form-title'>*</span>
           </label>
           <Controller
             name='apoio'
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id='ed-select'
+                isMulti
+                options={avaliadoresOptions}
+                value={selectedOptions}
+                onChange={handleChange}
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
+              />
+            )}
+          />
+
+          <p className='text-danger error-message'>{errors.apoio?.message}</p>
+        </div>
+
+        <div className='col-12 mb-1'>
+          <label className='form-label  form-title'>
+            Apoio Administrativo
+            <span className='text-danger ms-1 form-title'>*</span>
+          </label>
+          <Controller
+            name='apoioAd'
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id='ed-select'
+                isMulti
+                options={avaliadoresOptions}
+                value={selectedOptions}
+                onChange={handleChange}
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
+              />
+            )}
+          />
+
+          <p className='text-danger error-message'>{errors.apoioAd?.message}</p>
+        </div>
+
+        <div className='col-12 mb-1'>
+          <label className='form-label  form-title'>
+            Comunicação
+            <span className='text-danger ms-1 form-title'>*</span>
+          </label>
+          <Controller
+            name='comunicacao'
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id='ed-select'
+                isMulti
+                options={avaliadoresOptions}
+                value={selectedOptions}
+                onChange={handleChange}
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
+              />
+            )}
+          />
+
+          <p className='text-danger error-message'>
+            {errors.comunicacao?.message}
+          </p>
+        </div>
+
+        <div className='col-12 mb-1'>
+          <label className='form-label  form-title'>
+            Estudantes Voluntários
+            <span className='text-danger ms-1 form-title'>*</span>
+          </label>
+          <Controller
+            name='estudantes'
             control={control}
             render={({ field }) => (
               <Select
@@ -377,7 +501,9 @@ export function FormEdicao() {
             )}
           />
 
-          <p className='text-danger error-message'>{errors.apoio?.message}</p>
+          <p className='text-danger error-message'>
+            {errors.estudantes?.message}
+          </p>
         </div>
       </div>
 
@@ -480,6 +606,7 @@ export function FormEdicao() {
                     field.onChange(date?.toISOString() || null)
                   }
                   selected={field.value ? new Date(field.value) : null}
+                  placeholderText={formApresentacoesFields.inicio.placeholder}
                   className='form-control datepicker'
                   dateFormat='dd/MM/yyyy'
                   minDate={new Date()}
@@ -496,7 +623,7 @@ export function FormEdicao() {
 
       <div className='d-grid gap-2 col-3 mx-auto'>
         <button type='submit' className='btn text-white fs-5 submit-button'>
-          Salvar
+          {confirmButton.label}
         </button>
       </div>
     </form>

@@ -7,6 +7,9 @@ interface EdicaoParams {
   coordinatorId?: string[];
   comissao?: string[];
   apoio?: string[];
+  apoioAd?: string[];
+  comunicacao?: string[];
+  estudantes?: string[];
   presentationDuration?: string;
   salas?:string;
   sessoes?: string;

@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
@@ -13,13 +12,7 @@ import {
 } from "./util";
 
 export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
-export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
 
-interface IContextLogin {
-  user: string | null;
-  signed: boolean;
-  singIn: (body: UserLogin) => Promise<void>;
-  logout: () => void;
 interface IContextLogin {
   user: string | null;
   signed: boolean;
@@ -34,13 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const user = getUserLocalStorage();
-  useEffect(() => {
-    const user = getUserLocalStorage();
 
-    if (user) {
-      setUser(user);
-    }
-  }, []);
     if (user) {
       setUser(user);
     }
@@ -66,7 +53,9 @@ export const AuthProvider = ({ children }) => {
 
       showAlert({
         icon: "error",
-        text: err.response?.data?.message || "Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde!",
+        text:
+          err.response?.data?.message ||
+          "Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
     }
@@ -77,20 +66,6 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     return router.push("/");
   }
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        signed: !!user,
-        singIn,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
 
   return (
     <AuthContext.Provider
