@@ -25,3 +25,13 @@ input::placeholder {
         background-color: #FFA90F;
     }
 }
+
+.password-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+.eye{
+    cursor: pointer;
+}
