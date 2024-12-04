@@ -79,6 +79,22 @@ export class EventEditionService {
     return eventResponseDto;
   }
 
+  async findActive() {
+    const event = await this.prismaClient.eventEdition.findFirst({
+      where: {
+        isActive: true,
+      },
+    });
+
+    if (!event) {
+      throw new BadRequestException('Não existe nenhum evento ativo');
+    }
+
+    const eventResponseDto = new EventEditionResponseDto(event);
+
+    return eventResponseDto;
+  }
+
   async update(id: string, updateEventEdition: UpdateEventEditionDto) {
     const event = await this.prismaClient.eventEdition.findUnique({
       where: {
