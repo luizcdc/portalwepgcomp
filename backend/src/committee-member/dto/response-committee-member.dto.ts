@@ -13,6 +13,9 @@ export class ResponseCommitteeMemberDto {
   userId: string;
 
   @Expose()
+  userName: string;
+
+  @Expose()
   level: CommitteeLevel;
 
   @Expose()
