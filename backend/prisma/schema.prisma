@@ -58,7 +58,7 @@ enum SubmissionStatus {
   Submitted
   Confirmed
   Rejected
-  
+
   @@map("submission_status")
 }
 
@@ -183,8 +183,7 @@ model Submission {
   pdfFile                     String           @map("pdf_file") @db.VarChar(255)
   phoneNumber                 String           @map("phone_number") @db.VarChar(20)
   proposedPresentationBlockId String?          @map("proposed_presentation_block_id")
-  proposedPositionWithinBlock Int?             @map("proposed_position_within_block") 
-  ranking                     Int?             @map("ranking")
+  proposedPositionWithinBlock Int?             @map("proposed_position_within_block")
   coAdvisor                   String?          @map("co_advisor") @db.VarChar(255)
   status                      SubmissionStatus @map("status")
   createdAt                   DateTime         @default(now()) @map("created_at")
@@ -266,15 +265,17 @@ model PresentationBlock {
 }
 
 model Presentation {
-  id                  String             @id @default(uuid()) @map("id")
-  submissionId        String             @map("submission_id")
-  presentationBlockId String             @map("presentation_block_id")
-  positionWithinBlock Int                @map("position_within_block") 
-  status              PresentationStatus @map("status")
-  createdAt           DateTime           @default(now()) @map("created_at")
-  updatedAt           DateTime           @updatedAt @map("updated_at")
-  submission          Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  presentationBlock   PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
+  id                     String             @id @default(uuid()) @map("id")
+  submissionId           String             @map("submission_id")
+  presentationBlockId    String             @map("presentation_block_id")
+  positionWithinBlock    Int                @map("position_within_block")
+  status                 PresentationStatus @map("status")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+  publicAverageScore     Float              @map("public_average_score")
+  evaluatorsAverageScore Float              @map("evaluators_average_score")
+  submission             Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  presentationBlock      PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
 
   @@map("presentation")
 }
