@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { usePathname } from "next/navigation"; // Usando usePathname para capturar o caminho
 import { useEffect, useState } from "react";
 
@@ -54,15 +53,8 @@ export default function Avaliacao() {
       <Banner title='Avaliação' />
 
       <div className='avalieApresentacao'>
-        <div className='avalieElementos'>
-          <Image
-            src={"/assets/images/person_icon.svg"}
-            alt='ícone pessoa'
-            width={65}
-            height={65}
-            priority={true}
-          />
 
+        <div className='avalieElementos'>
           <div className='avalieIdentificador'>
             <div className='avalieApresentador'>{presentation?.doutorando}</div>
             <div className='avaliePesquisa'>{presentation?.titulo}</div>
