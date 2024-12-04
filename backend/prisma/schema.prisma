@@ -58,7 +58,7 @@ enum SubmissionStatus {
   Submitted
   Confirmed
   Rejected
-  
+
   @@map("submission_status")
 }
 
@@ -183,7 +183,7 @@ model Submission {
   pdfFile                     String           @map("pdf_file") @db.VarChar(255)
   phoneNumber                 String           @map("phone_number") @db.VarChar(20)
   proposedPresentationBlockId String?          @map("proposed_presentation_block_id")
-  proposedPositionWithinBlock Int?             @map("proposed_position_within_block") 
+  proposedPositionWithinBlock Int?             @map("proposed_position_within_block")
   ranking                     Int?             @map("ranking")
   coAdvisor                   String?          @map("co_advisor") @db.VarChar(255)
   status                      SubmissionStatus @map("status")
@@ -269,7 +269,7 @@ model Presentation {
   id                  String             @id @default(uuid()) @map("id")
   submissionId        String             @map("submission_id")
   presentationBlockId String             @map("presentation_block_id")
-  positionWithinBlock Int                @map("position_within_block") 
+  positionWithinBlock Int                @map("position_within_block")
   status              PresentationStatus @map("status")
   createdAt           DateTime           @default(now()) @map("created_at")
   updatedAt           DateTime           @updatedAt @map("updated_at")
@@ -277,4 +277,16 @@ model Presentation {
   presentationBlock   PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
 
   @@map("presentation")
+}
+
+model Guidance {
+  id               String   @id @default(uuid()) @map("id")
+  summary          String   @map("summary") @db.Text
+  authorGuidance   String   @map("authors_guidance") @db.Text
+  reviewerGuidance String   @map("reviewers_guidance") @db.Text
+  audienceGuidance String   @map("audience_guidance") @db.Text
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("guidance")
 }
