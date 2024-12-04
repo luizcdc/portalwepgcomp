@@ -439,6 +439,8 @@ describe('PresentationBlockService', () => {
           startTime: new Date(),
           duration: 1,
           type: PresentationBlockType.General,
+          presentations: [],
+          panelists: [],
         },
         {
           id: '2',
@@ -446,21 +448,85 @@ describe('PresentationBlockService', () => {
           startTime: new Date(),
           duration: 1,
           type: PresentationBlockType.General,
+          presentations: [],
+          panelists: [],
         },
       ];
+
       prismaService.presentationBlock.findMany = jest
         .fn()
         .mockResolvedValue(presentationBlocks);
 
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        id: eventEditionId,
+        presentationDuration: 10,
+        startDate: new Date(),
+        endDate: new Date(),
+      });
+
       const result = await service.findAllByEventEditionId(eventEditionId);
 
-      expect(result).toEqual(presentationBlocks);
+      expect(result.length).toBe(2);
+      result.forEach((block) => {
+        expect(block).toHaveProperty('availablePositionsWithinBlock');
+      });
+    });
+    it('should return presentation blocks with available positions', async () => {
+      const eventEditionId = '123';
+      const now = new Date();
+
+      const presentationBlocks = [
+        {
+          id: '1',
+          eventEditionId,
+          startTime: now,
+          duration: 30,
+          type: PresentationBlockType.Presentation,
+          presentations: [],
+        },
+        {
+          id: '2',
+          eventEditionId,
+          startTime: now,
+          duration: 30,
+          type: PresentationBlockType.General,
+          presentations: [],
+        },
+      ];
+
+      prismaService.presentationBlock.findMany = jest
+        .fn()
+        .mockResolvedValue(presentationBlocks);
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        id: eventEditionId,
+        presentationDuration: 10,
+      });
+
+      const result = await service.findAllByEventEditionId(eventEditionId);
+
+      expect(result.length).toBe(2);
+
+      // Check Presentation block
+      const presentationBlock = result.find(
+        (block) => block.type === PresentationBlockType.Presentation,
+      );
+      expect(presentationBlock).toBeDefined();
+      expect(presentationBlock.availablePositionsWithinBlock).toBeDefined();
+      expect(presentationBlock.availablePositionsWithinBlock.length).toBe(3); // 30 min / 10 min per presentation
     });
     it('should return an empty array if no presentation blocks are found', async () => {
       const eventEditionId = '123';
+
       prismaService.presentationBlock.findMany = jest
         .fn()
         .mockResolvedValue([]);
+
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        id: eventEditionId,
+        presentationDuration: 10,
+        startDate: new Date(),
+        endDate: new Date(),
+      });
 
       const result = await service.findAllByEventEditionId(eventEditionId);
 
@@ -475,13 +541,8 @@ describe('PresentationBlockService', () => {
           startTime: new Date(),
           duration: 1,
           type: PresentationBlockType.General,
-        },
-        {
-          id: '2',
-          eventEditionId: '456',
-          startTime: new Date(),
-          duration: 1,
-          type: PresentationBlockType.General,
+          presentations: [],
+          panelists: [],
         },
         {
           id: '3',
@@ -489,12 +550,21 @@ describe('PresentationBlockService', () => {
           startTime: new Date(),
           duration: 1,
           type: PresentationBlockType.General,
+          presentations: [],
+          panelists: [],
         },
       ];
 
       prismaService.presentationBlock.findMany = jest
         .fn()
-        .mockResolvedValue([presentationBlocks[0], presentationBlocks[2]]);
+        .mockResolvedValue(presentationBlocks);
+
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        id: eventEditionId,
+        presentationDuration: 10,
+        startDate: new Date(),
+        endDate: new Date(),
+      });
 
       const result = await service.findAllByEventEditionId(eventEditionId);
 
@@ -504,12 +574,27 @@ describe('PresentationBlockService', () => {
         },
         include: {
           presentations: true,
-          panelists: true,
+          panelists: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
 
-      // Verify the result is correct
-      expect(result).toEqual([presentationBlocks[0], presentationBlocks[2]]);
+      expect(result.length).toBe(2);
+    });
+    it('should throw an error if event edition is not found', async () => {
+      const eventEditionId = '123';
+
+      prismaService.presentationBlock.findMany = jest
+        .fn()
+        .mockResolvedValue([]);
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue(null);
+
+      await expect(
+        service.findAllByEventEditionId(eventEditionId),
+      ).rejects.toThrow('Edição do evento não encontrada');
     });
   });
 
@@ -519,16 +604,108 @@ describe('PresentationBlockService', () => {
         id: '1',
         eventEditionId: '123',
         startTime: new Date(),
-        duration: 1,
-        type: PresentationBlockType.General,
+        duration: 30,
+        type: PresentationBlockType.Presentation,
+        presentations: [],
       };
+
       prismaService.presentationBlock.findUnique = jest
         .fn()
         .mockResolvedValue(presentationBlock);
 
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        id: '123',
+        presentationDuration: 10,
+        startDate: new Date(),
+        endDate: new Date(),
+      });
+
       const result = await service.findOne('1');
 
-      expect(result).toEqual(presentationBlock);
+      expect(result.id).toBe('1');
+      expect(result).toHaveProperty('availablePositionsWithinBlock');
+    });
+
+    it('should return a presentation block with available positions', async () => {
+      const now = new Date();
+      const presentationBlock = {
+        id: '1',
+        eventEditionId: '123',
+        startTime: now,
+        duration: 30,
+        type: PresentationBlockType.Presentation,
+        presentations: [],
+      };
+
+      prismaService.presentationBlock.findUnique = jest
+        .fn()
+        .mockResolvedValue(presentationBlock);
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        id: '123',
+        presentationDuration: 10,
+      });
+
+      const result = await service.findOne('1');
+
+      expect(result.id).toBe('1');
+      expect(result.availablePositionsWithinBlock).toBeDefined();
+      expect(result.availablePositionsWithinBlock.length).toBe(3); // 30 min / 10 min per presentation
+    });
+
+    it('should return a general block with empty available positions', async () => {
+      const now = new Date();
+      const presentationBlock = {
+        id: '1',
+        eventEditionId: '123',
+        startTime: now,
+        duration: 30,
+        type: PresentationBlockType.General,
+        presentations: [],
+      };
+
+      prismaService.presentationBlock.findUnique = jest
+        .fn()
+        .mockResolvedValue(presentationBlock);
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue({
+        id: '123',
+        presentationDuration: 10,
+      });
+
+      const result = await service.findOne('1');
+
+      expect(result.id).toBe('1');
+      expect(result.availablePositionsWithinBlock).toEqual([]);
+    });
+
+    it('should throw an error if presentation block is not found', async () => {
+      prismaService.presentationBlock.findUnique = jest
+        .fn()
+        .mockResolvedValue(null);
+
+      await expect(service.findOne('1')).rejects.toThrow(
+        'Presentation block not found',
+      );
+    });
+
+    it('should throw an error if event edition is not found', async () => {
+      const now = new Date();
+      const presentationBlock = {
+        id: '1',
+        eventEditionId: '123',
+        startTime: now,
+        duration: 30,
+        type: PresentationBlockType.Presentation,
+        presentations: [],
+      };
+
+      prismaService.presentationBlock.findUnique = jest
+        .fn()
+        .mockResolvedValue(presentationBlock);
+      prismaService.eventEdition.findUnique = jest.fn().mockResolvedValue(null);
+
+      await expect(service.findOne('1')).rejects.toThrow(
+        'Event edition not found',
+      );
     });
   });
 
