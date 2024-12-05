@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsOptional } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
 export class CreateGuidanceDto {
   @IsString()
@@ -19,10 +19,4 @@ export class CreateGuidanceDto {
   @IsString()
   @IsOptional()
   eventEditionId: string;
-
-  @IsDate()
-  createdAt: Date;
-
-  @IsDate()
-  updatedAt: Date;
 }
