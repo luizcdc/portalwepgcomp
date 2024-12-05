@@ -6,6 +6,8 @@ import {
   Post,
   UseGuards,
   Patch,
+  Get, 
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
@@ -13,7 +15,10 @@ import { UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevel } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class UserController {
@@ -44,5 +49,15 @@ export class UserController {
   @UserLevels(UserLevel.Superadmin)
   async activateUser(@Param('id') id: string) {
     return this.userService.activateProfessor(id);
+  }
+
+  @Get()
+  @ApiQuery({ name: 'role', required: false, description: 'Filter by user level (e.g., "Admin", "Default")' })
+  @ApiQuery({ name: 'profile', required: false, description: 'Filter by profile (e.g., "Professor", "Listener")' })
+  async getUsers(
+    @Query('role') role?: string,
+    @Query('profile') profile?: string,
+  ) {
+    return await this.userService.findAll(role, profile);
   }
 }
