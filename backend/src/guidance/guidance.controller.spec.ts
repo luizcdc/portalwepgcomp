@@ -10,7 +10,7 @@ describe('GuidanceController', () => {
   beforeEach(async () => {
     // Mock do GuidanceService
     guidanceServiceMock = {
-      getUniqueInstance: jest.fn(),
+      getActiveInstance: jest.fn(),
       update: jest.fn(),
     };
 
@@ -39,13 +39,13 @@ describe('GuidanceController', () => {
         updatedAt: new Date(),
       };
 
-      (guidanceServiceMock.getUniqueInstance as jest.Mock).mockResolvedValue(
+      (guidanceServiceMock.getActiveInstance as jest.Mock).mockResolvedValue(
         mockGuidance,
       );
 
       const result = await controller.getGuidance();
 
-      expect(guidanceServiceMock.getUniqueInstance).toHaveBeenCalledTimes(1);
+      expect(guidanceServiceMock.getActiveInstance).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockGuidance);
     });
   });

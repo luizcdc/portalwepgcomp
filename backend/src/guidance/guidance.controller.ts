@@ -1,6 +1,7 @@
-import { Controller, Get, Patch, Body } from '@nestjs/common';
+import { Controller, Get, Patch, Body, Delete, Post } from '@nestjs/common';
 import { GuidanceService } from './guidance.service';
 import { UpdateGuidanceDto } from './dto/update-guidance.dto';
+import { CreateGuidanceDto } from './dto/create-guidance.dto';
 
 @Controller('guidance')
 export class GuidanceController {
@@ -8,7 +9,22 @@ export class GuidanceController {
 
   @Get()
   async getGuidance() {
-    return this.guidanceService.getUniqueInstance();
+    return this.guidanceService.getActiveInstance();
+  }
+
+  @Get(':id')
+  async getGuidanceById(id: string) {
+    return this.guidanceService.getById(id);
+  }
+
+  @Delete(':id')
+  async deleteGuidance(id: string) {
+    return this.guidanceService.remove(id);
+  }
+
+  @Post()
+  async createGuidance(@Body() createGuidanceDto: CreateGuidanceDto) {
+    return this.guidanceService.create(createGuidanceDto);
   }
 
   @Patch()
