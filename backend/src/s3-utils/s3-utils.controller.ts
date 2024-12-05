@@ -51,7 +51,7 @@ export class S3UtilsController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 51200 }),
+          new MaxFileSizeValidator({ maxSize: 51200000 }),
           new FileTypeValidator({ fileType: 'application/pdf' }),
         ],
       }),
