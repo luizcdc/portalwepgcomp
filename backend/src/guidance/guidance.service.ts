@@ -21,7 +21,6 @@ export class GuidanceService {
         eventEditionId: eventEditionActive.id,
       },
     });
-    console.log(instance);
     if (!instance) {
       throw new AppException(
         'Não existe orientação ativa para a edição do evento.',
@@ -29,8 +28,8 @@ export class GuidanceService {
       );
     }
 
-    const response_instance = new ResponseGuidanceDto(instance);
-    return response_instance;
+    const responseInstance = new ResponseGuidanceDto(instance);
+    return responseInstance;
   }
 
   async getById(id: string) {
@@ -41,11 +40,11 @@ export class GuidanceService {
     });
 
     if (!guidance) {
-      throw new AppException('Intância de orientação não encontrada.', 404);
+      throw new AppException('Instância de orientação não encontrada.', 404);
     }
 
-    const response_instance = new ResponseGuidanceDto(guidance);
-    return response_instance;
+    const responseInstance = new ResponseGuidanceDto(guidance);
+    return responseInstance;
   }
 
   async remove(id: string) {
@@ -56,7 +55,7 @@ export class GuidanceService {
     });
 
     if (!guidanceExists) {
-      throw new AppException('Intância de orientação não encontrada.', 404);
+      throw new AppException('Instância de orientação não encontrada.', 404);
     }
 
     await this.prismaClient.guidance.delete({
@@ -65,7 +64,7 @@ export class GuidanceService {
       },
     });
 
-    return { message: 'Intância de orientação removida com sucesso.' };
+    return { message: 'Instância de orientação removida com sucesso.' };
   }
 
   async create(createGuidanceDto: CreateGuidanceDto) {
@@ -78,8 +77,8 @@ export class GuidanceService {
       },
     });
 
-    const response_instance = new ResponseGuidanceDto(createGuidance);
-    return response_instance;
+    const responseInstance = new ResponseGuidanceDto(createGuidance);
+    return responseInstance;
   }
 
   async update(id: string, updateGuidanceDto: UpdateGuidanceDto) {
@@ -90,7 +89,7 @@ export class GuidanceService {
     });
 
     if (!guidanceExists) {
-      throw new AppException('Intância de orientação não encontrada.', 404);
+      throw new AppException('Instância de orientação não encontrada.', 404);
     }
 
     const updateGuidance = await this.prismaClient.guidance.update({
@@ -100,8 +99,8 @@ export class GuidanceService {
       data: updateGuidanceDto,
     });
 
-    const response_instance = new ResponseGuidanceDto(updateGuidance);
-    return response_instance;
+    const responseInstance = new ResponseGuidanceDto(updateGuidance);
+    return responseInstance;
   }
 
   async updateActive(updateGuidanceDto: UpdateGuidanceDto) {
