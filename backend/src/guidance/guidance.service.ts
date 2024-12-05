@@ -21,7 +21,7 @@ export class GuidanceService {
         eventEditionId: eventEditionActive.id,
       },
     });
-
+    console.log(instance);
     if (!instance) {
       throw new AppException(
         'Não existe orientação ativa para a edição do evento.',
@@ -82,7 +82,29 @@ export class GuidanceService {
     return response_instance;
   }
 
-  async update(updateGuidanceDto: UpdateGuidanceDto) {
+  async update(id: string, updateGuidanceDto: UpdateGuidanceDto) {
+    const guidanceExists = await this.prismaClient.guidance.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!guidanceExists) {
+      throw new AppException('Intância de orientação não encontrada.', 404);
+    }
+
+    const updateGuidance = await this.prismaClient.guidance.update({
+      where: {
+        id,
+      },
+      data: updateGuidanceDto,
+    });
+
+    const response_instance = new ResponseGuidanceDto(updateGuidance);
+    return response_instance;
+  }
+
+  async updateActive(updateGuidanceDto: UpdateGuidanceDto) {
     const instance = await this.getActiveInstance();
     return this.prismaClient.guidance.update({
       where: { id: instance.id },

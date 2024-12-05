@@ -1,11 +1,11 @@
 import {
   Controller,
   Get,
-  Patch,
   Body,
   Delete,
   Post,
   Param,
+  Put,
 } from '@nestjs/common';
 import { GuidanceService } from './guidance.service';
 import { UpdateGuidanceDto } from './dto/update-guidance.dto';
@@ -35,8 +35,16 @@ export class GuidanceController {
     return this.guidanceService.create(createGuidanceDto);
   }
 
-  @Patch()
-  async updateGuidance(@Body() updateGuidanceDto: UpdateGuidanceDto) {
-    return this.guidanceService.update(updateGuidanceDto);
+  @Put('/active')
+  async updateActiveGuidance(@Body() updateGuidanceDto: UpdateGuidanceDto) {
+    return this.guidanceService.updateActive(updateGuidanceDto);
+  }
+
+  @Put(':id')
+  async updateGuidance(
+    @Param('id') id: string,
+    @Body() updateGuidanceDto: UpdateGuidanceDto,
+  ) {
+    return this.guidanceService.update(id, updateGuidanceDto);
   }
 }
