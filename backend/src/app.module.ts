@@ -13,6 +13,7 @@ import { PresentationModule } from './presentation/presentation.module';
 import { SubmissionModule } from './submission/submission.module';
 import { PresentationBlockModule } from './presentation-block/presentation-block.module';
 import { CommitteeMemberModule } from './committee-member/committee-member.module';
+import { S3UtilsModule } from './s3-utils/s3-utils.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CommitteeMemberModule } from './committee-member/committee-member.modul
     SubmissionModule,
     PresentationBlockModule,
     CommitteeMemberModule,
+    S3UtilsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
