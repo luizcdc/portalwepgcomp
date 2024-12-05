@@ -402,14 +402,20 @@ export class PresentationService {
       where: { mainAuthorId: userId },
       include: { Presentation: true },
     });
-  
+
     // Extract presentations directly from the submissions
-    const presentations = submissions.flatMap(submission => submission.Presentation);
-  
+    const presentations = submissions.flatMap(
+      (submission) => submission.Presentation,
+    );
+
     return presentations;
   }
 
-  async updatePresentationForUser(userId: string, presentationId: string, dto: UpdatePresentationDto) {
+  async updatePresentationForUser(
+    userId: string,
+    presentationId: string,
+    dto: UpdatePresentationDto,
+  ) {
     // Check if the presentation belongs to a submission authored by the user
     const presentation = await this.prismaClient.presentation.findFirst({
       where: {
@@ -417,11 +423,14 @@ export class PresentationService {
         submission: { mainAuthorId: userId },
       },
     });
-  
+
     if (!presentation) {
-      throw new AppException('Apresentação não encontrada ou não pertence ao usuário.', 404);
+      throw new AppException(
+        'Apresentação não encontrada ou não pertence ao usuário.',
+        404,
+      );
     }
-  
+
     // Update the presentation
     return this.prismaClient.presentation.update({
       where: { id: presentationId },
