@@ -188,8 +188,8 @@ describe('UserController', () => {
           password: 'hashedPassword123',
           registrationNumber: '2023001',
           photoFilePath: 'path/to/photo1.jpg',
-          level: UserLevel.Admin, // Corrigido para usar o enum
-          profile: Profile.Professor, // Corrigido para usar o enum
+          level: UserLevel.Admin, 
+          profile: Profile.Professor, 
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -201,8 +201,8 @@ describe('UserController', () => {
           password: 'hashedPassword456',
           registrationNumber: '2023002',
           photoFilePath: 'path/to/photo2.jpg',
-          level: UserLevel.Default, // Corrigido para usar o enum
-          profile: Profile.Listener, // Corrigido para usar o enum
+          level: UserLevel.Default, 
+          profile: Profile.Listener, 
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -228,8 +228,8 @@ describe('UserController', () => {
           password: 'hashedPassword123',
           registrationNumber: '2023001',
           photoFilePath: 'path/to/photo1.jpg',
-          level: UserLevel.Admin, // Corrigido para usar o enum
-          profile: Profile.Professor, // Corrigido para usar o enum
+          level: UserLevel.Admin, 
+          profile: Profile.Professor, 
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -255,8 +255,8 @@ describe('UserController', () => {
           password: 'hashedPassword456',
           registrationNumber: '2023002',
           photoFilePath: 'path/to/photo2.jpg',
-          level: UserLevel.Default, // Corrigido para usar o enum
-          profile: Profile.Listener, // Corrigido para usar o enum
+          level: UserLevel.Default, 
+          profile: Profile.Listener, 
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -282,8 +282,8 @@ describe('UserController', () => {
           password: 'hashedPassword123',
           registrationNumber: '2023001',
           photoFilePath: 'path/to/photo1.jpg',
-          level: UserLevel.Admin, // Corrigido para usar o enum
-          profile: Profile.Professor, // Corrigido para usar o enum
+          level: UserLevel.Admin, 
+          profile: Profile.Professor, 
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
