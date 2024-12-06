@@ -19,7 +19,7 @@ export async function LoginRequest(
   email: string,
   password: string
 ): Promise<{
-  token: any; data: UserProfile 
+  token: string; data: UserProfile 
 }> {
 
 
