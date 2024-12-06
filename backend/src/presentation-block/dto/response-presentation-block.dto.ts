@@ -12,8 +12,10 @@ export class ResponsePresentationDto {
   presentationBlockId: string;
   positionWithinBlock: number;
   status: PresentationStatus;
+  startTime: Date;
   createdAt: Date;
   updatedAt: Date;
+  submission: ResponseSubmissionDto;
 
   constructor(presentation: any) {
     this.id = presentation.id;
@@ -21,8 +23,46 @@ export class ResponsePresentationDto {
     this.presentationBlockId = presentation.presentationBlockId;
     this.positionWithinBlock = presentation.positionWithinBlock;
     this.status = presentation.status;
+    this.startTime = presentation.startTime;
     this.createdAt = presentation.createdAt;
     this.updatedAt = presentation.updatedAt;
+    this.submission = new ResponseSubmissionDto(presentation.submission);
+  }
+}
+
+export class ResponseSubmissionDto {
+  id: string;
+  advisorId: string;
+  mainAuthorId: string;
+  eventEditionId: string;
+  title: string;
+  abstract: string;
+  pdfFile: string;
+  phoneNumber: string;
+  proposedPresentationBlockId?: string;
+  proposedPositionWithinBlock?: number;
+  ranking?: number;
+  coAdvisor?: string;
+  status: PresentationStatus;
+  createdAt: Date;
+  updatedAt: Date;
+
+  constructor(submission: any) {
+    this.id = submission.id;
+    this.advisorId = submission.advisorId;
+    this.mainAuthorId = submission.mainAuthorId;
+    this.eventEditionId = submission.eventEditionId;
+    this.title = submission.title;
+    this.abstract = submission.abstract;
+    this.pdfFile = submission.pdfFile;
+    this.phoneNumber = submission.phoneNumber;
+    this.proposedPresentationBlockId = submission.proposedPresentationBlockId;
+    this.proposedPositionWithinBlock = submission.proposedPositionWithinBlock;
+    this.ranking = submission.ranking;
+    this.coAdvisor = submission.coAdvisor;
+    this.status = submission.status;
+    this.createdAt = submission.createdAt;
+    this.updatedAt = submission.updatedAt;
   }
 }
 

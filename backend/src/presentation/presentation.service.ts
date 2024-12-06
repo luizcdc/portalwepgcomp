@@ -9,6 +9,7 @@ import { UpdatePresentationWithSubmissionDto } from './dto/update-presentation-w
 import { PresentationStatus } from '@prisma/client';
 import { SubmissionStatus } from '@prisma/client';
 import { PresentationBlockType } from '@prisma/client';
+import { PresentationResponseDto } from './dto/response-presentation.dto';
 
 @Injectable()
 export class PresentationService {
@@ -192,7 +193,20 @@ export class PresentationService {
       },
     });
 
-    return presentations;
+    const presentationResponseDtos: PresentationResponseDto[] = [];
+
+    for (const presentation of presentations) {
+      const presentationTime = await this.calculatePresentationStartTime(
+        presentation.presentationBlockId,
+        presentation.positionWithinBlock,
+      );
+
+      presentationResponseDtos.push(
+        new PresentationResponseDto(presentation, presentationTime),
+      );
+    }
+
+    return presentationResponseDtos;
   }
 
   async findOne(id: string) {
@@ -205,7 +219,13 @@ export class PresentationService {
 
     if (!presentation)
       throw new AppException('Apresentação não encontrada.', 404);
-    return presentation;
+
+    const presentationTime = await this.calculatePresentationStartTime(
+      presentation.presentationBlockId,
+      presentation.positionWithinBlock,
+    );
+
+    return new PresentationResponseDto(presentation, presentationTime);
   }
 
   async update(id: string, updatePresentationDto: UpdatePresentationDto) {
@@ -436,5 +456,35 @@ export class PresentationService {
       where: { id: presentationId },
       data: dto,
     });
+  }
+
+  private async calculatePresentationStartTime(
+    presentationBlockId: string,
+    positionWithinBlock: number,
+  ): Promise<Date> {
+    const presentationBlock =
+      await this.prismaClient.presentationBlock.findUnique({
+        where: { id: presentationBlockId },
+      });
+
+    if (!presentationBlock)
+      throw new AppException('Bloco de apresentação não encontrado.', 404);
+
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: { id: presentationBlock.eventEditionId },
+    });
+
+    if (!eventEdition) throw new AppException('Evento não encontrado.', 404);
+
+    const presentationDuration = eventEdition.presentationDuration;
+    const startTime = presentationBlock.startTime;
+
+    const presentationTime = new Date(startTime);
+    presentationTime.setMinutes(
+      presentationTime.getMinutes() +
+        positionWithinBlock * presentationDuration,
+    );
+
+    return presentationTime;
   }
 }
