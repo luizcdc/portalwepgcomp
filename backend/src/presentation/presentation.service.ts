@@ -116,7 +116,6 @@ export class PresentationService {
       abstractText,
       pdfFile,
       phoneNumber,
-      submissionStatus,
       coAdvisor,
       presentationBlockId,
       positionWithinBlock,
@@ -136,7 +135,7 @@ export class PresentationService {
         phoneNumber,
         proposedPresentationBlockId: presentationBlockId,
         proposedPositionWithinBlock: positionWithinBlock,
-        status: submissionStatus,
+        status: SubmissionStatus.Confirmed,
         coAdvisor,
       });
     } catch (error) {
@@ -340,7 +339,6 @@ export class PresentationService {
       abstractText,
       pdfFile,
       phoneNumber,
-      submissionStatus,
       coAdvisor,
       presentationBlockId,
       positionWithinBlock,
@@ -368,7 +366,6 @@ export class PresentationService {
           abstractText,
           pdfFile,
           phoneNumber,
-          status: submissionStatus,
           coAdvisor,
         },
       );
@@ -383,7 +380,6 @@ export class PresentationService {
     let updatedPresentation;
     try {
       updatedPresentation = await this.update(id, {
-        submissionId: updatedSubmission.id,
         presentationBlockId,
         positionWithinBlock,
         status,
