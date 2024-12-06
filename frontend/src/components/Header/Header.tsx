@@ -6,9 +6,13 @@ import { usePathname } from "next/navigation";
 import "./style.scss";
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import PerfilOuvinte from "../Perfil/PerfilOuvinte";
+import PerfilAdmin from "../Perfil/PerfilAdmin";
+import PerfilDoutorando from "../Perfil/PerfilDoutorando";
+import "./style.scss";
 
 export default function Header() {
-  const { signed, logout } = useContext(AuthContext);
+  const { user, signed } = useContext(AuthContext);
 
   type MenuItem =
     | "inicio"
@@ -29,6 +33,20 @@ export default function Header() {
       }
     }
   };
+
+  function perfil() {
+    if (!user) return null;
+    switch (user.profile) {
+      case "Listener":
+        return <PerfilOuvinte />;
+      case "Professor":
+        return <PerfilAdmin />;
+      case "DoctoralStudent":
+        return <PerfilDoutorando />;
+      default:
+        return null;
+    }
+  }
 
   useEffect(() => {
     const currentPath = pathname;
@@ -120,14 +138,7 @@ export default function Header() {
               <div className='vr text-black'></div>
               <li className='nav-item'>
                 {signed ? (
-                  <Link
-                    className='nav-link active text-black'
-                    aria-current='page'
-                    href='/Home'
-                    onClick={logout}
-                  >
-                    Logout
-                  </Link>
+                  perfil()
                 ) : (
                   <Link
                     className='nav-link active text-black'

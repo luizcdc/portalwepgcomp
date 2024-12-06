@@ -1,8 +1,11 @@
 "use client";
 import Link from "next/link";
 import "./style.scss";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 export default function PerfilDoutorando() {
+  const { logout } = useContext(AuthContext);
   return (
     <>
       <li className='dropdown'>
@@ -24,6 +27,11 @@ export default function PerfilDoutorando() {
             <Link className='dropdown-item' href='#'>
               Apresentação
             </Link>
+          </li>
+          <li>
+              <Link className='dropdown-item' href='/Home' onClick={logout}>
+                Sair
+              </Link>
           </li>
         </ul>
       </li>
