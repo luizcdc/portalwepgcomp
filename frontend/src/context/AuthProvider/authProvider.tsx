@@ -1,7 +1,12 @@
 "use client";
 
 import { createContext, useEffect, useState } from "react";
-import { api, getUserLocalStorage, LoginRequest, setTokenLocalStorage } from "./util";
+import {
+  api,
+  getUserLocalStorage,
+  LoginRequest,
+  setTokenLocalStorage,
+} from "./util";
 import { useRouter } from "next/navigation";
 import { useSweetAlert } from "@/hooks/useAlert";
 
@@ -33,7 +38,7 @@ export const AuthProvider = ({ children }) => {
       const payload = {
         token: response.token,
         data: response.data,
-      }
+      };
 
       setUser(payload.data);
       api.defaults.headers.common["Authorization"] = `Bearer ${payload.token}`;

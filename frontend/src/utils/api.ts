@@ -4,7 +4,7 @@ import  Axios from "axios";
 
 
 const headersDefault = {
-    'Content-Type': 'application/json',
+  'Content-Type': 'application/json',
 };
 
 const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
