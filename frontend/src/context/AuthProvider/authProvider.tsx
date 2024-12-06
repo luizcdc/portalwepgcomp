@@ -1,12 +1,7 @@
 "use client";
 
-import { createContext, useEffect, useState } from "react";
-import {
-  api,
-  getUserLocalStorage,
-  LoginRequest,
-  setTokenLocalStorage,
-} from "./util";
+import { createContext, useState } from "react";
+import { api, LoginRequest, setTokenLocalStorage } from "./util";
 import { useRouter } from "next/navigation";
 import { useSweetAlert } from "@/hooks/useAlert";
 
@@ -24,13 +19,15 @@ export const AuthProvider = ({ children }) => {
   const { showAlert } = useSweetAlert();
   const router = useRouter();
 
-  useEffect(() => {
-    const user = getUserLocalStorage();
+  // Acho que esse trecho comentado poderia ser removido
 
-    if (user) {
-      setUser(user);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const user = getUserLocalStorage();
+
+  //   if (user) {
+  //     setUser(user);
+  //   }
+  // }, []);
 
   const singIn = async ({ email, password }) => {
     try {
