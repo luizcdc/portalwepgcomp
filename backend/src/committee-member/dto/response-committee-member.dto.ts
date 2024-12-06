@@ -13,6 +13,12 @@ export class ResponseCommitteeMemberDto {
   userId: string;
 
   @Expose()
+  userName: string;
+
+  @Expose()
+  userEmail: string;
+
+  @Expose()
   level: CommitteeLevel;
 
   @Expose()

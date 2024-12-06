@@ -1,12 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 
 import Star from "@/components/UI/Star";
 import avaliar from "@/public/assets/images/avaliar.svg";
-import Linkedin from "@/public/assets/images/logo_linkedin.svg";
 
 export default function PresentationModal({
   props,
@@ -36,13 +34,6 @@ export default function PresentationModal({
           paddingBottom: "15px",
         }}
       >
-        <Image
-          src={"/assets/images/person_icon.svg"}
-          alt="PGCOMP Logo"
-          width={110}
-          height={110}
-          priority={true}
-        />
         <h3
           className="fw-semibold text-start"
           style={{ fontSize: "18px", lineHeight: "27px" }}
@@ -62,11 +53,6 @@ export default function PresentationModal({
             <strong>{props.doutorando}</strong>
             <div> | </div>
             <div>{props.emailDoutorando}</div>
-            <div>
-              <Link href="">
-                <Image src={Linkedin} width={22} height={22} alt="Linkedin" />
-              </Link>
-            </div>
           </div>
           <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
             Orientador(a): {props.orientador}
