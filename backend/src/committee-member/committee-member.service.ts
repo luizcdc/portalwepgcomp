@@ -85,25 +85,69 @@ export class CommitteeMemberService {
     });
   }
 
+  async findCurrentCoordinator(eventEditionId: string) {
+    const coordinator = await this.prismaClient.committeeMember.findFirst({
+      where: {
+        eventEditionId,
+        level: CommitteeLevel.Coordinator,
+      },
+      include: { user: true },
+    });
+
+    if (!coordinator) {
+      throw new NotFoundException('Coordenador não encontrado');
+    }
+
+    const { user, ...responseCommitteeMember } = coordinator;
+    return new ResponseCommitteeMemberDto({
+      ...responseCommitteeMember,
+      userName: user.name,
+      userEmail: user.email,
+    });
+  }
+
   async findAll(eventEditionId: string) {
+    // To create the ResponseCommitteeMemberDto, we need to also return the user name
     const found = await this.prismaClient.committeeMember.findMany({
       where: { eventEditionId },
+      include: { user: true },
     });
+    if (found.length === 0) {
+      // Check whether the event edition exists
+      const eventEdition = await this.prismaClient.eventEdition.findUnique({
+        where: { id: eventEditionId },
+      });
+      if (!eventEdition) {
+        throw new NotFoundException(
+          `Edição do evento com ID ${eventEditionId} não encontrada`,
+        );
+      }
+    }
+    // destructure the returned object, remove user from it, but use it to create the userName field
     return found.map(
-      (committeeMember) => new ResponseCommitteeMemberDto(committeeMember),
+      ({ user, ...committeeMember }) =>
+        new ResponseCommitteeMemberDto({
+          ...committeeMember,
+          userName: user.name,
+        }),
     );
   }
 
   async findOne(id: string) {
     const committeeMember = await this.prismaClient.committeeMember.findUnique({
       where: { id },
+      include: { user: true },
     });
 
     if (!committeeMember) {
       throw new NotFoundException('Membro da comissão não encontrado');
     }
 
-    return new ResponseCommitteeMemberDto(committeeMember);
+    const { user, ...responseCommitteeMember } = committeeMember;
+    return new ResponseCommitteeMemberDto({
+      ...responseCommitteeMember,
+      userName: user.name,
+    });
   }
 
   async update(
@@ -133,13 +177,17 @@ export class CommitteeMemberService {
     const result = await this.prismaClient.committeeMember.update({
       where: { id: committeeMember.id },
       data: updateCommitteeMemberDto,
+      include: { user: true },
     });
 
     if (updateCommitteeMemberDto.level) {
       await this.promoteUser(result.userId, result.level);
     }
-
-    return new ResponseCommitteeMemberDto(result);
+    const { user, ...resultDto } = result;
+    return new ResponseCommitteeMemberDto({
+      ...resultDto,
+      userName: user.name,
+    });
   }
 
   async remove(id: string, userId?: string, eventEditionId?: string) {

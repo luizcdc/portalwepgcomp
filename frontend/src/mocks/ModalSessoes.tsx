@@ -59,6 +59,10 @@ export const ModalSessaoMock = {
         },
       ],
     },
+    n_apresentacoes: {
+      label: "Número máximo de apresentações para essa sessão",
+      placeholder: "Ex. 4",
+    },
     sala: {
       label: "Sala do evento",
       placeholder: "Selecione a sala do evento",
