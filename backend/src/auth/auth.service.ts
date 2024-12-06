@@ -21,7 +21,9 @@ export class AuthService {
     private mailingService: MailingService,
   ) {}
 
-  async signIn(userData: SignInDto): Promise<{ token: string; data: Partial<UserAccount> }> {
+  async signIn(
+    userData: SignInDto,
+  ): Promise<{ token: string; data: Partial<UserAccount> }> {
     const user = await this.userService.findByEmail(userData.email);
 
     if (!user) {
@@ -38,11 +40,12 @@ export class AuthService {
     };
 
     const data = {
+      id: user.id,
       name: user.name,
       profile: user.profile,
       level: user.level,
       isActive: user.isActive,
-    }
+    };
 
     const token = await this.jwtService.signAsync(payload);
     return {
