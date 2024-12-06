@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
+import { UserLogin } from "@/models/user";
 import {
   api,
   getUserLocalStorage,
