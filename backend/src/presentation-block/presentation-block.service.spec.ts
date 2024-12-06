@@ -573,7 +573,11 @@ describe('PresentationBlockService', () => {
           eventEditionId,
         },
         include: {
-          presentations: true,
+          presentations: {
+            include: {
+              submission: true,
+            },
+          },
           panelists: {
             include: {
               user: true,
