@@ -1,7 +1,7 @@
 name: Vercel Preview Frontend Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: prj_y1zYc6ywtGS1Nn4D1VBPqDdf6is4
+  VERCEL_PROJECT_ID: ${{ secrets.FRONTEND_DSV_VERCEL_PROJECT_ID }}
 on:
   push:
     branches:
@@ -18,17 +18,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
         
     steps:
       - uses: actions/checkout@v2
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} 
       - name: Clean modules
         run: npm run clean
       - name: Build Project Artifacts
-        run: vercel build --prod --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} 
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=JVMufX1sAGnyBH5wybsZBjqJ # TODO: Substituir pela variável de ambiente VERCEL_TOKEN 
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 

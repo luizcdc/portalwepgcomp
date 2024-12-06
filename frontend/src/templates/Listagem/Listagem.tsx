@@ -3,85 +3,152 @@
 import CardListagem from "@/components/CardListagem/CardListagem";
 import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-
 import "./style.scss";
 import Banner from "@/components/UI/Banner";
 
 interface ListagemProps {
   title: string;
-  labelAddButton: string;
-  navigate: string;
+  labelAddButton?: string;
   searchPlaceholder: string;
-  labelListCardsButton: string;
   cardsList: any[];
+  searchValue?: string;
+  labelListCardsButton?: string;
+  isMyPresentation?: boolean;
+  isFavorites?: boolean;
+  idModal?: string;
+  idModalDelete?: string;
+  onAddButtonClick?: () => void;
+  onChangeSearchValue?: (value: string) => void;
+  onClickItem?: (value: string) => void;
 }
 
 export default function Listagem({
+  idModal,
   title,
   labelAddButton,
-  navigate,
   labelListCardsButton,
   searchPlaceholder,
+  searchValue,
+  isMyPresentation,
+  isFavorites,
   cardsList,
+  onAddButtonClick,
+  onChangeSearchValue,
+  onClickItem,
+  idModalDelete,
 }: Readonly<ListagemProps>) {
-  const router = useRouter();
-  const handleNavigation = () => {
-    router.push(navigate);
-  };
-
   return (
-    <div className='listagem-template'>
+    <div className="listagem-template">
       <Banner title={title} />
-      <div className='listagem-template-content'>
-        <div className='listagem-template-user-area'>
-          <button onClick={handleNavigation}>
-            {labelAddButton}
-            <Image src='/assets/images/add.svg' alt='' width={24} height={24} />
-          </button>
-          <div className='input-group listagem-template-content-input'>
-            <input
-              placeholder={searchPlaceholder}
-              type='text'
-              className='form-control'
-              aria-label="Recipient's username"
-              aria-describedby='button-addon2'
-            />
+      <div className="listagem-template-content">
+        <div className="listagem-template-user-area">
+          {labelAddButton ? (
             <button
-              className='btn btn-outline-secondary'
-              type='button'
-              id='button-addon2'
+              type="button"
+              data-bs-toggle={idModal ? "modal" : undefined}
+              data-bs-target={idModal ? `#${idModal}` : undefined}
+              onClick={idModal ? () => {} : onAddButtonClick}
             >
+              {labelAddButton}
               <Image
-                src='/assets/images/search.svg'
-                alt=''
+                src="/assets/images/add.svg"
+                alt=""
                 width={24}
                 height={24}
               />
             </button>
-          </div>
+          ) : (
+            ""
+          )}
+          {onChangeSearchValue && (
+            <div
+              className="input-group listagem-template-content-input"
+              style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+            >
+              <input
+                placeholder={searchPlaceholder}
+                type="text"
+                className="form-control"
+                aria-label="campo de busca"
+                aria-describedby="botao-busca"
+                value={searchValue}
+                onChange={(e) => onChangeSearchValue(e.target.value)}
+              />
+
+              <button
+                className="btn btn-outline-secondary"
+                type="button"
+                id="botao-busca"
+              >
+                <Image
+                  src="/assets/images/search.svg"
+                  alt=""
+                  width={24}
+                  height={24}
+                />
+              </button>
+            </div>
+          )}
         </div>
-        <div className='listagem-template-cards'>
-          {cardsList?.map((card) => (
-            <CardListagem
-              key={card.name}
-              title={card.name}
-              subtitle={
-                title === "Sessões"
-                  ? `${formatDate(card.startAt, card.endAt)}`
-                  : card.subtitle
-              }
-              onClick={() => {}}
-            />
-          ))}
+        <div className="listagem-template-cards">
+          {!!cardsList.length &&
+            !isFavorites &&
+            cardsList?.map((card) => (
+              <CardListagem
+                key={card.title}
+                title={card.title}
+                subtitle={
+                  title === "Sessões"
+                    ? `${formatDate(card.startTime)}`
+                    : card.subtitle
+                }
+                idModalEdit={idModal}
+                idModalDelete={idModalDelete}
+                onClickItem={() => onClickItem && onClickItem(card)}
+              />
+            ))}
+          {!!cardsList.length &&
+            isFavorites &&
+            cardsList?.map((card) => (
+              <CardListagem
+                key={card.name}
+                title={card.name}
+                subtitle={
+                  title === "Sessões"
+                    ? `${formatDate(card.startAt)}`
+                    : card.subtitle
+                }
+                showFavorite
+                onClickItem={() => onClickItem && onClickItem(card)}
+              />
+            ))}
+          {!cardsList.length && (
+            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+              <h4 className="empty-list mb-0">
+                <Image
+                  src="/assets/images/empty_box.svg"
+                  alt="Lista vazia"
+                  width={90}
+                  height={90}
+                />
+                Essa lista ainda está vazia
+              </h4>
+            </div>
+          )}
         </div>
-        <button className='listagem-template-mais-cards text-white'>
+        <button
+          className="listagem-template-mais-cards"
+          style={{
+            visibility:
+              isMyPresentation || cardsList.length <= 4 ? "hidden" : "visible",
+          }}
+        >
           {labelListCardsButton}
 
           <Image
-            className='listagem-template-mais-cards-icon'
-            src='/assets/images/seta.svg'
-            alt=''
+            className="listagem-template-mais-cards-icon"
+            src="/assets/images/seta.svg"
+            alt=""
             width={24}
             height={24}
           />

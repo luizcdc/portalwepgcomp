@@ -1,35 +1,63 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useContext } from "react";
-import "./style.scss";
-import { useForm } from "react-hook-form";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import PasswordEye from "@/components/UI/PasswordEye";
+
+import "./style.scss";
+
+const formLoginSchema = z.object({
+  email: z
+    .string({
+      invalid_type_error: "Campo inválido!",
+    })
+    .min(1, "Verifique seu email")
+    .email({
+      message: "Verifique seu email",
+    }),
+  password: z
+    .string({
+      invalid_type_error: "Campo inválido",
+    })
+    .min(1, {
+      message: "Verifique sua senha",
+    }),
+});
+
+type FormLoginSchema = z.infer<typeof formLoginSchema>;
 
 export function FormLogin() {
-  const { register, handleSubmit} = useForm<UserLogin>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormLoginSchema>({
+    resolver: zodResolver(formLoginSchema),
+  });
   const { singIn, signed } = useContext(AuthContext);
   const router = useRouter();
 
-  async function handleLogin(data: UserLogin ) {   
-    const { email, password }  = data;
-    
+  const [eye, setEye] = useState(false);
+
+  async function handleLogin(data: UserLogin) {
+    const { email, password } = data;
 
     const usuario: UserLogin = { email, password };
 
     try {
       await singIn(usuario);
-    } catch (error) {      
+    } catch (error) {}
+  }
 
-    }
-  };
-
-  if(signed) {
-    router.push("/")
+  if (signed) {
+    router.push("/");
   } else {
-
     return (
-      <form className="row g-3" onSubmit={handleSubmit(handleLogin)}>
+      <form className="row login" onSubmit={handleSubmit(handleLogin)}>
         <hr />
         <div className="col-12 mb-3">
           <label className="form-label fw-bold form-title">
@@ -41,23 +69,30 @@ export function FormLogin() {
             className="form-control input-title"
             id="email"
             placeholder="exemplo@ufba.br"
-            required
             {...register("email")}
           />
+          <p className="text-danger error-message">{errors.email?.message}</p>
         </div>
         <div className="col-12 mb-3">
           <label className="form-label fw-bold form-title">
             Senha
             <span className="text-danger ms-1">*</span>
           </label>
-          <input
-            type="password"
-            className="form-control input-title"
-            id="password"
-            placeholder="digite sua senha"
-            required
-            {...register("password")}
-          />
+          <div className="password-input">
+            <input
+              type={eye? "text": "password"}
+              className="form-control input-title"
+              id="password"
+              placeholder="digite sua senha"
+              {...register("password")}
+            />
+            <div className="eye" onClick={() => setEye(!eye)}>
+              <PasswordEye color={eye==false?"black":"blue"}/>
+            </div>
+          </div>
+          <p className="text-danger error-message">
+            {errors.password?.message}
+          </p>
 
           <div className="text-end link">
             <button
@@ -70,10 +105,10 @@ export function FormLogin() {
             </button>
           </div>
         </div>
-        <div className="d-grid gap-2 col-3 mx-auto">
+        <div className="d-grid gap-2 col-3 mx-auto mb-4">
           <button
             type="submit"
-            className="btn text-white fw-semibold button-primary"
+            className="btn text-white fw-semibold fs-6 button-primary"
           >
             Entrar
           </button>

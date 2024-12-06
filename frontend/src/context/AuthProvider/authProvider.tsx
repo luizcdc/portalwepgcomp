@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import { createContext, useEffect, useState } from "react";
-import { api, LoginRequest, setTokenLocalStorage } from "./util";
+import { api, getUserLocalStorage, LoginRequest, setTokenLocalStorage } from "./util";
 import { useRouter } from "next/navigation";
 import { useSweetAlert } from "@/hooks/useAlert";
 
-export const AuthContext = createContext< IContextLogin>( {} as IContextLogin);
+export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
 
 interface IContextLogin {
   user: UserProfile | null;
@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
+    const user = getUserLocalStorage();
 
     if (user) {
       setUser(user);

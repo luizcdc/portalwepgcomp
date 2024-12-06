@@ -1,9 +1,11 @@
+"use client";
+
+import { useUsers } from "@/hooks/useUsers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
-import { useUsers } from "@/hooks/useUsers";
 
 const formAlterarSenhaSchema = z
   .object({
@@ -75,36 +77,36 @@ export function FormAlterarSenha({ params }) {
   };
 
   return (
-    <form className="row g-3" onSubmit={handleSubmit(handleFormCadastro)}>
-      <div className="col-12 mb-1">
-        <label className="form-label fw-bold form-title">
+    <form className='row' onSubmit={handleSubmit(handleFormCadastro)}>
+      <div className='col-12 mb-1'>
+        <label className='form-label fw-bold form-title'>
           Senha
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className='text-danger ms-1 form-title'>*</span>
         </label>
         <input
-          type="password"
-          className="form-control input-title"
-          id="senha"
-          placeholder="Insira sua senha"
+          type='password'
+          className='form-control input-title'
+          id='senha'
+          placeholder='Insira sua senha'
           {...register("senha")}
           value={senha}
           onChange={handleChangeSenha}
         />
-        <p className="text-danger error-message">{errors.senha?.message}</p>
-        <div className="mt-3">
-          <p className="mb-1 fw-semibold paragraph-title">
+        <p className='text-danger error-message'>{errors.senha?.message}</p>
+        <div className='mt-3'>
+          <p className='mb-1 fw-semibold paragraph-title'>
             A senha deve possuir pelo menos:
           </p>
-          <ul className="mb-0">
+          <ul className='mb-0'>
             <li
               className={`fw-semibold list-title ${
                 requisitos.minLength ? "text-success" : "text-danger"
               }`}
             >
               {requisitos.minLength ? (
-                <i className="bi bi-shield-fill-check" />
+                <i className='bi bi-shield-fill-check' />
               ) : (
-                <i className="bi bi-shield-fill-x" />
+                <i className='bi bi-shield-fill-x' />
               )}{" "}
               8 dígitos
             </li>
@@ -114,9 +116,9 @@ export function FormAlterarSenha({ params }) {
               }`}
             >
               {requisitos.upperCase ? (
-                <i className="bi bi-shield-fill-check" />
+                <i className='bi bi-shield-fill-check' />
               ) : (
-                <i className="bi bi-shield-fill-x" />
+                <i className='bi bi-shield-fill-x' />
               )}{" "}
               1 letra maiúscula
             </li>
@@ -126,9 +128,9 @@ export function FormAlterarSenha({ params }) {
               }`}
             >
               {requisitos.lowerCase ? (
-                <i className="bi bi-shield-fill-check" />
+                <i className='bi bi-shield-fill-check' />
               ) : (
-                <i className="bi bi-shield-fill-x" />
+                <i className='bi bi-shield-fill-x' />
               )}{" "}
               1 letra minúscula
             </li>
@@ -138,9 +140,9 @@ export function FormAlterarSenha({ params }) {
               }`}
             >
               {requisitos.number ? (
-                <i className="bi bi-shield-fill-check" />
+                <i className='bi bi-shield-fill-check' />
               ) : (
-                <i className="bi bi-shield-fill-x" />
+                <i className='bi bi-shield-fill-x' />
               )}{" "}
               4 números
             </li>
@@ -150,9 +152,9 @@ export function FormAlterarSenha({ params }) {
               }`}
             >
               {requisitos.specialChar ? (
-                <i className="bi bi-shield-fill-check" />
+                <i className='bi bi-shield-fill-check' />
               ) : (
-                <i className="bi bi-shield-fill-x" />
+                <i className='bi bi-shield-fill-x' />
               )}{" "}
               1 caracter especial
             </li>
@@ -160,27 +162,27 @@ export function FormAlterarSenha({ params }) {
         </div>
       </div>
 
-      <div className="col-12 mb-4">
-        <label className="form-label fw-bold form-title">
+      <div className='col-12 mb-4'>
+        <label className='form-label fw-bold form-title'>
           Confirmação de senha
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className='text-danger ms-1 form-title'>*</span>
         </label>
         <input
-          type="password"
-          className="form-control input-title"
-          id="confirmaSenha"
-          placeholder="Insira sua senha novamente"
+          type='password'
+          className='form-control input-title'
+          id='confirmaSenha'
+          placeholder='Insira sua senha novamente'
           {...register("confirmaSenha")}
         />
-        <p className="text-danger error-message">
+        <p className='text-danger error-message'>
           {errors.confirmaSenha?.message}
         </p>
       </div>
 
-      <div className="d-grid gap-2 col-3 mx-auto">
+      <div className='d-grid gap-2 col-3 mx-auto'>
         <button
-          type="submit"
-          className="btn text-white fs-5 fw-bold submit-button"
+          type='submit'
+          className='btn text-white fs-5 fw-bold submit-button'
         >
           Enviar
         </button>

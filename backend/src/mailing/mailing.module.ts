@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { MailingService } from './mailing.service';
 import { MailingController } from './mailing.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { queueConstants } from 'src/queue/constants';
+import { queueConstants } from '../queue/constants';
+import { EventEditionModule } from 'src/event-edition/event-edition.module';
+import { CommitteeMemberModule } from 'src/committee-member/committee-member.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { queueConstants } from 'src/queue/constants';
         },
       },
     ]),
+    EventEditionModule,
+    CommitteeMemberModule,
   ],
   controllers: [MailingController],
   providers: [MailingService],

@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import "./style.scss";
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import PerfilOuvinte from "../Perfil/PerfilOuvinte";
@@ -42,11 +41,6 @@ export default function Header() {
       case "Professor":
         return <PerfilAdmin />;
       case "DoctoralStudent":
-        return <PerfilDoutorando />;
-      default:
-        return null;
-    }
-  }
 
   useEffect(() => {
     const currentPath = pathname;
@@ -67,7 +61,7 @@ export default function Header() {
   return (
     <nav className='navbar navbar-expand-lg'>
       <div className='container-fluid'>
-        <a className='navbar-brand'>
+        <Link className='navbar-brand' href='/'>
           <Image
             src={"/assets/images/logo_PGCOMP.svg"}
             alt='PGCOMP Logo'
@@ -75,7 +69,7 @@ export default function Header() {
             height={100}
             priority
           />
-        </a>
+        </Link>
 
         <div className='d-flex justify-content-end me-5'>
           <button

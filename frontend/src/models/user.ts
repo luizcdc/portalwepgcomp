@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
 type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
 
 interface RegisterUserParams {

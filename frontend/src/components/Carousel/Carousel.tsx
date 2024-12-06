@@ -1,8 +1,9 @@
 "use client";
 import "./Carousel.scss";
 import { CarouselMock } from "@/mocks/Carousel";
-import CarouselSlide from "./CarouselSlide";
+
 import Link from "next/link";
+import CarouselSlide from "./CarouselSlide";
 
 export default function Carousel() {
   const { slide1, slide2, slide3 } = CarouselMock;
@@ -14,34 +15,9 @@ export default function Carousel() {
       data-bs-ride='carousel'
       data-bs-interval='6000'
     >
-      <div className='carousel-indicators indicators-content'>
-        <button
-          type='button'
-          data-bs-target='#carousel-wepgcomp'
-          data-bs-slide-to='0'
-          className='indicators-buttons active'
-          aria-current='true'
-          aria-label='Slide 1'
-        />
-        <button
-          type='button'
-          data-bs-target='#carousel-wepgcomp'
-          data-bs-slide-to='1'
-          className='indicators-buttons'
-          aria-label='Slide 2'
-        />
-        <button
-          type='button'
-          data-bs-target='#carousel-wepgcomp'
-          data-bs-slide-to='2'
-          className='indicators-buttons'
-          aria-label='Slide 3'
-        />
-      </div>
-
       <div className='carousel-inner'>
-        <CarouselSlide imageUrl={slide1.backgroundUrl || ""} isActive>
-          <h2 className='display-4 title'>{slide1.title}</h2>
+        <CarouselSlide imageUrl={slide1.backgroundUrl || ""} slideIndex="0" isActive>
+          <h2 className='display-4 text-white title'>{slide1.title}</h2>
           <p className='lead'>{slide1.subtitles[0]}</p>
 
           <p className='lead fw-semibold'>{slide1.subtitles[1]}</p>
@@ -54,7 +30,7 @@ export default function Carousel() {
           </Link>
         </CarouselSlide>
 
-        <CarouselSlide imageUrl={slide2.backgroundUrl || ""}>
+        <CarouselSlide imageUrl={slide2.backgroundUrl || ""} slideIndex="1">
           <h2 className='display-4 title'>{slide2.title}</h2>
           <div className='slide-2-content'>
             <div className='concept-content'>
@@ -76,7 +52,7 @@ export default function Carousel() {
           </div>
         </CarouselSlide>
 
-        <CarouselSlide imageUrl={slide3.backgroundUrl || ""}>
+        <CarouselSlide imageUrl={slide3.backgroundUrl || ""} slideIndex="2">
           <h2 className='display-4 title'>{slide3.title}</h2>
           <p className='lead'>{slide3.subtitles[0]}</p>
           <p className='lead'>{slide3.subtitles[1]}</p>

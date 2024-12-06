@@ -1,35 +1,35 @@
-.body{
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-items: center;
-    gap: 10px;
-}
+.cadastro-edicao {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-items: center;
+  gap: 10px;
 
-.title {
+  .title {
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-items: center;
     margin-bottom: 10px;
-}
+  }
 
-h1 {
-    color: #0066BA;
-}
+  h1 {
+    color: #0066ba;
+  }
 
-hr {
+  hr {
     border-width: 1px;
-    border-color: #FFA90F;
+    border-color: #ffa90f;
     border-style: solid;
     width: 600px;
-}
+  }
 
-.sub-title{
-    color: #343A40;
+  .sub-title {
+    color: #343a40;
     font-weight: bold;
     font-size: 28px;
     text-align: center;
     line-height: 15px;
     margin-bottom: 10px;
+  }
 }

@@ -1,4 +1,6 @@
 "use client";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
 import { useContext } from "react";
@@ -24,7 +26,7 @@ export default function PerfilOuvinte() {
             </Link>
           </li>
           <li>
-            <Link className='dropdown-item' href='#'>
+            <Link className='dropdown-item' href='/Favoritos'>
               Favoritos
             </Link>
           </li>
@@ -34,9 +36,11 @@ export default function PerfilOuvinte() {
             </Link>
           </li>
           <li>
+            <li>
               <Link className='dropdown-item' href='/Home' onClick={logout}>
                 Sair
               </Link>
+            </li>
           </li>
         </ul>
       </li>

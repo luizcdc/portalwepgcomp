@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailingService } from '../mailing/mailing.service';
+import { UserAccount } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -20,21 +21,33 @@ export class AuthService {
     private mailingService: MailingService,
   ) {}
 
-  async signIn(data: SignInDto): Promise<{ token: string }> {
-    const user = await this.userService.findByEmail(data.email);
-    if (!(await bcrypt.compare(data.password, user.password))) {
+  async signIn(userData: SignInDto): Promise<{ token: string; data: Partial<UserAccount> }> {
+    const user = await this.userService.findByEmail(userData.email);
+
+    if (!user) {
+      throw new AppException('Email ou senha inválido', 400);
+    }
+
+    if (!(await bcrypt.compare(userData.password, user.password))) {
       throw new AppException('Email ou senha inválido', 400);
     }
 
     const payload = {
       userId: user.id,
       email: user.email,
-      level: user.level,
     };
+
+    const data = {
+      name: user.name,
+      profile: user.profile,
+      level: user.level,
+      isActive: user.isActive,
+    }
 
     const token = await this.jwtService.signAsync(payload);
     return {
       token,
+      data,
     };
   }
 

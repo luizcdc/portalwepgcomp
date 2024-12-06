@@ -1,0 +1,28 @@
+.modal-cadastro-apresentacao{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+       
+    .linha {
+      width: 100%;
+    }
+    
+    
+    .form-label-cadastro-apresentacao{
+      font-size: 1rem;
+    }
+    
+    .content-cadastro-apresentacao {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    p {
+      text-align: justify;
+    }
+
+    .title-cadastro-apresentacao {
+      font-weight: 700;
+    }
+}

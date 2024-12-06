@@ -3,27 +3,59 @@
 import Image from "next/image";
 
 import "./style.scss";
+import Star from "../UI/Star";
 
 interface CardListagem {
   title: string;
   subtitle: string;
-  onClick: () => void;
+  onClickItem?: () => void;
+  showFavorite?: boolean;
+  idModalEdit?: string;
+  idModalDelete?: string;
 }
 
 export default function CardListagem({
   title,
   subtitle,
-  onClick,
+  onClickItem,
+  showFavorite,
+  idModalEdit,
+  idModalDelete,
 }: Readonly<CardListagem>) {
   return (
-    <div className="card-listagem">
+    <div className="card-listagem" onClick={onClickItem}>
       <div className="card-listagem-text">
         <p>{title}</p>
         <p>{subtitle}</p>
       </div>
-      <button onClick={onClick}>
-        <Image src="/assets/images/edit.svg" alt="" width={50} height={50} />
-      </button>
+      <div className="buttons-area">
+        {showFavorite ? (
+          <Star color={"#F17F0C"} />
+        ) : (
+          <button
+            className="button-edit"
+            data-bs-toggle="modal"
+            data-bs-target={`#${idModalEdit}`}
+          >
+            <Image
+              src="/assets/images/edit.svg"
+              alt="edit button"
+              width={50}
+              height={50}
+            />
+          </button>
+        )}
+        {!!idModalDelete && (
+          <button data-bs-toggle="modal" data-bs-target={`#${idModalDelete}`}>
+            <Image
+              src="/assets/images/delete.svg"
+              alt="delete button"
+              width={50}
+              height={50}
+            />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
