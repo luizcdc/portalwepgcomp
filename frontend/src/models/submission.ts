@@ -3,7 +3,7 @@ import { UUID } from "crypto";
 export interface SubmissionParams {
     title: string;
     abstractText: string;
-    advisorId: string;
+    advisorId: UUID;
     coAdvisor?: string;
     dateSuggestion?: Date;
     pdfFile: string;
