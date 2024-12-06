@@ -19,7 +19,6 @@ export class RoomService {
       throw new AppException('Evento não encontrado.', 404);
     }
 
-    // Nao sei se pode ter duas salas com o mesmo nome no mesmo evento
     const roomWithSameName = await this.prismaClient.room.findFirst({
       where: { name, eventEditionId },
     });
@@ -69,7 +68,6 @@ export class RoomService {
       throw new AppException('Sala não encontrada.', 404);
     }
 
-    // Nao sei se pode ter duas salas com o mesmo nome no mesmo evento
     const eventEdition = await this.prismaClient.eventEdition.findUnique({
       where: { id: eventEditionId },
     });
