@@ -27,19 +27,29 @@ const formSessaoApresentacoesSchema = z.object({
     )
     .optional(),
 
-  sala: z.string({
-    required_error: "Sala é obrigatória!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  n_apresentacoes: z
+    .number({
+      invalid_type_error: "Campo inválido!",
+    })
+    .refine((value) => value > 0, {
+      message:
+        "Número de apresentações é obrigatório e deve ser maior que zero!",
+    }),
+
+  sala: z
+    .string({
+      invalid_type_error: "Campo inválido!",
+    })
+    .min(1, "Sala é obrigatória!"),
 
   inicio: z
     .string({
-      required_error: "Data e horário de início são obrigatórios!",
       invalid_type_error: "Campo inválido!",
     })
     .datetime({
       message: "Data ou horário inválidos!",
     })
+    .min(1, "Data e horário de início são obrigatórios!")
     .nullable(),
 
   avaliadores: z
@@ -63,6 +73,19 @@ export default function FormSessaoApresentacoes() {
     typeof formSessaoApresentacoesSchema
   >;
 
+  const defaultValues = sessao?.id
+    ? {
+        apresentacoes: [],
+        n_apresentacoes: sessao?.presentationsNumber ?? 0,
+        sala: sessao?.roomId ?? "",
+        inicio: sessao?.startTime ?? null,
+        avaliadores: [],
+      }
+    : {
+        inicio: null,
+        n_apresentacoes: 0,
+      };
+
   const {
     register,
     control,
@@ -70,9 +93,7 @@ export default function FormSessaoApresentacoes() {
     formState: { errors },
   } = useForm<FormSessaoApresentacoesSchema>({
     resolver: zodResolver(formSessaoApresentacoesSchema),
-    defaultValues: {
-      inicio: null,
-    },
+    defaultValues,
   });
 
   const salasOptions = formatOptions(
@@ -98,7 +119,7 @@ export default function FormSessaoApresentacoes() {
   const handleFormSessaoApresentacoes = (
     data: FormSessaoApresentacoesSchema
   ) => {
-    const { apresentacoes, sala, inicio, avaliadores } = data;
+    const { apresentacoes, sala, inicio, n_apresentacoes, avaliadores } = data;
 
     if (!sala || !inicio) {
       throw new Error("Campos obrigatórios em branco.");
@@ -110,6 +131,7 @@ export default function FormSessaoApresentacoes() {
       apresentacoes: apresentacoes?.map((v) => v.value) || [],
       roomId: sala,
       startTime: inicio,
+      presentationsNumber: n_apresentacoes,
       avaliadores: avaliadores?.map((v) => v.value) || [],
     } as SessaoParams;
 
@@ -147,6 +169,23 @@ export default function FormSessaoApresentacoes() {
 
         <p className="text-danger error-message">
           {errors.apresentacoes?.message}
+        </p>
+      </div>
+
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold form-title ">
+          {formApresentacoesFields.n_apresentacoes.label}
+          <span className="text-danger ms-1 form-title">*</span>
+        </label>
+        <input
+          type="number"
+          className="form-control input-title"
+          id="sg-titulo-input"
+          placeholder={formApresentacoesFields.n_apresentacoes.placeholder}
+          {...register("n_apresentacoes")}
+        />
+        <p className="text-danger error-message">
+          {errors.n_apresentacoes?.message}
         </p>
       </div>
 

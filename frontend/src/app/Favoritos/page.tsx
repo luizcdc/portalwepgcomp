@@ -21,7 +21,7 @@ export default function Favoritos() {
       cardsMock?.filter((v) => v.name?.includes(searchValue.trim())) ?? [];
     setSessionsListValues(newSessionsList);
   }, [searchValue]);
-  
+
   const [modalContent, setModalContent] =
     useState<PresentationData>(MockupPresentention);
 
@@ -42,7 +42,7 @@ export default function Favoritos() {
           title={title}
           cardsList={sessionsListValues}
           isFavorites
-          idModal={title.trim() + '-modal'}
+          idModal={title.trim() + "-modal"}
           searchValue={searchValue}
           onChangeSearchValue={(value) => setSearchValue(value)}
           searchPlaceholder={userArea.search}

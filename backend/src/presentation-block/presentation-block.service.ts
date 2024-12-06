@@ -243,11 +243,66 @@ export class PresentationBlockService {
     id: string,
     updatePresentationBlockDto: UpdatePresentationBlockDto,
   ) {
+    if (
+      updatePresentationBlockDto.duration == null &&
+      updatePresentationBlockDto.numPresentations == null
+    ) {
+      throw new AppException(
+        'É necessário informar a duração da sessão ou o número de apresentações',
+        400,
+      );
+    } else if (
+      updatePresentationBlockDto.duration != null &&
+      updatePresentationBlockDto.numPresentations != null
+    ) {
+      throw new AppException(
+        'Informe ou duração ou número de apresentações, não ambos',
+        400,
+      );
+    } else if (
+      updatePresentationBlockDto.duration != null &&
+      updatePresentationBlockDto.type === PresentationBlockType.Presentation
+    ) {
+      throw new AppException(
+        'A duração não pode ser especificada para sessões de apresentação, apenas número de apresentações',
+        400,
+      );
+    } else if (
+      updatePresentationBlockDto.numPresentations != null &&
+      updatePresentationBlockDto.type === PresentationBlockType.General
+    ) {
+      throw new AppException(
+        'O número de apresentações não pode ser especificado para sessões gerais, apenas a duração',
+        400,
+      );
+    }
+    if (updatePresentationBlockDto.duration == null) {
+      const presentationBlock =
+        await this.prismaClient.presentationBlock.findUnique({
+          where: {
+            id,
+          },
+        });
+      if (presentationBlock == null) {
+        throw new AppException('Sessão não encontrada', 404);
+      }
+      const eventEdition = await this.prismaClient.eventEdition.findUnique({
+        where: {
+          id: presentationBlock.eventEditionId,
+        },
+      });
+      updatePresentationBlockDto.duration =
+        eventEdition.presentationDuration *
+        updatePresentationBlockDto.numPresentations;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { numPresentations, ...without_num_presentations } =
+      updatePresentationBlockDto;
     return await this.prismaClient.presentationBlock.update({
       where: {
         id,
       },
-      data: updatePresentationBlockDto,
+      data: without_num_presentations,
     });
   }
 

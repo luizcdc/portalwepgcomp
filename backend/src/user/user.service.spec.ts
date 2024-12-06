@@ -746,4 +746,183 @@ describe('UserService', () => {
       expect(result).toEqual(updatedUserMock);
     });
   });
+
+  describe('findAll', () => {
+    it('should return all users when no filters are applied', async () => {
+      const usersMock = [
+        {
+          id: '1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          password: 'hashedPassword',
+          registrationNumber: 'REG123',
+          photoFilePath: 'photo/path',
+          profile: Profile.Professor,
+          level: UserLevel.Admin,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: '2',
+          name: 'Jane Doe',
+          email: 'jane@example.com',
+          password: 'hashedPassword',
+          registrationNumber: 'REG456',
+          photoFilePath: 'photo/path',
+          profile: Profile.Listener,
+          level: UserLevel.Default,
+          isActive: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      prismaService.userAccount.findMany = jest.fn().mockResolvedValue(usersMock);
+
+      const result = await service.findAll();
+
+      expect(prismaService.userAccount.findMany).toHaveBeenCalledWith({
+        where: {},
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          password: true,
+          registrationNumber: true,
+          photoFilePath: true,
+          profile: true,
+          level: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+    });
+
+    it('should return users filtered by role', async () => {
+      const usersMock = [
+        {
+          id: '1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          password: 'hashedPassword',
+          registrationNumber: 'REG123',
+          photoFilePath: 'photo/path',
+          profile: Profile.Professor,
+          level: UserLevel.Admin,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      prismaService.userAccount.findMany = jest.fn().mockResolvedValue(usersMock);
+
+      const result = await service.findAll('Admin');
+
+      expect(prismaService.userAccount.findMany).toHaveBeenCalledWith({
+        where: { level: 'Admin' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          password: true,
+          registrationNumber: true,
+          photoFilePath: true,
+          profile: true,
+          level: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+    });
+
+    it('should return users filtered by profile', async () => {
+      const usersMock = [
+        {
+          id: '2',
+          name: 'Jane Doe',
+          email: 'jane@example.com',
+          password: 'hashedPassword',
+          registrationNumber: 'REG456',
+          photoFilePath: 'photo/path',
+          profile: Profile.Listener,
+          level: UserLevel.Default,
+          isActive: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      prismaService.userAccount.findMany = jest.fn().mockResolvedValue(usersMock);
+
+      const result = await service.findAll(undefined, 'Listener');
+
+      expect(prismaService.userAccount.findMany).toHaveBeenCalledWith({
+        where: { profile: 'Listener' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          password: true,
+          registrationNumber: true,
+          photoFilePath: true,
+          profile: true,
+          level: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+    });
+
+    it('should return users filtered by both role and profile', async () => {
+      const usersMock = [
+        {
+          id: '1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          password: 'hashedPassword',
+          registrationNumber: 'REG123',
+          photoFilePath: 'photo/path',
+          profile: Profile.Professor,
+          level: UserLevel.Admin,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      prismaService.userAccount.findMany = jest.fn().mockResolvedValue(usersMock);
+
+      const result = await service.findAll('Admin', 'Professor');
+
+      expect(prismaService.userAccount.findMany).toHaveBeenCalledWith({
+        where: { level: 'Admin', profile: 'Professor' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          password: true,
+          registrationNumber: true,
+          photoFilePath: true,
+          profile: true,
+          level: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+    });
+  });
 });
