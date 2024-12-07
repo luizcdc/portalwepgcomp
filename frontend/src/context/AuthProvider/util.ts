@@ -1,9 +1,10 @@
+
 import { axiosInstance } from "@/utils/api";
 
 export const api = axiosInstance();
- 
-export function setTokenLocalStorage(token: any){
-    localStorage.setItem("@Auth:token", token)
+
+export function setTokenLocalStorage(token: any) {
+  localStorage.setItem("@Auth:token", token)
 }
 
 export function getUserLocalStorage() {
@@ -19,7 +20,7 @@ export async function LoginRequest(
   email: string,
   password: string
 ): Promise<{
-  token: string; data: UserProfile 
+  token: string; data: UserProfile
 }> {
 
 
