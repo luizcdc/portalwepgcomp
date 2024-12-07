@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import HtmlEditorComponent from "./HtmlEditorComponent/HtmlEditorComponent";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { SessoesMock } from "@/mocks/Sessoes";
+import { useEdicao } from "@/hooks/useEdicao";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -21,6 +23,13 @@ function MapPlaceholder() {
 export default function Endereco() {
   const [content, setContent] = useState("");
   const { signed } = useContext(AuthContext);
+
+  const { updateEdicao } = useEdicao();
+  const { eventEditionId } = SessoesMock;
+
+  const handleEditAdress = () => {
+    updateEdicao(eventEditionId, { location: content });
+  };
 
   const latitude = -13.0;
   const longitude = -38.507;
@@ -41,6 +50,7 @@ export default function Endereco() {
         <HtmlEditorComponent
           content={content}
           onChange={(newValue) => setContent(newValue)}
+          handleEditField={handleEditAdress}
         />
       ) : (
         <div className="fs-6">
