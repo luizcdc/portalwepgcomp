@@ -5,7 +5,7 @@ import LocalEvento from "@/components/LocalEvento";
 import Organizacao from "@/components/Organizacao";
 import Orientacao from "@/components/Orientacao";
 import Realizacao from "@/components/Realizacao";
-import ScheduleSection from "@/components/ScheduleSection";
+import ScheduleSection from "@/components/ScheduleSection/ScheduleSection";
 
 export default function Home() {
   return (
