@@ -13,6 +13,8 @@ import { PresentationModule } from './presentation/presentation.module';
 import { SubmissionModule } from './submission/submission.module';
 import { PresentationBlockModule } from './presentation-block/presentation-block.module';
 import { CommitteeMemberModule } from './committee-member/committee-member.module';
+import { EvaluationController } from './evaluation/evaluation.controller';
+import { EvaluationModule } from './evaluation/evaluation.module';
 
 @Module({
   imports: [
@@ -28,8 +30,9 @@ import { CommitteeMemberModule } from './committee-member/committee-member.modul
     SubmissionModule,
     PresentationBlockModule,
     CommitteeMemberModule,
+    EvaluationModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, EvaluationController],
   providers: [AppService],
 })
 export class AppModule {}
