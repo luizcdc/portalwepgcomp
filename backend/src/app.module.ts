@@ -13,6 +13,9 @@ import { PresentationModule } from './presentation/presentation.module';
 import { SubmissionModule } from './submission/submission.module';
 import { PresentationBlockModule } from './presentation-block/presentation-block.module';
 import { CommitteeMemberModule } from './committee-member/committee-member.module';
+import { RoomModule } from './room/room.module';
+import { GuidanceModule } from './guidance/guidance.module';
+
 
 @Module({
   imports: [
@@ -28,6 +31,8 @@ import { CommitteeMemberModule } from './committee-member/committee-member.modul
     SubmissionModule,
     PresentationBlockModule,
     CommitteeMemberModule,
+    RoomModule,
+    GuidanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -27,22 +27,24 @@ export class PresentationBlockController {
   @Get('event-edition/:eventEditionId')
   async findAllByEventEditionId(
     @Param('eventEditionId') eventEditionId: string,
-  ) {
-    // Use ResponsePresentationBlockDto as the return type
-    const presentations =
+  ): Promise<ResponsePresentationBlockDto[]> {
+    const presentationBlocks =
       await this.presentationBlockService.findAllByEventEditionId(
         eventEditionId,
       );
 
-    return presentations.map(
-      (presentation) => new ResponsePresentationBlockDto(presentation),
+    return presentationBlocks.map(
+      (block) => new ResponsePresentationBlockDto(block),
     );
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const found = await this.presentationBlockService.findOne(id);
-    return found ? new ResponsePresentationBlockDto(found) : null;
+  async findOne(
+    @Param('id') id: string,
+  ): Promise<ResponsePresentationBlockDto> {
+    const presentationBlock = await this.presentationBlockService.findOne(id);
+
+    return new ResponsePresentationBlockDto(presentationBlock);
   }
 
   @Patch(':id')

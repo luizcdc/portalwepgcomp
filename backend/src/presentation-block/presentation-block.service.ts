@@ -186,24 +186,57 @@ export class PresentationBlockService {
   async findAllByEventEditionId(eventEditionId: string) {
     const presentationBlocks =
       await this.prismaClient.presentationBlock.findMany({
-        where: {
-          eventEditionId,
-        },
+        where: { eventEditionId },
         include: {
-          presentations: true,
-          panelists: true,
+          presentations: {
+            include: {
+              submission: true,
+            },
+          },
+          panelists: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
 
-    return presentationBlocks;
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: { id: eventEditionId },
+    });
+
+    if (!eventEdition) {
+      throw new Error('Edição do evento não encontrada');
+    }
+
+    return Promise.all(
+      presentationBlocks.map((block) => this.processPresentationBlock(block)),
+    );
   }
 
   async findOne(id: string) {
-    return await this.prismaClient.presentationBlock.findUnique({
-      where: {
-        id,
-      },
-    });
+    const presentationBlock =
+      await this.prismaClient.presentationBlock.findUnique({
+        where: { id },
+        include: {
+          presentations: {
+            include: {
+              submission: true,
+            },
+          },
+          panelists: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+
+    if (!presentationBlock) {
+      throw new Error('Presentation block not found');
+    }
+
+    return this.processPresentationBlock(presentationBlock);
   }
 
   async update(
@@ -279,5 +312,90 @@ export class PresentationBlockService {
         id,
       },
     });
+  }
+
+  private calculatePresentationStartTime(
+    blockStartTime: Date,
+    positionWithinBlock: number,
+    presentationDuration: number,
+  ): Date {
+    const presentationTime = new Date(blockStartTime);
+    presentationTime.setMinutes(
+      presentationTime.getMinutes() +
+        positionWithinBlock * presentationDuration,
+    );
+
+    return presentationTime;
+  }
+
+  private async processPresentationBlock(presentationBlock: any) {
+    // Fetch the associated event edition to get presentation duration
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: {
+        id: presentationBlock.eventEditionId,
+      },
+    });
+
+    if (!eventEdition) {
+      throw new Error('Event edition not found');
+    }
+
+    const presentationDuration = eventEdition.presentationDuration;
+
+    // For 'General' type blocks, return without calculations
+    if (presentationBlock.type !== 'Presentation') {
+      return {
+        ...presentationBlock,
+        presentations: [],
+        availablePositionsWithinBlock: [],
+      };
+    }
+
+    // Calculate total and available positions
+    const totalPositions = Math.floor(
+      presentationBlock.duration / presentationDuration,
+    );
+
+    const occupiedPositions = presentationBlock.presentations.map(
+      (p: any) => p.positionWithinBlock,
+    );
+
+    const availablePositionsWithinBlock = [];
+
+    for (let i = 0; i < totalPositions; i++) {
+      if (!occupiedPositions.includes(i)) {
+        const positionStartTime = new Date(presentationBlock.startTime);
+        positionStartTime.setMinutes(
+          positionStartTime.getMinutes() + i * presentationDuration,
+        );
+
+        availablePositionsWithinBlock.push({
+          positionWithinBlock: i,
+          startTime: positionStartTime,
+        });
+      }
+    }
+
+    // Calculate start times for existing presentations
+    const presentationsWithStartTime = presentationBlock.presentations.map(
+      (presentation: any) => {
+        const startTime = this.calculatePresentationStartTime(
+          presentationBlock.startTime,
+          presentation.positionWithinBlock,
+          presentationDuration,
+        );
+
+        return {
+          ...presentation,
+          startTime,
+        };
+      },
+    );
+
+    return {
+      ...presentationBlock,
+      presentations: presentationsWithStartTime,
+      availablePositionsWithinBlock,
+    };
   }
 }

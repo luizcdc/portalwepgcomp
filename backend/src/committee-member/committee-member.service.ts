@@ -85,6 +85,27 @@ export class CommitteeMemberService {
     });
   }
 
+  async findCurrentCoordinator(eventEditionId: string) {
+    const coordinator = await this.prismaClient.committeeMember.findFirst({
+      where: {
+        eventEditionId,
+        level: CommitteeLevel.Coordinator,
+      },
+      include: { user: true },
+    });
+
+    if (!coordinator) {
+      throw new NotFoundException('Coordenador não encontrado');
+    }
+
+    const { user, ...responseCommitteeMember } = coordinator;
+    return new ResponseCommitteeMemberDto({
+      ...responseCommitteeMember,
+      userName: user.name,
+      userEmail: user.email,
+    });
+  }
+
   async findAll(eventEditionId: string) {
     // To create the ResponseCommitteeMemberDto, we need to also return the user name
     const found = await this.prismaClient.committeeMember.findMany({

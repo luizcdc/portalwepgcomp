@@ -6,6 +6,7 @@ import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmissionStatus } from '@prisma/client';
 import { Profile } from '@prisma/client';
+import { Submission } from '@prisma/client';
 
 @Injectable()
 export class SubmissionService {
@@ -132,57 +133,29 @@ export class SubmissionService {
     eventEditionId: string,
     withoutPresentation: boolean,
     orderByProposedPresentation: boolean,
-    showConfirmedOnly: boolean, // New parameter to filter confirmed submissions
+    showConfirmedOnly: boolean,
   ): Promise<ResponseSubmissionDto[]> {
     const submissions = await this.prismaClient.submission.findMany({
       where: {
         eventEditionId: eventEditionId,
         ...(withoutPresentation && { Presentation: { none: {} } }),
-        ...(showConfirmedOnly && { status: SubmissionStatus.Confirmed }), // Filter for confirmed submissions
+        ...(showConfirmedOnly && { status: SubmissionStatus.Confirmed }),
       },
       orderBy: orderByProposedPresentation
         ? [
             { proposedPresentationBlockId: { sort: 'asc', nulls: 'last' } },
             { proposedPositionWithinBlock: { sort: 'asc', nulls: 'last' } },
           ]
-        : undefined, // No sorting when false
+        : undefined,
     });
 
     const result: ResponseSubmissionDto[] = [];
 
-    // calculate the proposed start time for each submission that has a proposed block
     for (const submission of submissions) {
-      const eventEdition = await this.prismaClient.eventEdition.findUnique({
-        where: { id: submission.eventEditionId },
-        select: { presentationDuration: true },
-      });
-
-      const presentationBlock = submission.proposedPresentationBlockId
-        ? await this.prismaClient.presentationBlock.findUnique({
-            where: { id: submission.proposedPresentationBlockId },
-            select: { startTime: true },
-          })
-        : null;
-
-      const presentationDurationMinutes =
-        eventEdition?.presentationDuration || 0;
-
-      let proposedStartTime: Date | null = null;
-
-      if (
-        presentationBlock?.startTime &&
-        submission.proposedPositionWithinBlock !== null &&
-        submission.proposedPositionWithinBlock !== undefined
-      ) {
-        proposedStartTime = new Date(presentationBlock.startTime);
-        const additionalMinutes =
-          submission.proposedPositionWithinBlock * presentationDurationMinutes;
-
-        // Add the additional minutes
-        proposedStartTime.setMinutes(
-          proposedStartTime.getMinutes() + additionalMinutes,
-        );
-      }
+      const proposedStartTime = await this.calculateProposedStartTime(
+        submission,
+        eventEditionId,
+      );
 
       result.push(new ResponseSubmissionDto(submission, proposedStartTime));
     }
@@ -199,35 +172,11 @@ export class SubmissionService {
       throw new AppException('Submissão não encontrada.', 404);
     }
 
-    const eventEdition = await this.prismaClient.eventEdition.findUnique({
-      where: { id: submission.eventEditionId },
-      select: { presentationDuration: true },
-    });
+    const proposedStartTime = await this.calculateProposedStartTime(
+      submission,
+      submission.eventEditionId,
+    );
 
-    const presentationBlock = submission.proposedPresentationBlockId
-      ? await this.prismaClient.presentationBlock.findUnique({
-          where: { id: submission.proposedPresentationBlockId },
-          select: { startTime: true },
-        })
-      : null;
-
-    const presentationDurationMinutes = eventEdition?.presentationDuration || 0;
-    let proposedStartTime: Date | null = null;
-
-    if (
-      presentationBlock?.startTime &&
-      submission.proposedPositionWithinBlock !== null &&
-      submission.proposedPositionWithinBlock !== undefined
-    ) {
-      proposedStartTime = new Date(presentationBlock.startTime);
-      const additionalMinutes =
-        submission.proposedPositionWithinBlock * presentationDurationMinutes;
-      proposedStartTime.setMinutes(
-        proposedStartTime.getMinutes() + additionalMinutes,
-      );
-    }
-
-    // Return the DTO
     return new ResponseSubmissionDto(submission, proposedStartTime);
   }
 
@@ -379,5 +328,44 @@ export class SubmissionService {
     return this.prismaClient.submission.delete({
       where: { id },
     });
+  }
+
+  private async calculateProposedStartTime(
+    submission: Submission,
+    eventEditionId: string,
+  ): Promise<Date | null> {
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: { id: eventEditionId },
+      select: { presentationDuration: true },
+    });
+
+    if (!submission.proposedPresentationBlockId) {
+      return null;
+    }
+
+    const presentationBlock =
+      await this.prismaClient.presentationBlock.findUnique({
+        where: { id: submission.proposedPresentationBlockId },
+        select: { startTime: true },
+      });
+
+    const presentationDurationMinutes = eventEdition?.presentationDuration || 0;
+    if (
+      !presentationBlock?.startTime ||
+      submission.proposedPositionWithinBlock === null ||
+      submission.proposedPositionWithinBlock === undefined
+    ) {
+      return null;
+    }
+
+    const proposedStartTime = new Date(presentationBlock.startTime);
+    const additionalMinutes =
+      submission.proposedPositionWithinBlock * presentationDurationMinutes;
+
+    proposedStartTime.setMinutes(
+      proposedStartTime.getMinutes() + additionalMinutes,
+    );
+
+    return proposedStartTime;
   }
 }

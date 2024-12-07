@@ -33,3 +33,10 @@ interface UserLogin {
     email: string,
     password: string
 }
+
+interface UserProfile {
+    name: string;
+    profile: string;
+    level: string;
+    isActive: boolean;
+  }
