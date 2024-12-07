@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+
 import { axiosInstance } from "@/utils/api";
 
 export const api = axiosInstance();
@@ -18,7 +20,7 @@ export function getUserLocalStorage() {
 export async function LoginRequest(
   email: string,
   password: string
-): Promise<{ token: string }> {
+): Promise<{ token: string, userId: UUID }> {
 
   const instance = axiosInstance();
 
