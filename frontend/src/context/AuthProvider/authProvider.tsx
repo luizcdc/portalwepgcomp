@@ -1,5 +1,6 @@
 "use client";
 
+import { UUID } from "crypto";
 import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 
@@ -16,6 +17,7 @@ export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
 
 interface IContextLogin {
   user: string | null;
+  userId: UUID | null;
   signed: boolean;
   singIn: (body: UserLogin) => Promise<void>;
   logout: () => void;
@@ -23,6 +25,7 @@ interface IContextLogin {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState<null | string>(null);
+  const [userId, setUserId] = useState<null | UUID>(null);
   const { showAlert } = useSweetAlert();
   const router = useRouter();
 
@@ -34,12 +37,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const singIn = async ({ email, password }) => {
+  const singIn = async ({ email, password }: UserLogin) => {
     try {
       const response = await LoginRequest(email, password);
       const payload = response.token;
+      const userId = response.data.id;
 
       setUser(payload);
+      setUserId(userId);
+
       api.defaults.headers.common["Authorization"] = `Bearer ${payload}`;
       setTokenLocaStorage(payload);
 
@@ -65,6 +71,7 @@ export const AuthProvider = ({ children }) => {
   function logout() {
     localStorage.clear();
     setUser(null);
+    setUserId(null);
     return router.push("/");
   }
 
@@ -72,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        userId,
         signed: !!user,
         singIn,
         logout,
