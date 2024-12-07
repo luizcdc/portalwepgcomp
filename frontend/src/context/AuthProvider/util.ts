@@ -20,7 +20,7 @@ export function getUserLocalStorage() {
 export async function LoginRequest(
   email: string,
   password: string
-): Promise<{ token: string, userId: UUID }> {
+): Promise<{ token: string, data: { id: UUID } }> {
 
   const instance = axiosInstance();
 
