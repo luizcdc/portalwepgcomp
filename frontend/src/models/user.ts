@@ -1,6 +1,12 @@
 import { UUID } from "crypto";
 
 type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
+type RoleType = "Superadmin" | "Admin" | "Default";
+
+export interface GetUsers {
+    role?: RoleType | RoleType[];
+    profile?: ProfileType | ProfileType[];
+}
 
 export interface RegisterUserParams {
     name: string,
