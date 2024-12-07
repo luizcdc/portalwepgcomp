@@ -41,7 +41,6 @@ export class ResponseSubmissionDto {
   phoneNumber: string;
   proposedPresentationBlockId?: string;
   proposedPositionWithinBlock?: number;
-  ranking?: number;
   coAdvisor?: string;
   status: PresentationStatus;
   createdAt: Date;
@@ -58,7 +57,6 @@ export class ResponseSubmissionDto {
     this.phoneNumber = submission.phoneNumber;
     this.proposedPresentationBlockId = submission.proposedPresentationBlockId;
     this.proposedPositionWithinBlock = submission.proposedPositionWithinBlock;
-    this.ranking = submission.ranking;
     this.coAdvisor = submission.coAdvisor;
     this.status = submission.status;
     this.createdAt = submission.createdAt;
