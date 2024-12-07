@@ -1,5 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { EvaluationService } from './evaluation.service';
+import { CreateEvaluationsDto } from './dto/create-evaluation.dto';
 
 @Controller('evaluations')
 export class EvaluationController {
@@ -8,18 +9,10 @@ export class EvaluationController {
   @Post()
   async registerEvaluation(
     @Body()
-    body: {
-      userId: string;
-      presentationId: string;
-      score: number;
-      comments?: string;
-    },
+    createEvaluationsDto: CreateEvaluationsDto
+    
   ) {
-    return this.evaluationService.registerEvaluation(
-      body.userId,
-      body.presentationId,
-      body.score,
-      body.comments,
-    );
+    
+    return await this.evaluationService.registerEvaluation(createEvaluationsDto);
   }
 }
