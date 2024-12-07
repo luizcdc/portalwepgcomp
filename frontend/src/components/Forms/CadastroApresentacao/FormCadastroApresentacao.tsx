@@ -1,17 +1,20 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { UUID } from "crypto";
 import { usePathname } from "next/navigation";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { SubmissionContext } from "@/context/submission";
 import { useSweetAlert } from "@/hooks/useAlert";
 import { SubmissionParams } from "@/models/submission";
 
+import { userApi } from "@/services/user";
 import "./style.scss";
 
 const formCadastroSchema = z.object({
@@ -23,7 +26,7 @@ const formCadastroSchema = z.object({
     .min(1, "O abstract é obrigatório"),
   orientador: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "O nome do orientador é obrigatório."),
+    .uuid(),
   coorientador: z.string().optional(),
   data: z.string().optional(),
   celular: z
@@ -42,6 +45,9 @@ type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 export function FormCadastroApresentacao() {
   const pathname = usePathname();
   const { createSubmission } = useContext(SubmissionContext);
+  const { userId } = useContext(AuthContext);
+  const [adminUsers, setAdminUsers] = useState<any[]>([]);
+  const [, setLoading] = useState<boolean>(false);
   const { showAlert } = useSweetAlert();
 
   const {
@@ -53,15 +59,43 @@ export function FormCadastroApresentacao() {
     resolver: zodResolver(formCadastroSchema),
   });
 
+  useEffect(() => {
+    const loadAdminUsers = async () => {
+      setLoading(true);
+
+      try {
+        const users = await userApi.getUsers({ role: ["Admin", "Superadmin"] });
+        setAdminUsers(users);
+      } catch (err) {
+        console.error("Erro ao buscar usuários admin:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAdminUsers();
+  }, []);
+
   const onSubmit = async (data: formCadastroSchema) => {
+    if (!userId) {
+      showAlert({
+        icon: "error",
+        title: "Usuário não autenticado",
+        text: "Você precisa estar logado para submeter uma apresentação.",
+        confirmButtonText: "Retornar",
+      });
+      return;
+    }
+
     const submissionData: SubmissionParams = {
       title: data.titulo,
       abstractText: data.abstract,
-      advisorId: data.orientador,
+      advisorId: data.orientador as UUID,
       coAdvisor: data.coorientador || "",
       dateSuggestion: data.data ? new Date(data.data) : undefined,
       pdfFile: data.slide ? data.slide.name : "",
       phoneNumber: data.celular,
+      mainAuthorId: userId,
     };
 
     try {
@@ -119,8 +153,16 @@ export function FormCadastroApresentacao() {
           {...register("orientador")}
         >
           <option value="">Selecione o nome do orientador</option>
-          <option value="orientador1">Fred Durão</option>
-
+          {adminUsers
+            .filter((user) => user.roles?.some(role => ["Admin", "Superadmin"].includes(role)))
+            .map((admin) => {
+              return (
+                <option key={admin.id} value={admin.id}>
+                  {admin.name}
+                </option>
+              );
+            })
+          }
         </select>
         <p className='text-danger error-message'>
           {errors.orientador?.message}
