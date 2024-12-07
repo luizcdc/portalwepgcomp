@@ -19,16 +19,6 @@ export const AuthProvider = ({ children }) => {
   const { showAlert } = useSweetAlert();
   const router = useRouter();
 
-  // Acho que esse trecho comentado poderia ser removido
-
-  // useEffect(() => {
-  //   const user = getUserLocalStorage();
-
-  //   if (user) {
-  //     setUser(user);
-  //   }
-  // }, []);
-
   const singIn = async ({ email, password }) => {
     try {
       const response = await LoginRequest(email, password);
