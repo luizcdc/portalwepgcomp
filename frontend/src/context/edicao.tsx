@@ -99,7 +99,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         console.log("atualizado com sucesso");
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response.data.message);
         setEdicao(null);
         console.log("erro ao atualizar");
         alert("Erro ao tentar atualizar!");

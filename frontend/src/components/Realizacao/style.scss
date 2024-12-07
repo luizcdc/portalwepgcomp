@@ -1,0 +1,28 @@
+.realizacao-home{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30%;
+    margin: 1.875rem;
+    margin-left: 4.357rem;
+
+
+    .realizacao-areas{
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 0.625rem;
+
+        .title{
+            color: black;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .parceiros{
+            display: flex;
+        }
+    }
+}

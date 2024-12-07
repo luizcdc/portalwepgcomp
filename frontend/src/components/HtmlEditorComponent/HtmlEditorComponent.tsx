@@ -7,11 +7,13 @@ import "./style.scss";
 interface HtmlEditorComponentProps {
   content: string;
   onChange: (value: string) => void;
+  handleEditField?: () => void;
 }
 
 export default function HtmlEditorComponent({
   content,
   onChange,
+  handleEditField,
 }: Readonly<HtmlEditorComponentProps>) {
   const isAdm = true;
   const [preview, setPreview] = useState<boolean>(false);
@@ -24,12 +26,19 @@ export default function HtmlEditorComponent({
         <HtmlEditor value={content} onChange={onChange} />
       )}
 
-      <button
-        className="buttonPreviewHtmlEditor"
-        onClick={() => setPreview(!preview)}
-      >
-        {preview ? "Editar" : "Ver prévia"}
-      </button>
+      <div className="buttonsArea">
+        <button
+          className="buttonPreviewHtmlEditor"
+          onClick={() => setPreview(!preview)}
+        >
+          {preview ? "Editar" : "Ver prévia"}
+        </button>
+        {handleEditField && (
+          <button className="buttonPreviewHtmlEditor" onClick={handleEditField}>
+            Salvar
+          </button>
+        )}
+      </div>
     </div>
   );
 }
