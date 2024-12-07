@@ -8,6 +8,7 @@ export interface SubmissionParams {
     dateSuggestion?: Date;
     pdfFile: string;
     phoneNumber: string;
+    mainAuthorId: UUID;
 }
 
 export interface Submission extends SubmissionParams {
