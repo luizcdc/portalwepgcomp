@@ -2,11 +2,13 @@
 export default async () => {
     const t = {
         ["./user/dto/create-user.dto"]: await import("./user/dto/create-user.dto"),
+        ["./presentation-block/dto/response-presentation-block.dto"]: await import("./presentation-block/dto/response-presentation-block.dto"),
         ["./user/dto/response-user.dto"]: await import("./user/dto/response-user.dto"),
         ["./mailing/mailing.dto"]: await import("./mailing/mailing.dto"),
         ["./event-edition/dto/event-edition-response"]: await import("./event-edition/dto/event-edition-response"),
         ["./committee-member/dto/response-committee-member.dto"]: await import("./committee-member/dto/response-committee-member.dto"),
         ["./queue/queue.dto"]: await import("./queue/queue.dto"),
+        ["./presentation/dto/response-presentation.dto"]: await import("./presentation/dto/response-presentation.dto"),
         ["./submission/dto/response-submission.dto"]: await import("./submission/dto/response-submission.dto"),
         ["./presentation-block/dto/response-presentation-block.dto"]: await import("./presentation-block/dto/response-presentation-block.dto")
     };

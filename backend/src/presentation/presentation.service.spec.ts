@@ -2,6 +2,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SubmissionService } from '../submission/submission.service';
 import { PresentationService } from './presentation.service';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
+import { PresentationResponseDto } from './dto/response-presentation.dto';
 import { AppException } from '../exceptions/app.exception';
 import { PresentationStatus } from '@prisma/client';
 import { SubmissionStatus } from '@prisma/client';
@@ -15,6 +16,8 @@ describe('PresentationService', () => {
       submission: {
         findUnique: jest.fn(),
         delete: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
       },
       presentation: {
         findFirst: jest.fn(),
@@ -342,14 +345,35 @@ describe('PresentationService', () => {
         },
       ];
 
+      // Mock the findMany method to return mock presentations
       (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
         mockPresentations,
       );
 
+      // Mock the findUnique method for presentation block
+      (
+        prismaService.presentationBlock.findUnique as jest.Mock
+      ).mockImplementation((args) => {
+        return Promise.resolve({
+          id: args.where.id,
+          startTime: new Date(),
+          eventEditionId: 'event1',
+        });
+      });
+
+      // Mock the findUnique method for event edition
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        id: 'event1',
+        presentationDuration: 15,
+      });
+
+      // Call the method
       const presentations =
         await service.findAllByEventEditionId(eventEditionId);
 
-      expect(presentations).toEqual(mockPresentations);
+      // Assertions
+      expect(presentations).toHaveLength(2);
+      expect(presentations[0]).toBeInstanceOf(PresentationResponseDto);
       expect(prismaService.presentation.findMany).toHaveBeenCalledWith({
         where: {
           submission: {
@@ -365,12 +389,25 @@ describe('PresentationService', () => {
     it('should return an empty array if no presentations exist for the event edition', async () => {
       const eventEditionId = 'event1';
 
+      // Mock the findMany method to return an empty array
       (prismaService.presentation.findMany as jest.Mock).mockResolvedValue([]);
 
+      // Call the method
       const presentations =
         await service.findAllByEventEditionId(eventEditionId);
 
-      expect(presentations).toEqual([]);
+      // Assertions
+      expect(presentations).toHaveLength(0);
+      expect(prismaService.presentation.findMany).toHaveBeenCalledWith({
+        where: {
+          submission: {
+            eventEditionId,
+          },
+        },
+        include: {
+          submission: true,
+        },
+      });
     });
   });
 
@@ -382,15 +419,34 @@ describe('PresentationService', () => {
         presentationBlockId: '1',
         positionWithinBlock: 1,
         status: PresentationStatus.ToPresent,
+        submission: { eventEditionId: 'event1' },
       };
 
+      // Mock the findUnique method to return the mock presentation
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
         mockPresentation,
       );
 
+      // Mock the findUnique method for presentation block
+      (
+        prismaService.presentationBlock.findUnique as jest.Mock
+      ).mockResolvedValue({
+        id: '1',
+        startTime: new Date(),
+        eventEditionId: 'event1',
+      });
+
+      // Mock the findUnique method for event edition
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        id: 'event1',
+        presentationDuration: 15,
+      });
+
+      // Call the method
       const presentation = await service.findOne('1');
 
-      expect(presentation).toEqual(mockPresentation);
+      // Assertions
+      expect(presentation).toBeInstanceOf(PresentationResponseDto);
       expect(prismaService.presentation.findUnique).toHaveBeenCalledWith({
         where: { id: '1' },
         include: {
@@ -738,10 +794,15 @@ describe('PresentationService', () => {
         },
       ];
 
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(mockSubmissions);
+      // Mock the findMany method to return mock submissions
+      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(
+        mockSubmissions,
+      );
 
+      // Call the method
       const presentations = await service.listUserPresentations(userId);
 
+      // Assertions
       expect(presentations).toEqual([
         { id: 'presentation-1', positionWithinBlock: 1 },
         { id: 'presentation-2', positionWithinBlock: 2 },
@@ -756,10 +817,13 @@ describe('PresentationService', () => {
     it('should return an empty array if no submissions are found', async () => {
       const userId = 'user-id';
 
+      // Mock the findMany method to return an empty array
       (prismaService.submission.findMany as jest.Mock).mockResolvedValue([]);
 
+      // Call the method
       const presentations = await service.listUserPresentations(userId);
 
+      // Assertions
       expect(presentations).toEqual([]);
       expect(prismaService.submission.findMany).toHaveBeenCalledWith({
         where: { mainAuthorId: userId },
@@ -784,8 +848,12 @@ describe('PresentationService', () => {
         positionWithinBlock: 2,
       };
 
-      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(mockPresentation);
-      (prismaService.presentation.update as jest.Mock).mockResolvedValue(updatedPresentation);
+      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(
+        mockPresentation,
+      );
+      (prismaService.presentation.update as jest.Mock).mockResolvedValue(
+        updatedPresentation,
+      );
 
       const result = await service.updatePresentationForUser(
         userId,
@@ -811,12 +879,17 @@ describe('PresentationService', () => {
       const presentationId = 'presentation-id';
       const updateDto = { positionWithinBlock: 2 };
 
-      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(null);
+      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(
+        null,
+      );
 
       await expect(
         service.updatePresentationForUser(userId, presentationId, updateDto),
       ).rejects.toThrow(
-        new AppException('Apresentação não encontrada ou não pertence ao usuário.', 404),
+        new AppException(
+          'Apresentação não encontrada ou não pertence ao usuário.',
+          404,
+        ),
       );
       expect(prismaService.presentation.findFirst).toHaveBeenCalledWith({
         where: {
