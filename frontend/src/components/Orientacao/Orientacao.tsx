@@ -14,7 +14,7 @@ export default function Orientacao() {
     <div
       id="Orientacao"
     >
-      <div className="text-white text-center display-4 fs-1 fw-bold">Orientações</div>
+      <div className="text-white text-center display-4 fs-1 fw-bold orientacao-titulo">Orientações</div>
 
       {signed ? (
         <HtmlEditorComponent
