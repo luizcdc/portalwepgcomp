@@ -226,14 +226,18 @@ export class UserService {
     return ['Admin', 'Superadmin'].includes(user.level);
   }
 
-  async findAll(role?: string, profile?: string): Promise<ResponseUserDto[]> {
+  async findAll(
+    roles?: string | string[],
+    profiles?: string | string[],
+  ): Promise<ResponseUserDto[]> {
     const whereClause: any = {};
 
-    if (role) {
-      whereClause.level = role;
+    if (roles && Array.isArray(roles) && roles.length > 0) {
+      whereClause.level = { in: roles };
     }
-    if (profile) {
-      whereClause.profile = profile;
+
+    if (profiles && Array.isArray(profiles) && profiles.length > 0) {
+      whereClause.profile = { in: profiles };
     }
 
     const users = await this.prismaClient.userAccount.findMany({
