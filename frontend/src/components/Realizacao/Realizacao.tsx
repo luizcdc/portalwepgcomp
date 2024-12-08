@@ -12,13 +12,7 @@ export default function Realizacao() {
           Realização:
         </div>
 
-        <div
-          style={{
-            backgroundImage: `url(/assets/images/logo_computacao.svg)`,
-            backgroundSize: "cover",
-            width: "240px",
-            height: "70px",
-          }}
+        <div id="realizacao-computacao"
         ></div>
       </div>
 
@@ -31,22 +25,10 @@ export default function Realizacao() {
 
         <div className="realizacao-apoio-lista-itens"
         >
-          <div
-            style={{
-              backgroundImage: `url(/assets/images/logo_ufba.svg)`,
-              backgroundSize: "cover",
-              width: "138px",
-              height: "89px",
-            }}
+          <div id="realizacao-ufba"
           ></div>
 
-          <div
-            style={{
-              backgroundImage: `url(/assets/images/logo_jusbrasil.svg)`,
-              backgroundSize: "cover",
-              width: "208px",
-              height: "32px",
-            }}
+          <div id="realizacao-jusbrasil"
           ></div>
         </div>
       </div>
