@@ -62,7 +62,7 @@ export class EventEditionService {
     const {
       organizingCommitteeIds,
       itSupportIds,
-      administativeSupportIds,
+      administrativeSupportIds,
       communicationIds,
     } = createFromEventEditionFormDto;
 
@@ -80,7 +80,7 @@ export class EventEditionService {
 
     await this.createCommitteeMembersFromArray(
       eventEditionId,
-      administativeSupportIds,
+      administrativeSupportIds,
       CommitteeRole.AdministativeSupport,
     );
 

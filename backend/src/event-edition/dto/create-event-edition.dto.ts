@@ -84,7 +84,7 @@ export class CreateFromEventEditionFormDto {
   itSupportIds: Array<string>;
 
   @IsOptional()
-  administativeSupportIds: Array<string>;
+  administrativeSupportIds: Array<string>;
 
   @IsOptional()
   communicationIds: Array<string>;
