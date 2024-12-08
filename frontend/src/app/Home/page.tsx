@@ -3,7 +3,7 @@
 import Carousel from "@/components/Carousel/Carousel";
 import LocalEvento from "@/components/LocalEvento";
 import Organizacao from "@/components/Organizacao";
-import Orientacao from "@/components/Orientacao";
+import Orientacao from "@/components/Orientacao/Orientacao";
 import Realizacao from "@/components/Realizacao";
 import ScheduleSection from "@/components/ScheduleSection/ScheduleSection";
 
