@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
-import { UserLevels } from '../auth/decorators/user-level.decorator';
+import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevel } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
@@ -24,6 +24,7 @@ import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post('register')
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.userService.create(createUserDto);
