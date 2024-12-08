@@ -87,13 +87,20 @@ export class S3UtilsService {
           Bucket: bucket,
         }),
       );
-      const contentsList = response.Contents.map((obj) => obj.Key).join('\n');
-      console.log("\nHere's a list of files in the bucket:");
-      console.log(`${contentsList}\n`);
-      return response.Contents.map((obj) => obj.Key);
+      // Validation to check if the bucket is empty
+      if (!response.Contents || response.Contents.length === 0) {
+        console.log(`The bucket '${bucket}' is empty.`);
+        return [];
+      }
+      const fileKeys = response.Contents.map(
+        (obj) => obj.Key || 'Unnamed file',
+      );
+      return fileKeys;
     } catch (err) {
-      console.error(err);
-      throw new Error(`Failed to list files: ${err.message}`);
+      console.error(`Error listing files in bucket ${bucket}:`, err);
+      throw new Error(
+        `Failed to list files in bucket "${bucket}": ${err.message}`,
+      );
     }
   }
 }
