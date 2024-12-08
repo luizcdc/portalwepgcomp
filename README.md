@@ -59,6 +59,7 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 - **Alexandre Cury Lima** - [alexandre.cury@ufba.br](mailto:alexandre.cury@ufba.br)
 - **Álvaro Souza Olivera** - [alvaro.oliveira@ufba.br](mailto:alvaro.oliveira@ufba.br)
 - **Antonio de Sousa Cruz Neto** - [antoniocruznb@gmail.com](mailto:antoniocruznb@gmail.com)
+- **Antonio Augusto Menezes de Oliveira** - [antonio.menezes@ufba.br](antonio.menezes@ufba.br)
 - **Caio Nery Matos Santos** - [caionms@ufba.br](mailto:caionms@ufba.br)
 - **Ernesto Santana dos Reis Filho** - [ernestosrf98@gmail.com](mailto:ernestosrf98@gmail.com)
 - **Felipe Rezende** - [felipe.rezende@ufba.br](mailto:felipe.rezende@ufba.br)
