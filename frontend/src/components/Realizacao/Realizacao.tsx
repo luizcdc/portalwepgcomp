@@ -27,7 +27,7 @@ export default function Realizacao() {
       <div className="realizacao-lista">
         <div className="realizacao-titulo">Realização:</div>
 
-        <div id="realizacao-computacao" className="parceiros">
+        <div className="realizacao-parceiros">
           <Image
             src={"/assets/images/logo_computacao.svg"}
             alt="Computação Logo"
@@ -38,7 +38,7 @@ export default function Realizacao() {
           <Image
             src={"/assets/images/logo_ufba.svg"}
             alt="UFBA Logo"
-            width={300}
+            width={160}
             height={100}
             priority
           />
@@ -54,37 +54,6 @@ export default function Realizacao() {
           handleEditField={handleEditPartners}
         />
       </div>
-
-      {/* <div className="realizacao"
-    >
-      <div className="realizacao-lista"
-      >
-        <div className="realizacao-titulo"
-        >
-          Realização:
-        </div>
-
-        <div id="realizacao-computacao"
-        ></div>
-      </div>
-
-      <div className="realizacao-apio-lista"
-      >
-        <div className="realizacao-apoio-titulo"
-        >
-          Apoio:
-        </div>
-
-        <div className="realizacao-apoio-lista-itens"
-        >
-          <div id="realizacao-ufba"
-          ></div>
-
-          <div id="realizacao-jusbrasil"
-          ></div>
-        </div>
-      </div>
-    </div> */}
     </div>
   );
 }
