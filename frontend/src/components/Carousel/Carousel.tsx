@@ -47,7 +47,6 @@ export default function Carousel() {
             </div>
             <div className='info-subtitles'>
               <p className='lead'>{slide2.subtitles[0]}</p>
-              <p className='lead'>{slide2.subtitles[1]}</p>
             </div>
           </div>
         </CarouselSlide>

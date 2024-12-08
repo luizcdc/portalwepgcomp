@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useMemo } from "react";
-import {MockOrganizacao} from "./../mocks/Organizacao"
 import { useCommittee } from "@/hooks/useCommittee";
+import "./style.scss";
 
 /* interface OrganizacaoProps {
     coordenador: string,

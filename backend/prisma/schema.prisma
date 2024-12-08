@@ -107,7 +107,6 @@ model EventEdition {
   description                       String            @map("description") @db.Text
   callForPapersText                 String            @map("call_for_papers_text") @db.Text
   partnersText                      String            @map("partners_text") @db.Text
-  url                               String            @map("url") @db.VarChar(255)
   location                          String            @map("location") @db.Text
   startDate                         DateTime          @map("start_date")
   endDate                           DateTime          @map("end_date")
@@ -273,8 +272,8 @@ model Presentation {
   status                 PresentationStatus @map("status")
   createdAt              DateTime           @default(now()) @map("created_at")
   updatedAt              DateTime           @updatedAt @map("updated_at")
-  publicAverageScore     Float              @map("public_average_score")
-  evaluatorsAverageScore Float              @map("evaluators_average_score")
+  publicAverageScore     Float?             @map("public_average_score")
+  evaluatorsAverageScore Float?             @map("evaluators_average_score")
   submission             Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   presentationBlock      PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
 
@@ -282,15 +281,15 @@ model Presentation {
 }
 
 model Guidance {
-  id               String       @id @default(uuid()) @map("id")
-  summary          String       @map("summary") @db.Text
-  authorGuidance   String       @map("authors_guidance") @db.Text
-  reviewerGuidance String       @map("reviewers_guidance") @db.Text
-  audienceGuidance String       @map("audience_guidance") @db.Text
-  createdAt        DateTime     @default(now()) @map("created_at")
-  updatedAt        DateTime     @updatedAt @map("updated_at")
-  eventEditionId   String       @map("event_edition_id")
-  eventEdition     EventEdition @relation(fields: [eventEditionId], references: [id])
+  id               String        @id @default(uuid()) @map("id")
+  summary          String?       @map("summary") @db.Text
+  authorGuidance   String?       @map("authors_guidance") @db.Text
+  reviewerGuidance String?       @map("reviewers_guidance") @db.Text
+  audienceGuidance String?       @map("audience_guidance") @db.Text
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+  eventEditionId   String?       @map("event_edition_id")
+  eventEdition     EventEdition? @relation(fields: [eventEditionId], references: [id])
 
   @@map("guidance")
 }
