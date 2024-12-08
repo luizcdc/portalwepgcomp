@@ -1,22 +1,26 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import HtmlEditor from "../HtmlEditor/HtmlEditor";
 
 import "./style.scss";
 
+import { AuthContext } from "@/context/AuthProvider/authProvider";
+
 interface HtmlEditorComponentProps {
   content: string;
   onChange: (value: string) => void;
-  onSave?: () => void;
+  handleEditField?: () => void;
 }
 
 export default function HtmlEditorComponent({
   content,
   onChange,
-  onSave,
+  handleEditField,
 }: Readonly<HtmlEditorComponentProps>) {
-  const isAdm = true;
-  const [preview, setPreview] = useState<boolean>(false);
+  const [preview, setPreview] = useState<boolean>(!content);
+  const { user } = useContext(AuthContext);
+
+  const isAdm = user?.level === "Superadmin";
 
   return (
     <div className="previewHtmlEditor">
@@ -26,17 +30,23 @@ export default function HtmlEditorComponent({
         <HtmlEditor value={content} onChange={onChange} />
       )}
 
-      <button
-        className="buttonPreviewHtmlEditor"
-        onClick={() => setPreview(!preview)}
-      >
-        {preview ? "Editar" : "Ver prévia"}
-      </button>
-
-      {onSave && (
-        <button className="buttonPreviewHtmlEditor" onClick={onSave}>
-          Salvar
-        </button>
+      {isAdm && (
+        <div className="buttonsArea">
+          <button
+            className="buttonPreviewHtmlEditor"
+            onClick={() => setPreview(!preview)}
+          >
+            {preview ? "Editar" : "Ver prévia"}
+          </button>
+          {handleEditField && (
+            <button
+              className="buttonPreviewHtmlEditor"
+              onClick={handleEditField}
+            >
+              Salvar
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

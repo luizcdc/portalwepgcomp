@@ -12,7 +12,7 @@ interface OrientacaoProps {
 interface OrientacaoProviderData {
   loadingOrientacoes: boolean;
   loadingOrientacao: boolean;
-  orientacoes: Orientacao[];
+  orientacoes: Orientacao | null;
   orientacao: Orientacao | null;
   getOrientacoes: () => void;
   getOrientacaoById: (idOrientacao: string) => void;
@@ -28,7 +28,7 @@ export const OrientacaoContext = createContext<OrientacaoProviderData>(
 export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
   const [loadingOrientacoes, setLoadingOrientacoes] = useState<boolean>(false);
   const [loadingOrientacao, setLoadingOrientacao] = useState<boolean>(false);
-  const [orientacoes, setOrientacoes] = useState<Orientacao[]>([]);
+  const [orientacoes, setOrientacoes] = useState<Orientacao | null>(null);
   const [orientacao, setOrientacao] = useState<Orientacao | null>(null);
 
   const { showAlert } = useSweetAlert();
@@ -42,7 +42,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
       })
       .catch((err) => {
         console.log(err);
-        setOrientacoes([]);
+        setOrientacoes(null);
       })
       .finally(() => {
         setLoadingOrientacoes(false);

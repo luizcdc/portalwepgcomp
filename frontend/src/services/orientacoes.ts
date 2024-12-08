@@ -31,7 +31,7 @@ export const orientacoesApi = {
     putOrientacao: async (idOrientacao: string, body: OrientacaoParams) => {
         const instance = axiosInstance();
 
-        const { data } = await instance.patch(`${baseUrl}/${idOrientacao}`, body);
+        const { data } = await instance.put(`${baseUrl}/${idOrientacao}`, body);
 
         return data;
     },
@@ -39,7 +39,7 @@ export const orientacoesApi = {
     putOrientacaoActive: async (body: OrientacaoParams) => {
         const instance = axiosInstance();
 
-        const { data } = await instance.patch(`${baseUrl}/active`, body);
+        const { data } = await instance.put(`${baseUrl}/active`, body);
 
         return data;
     },
