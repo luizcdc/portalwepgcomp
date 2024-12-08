@@ -1,19 +1,20 @@
 import { IsString, IsOptional } from 'class-validator';
 
 export class CreateGuidanceDto {
+  @IsOptional()
   @IsString()
   summary: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   authorGuidance: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   reviewerGuidance: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   audienceGuidance: string;
 
   @IsString()

@@ -21,4 +21,10 @@
             color: #054B75 !important;
         }
     }
+
+    @media (max-width:900px) {
+        button {
+            width: auto;
+        }
+    }
 }

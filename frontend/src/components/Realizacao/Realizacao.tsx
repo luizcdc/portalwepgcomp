@@ -23,11 +23,11 @@ export default function Realizacao() {
   }, [Edicao?.partnersText]);
 
   return (
-    <div className="realizacao-home">
-      <div className="realizacao-areas">
-        <div className="title">Realização:</div>
+    <div className="realizacao">
+      <div className="realizacao-lista">
+        <div className="realizacao-titulo">Realização:</div>
 
-        <div className="parceiros">
+        <div id="realizacao-computacao" className="parceiros">
           <Image
             src={"/assets/images/logo_computacao.svg"}
             alt="Computação Logo"
@@ -45,8 +45,8 @@ export default function Realizacao() {
         </div>
       </div>
 
-      <div className="realizacao-areas">
-        <div className="title">Apoio:</div>
+      <div className="realizacao-apoio-lista">
+        <div className="realizacao-apoio-titulo">Apoio:</div>
 
         <HtmlEditorComponent
           content={content}
@@ -54,6 +54,37 @@ export default function Realizacao() {
           handleEditField={handleEditPartners}
         />
       </div>
+
+      {/* <div className="realizacao"
+    >
+      <div className="realizacao-lista"
+      >
+        <div className="realizacao-titulo"
+        >
+          Realização:
+        </div>
+
+        <div id="realizacao-computacao"
+        ></div>
+      </div>
+
+      <div className="realizacao-apio-lista"
+      >
+        <div className="realizacao-apoio-titulo"
+        >
+          Apoio:
+        </div>
+
+        <div className="realizacao-apoio-lista-itens"
+        >
+          <div id="realizacao-ufba"
+          ></div>
+
+          <div id="realizacao-jusbrasil"
+          ></div>
+        </div>
+      </div>
+    </div> */}
     </div>
   );
 }
