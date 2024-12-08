@@ -1,7 +1,7 @@
 "use client";
 
 import Carousel from "@/components/Carousel/Carousel";
-import LocalEvento from "@/components/LocalEvento";
+import LocalEvento from "@/components/LocalEvento/LocalEvento";
 import Organizacao from "@/components/Organizacao/Organizacao";
 import Orientacao from "@/components/Orientacao/Orientacao";
 import Realizacao from "@/components/Realizacao";

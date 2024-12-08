@@ -35,37 +35,39 @@ export default function Endereco() {
         color: "white",
       }}
     >
-      <div className="fs-1 fw-bold">Local do Evento</div>
+      <div className="container">
+        <div className="fs-1 fw-bold">Local do Evento</div>
 
-      {signed ? (
-        <HtmlEditorComponent
-          content={content}
-          onChange={(newValue) => setContent(newValue)}
-        />
-      ) : (
-        <div className="fs-6">
-          <div className="fw-bold">Instituto de Computação da UFBA - PAF 2</div>
-          <div>Avenida Milton Santos, s/n - Campus de Ondina</div>
-          <div>CEP 40.170-110, Salvador - Bahia.</div>
-        </div>
-      )}
-
-      <div>
-        <MapContainer
-          center={[latitude, longitude]}
-          zoom={15}
-          placeholder={<MapPlaceholder />}
-          style={{
-            height: "180px",
-            width: "150%",
-            borderRadius: "8px",
-          }}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        {signed ? (
+          <HtmlEditorComponent
+            content={content}
+            onChange={(newValue) => setContent(newValue)}
           />
-        </MapContainer>
+        ) : (
+          <div className="fs-6">
+            <div className="fw-bold">Instituto de Computação da UFBA - PAF 2</div>
+            <div>Avenida Milton Santos, s/n - Campus de Ondina</div>
+            <div>CEP 40.170-110, Salvador - Bahia.</div>
+          </div>
+        )}
+
+        <div>
+          <MapContainer
+            center={[latitude, longitude]}
+            zoom={15}
+            placeholder={<MapPlaceholder />}
+            style={{
+              height: "180px",
+              width: "100%",
+              borderRadius: "8px",
+            }}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </MapContainer>
+        </div>
       </div>
     </div>
   );

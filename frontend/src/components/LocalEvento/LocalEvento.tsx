@@ -1,6 +1,7 @@
 "use client";
 import Contato from "@/components/Contato";
 import Endereco from "@/components/Endereco";
+import "./style.scss";
 
 export default function LocalEvento() {
   return (
@@ -12,10 +13,9 @@ export default function LocalEvento() {
         paddingBottom: "20px",
       }}
     >
-      <div className="d-flex flex-row justify-content-evenly"
+      <div className="d-flex flex-row justify-content-evenly contato"
         style={{
           gap: "40px",
-          paddingRight: "10rem",
         }}
       >
         <Contato />
