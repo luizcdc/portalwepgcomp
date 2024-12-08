@@ -6,7 +6,7 @@ import {
   Post,
   UseGuards,
   Patch,
-  Get, 
+  Get,
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -52,12 +52,28 @@ export class UserController {
   }
 
   @Get()
-  @ApiQuery({ name: 'role', required: false, description: 'Filter by user level (e.g., "Admin", "Default")' })
-  @ApiQuery({ name: 'profile', required: false, description: 'Filter by profile (e.g., "Professor", "Listener")' })
+  @ApiQuery({
+    name: 'roles',
+    required: false,
+    description:
+      'Filter by user levels (e.g., "Admin", "Default"). Accepts multiple values.',
+  })
+  @ApiQuery({
+    name: 'profiles',
+    required: false,
+    description:
+      'Filter by profiles (e.g., "Professor", "Listener"). Accepts multiple values.',
+  })
   async getUsers(
-    @Query('role') role?: string,
-    @Query('profile') profile?: string,
+    @Query('roles') roles?: string | string[],
+    @Query('profiles') profiles?: string | string[],
   ) {
-    return await this.userService.findAll(role, profile);
+    const toArray = (input?: string | string[]): string[] =>
+      Array.isArray(input) ? input : input ? [input] : [];
+
+    const rolesArray = toArray(roles);
+    const profilesArray = toArray(profiles);
+
+    return await this.userService.findAll(rolesArray, profilesArray);
   }
 }
