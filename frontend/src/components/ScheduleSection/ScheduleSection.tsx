@@ -39,7 +39,7 @@ export default function ScheduleSection() {
         >
           Programação
         </h1>
-        <div className="d-flex justify-content-center programacao-dias" style={{ gap: "30px" }}>
+        <div className="d-flex justify-content-center programacao-dias">
           <button
             className="d-flex align-items-center fw-bold flex-start"
             style={{
@@ -109,7 +109,7 @@ export default function ScheduleSection() {
           <p className="m-0" style={{ width: "44px" }}></p>
         </div>
 
-        <div className="d-flex flex-column programacao-item" style={{ gap: "10px" }}>
+        <div className="d-flex flex-column programacao-item">
           {MockupSchedule[date].map((item, index) => {
             return (
               <div
@@ -128,7 +128,7 @@ export default function ScheduleSection() {
                   title={item.title}
                   onClickEvent={() => openModalPresentation(item)}
                 />
-                <div className="m-0 programacao-item-aux" style={{ width: "44px" }}></div>
+                <div className="m-0 programacao-item-aux"></div>
               </div>
             );
           })}
