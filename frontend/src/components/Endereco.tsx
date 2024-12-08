@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import HtmlEditorComponent from "./HtmlEditorComponent/HtmlEditorComponent";
@@ -24,7 +24,7 @@ export default function Endereco() {
   const [content, setContent] = useState("");
   const { signed } = useContext(AuthContext);
 
-  const { updateEdicao } = useEdicao();
+  const { updateEdicao, Edicao } = useEdicao();
   const { eventEditionId } = SessoesMock;
 
   const handleEditAdress = () => {
@@ -33,6 +33,10 @@ export default function Endereco() {
 
   const latitude = -13.0;
   const longitude = -38.507;
+
+  useEffect(() => {
+    setContent(Edicao?.location ?? "");
+  }, [Edicao?.location]);
 
   return (
     <div

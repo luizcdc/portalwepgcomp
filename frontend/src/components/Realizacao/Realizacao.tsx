@@ -4,19 +4,23 @@ import Image from "next/image";
 
 import { useEdicao } from "@/hooks/useEdicao";
 import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SessoesMock } from "@/mocks/Sessoes";
 
 import "./style.scss";
 
 export default function Realizacao() {
   const [content, setContent] = useState("");
-  const { updateEdicao } = useEdicao();
+  const { updateEdicao, Edicao } = useEdicao();
   const { eventEditionId } = SessoesMock;
 
   const handleEditPartners = () => {
     updateEdicao(eventEditionId, { partnersText: content });
   };
+
+  useEffect(() => {
+    setContent(Edicao?.partnersText ?? "");
+  }, [Edicao?.partnersText]);
 
   return (
     <div className="realizacao-home">
