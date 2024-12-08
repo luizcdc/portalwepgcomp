@@ -5,5 +5,6 @@ import { EventEditionService } from './event-edition.service';
 @Module({
   controllers: [EventEditionController],
   providers: [EventEditionService],
+  exports: [EventEditionService],
 })
 export class EventEditionModule {}

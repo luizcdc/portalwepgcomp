@@ -17,9 +17,6 @@ export class EventEditionResponseDto {
   partnersText: string;
 
   @Expose()
-  url: string;
-
-  @Expose()
   location: string;
 
   @Expose()

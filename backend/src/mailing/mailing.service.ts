@@ -8,6 +8,8 @@ import {
 } from './mailing.dto';
 import { QueueService } from '../queue/queue.service';
 import { createTransport, Transporter } from 'nodemailer';
+import { EventEditionService } from '../event-edition/event-edition.service';
+import { CommitteeMemberService } from '../committee-member/committee-member.service';
 
 @Injectable()
 export class MailingService {
@@ -19,6 +21,8 @@ export class MailingService {
     @Inject('EMAIL_SERVER_LIMIT_SERVICE')
     private serverLimitClient: ClientProxy,
     @Inject('DEAD_QUEUE_SERVICE') private deadQueueClient: ClientProxy,
+    private eventEditionService: EventEditionService,
+    private committeeMemberService: CommitteeMemberService,
   ) {
     this.mailerTransport = createTransport({
       host: process.env.MAIL_HOST,
@@ -87,10 +91,15 @@ export class MailingService {
   ): Promise<ContactResponseDto> {
     const { name, email, text } = contactDto;
 
+    const eventEdition = await this.eventEditionService.findActive();
+
+    const coordinator =
+      await this.committeeMemberService.findCurrentCoordinator(eventEdition.id);
+
     const emailContent = {
       from: `"${name}" <${email}>`,
       cc: email,
-      to: process.env.ORGANIZER_EMAIL,
+      to: coordinator.userEmail,
       subject: 'Contato: WEPGCOMP',
       text,
     };

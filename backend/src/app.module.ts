@@ -15,6 +15,8 @@ import { PresentationBlockModule } from './presentation-block/presentation-block
 import { CommitteeMemberModule } from './committee-member/committee-member.module';
 import { EvaluationController } from './evaluation/evaluation.controller';
 import { EvaluationModule } from './evaluation/evaluation.module';
+import { RoomModule } from './room/room.module';
+import { GuidanceModule } from './guidance/guidance.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { EvaluationModule } from './evaluation/evaluation.module';
     PresentationBlockModule,
     CommitteeMemberModule,
     EvaluationModule,
+    RoomModule,
+    GuidanceModule,
   ],
   controllers: [AppController, EvaluationController],
   providers: [AppService],
