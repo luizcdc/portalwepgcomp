@@ -59,7 +59,7 @@ export class S3UtilsController {
     file: Express.Multer.File,
   ) {
     const key = v4() + '.pdf';
-    const response = this.s3UtilsService.uploadFile(file, key);
+    const response = await this.s3UtilsService.uploadFile(file, key);
     if (!response) throw new AppException('Error uploading file to S3', 500);
     return {
       message: 'File uploaded successfully',
