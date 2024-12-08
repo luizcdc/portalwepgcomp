@@ -29,8 +29,6 @@ export class S3UtilsService {
           Bucket: bucket,
         }),
       );
-      console.log(`Bucket ${bucket} created successfully`);
-
       return true;
     } catch (err) {
       console.error(err);
