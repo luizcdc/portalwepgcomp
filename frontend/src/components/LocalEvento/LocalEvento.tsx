@@ -9,13 +9,12 @@ export default function LocalEvento() {
       id='Contato'
       style={{
         backgroundColor: "#0074BA",
-        paddingTop: "20px",
-        paddingBottom: "20px",
+        padding: "20px",
       }}
     >
       <div className="d-flex flex-row justify-content-evenly contato"
         style={{
-          gap: "40px",
+          gap: "30px",
         }}
       >
         <Contato />
