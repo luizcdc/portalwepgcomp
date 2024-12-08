@@ -5,7 +5,7 @@ import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { FavoritosMock } from "@/mocks/Favoritos";
 import { MockupPresentention } from "@/mocks/Schedule";
 import Listagem from "@/templates/Listagem/Listagem";
-import Modal from "../../components/UI/Modal";
+import Modal from "../../components/UI/Modal/Modal";
 import { useEffect, useRef, useState } from "react";
 
 export default function Favoritos() {

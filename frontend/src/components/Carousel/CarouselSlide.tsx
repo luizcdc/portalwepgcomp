@@ -27,7 +27,7 @@ export default function CarouselSlide({
         }}
       >
         {children}
-        <div className='carousel-indicators indicators-content mt-3'>
+        <div className='carousel-indicators indicators-content'>
           <button
             type='button'
             data-bs-target='#carousel-wepgcomp'

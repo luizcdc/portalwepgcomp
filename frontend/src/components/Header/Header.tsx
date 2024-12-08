@@ -71,13 +71,14 @@ export default function Header() {
           <Image
             src={"/assets/images/logo_PGCOMP.svg"}
             alt="PGCOMP Logo"
+            className="navbar-image"
             width={300}
             height={100}
             priority
           />
         </Link>
-
-        <div className="d-flex justify-content-end me-5">
+        
+        <nav className="navbar">
           <button
             className="navbar-toggler"
             type="button"
@@ -89,7 +90,9 @@ export default function Header() {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
+        </nav>
 
+        <div className="d-flex justify-content-end navbar-menu-itens">
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav align-items-center me-auto mb-2 mb-lg-0 fw-normal">
               <div

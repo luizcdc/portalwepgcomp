@@ -26,13 +26,14 @@ export default function Endereco() {
   const longitude = -38.507;
 
   return (
-    <div
+    <div className="container"
       style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "left",
         gap: "20px",
         color: "white",
+        width: "100%",
       }}
     >
       <div className="fs-1 fw-bold">Local do Evento</div>
@@ -57,7 +58,7 @@ export default function Endereco() {
           placeholder={<MapPlaceholder />}
           style={{
             height: "180px",
-            width: "150%",
+            width: "100%",
             borderRadius: "8px",
           }}
         >

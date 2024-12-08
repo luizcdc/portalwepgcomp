@@ -1,6 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateEventEditionDto } from './dto/create-event-edition.dto';
+import {
+  CreateEventEditionDto,
+  CreateFromEventEditionFormDto,
+} from './dto/create-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole } from '@prisma/client';
@@ -15,7 +18,6 @@ export class EventEditionService {
         description: createEventEditionDto.description,
         callForPapersText: createEventEditionDto.callForPapersText,
         partnersText: createEventEditionDto.partnersText,
-        url: createEventEditionDto.url,
         location: createEventEditionDto.location,
         startDate: createEventEditionDto.startDate,
         endDate: createEventEditionDto.endDate,
@@ -49,6 +51,67 @@ export class EventEditionService {
     const eventResponseDto = new EventEditionResponseDto(createdEventEdition);
 
     return eventResponseDto;
+  }
+
+  async createFromEventEditionForm(
+    createFromEventEditionFormDto: CreateFromEventEditionFormDto,
+  ): Promise<EventEditionResponseDto> {
+    const eventEdition = await this.create(createFromEventEditionFormDto);
+
+    const { id: eventEditionId } = eventEdition;
+    const {
+      organizingCommitteeIds,
+      itSupportIds,
+      administrativeSupportIds,
+      communicationIds,
+    } = createFromEventEditionFormDto;
+
+    await this.createCommitteeMembersFromArray(
+      eventEditionId,
+      organizingCommitteeIds,
+      CommitteeRole.OrganizingCommittee,
+    );
+
+    await this.createCommitteeMembersFromArray(
+      eventEditionId,
+      itSupportIds,
+      CommitteeRole.ITSupport,
+    );
+
+    await this.createCommitteeMembersFromArray(
+      eventEditionId,
+      administrativeSupportIds,
+      CommitteeRole.AdministativeSupport,
+    );
+
+    await this.createCommitteeMembersFromArray(
+      eventEditionId,
+      communicationIds,
+      CommitteeRole.Communication,
+    );
+
+    const eventResponseDto = new EventEditionResponseDto(eventEdition);
+
+    return eventResponseDto;
+  }
+
+  async createCommitteeMembersFromArray(
+    eventEditionId: string,
+    ids: Array<string>,
+    role: CommitteeRole,
+  ) {
+    await Promise.all(
+      ids.map(async (id) => {
+        await this.prismaClient.committeeMember.create({
+          data: {
+            eventEditionId: eventEditionId,
+            userId: id,
+            level: CommitteeLevel.Committee,
+            role,
+          },
+        });
+      }),
+    );
   }
 
   async getAll() {

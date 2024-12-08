@@ -22,5 +22,6 @@ export const axiosInstance = () => {
     return Axios.create({
       baseURL: apis[domain],
       headers: headersDefault,
+      
     });
 };
