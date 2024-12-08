@@ -68,8 +68,10 @@ export class UserController {
     @Query('roles') roles?: string | string[],
     @Query('profiles') profiles?: string | string[],
   ) {
-    const toArray = (input?: string | string[]): string[] =>
-      Array.isArray(input) ? input : input ? [input] : [];
+    const toArray = (input?: string | string[]): string[] => {
+      if (!input) return [];
+      return Array.isArray(input) ? input : [input];
+    };
 
     const rolesArray = toArray(roles);
     const profilesArray = toArray(profiles);
