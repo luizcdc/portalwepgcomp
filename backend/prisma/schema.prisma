@@ -282,15 +282,15 @@ model Presentation {
 }
 
 model Guidance {
-  id               String       @id @default(uuid()) @map("id")
-  summary          String       @map("summary") @db.Text
-  authorGuidance   String       @map("authors_guidance") @db.Text
-  reviewerGuidance String       @map("reviewers_guidance") @db.Text
-  audienceGuidance String       @map("audience_guidance") @db.Text
-  createdAt        DateTime     @default(now()) @map("created_at")
-  updatedAt        DateTime     @updatedAt @map("updated_at")
-  eventEditionId   String       @map("event_edition_id")
-  eventEdition     EventEdition @relation(fields: [eventEditionId], references: [id])
+  id               String        @id @default(uuid()) @map("id")
+  summary          String?       @map("summary") @db.Text
+  authorGuidance   String?       @map("authors_guidance") @db.Text
+  reviewerGuidance String?       @map("reviewers_guidance") @db.Text
+  audienceGuidance String?       @map("audience_guidance") @db.Text
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+  eventEditionId   String?       @map("event_edition_id")
+  eventEdition     EventEdition? @relation(fields: [eventEditionId], references: [id])
 
   @@map("guidance")
 }
