@@ -65,7 +65,7 @@ export class S3UtilsController {
     const response = await this.s3UtilsService.uploadFile(file, key);
     if (!response) throw new AppException('Error uploading file to S3', 500);
     return {
-      message: 'File uploaded successfully',
+      message: 'Arquivo carregado com sucesso!',
       key,
     };
   }
