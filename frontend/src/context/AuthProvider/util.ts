@@ -1,4 +1,5 @@
 
+import { UserProfile } from "@/models/user";
 import { axiosInstance } from "@/utils/api";
 
 export const api = axiosInstance();
