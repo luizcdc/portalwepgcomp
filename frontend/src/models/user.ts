@@ -40,7 +40,7 @@ export interface UserLogin {
     password: string
 }
 
-interface UserProfile {
+export interface UserProfile {
     name: string;
     profile: string;
     level: string;
