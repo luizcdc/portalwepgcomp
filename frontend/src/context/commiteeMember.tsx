@@ -23,10 +23,8 @@ export const CommitterProvider = ({ children }: CommitterProps) => {
         .then((response) => {
             setcommitterList(response);
         })
-        .catch((err) => {
-            console.log(err)
+        .catch(() => {
             setcommitterList([]);
-            console.log("erro ao obter os membros da comissão")
         })
         .finally(() => {});
     }
