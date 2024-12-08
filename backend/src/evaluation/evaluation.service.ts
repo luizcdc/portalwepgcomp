@@ -13,6 +13,22 @@ export class EvaluationService {
     const results = [];
 
     for (const evaluation of evaluations) {
+      // Verify if presentation exists
+      const presentation = await this.prisma.submission.findUnique({
+        where: { id: evaluation.submissionId },
+      });
+      if (!presentation) {
+        throw new AppException('Presentation not found!', 404);
+      }
+
+      // Verify if user exists
+      const user = await this.prisma.userAccount.findUnique({
+        where: { id: evaluation.userId },
+      });
+      if (!user) {
+        throw new AppException('User not found!', 404);
+      }
+
       const existingEvaluation = await this.prisma.evaluation.findFirst({
         where: {
           userId: evaluation.userId,

@@ -38,9 +38,15 @@ describe('EvaluationService', () => {
       update: jest.fn().mockResolvedValue(mockExistingEvaluation),
       findFirst: jest
         .fn()
-        .mockResolvedValueOnce(mockExistingEvaluation) // Primeiro registro já existe
-        .mockResolvedValueOnce(null), // Segundo registro é novo
+        .mockResolvedValueOnce(mockExistingEvaluation) // First register already exists
+        .mockResolvedValueOnce(null), // Second register is new
       findMany: jest.fn().mockResolvedValue(mockEvaluations),
+    },
+    submission: {
+      findUnique: jest.fn().mockResolvedValue({ id: 'submission1' }), // Mock for presentations
+    },
+    userAccount: {
+      findUnique: jest.fn().mockResolvedValue({ id: 'user1' }), // Mock for users
     },
   };
 
@@ -82,7 +88,14 @@ describe('EvaluationService', () => {
 
       const result = await evaluationService.create(dto);
 
-      // Verifica que `update` foi chamado para o registro existente
+      expect(mockPrismaService.submission.findUnique).toHaveBeenCalledWith({
+        where: { id: 'submission1' },
+      });
+      expect(mockPrismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: 'user1' },
+      });
+
+      // Verify if `update` was called for existing register
       expect(mockPrismaService.evaluation.update).toHaveBeenCalledWith({
         where: { id: mockExistingEvaluation.id },
         data: {
@@ -91,12 +104,12 @@ describe('EvaluationService', () => {
         },
       });
 
-      // Verifica que `createMany` foi chamado para o novo registro
+      // Verify if `createMany` was called for new register
       expect(mockPrismaService.evaluation.createMany).toHaveBeenCalledWith({
-        data: [dto[1]], // Somente o novo registro
+        data: [dto[1]], // Only new register
       });
 
-      // Verifica que o resultado inclui o registro existente atualizado e o novo registro
+      // Verify if result includes the existing register and a new register
       expect(result).toEqual([
         { ...mockExistingEvaluation, score: dto[0].score },
         dto[1],
