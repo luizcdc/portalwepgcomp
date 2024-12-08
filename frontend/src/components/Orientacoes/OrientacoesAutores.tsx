@@ -18,8 +18,6 @@ export default function OrientacoesAutores() {
 
     if (idOrientacao) {
       putOrientacao(idOrientacao, { eventEditionId, authorGuidance: content });
-    } else {
-      console.log("Orientação não encontrada");
     }
   };
 

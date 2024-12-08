@@ -21,8 +21,6 @@ export default function OrientacoesAudiencia() {
         eventEditionId,
         audienceGuidance: content,
       });
-    } else {
-      console.log("Orientação não encontrada");
     }
   };
 

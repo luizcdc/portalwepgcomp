@@ -21,8 +21,6 @@ export default function OrientacoesAvaliadores() {
         eventEditionId,
         reviewerGuidance: content,
       });
-    } else {
-      console.log("Orientação não encontrada");
     }
   };
 

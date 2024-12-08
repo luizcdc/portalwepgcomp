@@ -55,13 +55,10 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
       .getOrientacaoById(idOrientacao)
       .then((response) => {
         setOrientacao(response);
-        console.log("encontrado com sucesso");
       })
       .catch((err) => {
         console.log(err);
         setOrientacao(null);
-        console.log("erro ao buscar");
-        alert("Erro ao tentar buscar!");
       })
       .finally(() => {
         setLoadingOrientacoes(false);
@@ -75,7 +72,6 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
       .postOrientacao(body)
       .then((response) => {
         setOrientacao(response);
-        console.log("criado com sucesso");
         showAlert({
           icon: "success",
           title: "Cadastro realizado com sucesso!",
@@ -84,9 +80,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
         });
       })
       .catch((err) => {
-        console.log(err.response.data.message);
         setOrientacao(null);
-        console.log("erro ao criar");
         showAlert({
           icon: "error",
           title: "Erro ao cadastrar orientação",
@@ -110,13 +104,23 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
       .putOrientacao(idOrientacao, body)
       .then((response) => {
         setOrientacao(response);
-        console.log("atualizado com sucesso");
+        showAlert({
+          icon: "success",
+          title: "Atualização realizada com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
       })
       .catch((err) => {
-        console.log(err);
         setOrientacao(null);
-        console.log("erro ao atualizar");
-        alert("Erro ao tentar atualizar!");
+        showAlert({
+          icon: "error",
+          title: "Erro ao atualizar orientação",
+          text:
+            err.response?.data?.message ||
+            "Ocorreu um erro durante a atualização. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
       })
       .finally(() => {
         setLoadingOrientacao(false);
@@ -127,9 +131,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
     setLoadingOrientacao(true);
     orientacoesApi
       .deleteOrientacaoById(idOrientacao)
-      .then((response) => {
-        console.log(response);
-
+      .then(() => {
         showAlert({
           icon: "success",
           title: "Sessão deletada com sucesso!",
@@ -142,7 +144,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
       .catch((err) => {
         showAlert({
           icon: "error",
-          title: "Erro ao deletar sessão",
+          title: "Erro ao deletar orientação",
           text:
             err.response?.data?.message ||
             "Ocorreu um erro durante a deleção. Tente novamente mais tarde!",
