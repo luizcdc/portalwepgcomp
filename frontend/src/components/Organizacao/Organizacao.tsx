@@ -1,6 +1,7 @@
 "use client"
 
-import {MockOrganizacao} from "./../mocks/Organizacao"
+import {MockOrganizacao} from "../../mocks/Organizacao"
+import "./style.scss";
 
 /* interface OrganizacaoProps {
     coordenador: string,
@@ -19,9 +20,9 @@ export default function Organizacao(/*{props} : {props: OrganizacaoProps}*/) {
     }
 
     return (
-        <div style={{width: "90%", margin: "0 auto", color: "black", padding: "30px 0"}}> 
-            <h1 style={{fontSize: "50px",fontWeight: "700",lineHeight: "80px",textAlign: "center", color: "#054B75"}}>Organização</h1>
-            <div style={{fontSize: "20px",fontWeight: "400",lineHeight: "30px",textAlign: "left"}}>
+        <div className="organizacao-container"> 
+            <h1 className="organizacao-titulo">Organização</h1>
+            <div className="organizacao-conteudo">
                 <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Coordenação geral:</span> {MockOrganizacao.coordenador}</p>
                 <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Comissão organizadora:</span> {formatTeam(MockOrganizacao.comissao)}</p>
                 <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Apoio à TI:</span> {formatTeam(MockOrganizacao.ti)}</p>

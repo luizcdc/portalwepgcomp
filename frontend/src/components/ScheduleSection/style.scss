@@ -1,0 +1,50 @@
+#Programacao {
+  margin: 0 auto;
+  padding: 20px 0 50px 0;
+  border-bottom: 1px solid #000000;
+}
+
+.progamacao-title {
+  line-height: 50px;
+  color: #054B75;
+  margin-bottom: 40px;
+}
+
+.programacao-dias {
+  gap: 30px;
+}
+
+.programacao-item {
+  gap: 10px;
+}
+
+.programacao-item-aux {
+  width: 44px;
+}
+
+.programacao-sala {
+  background-color: #0065A3;
+  border-radius: 10px;
+  border: 1px solid #0065A3;
+  gap: 40px;
+  margin: 1rem 4.5rem;
+}
+
+@media (max-width:480px) {
+  .progamacao-title {
+    margin-bottom: 0 !important;
+  }
+  .programacao-sala {
+    margin: 1rem 2rem;
+  }
+  .programacao-dias {
+    flex-direction: column;
+    margin: 1rem 2rem;
+  }
+  .programacao-item-aux {
+    display: none;
+  }
+  .programacao-item {
+    margin: 1rem 2rem;
+  }
+}
