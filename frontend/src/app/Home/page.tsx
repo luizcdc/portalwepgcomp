@@ -4,7 +4,7 @@ import Carousel from "@/components/Carousel/Carousel";
 import LocalEvento from "@/components/LocalEvento/LocalEvento";
 import Organizacao from "@/components/Organizacao/Organizacao";
 import Orientacao from "@/components/Orientacao/Orientacao";
-import Realizacao from "@/components/Realizacao";
+import Realizacao from "@/components/Realizacao/Realizacao";
 import ScheduleSection from "@/components/ScheduleSection/ScheduleSection";
 
 export default function Home() {
