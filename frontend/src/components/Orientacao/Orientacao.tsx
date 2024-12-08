@@ -33,19 +33,10 @@ export default function Orientacao() {
           <div className="orientacao-detalhe">
             <div className="fw-bold">Datas Importantes:</div>
 
-            <div className="d-flex flex-direction-row align-items-center gap-2">
-              <div
-                className="orientacao-ponto-lista"
-              ></div>
-              <div>Data limite para submissão: 27 de outubro de 2025.</div>
-            </div>
-
-            <div className="d-flex flex-direction-row align-items-center gap-2">
-              <div
-                className="orientacao-ponto-lista"
-              ></div>
-              <div>O evento será realizado de 12 a 14 de novembro de 2025.</div>
-            </div>
+            <ul>
+              <li>Data limite para submissão: 27 de outubro de 2025.</li>
+              <li>O evento será realizado de 12 a 14 de novembro de 2025.</li>
+            </ul>
           </div>
         </div>
       )}
