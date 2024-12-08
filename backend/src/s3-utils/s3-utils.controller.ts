@@ -45,8 +45,11 @@ export class S3UtilsController {
     },
   })
   @ApiOperation({ summary: 'Upload a file to S3' })
-  @ApiResponse({ status: 200, description: 'File uploaded successfully' })
-  @ApiResponse({ status: 500, description: 'Error uploading file to S3' })
+  @ApiResponse({ status: 200, description: 'Arquivo carregado com sucesso!' })
+  @ApiResponse({
+    status: 500,
+    description: 'Erro no carregamento do arquivo',
+  })
   async uploadFile(
     @UploadedFile(
       new ParseFilePipe({
