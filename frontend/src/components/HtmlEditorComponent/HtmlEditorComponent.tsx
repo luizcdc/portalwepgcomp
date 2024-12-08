@@ -7,11 +7,13 @@ import "./style.scss";
 interface HtmlEditorComponentProps {
   content: string;
   onChange: (value: string) => void;
+  onSave?: () => void;
 }
 
 export default function HtmlEditorComponent({
   content,
   onChange,
+  onSave,
 }: Readonly<HtmlEditorComponentProps>) {
   const isAdm = true;
   const [preview, setPreview] = useState<boolean>(false);
@@ -30,6 +32,12 @@ export default function HtmlEditorComponent({
       >
         {preview ? "Editar" : "Ver prévia"}
       </button>
+
+      {onSave && (
+        <button className="buttonPreviewHtmlEditor" onClick={onSave}>
+          Salvar
+        </button>
+      )}
     </div>
   );
 }

@@ -1,10 +1,12 @@
 "use client";
 
+import { getUserLocalStorage } from "@/context/AuthProvider/util";
 import  Axios from "axios";
 
 
 const headersDefault = {
   'Content-Type': 'application/json',
+  Authorization: `Bearer ${getUserLocalStorage()}`
 };
 
 const hostname = typeof window !== 'undefined' ? window.location.hostname : '';

@@ -4,10 +4,20 @@ import Link from "next/link";
 import { useContext, useState } from "react";
 import HtmlEditorComponent from "./HtmlEditorComponent/HtmlEditorComponent";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useOrientacao } from "@/hooks/useOrientacao";
+import { SessoesMock } from "@/mocks/Sessoes";
 
 export default function Orientacao() {
   const [content, setContent] = useState("");
+
+  const { eventEditionId } = SessoesMock;
   const { signed } = useContext(AuthContext);
+
+  const { postOrientacao } = useOrientacao();
+
+  const handleEditOrientacao = () => {
+    postOrientacao({ eventEditionId, summary: content });
+  };
 
   return (
     <div
@@ -33,6 +43,7 @@ export default function Orientacao() {
         <HtmlEditorComponent
           content={content}
           onChange={(newValue) => setContent(newValue)}
+          onSave={handleEditOrientacao}
         />
       ) : (
         <div
