@@ -16,7 +16,6 @@ export class PresentationResponseDto {
     phoneNumber: string;
     proposedPresentationBlockId?: string;
     proposedPositionWithinBlock?: number;
-    ranking?: number;
     coAdvisor?: string;
     status: SubmissionStatus;
     createdAt: Date;
@@ -45,7 +44,6 @@ export class PresentationResponseDto {
         presentation.submission.proposedPresentationBlockId,
       proposedPositionWithinBlock:
         presentation.submission.proposedPositionWithinBlock,
-      ranking: presentation.submission.ranking,
       coAdvisor: presentation.submission.coAdvisor,
       status: presentation.submission.status,
       createdAt: presentation.submission.createdAt,

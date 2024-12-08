@@ -6,7 +6,7 @@ import {
   Post,
   UseGuards,
   Patch,
-  Get, 
+  Get,
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -52,8 +52,16 @@ export class UserController {
   }
 
   @Get()
-  @ApiQuery({ name: 'role', required: false, description: 'Filter by user level (e.g., "Admin", "Default")' })
-  @ApiQuery({ name: 'profile', required: false, description: 'Filter by profile (e.g., "Professor", "Listener")' })
+  @ApiQuery({
+    name: 'role',
+    required: false,
+    description: 'Filter by user level (e.g., "Admin", "Default")',
+  })
+  @ApiQuery({
+    name: 'profile',
+    required: false,
+    description: 'Filter by profile (e.g., "Professor", "Listener")',
+  })
   async getUsers(
     @Query('role') role?: string,
     @Query('profile') profile?: string,
