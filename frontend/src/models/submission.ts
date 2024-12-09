@@ -7,7 +7,7 @@ export interface SubmissionParams {
     advisorId: UUID;
     coAdvisor?: string;
     dateSuggestion?: Date;
-    pdfFile: File;
+    pdfFile: string;
     phoneNumber: string;
 }
 
