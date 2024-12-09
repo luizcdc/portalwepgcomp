@@ -24,7 +24,7 @@ interface UserProviderData {
   registerUser: (body: RegisterUserParams) => Promise<void>;
   resetPasswordSendEmail: (body: ResetPasswordSendEmailParams) => Promise<void>;
   resetPassword: (body: ResetPasswordParams) => Promise<void>;
-  getAdvisors: () => void;
+  getAdvisors: () => Promise<void>;
 }
 
 export const UserContext = createContext<UserProviderData>(
@@ -167,10 +167,7 @@ export const UserProvider = ({ children }: UserProps) => {
     setLoadingAdvisors(true);
 
     try {
-      const response = await userApi.getUsers({
-        role: ["Superadmin", "Admin"],
-        profile: "Professor"
-      });
+      const response = await userApi.getAdvisors();
 
       setAdvisors(response);
     } catch (err: any) {

@@ -14,6 +14,14 @@ export const userApi = {
         return data;
     },
 
+    getAdvisors: async () => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.get(`${baseUrl}/advisors`);
+
+        return data;
+    },
+
     registerUser: async (body: RegisterUserParams) => {
         const instance = axiosInstance();
 
@@ -37,16 +45,4 @@ export const userApi = {
 
         return data;
     },
-
-    getAdvisors: async () => {
-        const instance = axiosInstance();
-        const params: GetUserParams = {
-            role: ["Superadmin", "Admin"],
-            profile: "Professor"
-        };
-
-        const { data } = await instance.get(`${baseUrl}`, { params });
-
-        return data;
-    }
 }
