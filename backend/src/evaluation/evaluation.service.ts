@@ -17,7 +17,7 @@ export class EvaluationService {
         where: { id: evaluation.submissionId },
       });
       if (!presentation) {
-        throw new AppException('Presentation not found!', 404);
+        throw new AppException('Apresentação não encontrada.', 404);
       }
 
       // Verify if user exists
@@ -25,7 +25,7 @@ export class EvaluationService {
         where: { id: evaluation.userId },
       });
       if (!user) {
-        throw new AppException('User not found!', 404);
+        throw new AppException('Usuário não encontrado.', 404);
       }
 
       const existingEvaluation = await this.prisma.evaluation.findFirst({
@@ -88,7 +88,7 @@ export class EvaluationService {
     });
     if (!evaluations) {
       throw new AppException(
-        `No evaluations found for the user ${userId}`,
+        `Nenhuma avaliação encontrada para o usuário ${userId}`,
         404,
       );
     }
@@ -104,7 +104,7 @@ export class EvaluationService {
 
     if (evaluations.length === 0) {
       throw new AppException(
-        `No evaluations found for submission ${submissionId}`,
+        `Nenhuma avaliação encontrada para o usuário ${submissionId}`,
         404,
       );
     }
