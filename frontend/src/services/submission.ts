@@ -2,7 +2,7 @@ import { GetSubmissionParams, SubmissionParams } from '@/models/submission';
 import { axiosInstance } from '@/utils/api';
 import { UUID } from 'crypto';
 
-const baseUrl = "/submision";
+const baseUrl = "/submission";
 
 export const submissionApi = {
     getSubmissions: async (params: GetSubmissionParams) => {
