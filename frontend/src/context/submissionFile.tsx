@@ -55,11 +55,11 @@ export const SubmissionFileProvider = ({ children }: SubmissionFileProps) => {
         }
     }
 
-    const sendFile = async (file: File, idSubmission: UUID) => {
+    const sendFile = async (file: File, idUser: UUID) => {
         setLoadingSubmissionFile(true);
 
         try {
-            const response = await submissionFileApi.sendFile(file, idSubmission);
+            const response = await submissionFileApi.sendFile(file, idUser);
             setSubmissionFile(response);
             console.log("Arquivo enviado com sucesso");
         } catch (err: any) {

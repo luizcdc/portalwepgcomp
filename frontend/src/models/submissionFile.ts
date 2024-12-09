@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 
 export interface SubmissionFileParams {
-    idSubmission: UUID;
+    idUser: UUID;
     pdfFile: File;
 }
 
