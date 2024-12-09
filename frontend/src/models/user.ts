@@ -1,6 +1,12 @@
 import { UUID } from "crypto";
 
 type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
+type RoleType = "Superadmin" | "Admin" | "Default";
+
+export interface GetUserParams {
+    profile?: ProfileType | ProfileType[];
+    role?: RoleType | RoleType[];
+}
 
 export interface RegisterUserParams {
     name: string,
@@ -13,7 +19,7 @@ export interface RegisterUserParams {
     registrationNumber?: string
 }
 
-export interface User extends RegisterUserParams{
+export interface User extends RegisterUserParams {
     id: UUID,
     createdAt: Date;
     deletedAt: Date;
@@ -40,4 +46,4 @@ export interface UserProfile {
     profile: string;
     level: string;
     isActive: boolean;
-  }
+}
