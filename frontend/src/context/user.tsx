@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
-import { RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams, User } from "@/models/user";
+import { GetUserParams, RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams, User } from "@/models/user";
 import { userApi } from "@/services/user";
 
 interface UserProps {
@@ -15,10 +15,16 @@ interface UserProviderData {
   loadingCreateUser: boolean;
   loadingSendEmail: boolean;
   loadingResetPassword: boolean;
+  loadingUserList: boolean;
+  loadingAdvisors: boolean;
   user: User | null;
+  userList: User[];
+  advisors: User[];
+  getUsers: (params: GetUserParams) => void;
   registerUser: (body: RegisterUserParams) => Promise<void>;
   resetPasswordSendEmail: (body: ResetPasswordSendEmailParams) => Promise<void>;
   resetPassword: (body: ResetPasswordParams) => Promise<void>;
+  getAdvisors: () => void;
 }
 
 export const UserContext = createContext<UserProviderData>(
@@ -27,13 +33,42 @@ export const UserContext = createContext<UserProviderData>(
 
 export const UserProvider = ({ children }: UserProps) => {
   const [loadingCreateUser, setLoadingCreateUser] = useState<boolean>(false);
+  const [loadingUserList, setLoadingUserList] = useState<boolean>(false);
   const [loadingSendEmail, setLoadingSendEmail] = useState<boolean>(false);
   const [loadingResetPassword, setLoadingResetPassword] =
     useState<boolean>(false);
+  const [loadingAdvisors, setLoadingAdvisors] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const [userList, setUserList] = useState<User[]>([]);
+  const [advisors, setAdvisors] = useState<User[]>([]);
 
   const { showAlert } = useSweetAlert();
   const router = useRouter();
+
+  const getUsers = async (params: GetUserParams) => {
+    setLoadingUserList(false);
+
+    try {
+      const response = await userApi.getUsers(params);
+      setUserList(response);
+      console.log("Listado com sucesso");
+    } catch (err: any) {
+      console.error(err);
+      setUserList([]);
+      console.log("Erro ao tentar listar");
+
+      showAlert({
+        icon: "error",
+        title: "Erro ao listar usuários",
+        text:
+          err.response?.data?.message ||
+          "Ocorreu um erro durante a busca.",
+        confirmButtonText: "Retornar",
+      });
+    } finally {
+      setLoadingUserList(false);
+    }
+  }
 
   const registerUser = async (body: RegisterUserParams) => {
     setLoadingCreateUser(true);
@@ -128,16 +163,49 @@ export const UserProvider = ({ children }: UserProps) => {
     }
   };
 
+  const getAdvisors = async () => {
+    setLoadingAdvisors(true);
+
+    try {
+      const response = await userApi.getUsers({
+        role: ["Superadmin", "Admin"],
+        profile: "Professor"
+      });
+
+      setAdvisors(response);
+    } catch (err: any) {
+      console.error("Erro ao buscar");
+      setAdvisors([]);
+
+      showAlert({
+        icon: "error",
+        title: "Erro ao buscar orientadores",
+        text:
+          err.response?.data?.message ||
+          "Ocorreu um erro ao buscar orientadores.",
+        confirmButtonText: "Retornar",
+      });
+    } finally {
+      setLoadingAdvisors(false);
+    }
+  }
+
   return (
     <UserContext.Provider
       value={{
         loadingCreateUser,
         loadingSendEmail,
         loadingResetPassword,
+        loadingUserList,
+        loadingAdvisors,
         user,
+        userList,
+        advisors,
+        getUsers,
         registerUser,
         resetPasswordSendEmail,
         resetPassword,
+        getAdvisors,
       }}
     >
       {children}
