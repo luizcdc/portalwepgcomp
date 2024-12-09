@@ -39,11 +39,13 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       .listEdicao()
       .then((response) => {
         setEdicoesList(response);
+        setEdicao(response[0]);
         console.log("listado com sucesso");
       })
       .catch((err) => {
         console.log(err);
         setEdicoesList([]);
+        setEdicao(null);
         console.log("erro ao listar");
         alert("Erro ao tentar listar!");
       })
