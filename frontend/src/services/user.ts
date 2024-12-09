@@ -1,11 +1,19 @@
 "use client"
-import { RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams } from '@/models/user';
+import { GetUserParams, RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams } from '@/models/user';
 import { axiosInstance } from '@/utils/api';
 
 const baseUrl = "/users";
 const authBaseUrl = "/auth";
 
 export const userApi = {
+    getUsers: async (params: GetUserParams) => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.get(`${baseUrl}`, { params });
+
+        return data;
+    },
+
     registerUser: async (body: RegisterUserParams) => {
         const instance = axiosInstance();
 
@@ -26,6 +34,18 @@ export const userApi = {
         const instance = axiosInstance();
 
         const { data } = await instance.post(`${authBaseUrl}/reset-password?token=${body.token}`, { newPassword: body.newPassword });
+
+        return data;
+    },
+
+    getAdvisors: async () => {
+        const instance = axiosInstance();
+        const params: GetUserParams = {
+            role: ["Superadmin", "Admin"],
+            profile: "Professor"
+        };
+
+        const { data } = await instance.get(`${baseUrl}`, { params });
 
         return data;
     }
