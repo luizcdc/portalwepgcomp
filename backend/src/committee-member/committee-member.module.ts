@@ -5,5 +5,6 @@ import { CommitteeMemberController } from './committee-member.controller';
 @Module({
   controllers: [CommitteeMemberController],
   providers: [CommitteeMemberService],
+  exports: [CommitteeMemberService],
 })
 export class CommitteeMemberModule {}

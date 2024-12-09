@@ -5,6 +5,7 @@ import { CreateCommitteeMemberDto } from './dto/create-committee-member.dto';
 import { UpdateCommitteeMemberDto } from './dto/update-committee-member.dto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
+import { use } from 'passport';
 
 describe('CommitteeMemberService', () => {
   let service: CommitteeMemberService;
@@ -188,13 +189,53 @@ describe('CommitteeMemberService', () => {
 
   describe('findAll', () => {
     it('should return an array of committee members', async () => {
+      const queryReturn = [
+        {
+          id: '1',
+          eventEditionId: '1',
+          userId: '2',
+          user: { name: 'John' },
+          level: 'Coordinator',
+          role: 'OrganizingCommittee',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: '3',
+          eventEditionId: '1',
+          userId: '2',
+          user: { id: '2', name: 'Doe' },
+          level: 'Member',
+          role: 'OrganizingCommittee',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
       const expectedResult = [
-        { id: '1', eventEditionId: '1' },
-        { id: '3', eventEditionId: '1' },
+        {
+          id: '1',
+          eventEditionId: '1',
+          userId: '2',
+          level: 'Coordinator',
+          role: 'OrganizingCommittee',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          userName: 'John',
+        },
+        {
+          id: '3',
+          eventEditionId: '1',
+          userId: '2',
+          level: 'Member',
+          role: 'OrganizingCommittee',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          userName: 'Doe',
+        },
       ];
       prismaService.committeeMember.findMany = jest
         .fn()
-        .mockResolvedValue(expectedResult);
+        .mockResolvedValue(queryReturn);
 
       const result = await service.findAll('1');
 
@@ -207,7 +248,7 @@ describe('CommitteeMemberService', () => {
       const expectedResult = { id: '1' };
       prismaService.committeeMember.findUnique = jest
         .fn()
-        .mockResolvedValue(expectedResult);
+        .mockResolvedValue({ ...expectedResult, user: { name: 'John' } });
 
       const result = await service.findOne('1');
 
@@ -235,10 +276,10 @@ describe('CommitteeMemberService', () => {
       const existingMember = { id: '1', ...updateDto };
       prismaService.committeeMember.findUnique = jest
         .fn()
-        .mockResolvedValue(existingMember);
+        .mockResolvedValue({ ...existingMember, user: { name: 'John' } });
       prismaService.committeeMember.update = jest
         .fn()
-        .mockResolvedValue(existingMember);
+        .mockResolvedValue({ ...existingMember, user: { name: 'John' } });
 
       const result = await service.update('1', updateDto);
 
@@ -246,6 +287,7 @@ describe('CommitteeMemberService', () => {
       expect(prismaService.committeeMember.update).toHaveBeenCalledWith({
         where: { id: '1' },
         data: updateDto,
+        include: { user: true },
       });
     });
 
@@ -270,10 +312,10 @@ describe('CommitteeMemberService', () => {
       const existingMember = { id: '1', ...updateDto };
       prismaService.committeeMember.findFirst = jest
         .fn()
-        .mockResolvedValue(existingMember);
+        .mockResolvedValue({ ...existingMember, user: { name: 'John' } });
       prismaService.committeeMember.update = jest
         .fn()
-        .mockResolvedValue(existingMember);
+        .mockResolvedValue({ ...existingMember, user: { name: 'John' } });
 
       const result = await service.update(
         null,
@@ -286,6 +328,7 @@ describe('CommitteeMemberService', () => {
       expect(prismaService.committeeMember.update).toHaveBeenCalledWith({
         where: { id: '1' },
         data: updateDto,
+        include: { user: true },
       });
     });
 

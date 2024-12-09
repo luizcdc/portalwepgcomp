@@ -7,14 +7,24 @@ import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { useSession } from "@/hooks/useSession";
 import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";
+import ModalConfirmacao from "@/components/Modals/ModalConfirmacao/ModalConfirmacao";
 
 export default function Sessoes() {
   const { title, userArea, buttonList, eventEditionId } = SessoesMock;
-  const { listSessions, sessoesList } = useSession();
+  const { listSessions, sessoesList, deleteSession, sessao, setSessao } =
+    useSession();
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] =
     useState<Sessao[]>(sessoesList);
+
+  const getSessionOnList = (card: any) => {
+    const sessaoValue = sessoesList.find((v) => v.id === card.id);
+
+    if (sessaoValue?.id) {
+      setSessao(sessaoValue);
+    }
+  };
 
   useEffect(() => {
     listSessions(eventEditionId);
@@ -24,7 +34,7 @@ export default function Sessoes() {
     const newSessionsList =
       sessoesList?.filter((v) => v.title?.includes(searchValue.trim())) ?? [];
     setSessionsListValues(newSessionsList);
-  }, [searchValue]);
+  }, [searchValue, sessoesList]);
 
   return (
     <ProtectedLayout>
@@ -43,8 +53,16 @@ export default function Sessoes() {
           searchValue={searchValue}
           onChangeSearchValue={(value) => setSearchValue(value)}
           cardsList={sessionsListValues}
+          idModalDelete="modalDeletarSessao"
+          onClickItem={getSessionOnList}
         />
         <ModalSessao />
+        <ModalConfirmacao
+          id="modalDeletarSessao"
+          text="Você realmente deseja deletar essa sessão?"
+          colorButtonConfirm="#CF000A"
+          onConfirm={() => deleteSession(sessao?.id ?? "")}
+        />
       </div>
     </ProtectedLayout>
   );

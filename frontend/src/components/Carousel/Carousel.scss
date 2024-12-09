@@ -14,21 +14,13 @@
     }
 
     .indicators-content{
-        bottom: 35%;
         z-index: 3;
+        position: relative;
 
         .indicators-buttons{
             border-radius: 50%;
             width: 15px; 
             height: 15px;
-        }
-
-        @media (max-width: 2800px) {          
-            bottom: 30%;     
-        }
-          
-        @media (max-width: 576px) {          
-            bottom: 20%;     
         }
     }
 

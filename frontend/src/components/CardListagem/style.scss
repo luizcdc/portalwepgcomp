@@ -20,10 +20,17 @@
         }
     }
 
-    button{
+
+
+    .buttons-area{
+        display: flex;
         margin: 1rem;
-        width: min-content;
-        border: none;
-        background: none;
+        gap: 0.25rem;
+
+        button{
+            width: min-content;
+            border: none;
+            background: none;
+        }
     }
 }

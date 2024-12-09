@@ -16,6 +16,7 @@ interface ListagemProps {
   isMyPresentation?: boolean;
   isFavorites?: boolean;
   idModal?: string;
+  idModalDelete?: string;
   onAddButtonClick?: () => void;
   onChangeSearchValue?: (value: string) => void;
   onClickItem?: (value: string) => void;
@@ -34,23 +35,31 @@ export default function Listagem({
   onAddButtonClick,
   onChangeSearchValue,
   onClickItem,
+  idModalDelete,
 }: Readonly<ListagemProps>) {
   return (
     <div className="listagem-template">
       <Banner title={title} />
       <div className="listagem-template-content">
         <div className="listagem-template-user-area">
-          {labelAddButton ? 
-              <button
+          {labelAddButton ? (
+            <button
               type="button"
               data-bs-toggle={idModal ? "modal" : undefined}
               data-bs-target={idModal ? `#${idModal}` : undefined}
               onClick={idModal ? () => {} : onAddButtonClick}
             >
               {labelAddButton}
-              <Image src="/assets/images/add.svg" alt="" width={24} height={24} />
-            </button>  : ""        
-          }
+              <Image
+                src="/assets/images/add.svg"
+                alt=""
+                width={24}
+                height={24}
+              />
+            </button>
+          ) : (
+            ""
+          )}
           {onChangeSearchValue && (
             <div
               className="input-group listagem-template-content-input"
@@ -82,21 +91,24 @@ export default function Listagem({
           )}
         </div>
         <div className="listagem-template-cards">
-          {!!cardsList.length && !isFavorites &&
+          {!!cardsList.length &&
+            !isFavorites &&
             cardsList?.map((card) => (
               <CardListagem
-                key={card.name}
-                title={card.name}
+                key={card.title}
+                title={card.title}
                 subtitle={
                   title === "Sessões"
-                    ? `${formatDate(card.startAt)}`
+                    ? `${formatDate(card.startTime)}`
                     : card.subtitle
                 }
-                onClick={() => {}}
+                idModalEdit={idModal}
+                idModalDelete={idModalDelete}
                 onClickItem={() => onClickItem && onClickItem(card)}
               />
             ))}
-          {!!cardsList.length && isFavorites &&
+          {!!cardsList.length &&
+            isFavorites &&
             cardsList?.map((card) => (
               <CardListagem
                 key={card.name}
@@ -107,7 +119,6 @@ export default function Listagem({
                     : card.subtitle
                 }
                 showFavorite
-                onClick={() => {}}
                 onClickItem={() => onClickItem && onClickItem(card)}
               />
             ))}

@@ -17,6 +17,7 @@ import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-w
 import { UpdatePresentationWithSubmissionDto } from './dto/update-presentation-with-submission.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from 'src/auth/guards/user-level.guard';
+import { PresentationResponseDto } from './dto/response-presentation.dto';
 
 @Controller('presentation')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
@@ -39,7 +40,9 @@ export class PresentationController {
   }
 
   @Get()
-  findAll(@Param('eventEditionId') eventEditionId: string) {
+  findAll(
+    @Param('eventEditionId') eventEditionId: string,
+  ): Promise<PresentationResponseDto[]> {
     return this.presentationService.findAllByEventEditionId(eventEditionId);
   }
 

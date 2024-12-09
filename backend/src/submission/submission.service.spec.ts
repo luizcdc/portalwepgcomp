@@ -140,7 +140,7 @@ describe('SubmissionService', () => {
 
       await expect(service.create(validCreateSubmissionDto)).rejects.toThrow(
         new AppException(
-          'Autor principal já submeteu uma apresentação para esta edição do evento.',
+          'Autor principal já enviou uma submissão para esta edição do evento.',
           400,
         ),
       );
