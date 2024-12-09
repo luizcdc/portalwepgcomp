@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
+import { SubmissionProvider } from "@/context/submission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
 
@@ -20,18 +21,20 @@ export default function Apresentacoes() {
   }, [searchValue]);
 
   return (
-    <div className="d-flex flex-column before-list">
-      <Listagem
-        idModal="editarApresentacaoModal"
-        title={title}
-        labelAddButton={userArea.add}
-        labelListCardsButton={buttonList}
-        searchValue={searchValue}
-        onChangeSearchValue={(value) => setSearchValue(value)}
-        searchPlaceholder={userArea.search}
-        cardsList={sessionsListValues}
-      />
-      <ModalEditarCadastro />
-    </div>
+    <SubmissionProvider>
+      <div className="d-flex flex-column before-list">
+        <Listagem
+          idModal="editarApresentacaoModal"
+          title={title}
+          labelAddButton={userArea.add}
+          labelListCardsButton={buttonList}
+          searchValue={searchValue}
+          onChangeSearchValue={(value) => setSearchValue(value)}
+          searchPlaceholder={userArea.search}
+          cardsList={sessionsListValues}
+        />
+        <ModalEditarCadastro />
+      </div>
+    </SubmissionProvider>
   );
 }
