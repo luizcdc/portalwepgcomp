@@ -61,7 +61,7 @@ export default function Carousel() {
 
         <CarouselSlide imageUrl={slide3.backgroundUrl || ""} slideIndex="2">
           <h2 className='display-4 title'>{slide3.title}</h2>
-          <p className='lead'>Inscrições: {formatDateUniq(Edicao?.startDate)}</p>
+          <p className='lead'>Inscrições: até {formatDateUniq(Edicao?.startDate)}</p>
           <p className='lead'>Data do evento: {formatDateEvent(Edicao?.startDate, Edicao?.endDate)}</p>
           <p className='lead'>Data limite para submissão: {formatDateUniq(Edicao?.submissionDeadline)}</p>
 
