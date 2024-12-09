@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UUID } from "crypto";
 import { usePathname } from "next/navigation";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ import { z } from "zod";
 
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { SubmissionContext } from "@/context/submission";
+import { UserContext } from "@/context/user";
 import { useSweetAlert } from "@/hooks/useAlert";
 
 import "./style.scss";
@@ -42,6 +43,7 @@ export function FormCadastroApresentacao() {
   const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
   const { createSubmission } = useContext(SubmissionContext);
+  const { getAdvisors, advisors } = useContext(UserContext);
 
   const {
     register,
@@ -52,6 +54,10 @@ export function FormCadastroApresentacao() {
   } = useForm<formCadastroSchema>({
     resolver: zodResolver(formCadastroSchema),
   });
+
+  useEffect(() => {
+    getAdvisors();
+  }, [getAdvisors]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -126,7 +132,11 @@ export function FormCadastroApresentacao() {
           {...register("orientador")}
         >
           <option value="">Selecione o nome do orientador</option>
-          <option value="8b5436b3-192b-46c4-8e8e-3a81ec7e2428">Fred Durão</option>
+          {advisors.map((advisor) => (
+            <option key={advisor.id} value={advisor.id}>
+              {advisor.name}
+            </option>
+          ))}
         </select>
         <p className='text-danger error-message'>
           {errors.orientador?.message}
