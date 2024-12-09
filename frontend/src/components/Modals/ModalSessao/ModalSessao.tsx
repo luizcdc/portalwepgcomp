@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.scss";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import { SessaoTipoEnum } from "@/enums/session";
@@ -18,6 +18,10 @@ export default function ModalSessao() {
       ? SessaoTipoEnum["Sessão geral do evento"]
       : SessaoTipoEnum["Sessão de apresentações"]
   );
+
+  useEffect(() => {
+    return setSessao(null);
+  }, []);
 
   return (
     <ModalComponent
