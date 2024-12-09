@@ -11,6 +11,7 @@ import { z } from "zod";
 
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { SubmissionContext } from "@/context/submission";
+import { SubmissionFileContext } from "@/context/submissionFile";
 import { UserContext } from "@/context/user";
 import { useSweetAlert } from "@/hooks/useAlert";
 
@@ -44,7 +45,9 @@ export function FormCadastroApresentacao() {
   const { user } = useContext(AuthContext);
   const { createSubmission } = useContext(SubmissionContext);
   const { getAdvisors, advisors } = useContext(UserContext);
+  const { sendFile, } = useContext(SubmissionFileContext);
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const {
     register,
@@ -64,13 +67,15 @@ export function FormCadastroApresentacao() {
   }, [advisorsLoaded, getAdvisors]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const selectedFile = e.target.files?.[0];
 
-    if (file) setValue("slide", file.name);
+    if (selectedFile) {
+      setFile(selectedFile);
+      setValue("slide", selectedFile.name);
+    }
   }
 
-
-  const onSubmit = (data: formCadastroSchema) => {
+  const onSubmit = async (data: formCadastroSchema) => {
     if (!user) {
       showAlert({
         icon: "error",
@@ -82,19 +87,23 @@ export function FormCadastroApresentacao() {
       return;
     }
 
-    const submissionData = {
-      mainAuthorId: user.id,
-      title: data.titulo,
-      abstractText: data.abstract,
-      advisorId: data.orientador as UUID,
-      coAdvisor: data.coorientador || "",
-      dateSuggestion: data.data ? new Date(data.data) : undefined,
-      pdfFile: data.slide,
-      phoneNumber: data.celular,
-    };
+    if (file) {
+      await sendFile(file, user.id);
 
-    createSubmission(submissionData);
-  };
+      const submissionData = {
+        mainAuthorId: user.id,
+        title: data.titulo,
+        abstractText: data.abstract,
+        advisorId: data.orientador as UUID,
+        coAdvisor: data.coorientador || "",
+        dateSuggestion: data.data ? new Date(data.data) : undefined,
+        pdfFile: file.name,
+        phoneNumber: data.celular,
+      };
+
+      await createSubmission(submissionData);
+    };
+  }
 
   return (
     <form
