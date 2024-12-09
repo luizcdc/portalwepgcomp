@@ -1,11 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { UUID } from "crypto";
+import { usePathname } from "next/navigation";
+import { useContext } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { usePathname } from "next/navigation";
+
+import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { SubmissionContext } from "@/context/submission";
+import { useSweetAlert } from "@/hooks/useAlert";
 import "./style.scss";
 
 const formCadastroSchema = z.object({
@@ -17,7 +23,7 @@ const formCadastroSchema = z.object({
     .min(1, "O abstract é obrigatório"),
   orientador: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "O nome do orientador é obrigatório."),
+    .uuid(),
   coorientador: z.string().optional(),
   data: z.string().optional(),
   celular: z
@@ -35,6 +41,8 @@ type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
 export function FormCadastroApresentacao() {
   const pathname = usePathname();
+  const { user } = useContext(AuthContext);
+  const { createSubmission } = useContext(SubmissionContext);
   const {
     register,
     control,
@@ -44,9 +52,32 @@ export function FormCadastroApresentacao() {
     resolver: zodResolver(formCadastroSchema),
   });
 
+  const { showAlert } = useSweetAlert();
+
   const onSubmit = (data: formCadastroSchema) => {
-    console.log("Dados enviados:", { ...data, data });
-    alert("Cadastro realizado com sucesso!");
+    if (!user) {
+      showAlert({
+        icon: "error",
+        text:
+         "Você precisa estar logado para realizar a submissão.",
+        confirmButtonText: "Retornar",
+      });
+
+      return;
+    }
+
+    const submissionData = {
+      mainAuthorId: user.id,
+      title: data.titulo,
+      abstractText: data.abstract,
+      advisorId: data.orientador as UUID,
+      coAdvisor: data.coorientador || "",
+      dateSuggestion: data.data ? new Date(data.data) : undefined,
+      pdfFile: data.slide,
+      phoneNumber: data.celular,
+    };
+
+    createSubmission(submissionData);
   };
 
   return (
@@ -83,15 +114,15 @@ export function FormCadastroApresentacao() {
         <label className='form-label form-title'>
           Nome do orientador<span className='text-danger ms-1'>*</span>
         </label>
-          <select
-            id="orientador-select"
-            className="form-control input-title"
-            {...register("orientador")}
-          >
-            <option value="">Selecione o nome do orientador</option>
-            <option value="orientador1">Fred Durão</option>
+        <select
+          id="orientador-select"
+          className="form-control input-title"
+          {...register("orientador")}
+        >
+          <option value="">Selecione o nome do orientador</option>
+          <option value="8b5436b3-192b-46c4-8e8e-3a81ec7e2428">Fred Durão</option>
 
-          </select>
+        </select>
         <p className='text-danger error-message'>
           {errors.orientador?.message}
         </p>
@@ -111,7 +142,7 @@ export function FormCadastroApresentacao() {
         <label className='form-label form-title'>Sugestão de data</label>
 
         <div className="input-group listagem-template-content-input">
-        <Controller
+          <Controller
             control={control}
             name="data"
             render={({ field }) => (
@@ -146,7 +177,7 @@ export function FormCadastroApresentacao() {
         <label className="form-label form-title">
           Celular <span className="txt-min">(preferência WhatsApp)</span><span className="text-danger ms-1">*</span>
         </label>
-        <input 
+        <input
           className="form-control input-title"
           placeholder="(XX) XXXXX-XXXX"
           {...register("celular")}
@@ -159,9 +190,9 @@ export function FormCadastroApresentacao() {
 
       <div className='d-grid gap-2 col-3 mx-auto'>
         <button
-          data-bs-target='#apresentacaoModal'
+          data-bs-target='#collapse'
           type='submit'
-          data-bs-toggle='modal'
+          data-bs-toggle="collapse"
           className='btn text-white fs-5 submit-button'
         >
           {pathname.includes("Cadastro") ? "Cadastrar" : "Alterar"}
