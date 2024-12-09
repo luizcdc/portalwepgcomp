@@ -5,7 +5,6 @@ import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 
 describe('EvaluationController', () => {
   let evaluationController: EvaluationController;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let evaluationService: EvaluationService;
 
   const mockEvaluations = [
@@ -32,7 +31,6 @@ describe('EvaluationController', () => {
     getUserEvaluations: jest.fn().mockResolvedValue(mockEvaluations),
     getAllEvaluations: jest.fn().mockResolvedValue(mockEvaluations),
     calculateFinalGrade: jest.fn().mockResolvedValue(8.5),
-    // calculateFinalScore: jest.fn().mockResolvedValue(8.5),
   };
 
   beforeEach(async () => {

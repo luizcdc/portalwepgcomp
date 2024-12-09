@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
-//import { UpdateEvaluationDto } from './dto/update-evaluation.dto';
 import { AppException } from 'src/exceptions/app.exception';
 
 @Injectable()
@@ -67,25 +66,6 @@ export class EvaluationService {
 
     return results;
   }
-
-  // Updating a specific evaluation
-  /*
-  async updateEvaluation(id: string, updateEvaluationDto: UpdateEvaluationDto) {
-    const existingEvaluation = await this.prisma.evaluation.findUnique({
-      where: { id },
-    });
-
-    if (!existingEvaluation) {
-      throw new AppException(`Evaluation ${id} not found.`, 404);
-    }
-
-    return this.prisma.evaluation.update({
-      where: { id },
-      data: updateEvaluationDto,
-    });
-  }
-*/
-
   // List all evaluations
   async findAll() {
     return this.prisma.evaluation.findMany({
@@ -99,7 +79,6 @@ export class EvaluationService {
 
   // List all evaluations for a specific user
   async findOne(userId: string) {
-    // console.log('==> findOne userId received:', userId);
     const evaluations = await this.prisma.evaluation.findMany({
       where: { userId },
       include: {
@@ -107,8 +86,6 @@ export class EvaluationService {
         submission: true,
       },
     });
-    // console.log('==> findOne evaluations received:', evaluations);
-
     if (!evaluations) {
       throw new AppException(
         `No evaluations found for the user ${userId}`,
