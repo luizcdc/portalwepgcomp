@@ -5,12 +5,12 @@ import { axiosInstance } from '@/utils/api';
 const baseUrl = "/s3-utils";
 
 export const submissionFileApi = {
-    sendFile: async (file: File, idSubmission: UUID) => {
+    sendFile: async (file: File, idUser: UUID) => {
         const instance = axiosInstance();
         const formData = new FormData();
 
         formData.append("file", file);
-        formData.append("idSubmission", idSubmission);
+        formData.append("idSubmission", idUser);
 
         const { data } = await instance.post(`${baseUrl}`, formData, {
             headers: {
