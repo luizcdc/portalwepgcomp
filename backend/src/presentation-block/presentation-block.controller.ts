@@ -11,6 +11,7 @@ import { PresentationBlockService } from './presentation-block.service';
 import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto';
 import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto';
 import { ResponsePresentationBlockDto } from './dto/response-presentation-block.dto';
+import { Public } from 'src/auth/decorators/user-level.decorator';
 
 @Controller('presentation-block')
 export class PresentationBlockController {
@@ -24,6 +25,7 @@ export class PresentationBlockController {
   }
 
   // FindAll but for only a given eventEditionId
+  @Public()
   @Get('event-edition/:eventEditionId')
   async findAllByEventEditionId(
     @Param('eventEditionId') eventEditionId: string,
@@ -38,6 +40,7 @@ export class PresentationBlockController {
     );
   }
 
+  @Public()
   @Get(':id')
   async findOne(
     @Param('id') id: string,
