@@ -18,7 +18,7 @@ import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { UserLevel } from '@prisma/client';
-import { UserLevels } from '../auth/decorators/user-level.decorator';
+import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 
@@ -49,6 +49,7 @@ export class EventEditionController {
     return await this.eventEditionService.getAll();
   }
 
+  @Public()
   @Get(':id')
   async getById(@Param('id') id: string) {
     return await this.eventEditionService.getById(id);

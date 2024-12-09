@@ -63,7 +63,7 @@ export function FormContato() {
       onSubmit={handleSubmit(handleFormContato)}
     >
       <div className="row mb-3">
-        <div className="col-6">
+        <div className="col-12 col-sm-6">
           <label className="form-label fs-5 text-white fw-semibold">Nome:</label>
           <input
             type="nome"
@@ -76,7 +76,7 @@ export function FormContato() {
           <p className="text-warning error-message">{errors.name?.message}</p>
         </div>
 
-        <div className="col-6">
+        <div className="col-12 col-sm-6">
           <label className="form-label fs-5 text-white fw-semibold">E-mail:</label>
           <input
             type="email"

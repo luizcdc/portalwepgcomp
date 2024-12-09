@@ -2,6 +2,7 @@
 import Image from "next/image";
 
 import { useState } from "react";
+import "./style.scss";
 
 export default function Modal({
   content,
@@ -32,43 +33,15 @@ export default function Modal({
       {isOpen ? (
         <>
           <div
-            style={{
-              width: "100vw",
-              height: "100vh",
-              position: "fixed",
-              backgroundColor: "#808080ba",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              left: "0",
-              top: "0",
-            }}
+            className="modal-area-close"
             onClick={() => closeModal()}
           ></div>
           <div
-            style={{
-              width: "60vw",
-              maxWidth: "800px",
-              backgroundColor: "white",
-              borderRadius: "10px",
-              border: "3px solid #F17F0C",
-              position: "fixed",
-              zIndex: "100",
-              left: "50%",
-              top: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
+            className="modal-content"
           >
             <div
               onClick={() => closeModal()}
-              style={{
-                position: "relative",
-                left: "94%",
-                top: "20px",
-                width: "24px",
-                height: "24px",
-                cursor: "pointer",
-              }}
+              className="modal-btn-close"
             >
               <Image
                 src={"/assets/images/close.svg"}
