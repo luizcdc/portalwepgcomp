@@ -24,7 +24,7 @@ import {
   BookmarkPresentationRequestDto,
   BookmarkPresentationResponseDto,
 } from './dto/bookmark-presentation.dto';
-import { UserLevels } from 'src/auth/decorators/user-level.decorator';
+import { Public, UserLevels } from 'src/auth/decorators/user-level.decorator';
 import { UserLevel } from '@prisma/client';
 
 @Controller('presentation')
@@ -83,6 +83,7 @@ export class PresentationController {
     );
   }
 
+  @Public()
   @Get()
   findAll(
     @Param('eventEditionId') eventEditionId: string,
@@ -101,6 +102,7 @@ export class PresentationController {
     return this.presentationService.listUserPresentations(userId);
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.presentationService.findOne(id);
