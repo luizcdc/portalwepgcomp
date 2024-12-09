@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UUID } from "crypto";
 import { usePathname } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
@@ -44,6 +44,7 @@ export function FormCadastroApresentacao() {
   const { user } = useContext(AuthContext);
   const { createSubmission } = useContext(SubmissionContext);
   const { getAdvisors, advisors } = useContext(UserContext);
+  const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
 
   const {
     register,
@@ -56,8 +57,11 @@ export function FormCadastroApresentacao() {
   });
 
   useEffect(() => {
-    getAdvisors();
-  }, [getAdvisors]);
+    if (!advisorsLoaded) {
+      getAdvisors();
+      setAdvisorsLoaded(true);
+    }
+  }, [advisorsLoaded, getAdvisors]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
