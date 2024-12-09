@@ -13,7 +13,6 @@ import { PresentationModule } from './presentation/presentation.module';
 import { SubmissionModule } from './submission/submission.module';
 import { PresentationBlockModule } from './presentation-block/presentation-block.module';
 import { CommitteeMemberModule } from './committee-member/committee-member.module';
-import { EvaluationController } from './evaluation/evaluation.controller';
 import { EvaluationModule } from './evaluation/evaluation.module';
 import { RoomModule } from './room/room.module';
 import { GuidanceModule } from './guidance/guidance.module';
@@ -36,7 +35,7 @@ import { GuidanceModule } from './guidance/guidance.module';
     RoomModule,
     GuidanceModule,
   ],
-  controllers: [AppController, EvaluationController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
