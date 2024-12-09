@@ -1,7 +1,6 @@
 import { UUID } from "crypto";
 
 export interface SubmissionParams {
-    mainAuthorId: UUID;
     title: string;
     abstractText: string;
     advisorId: UUID;
