@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+
 type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
 
 export interface RegisterUserParams {
@@ -12,10 +14,10 @@ export interface RegisterUserParams {
 }
 
 export interface User extends RegisterUserParams{
-    id: string,
-    createdAt: string;
-    deletedAt: string;
-    updatedAt: string;
+    id: UUID,
+    createdAt: Date;
+    deletedAt: Date;
+    updatedAt: Date;
 }
 
 export interface ResetPasswordSendEmailParams {
@@ -33,6 +35,7 @@ export interface UserLogin {
 }
 
 export interface UserProfile {
+    id: UUID;
     name: string;
     profile: string;
     level: string;
