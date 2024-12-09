@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
-import { useEffect, useState } from "react";
 
 export default function Apresentacoes() {
   const { title, userArea, cardsMock, buttonList } = ApresentacoesMock;
@@ -19,12 +20,7 @@ export default function Apresentacoes() {
   }, [searchValue]);
 
   return (
-    <div
-      className="d-flex flex-column"
-      style={{
-        gap: "50px",
-      }}
-    >
+    <div className="d-flex flex-column before-list">
       <Listagem
         idModal="editarApresentacaoModal"
         title={title}
