@@ -1,4 +1,5 @@
 "use client"
+import { RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams } from '@/models/user';
 import { axiosInstance } from '@/utils/api';
 
 const baseUrl = "/users";
@@ -24,7 +25,7 @@ export const userApi = {
     resetPassword: async (body: ResetPasswordParams) => {
         const instance = axiosInstance();
 
-        const { data } = await instance.post(`${authBaseUrl}/reset-password?token=${body.token}`, { newPassword: body.newPassword});
+        const { data } = await instance.post(`${authBaseUrl}/reset-password?token=${body.token}`, { newPassword: body.newPassword });
 
         return data;
     }

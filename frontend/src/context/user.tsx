@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
+import { RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams, User } from "@/models/user";
 import { userApi } from "@/services/user";
 
 interface UserProps {
