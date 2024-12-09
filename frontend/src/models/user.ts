@@ -4,8 +4,8 @@ type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
 type RoleType = "Superadmin" | "Admin" | "Default";
 
 export interface GetUserParams {
-    profile?: ProfileType | ProfileType[];
-    role?: RoleType | RoleType[];
+    profile?: ProfileType;
+    role?: RoleType;
 }
 
 export interface RegisterUserParams {
