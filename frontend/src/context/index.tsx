@@ -2,6 +2,7 @@
 import { ComposeProviders } from "@/components/ComposeProviders";
 import { UserProvider } from "./user";
 import { SessionProvider } from "./session";
+import { EdicaoProvider } from "./edicao";
 import { OrientacaoProvider } from "./orientacoes";
 import { CommitterProvider } from "./commiteeMember";
 
@@ -15,6 +16,7 @@ const Providers = ({ children }: ProvidersProps) => {
       with={[
         UserProvider,
         SessionProvider,
+        EdicaoProvider,
         CommitterProvider,
         OrientacaoProvider,
       ]}
