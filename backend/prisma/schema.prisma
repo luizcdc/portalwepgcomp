@@ -80,23 +80,24 @@ enum PresentationBlockType {
 }
 
 model UserAccount {
-  id                     String            @id @default(uuid()) @map("id")
-  name                   String            @map("name") @db.VarChar(255)
-  email                  String            @unique @map("email") @db.VarChar(255)
-  password               String            @map("password") @db.VarChar(255)
-  registrationNumber     String?           @unique @map("registration_number") @db.VarChar(20)
-  photoFilePath          String?           @map("photo_file_path") @db.VarChar(255)
-  profile                Profile           @default(DoctoralStudent) @map("profile")
-  level                  UserLevel         @default(Default) @map("level")
-  isActive               Boolean           @default(true) @map("is_active")
-  advisorFor             Submission[]      @relation("AdvisorRelation")
-  mainAuthored           Submission[]      @relation("MainAuthorRelation")
-  createdAt              DateTime          @default(now()) @map("created_at")
-  updatedAt              DateTime          @updatedAt @map("updated_at")
-  committeeMemberships   CommitteeMember[]
-  evaluations            Evaluation[]
-  panelistAwards         AwardedPanelist[]
-  panelistParticipations Panelist[]
+  id                      String            @id @default(uuid()) @map("id")
+  name                    String            @map("name") @db.VarChar(255)
+  email                   String            @unique @map("email") @db.VarChar(255)
+  password                String            @map("password") @db.VarChar(255)
+  registrationNumber      String?           @unique @map("registration_number") @db.VarChar(20)
+  photoFilePath           String?           @map("photo_file_path") @db.VarChar(255)
+  profile                 Profile           @default(DoctoralStudent) @map("profile")
+  level                   UserLevel         @default(Default) @map("level")
+  isActive                Boolean           @default(true) @map("is_active")
+  advisorFor              Submission[]      @relation("AdvisorRelation")
+  mainAuthored            Submission[]      @relation("MainAuthorRelation")
+  createdAt               DateTime          @default(now()) @map("created_at")
+  updatedAt               DateTime          @updatedAt @map("updated_at")
+  committeeMemberships    CommitteeMember[]
+  evaluations             Evaluation[]
+  panelistAwards          AwardedPanelist[]
+  panelistParticipations  Panelist[]
+  bookmarkedPresentations Presentation[]
 
   @@map("user_account")
 }
@@ -276,6 +277,7 @@ model Presentation {
   evaluatorsAverageScore Float?             @map("evaluators_average_score")
   submission             Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   presentationBlock      PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
+  bookmarkedUsers        UserAccount[]
 
   @@map("presentation")
 }
