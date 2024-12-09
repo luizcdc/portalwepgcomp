@@ -12,6 +12,7 @@ import { z } from "zod";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { SubmissionContext } from "@/context/submission";
 import { useSweetAlert } from "@/hooks/useAlert";
+
 import "./style.scss";
 
 const formCadastroSchema = z.object({
@@ -30,36 +31,41 @@ const formCadastroSchema = z.object({
     .string()
     .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos."),
   slide: z
-    .custom<File>((value) => value instanceof FileList && value.length > 0, {
-      message: "Arquivo obrigatório!",
-    })
-    .transform((value) => (value instanceof FileList ? value[0] : null))
-    .refine((file) => file !== null, { message: "Arquivo obrigatório!" }),
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "Arquivo é obrigatório"),
 });
 
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
 export function FormCadastroApresentacao() {
   const pathname = usePathname();
+  const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
   const { createSubmission } = useContext(SubmissionContext);
+
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<formCadastroSchema>({
     resolver: zodResolver(formCadastroSchema),
   });
 
-  const { showAlert } = useSweetAlert();
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) setValue("slide", file.name);
+  }
+
 
   const onSubmit = (data: formCadastroSchema) => {
     if (!user) {
       showAlert({
         icon: "error",
         text:
-         "Você precisa estar logado para realizar a submissão.",
+          "Você precisa estar logado para realizar a submissão.",
         confirmButtonText: "Retornar",
       });
 
@@ -121,7 +127,6 @@ export function FormCadastroApresentacao() {
         >
           <option value="">Selecione o nome do orientador</option>
           <option value="8b5436b3-192b-46c4-8e8e-3a81ec7e2428">Fred Durão</option>
-
         </select>
         <p className='text-danger error-message'>
           {errors.orientador?.message}
@@ -168,7 +173,7 @@ export function FormCadastroApresentacao() {
           type='file'
           className='form-control input-title'
           accept='.pdf'
-          {...register("slide")}
+          onChange={handleFileChange}
         />
         <p className='text-danger error-message'>{errors.slide?.message}</p>
       </div>
