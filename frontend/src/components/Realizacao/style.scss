@@ -6,61 +6,50 @@
   height: 240px;
   gap: 10%;
   margin: 30px;
-}
-.realizacao-lista {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 30px;
-}
-.realizacao-titulo {
-  color: black;
-  font-weight: 700;
-  font-size: 24px;
-}
-.realizacao-apio-lista {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 10px;
-}
-.realizacao-apoio-titulo {
-  color: black;
-  font-weight: 700;
-  font-size: 24px;
-}
-.realizacao-apoio-lista-itens {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 50px;
-}
-#realizacao-computacao {
-  background-image: url(/assets/images/logo_computacao.svg);
-  background-size: cover;
-  width: 240px;
-  height: 70px;
-}
-#realizacao-ufba {
-  background-image: url(/assets/images/logo_ufba.svg);
-  background-size: cover;
-  width: 138px;
-  height: 89px;
-}
-#realizacao-jusbrasil {
-  background-image: url(/assets/images/logo_jusbrasil.svg);
-  background-size: cover;
-  width: 208px;
-  height: 32px;
+
+  .realizacao-lista {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 30px;
+  }
+  .realizacao-titulo {
+    color: black;
+    font-weight: 700;
+    font-size: 24px;
+  }
+  .realizacao-parceiros{
+    display: flex;
+    gap: 1rem;
+  }
+  .realizacao-apoio-lista {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .realizacao-apoio-titulo {
+    color: black;
+    font-weight: 700;
+    font-size: 24px;
+  }
+  .realizacao-apoio-lista-itens {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 50px;
+  }
+  
+
 }
 
 @media (max-width:480px) {
   .realizacao {
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
     height: auto;
     gap: 20px;  
   }
@@ -69,7 +58,12 @@
   }
   .realizacao-apoio-lista-itens {
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
     gap: 10px;
+  }
+  .realizacao-parceiros{
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: start;
   }
 }

@@ -5,6 +5,7 @@
 import { createContext, ReactNode, useState } from "react";
 
 import { edicaoApi } from "@/services/edicao";
+import { useSweetAlert } from "@/hooks/useAlert";
 
 interface EdicaoProps {
   children: ReactNode;
@@ -32,6 +33,8 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
   const [loadingEdicao, setLoadingEdicao] = useState<boolean>(false);
   const [edicoesList, setEdicoesList] = useState<Edicao[]>([]);
   const [Edicao, setEdicao] = useState<Edicao | null>(null);
+
+  const { showAlert } = useSweetAlert();
 
   const listEdicao = async () => {
     setLoadingEdicoesList(true);
@@ -98,13 +101,23 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       .updateEdicaoById(idEdicao, body)
       .then((response) => {
         setEdicao(response);
-        console.log("atualizado com sucesso");
+        showAlert({
+          icon: "success",
+          title: "Atualização realizada com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
       })
       .catch((err) => {
-        console.log(err);
         setEdicao(null);
-        console.log("erro ao atualizar");
-        alert("Erro ao tentar atualizar!");
+        showAlert({
+          icon: "error",
+          title: "Erro ao atualizar informações do evento",
+          text:
+            err.response?.data?.message ||
+            "Ocorreu um erro durante a atualização. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
       })
       .finally(() => {
         setLoadingEdicao(false);

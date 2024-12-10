@@ -10,6 +10,11 @@ import { PresentationStatus } from '@prisma/client';
 import { SubmissionStatus } from '@prisma/client';
 import { PresentationBlockType } from '@prisma/client';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
+import {
+  BookmarkedPresentationsResponseDto,
+  BookmarkPresentationRequestDto,
+  BookmarkPresentationResponseDto,
+} from './dto/bookmark-presentation.dto';
 
 @Injectable()
 export class PresentationService {
@@ -482,5 +487,116 @@ export class PresentationService {
     );
 
     return presentationTime;
+  }
+
+  async bookmarkPresentation(
+    bookmarkPresentationRequestDto: BookmarkPresentationRequestDto,
+    userId: string,
+  ): Promise<BookmarkPresentationResponseDto> {
+    const { presentationId } = bookmarkPresentationRequestDto;
+
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new AppException('Usuário não encontrado.', 404);
+    }
+
+    const presentation = await this.prismaClient.presentation.findUnique({
+      where: {
+        id: presentationId,
+      },
+    });
+
+    if (!presentation) {
+      throw new AppException('Apresentação não encontrada.', 404);
+    }
+
+    const updatedUser = await this.prismaClient.userAccount.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        bookmarkedPresentations: {
+          connect: {
+            id: presentation.id,
+          },
+        },
+      },
+      include: {
+        bookmarkedPresentations: true,
+      },
+    });
+
+    return new BookmarkPresentationResponseDto(
+      updatedUser.bookmarkedPresentations,
+    );
+  }
+
+  async bookmarkedPresentations(
+    userId: string,
+  ): Promise<BookmarkedPresentationsResponseDto> {
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        bookmarkedPresentations: true,
+      },
+    });
+
+    if (!user) {
+      throw new AppException('Usuário não encontrado.', 404);
+    }
+
+    return new BookmarkedPresentationsResponseDto(user.bookmarkedPresentations);
+  }
+
+  async removePresentationBookmark(
+    presentationId: string,
+    userId: string,
+  ): Promise<BookmarkedPresentationsResponseDto> {
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new AppException('Usuário não encontrado.', 404);
+    }
+
+    const presentation = await this.prismaClient.presentation.findUnique({
+      where: {
+        id: presentationId,
+      },
+    });
+
+    if (!presentation) {
+      throw new AppException('Apresentação não encontrada.', 404);
+    }
+
+    const updatedUser = await this.prismaClient.userAccount.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        bookmarkedPresentations: {
+          disconnect: {
+            id: presentation.id,
+          },
+        },
+      },
+      include: {
+        bookmarkedPresentations: true,
+      },
+    });
+
+    return new BookmarkedPresentationsResponseDto(
+      updatedUser.bookmarkedPresentations,
+    );
   }
 }

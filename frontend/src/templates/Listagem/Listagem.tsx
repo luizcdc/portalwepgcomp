@@ -16,10 +16,11 @@ interface ListagemProps {
   isMyPresentation?: boolean;
   isFavorites?: boolean;
   idModal?: string;
-  idModalDelete?: string;
   onAddButtonClick?: () => void;
   onChangeSearchValue?: (value: string) => void;
   onClickItem?: (value: string) => void;
+  onDelete?: (id: string) => void;
+  onClear?: () => void;
 }
 
 export default function Listagem({
@@ -35,7 +36,8 @@ export default function Listagem({
   onAddButtonClick,
   onChangeSearchValue,
   onClickItem,
-  idModalDelete,
+  onDelete,
+  onClear,
 }: Readonly<ListagemProps>) {
   return (
     <div className="listagem-template">
@@ -47,7 +49,7 @@ export default function Listagem({
               type="button"
               data-bs-toggle={idModal ? "modal" : undefined}
               data-bs-target={idModal ? `#${idModal}` : undefined}
-              onClick={idModal ? () => {} : onAddButtonClick}
+              onClick={idModal ? onClear : onAddButtonClick}
             >
               {labelAddButton}
               <Image
@@ -103,8 +105,8 @@ export default function Listagem({
                     : card.subtitle
                 }
                 idModalEdit={idModal}
-                idModalDelete={idModalDelete}
                 onClickItem={() => onClickItem && onClickItem(card)}
+                onDelete={() => onDelete && onDelete(card?.id ?? "")}
               />
             ))}
           {!!cardsList.length &&

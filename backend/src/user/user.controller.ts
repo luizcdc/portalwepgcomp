@@ -79,4 +79,10 @@ export class UserController {
 
     return await this.userService.findAll(rolesArray, profilesArray);
   }
+
+  @Get('advisors')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  async getAdvisors() {
+    return await this.userService.findAll(['Admin', 'Superadmin'], 'Professor');
+  }
 }

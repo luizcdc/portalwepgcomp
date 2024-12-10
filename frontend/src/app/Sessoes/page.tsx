@@ -7,12 +7,10 @@ import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { useSession } from "@/hooks/useSession";
 import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";
-import ModalConfirmacao from "@/components/Modals/ModalConfirmacao/ModalConfirmacao";
 
 export default function Sessoes() {
   const { title, userArea, buttonList, eventEditionId } = SessoesMock;
-  const { listSessions, sessoesList, deleteSession, sessao, setSessao } =
-    useSession();
+  const { listSessions, sessoesList, deleteSession, setSessao } = useSession();
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] =
@@ -53,16 +51,11 @@ export default function Sessoes() {
           searchValue={searchValue}
           onChangeSearchValue={(value) => setSearchValue(value)}
           cardsList={sessionsListValues}
-          idModalDelete="modalDeletarSessao"
           onClickItem={getSessionOnList}
+          onClear={() => setSessao(null)}
+          onDelete={(id: string) => deleteSession(id)}
         />
         <ModalSessao />
-        <ModalConfirmacao
-          id="modalDeletarSessao"
-          text="Você realmente deseja deletar essa sessão?"
-          colorButtonConfirm="#CF000A"
-          onConfirm={() => deleteSession(sessao?.id ?? "")}
-        />
       </div>
     </ProtectedLayout>
   );
