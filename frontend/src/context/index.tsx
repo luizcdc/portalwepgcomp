@@ -5,6 +5,7 @@ import { SessionProvider } from "./session";
 import { EdicaoProvider } from "./edicao";
 import { OrientacaoProvider } from "./orientacoes";
 import { CommitterProvider } from "./commiteeMember";
+import { EdicaoProvider } from "./edicao";
 
 interface ProvidersProps {
   children: React.ReactNode;

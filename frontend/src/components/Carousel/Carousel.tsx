@@ -4,9 +4,17 @@ import { CarouselMock } from "@/mocks/Carousel";
 
 import Link from "next/link";
 import CarouselSlide from "./CarouselSlide";
+import { useEdicao } from "@/hooks/useEdicao";
+import { useEffect } from "react";
+import { formatDateEvent, formatDateUniq } from "@/utils/formatDate";
 
 export default function Carousel() {
+  const { listEdicao, Edicao, loadingEdicao } = useEdicao();
   const { slide1, slide2, slide3 } = CarouselMock;
+
+  useEffect(() => {
+    listEdicao();
+  }, [])
 
   return (
     <div
@@ -17,10 +25,10 @@ export default function Carousel() {
     >
       <div className='carousel-inner'>
         <CarouselSlide imageUrl={slide1.backgroundUrl || ""} slideIndex="0" isActive>
-          <h2 className='display-4 text-white title'>{slide1.title}</h2>
-          <p className='lead'>{slide1.subtitles[0]}</p>
+          <h2 className='display-4 text-white title'>{Edicao?.name || "Carregando..."}</h2>
+          <p className='lead'>{Edicao?.description || "Carregando..."}</p>
 
-          <p className='lead fw-semibold'>{slide1.subtitles[1]}</p>
+          <p className='lead fw-semibold'>{formatDateEvent(Edicao?.startDate, Edicao?.endDate)}</p>
 
           <Link
             className='btn btn-outline-light mt-3 px-4 py-2 schedule-button'
@@ -53,9 +61,9 @@ export default function Carousel() {
 
         <CarouselSlide imageUrl={slide3.backgroundUrl || ""} slideIndex="2">
           <h2 className='display-4 title'>{slide3.title}</h2>
-          <p className='lead'>{slide3.subtitles[0]}</p>
-          <p className='lead'>{slide3.subtitles[1]}</p>
-          <p className='lead'>{slide3.subtitles[2]}</p>
+          <p className='lead'>Inscrições: até {formatDateUniq(Edicao?.startDate)}</p>
+          <p className='lead'>Data do evento: {formatDateEvent(Edicao?.startDate, Edicao?.endDate)}</p>
+          <p className='lead'>Data limite para submissão: {formatDateUniq(Edicao?.submissionDeadline)}</p>
 
           <Link
             className='btn btn-outline-light mt-3 px-4 py-2 schedule-button'
