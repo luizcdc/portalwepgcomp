@@ -14,12 +14,10 @@ interface EdicaoParams {
   salas?:string;
   sessoes?: string;
   callForPapersText?: string;
-  endDate: string;
+  endDate?: string;
   submissionDeadline?: string;
   startDate?: string;
-
-  
-
+  partnersText?: string;
 }
 
 interface Edicao extends EdicaoParams {
