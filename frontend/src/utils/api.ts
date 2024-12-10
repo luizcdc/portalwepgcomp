@@ -19,7 +19,7 @@ const domain = hostname?.split(".")[0];
 
 const apis = {
     localhost: "https://portal-wepgcomp-api-development.vercel.app/",
-  "portal-wepgcomp-client-development":
+"portal-wepgcomp-client-development":
     "https://portal-wepgcomp-api-development.vercel.app/",
   "portal-wepgcomp-client": "https://portal-wepgcomp-api.vercel.app/",
 };
