@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { formatDateEvent, formatDateUniq } from "@/utils/formatDate";
 
 export default function Carousel() {
-  const { listEdicao, Edicao, loadingEdicao } = useEdicao();
+  const { listEdicao, Edicao } = useEdicao();
   const { slide1, slide2, slide3 } = CarouselMock;
 
   useEffect(() => {
