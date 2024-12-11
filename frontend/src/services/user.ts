@@ -4,10 +4,10 @@ import { axiosInstance } from '@/utils/api';
 
 const baseUrl = "/users";
 const authBaseUrl = "/auth";
+const instance = axiosInstance();
 
 export const userApi = {
     getUsers: async (params: GetUserParams) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.get(`${baseUrl}`, { params });
 
@@ -15,7 +15,6 @@ export const userApi = {
     },
 
     getAdvisors: async () => {
-        const instance = axiosInstance();
 
         const { data } = await instance.get(`${baseUrl}/advisors`);
 
@@ -23,7 +22,6 @@ export const userApi = {
     },
 
     registerUser: async (body: RegisterUserParams) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.post(`${baseUrl}/register`, body);
 
@@ -31,7 +29,6 @@ export const userApi = {
     },
 
     resetPasswordSendEmail: async (body: ResetPasswordSendEmailParams) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.post(`${authBaseUrl}/forgot-password`, body);
 
@@ -39,7 +36,6 @@ export const userApi = {
     },
 
     resetPassword: async (body: ResetPasswordParams) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.post(`${authBaseUrl}/reset-password?token=${body.token}`, { newPassword: body.newPassword });
 
