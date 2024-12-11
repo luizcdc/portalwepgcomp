@@ -4,18 +4,16 @@ import { GetSubmissionParams, SubmissionParams } from '@/models/submission';
 import { axiosInstance } from '@/utils/api';
 
 const baseUrl = "/submission";
+const instance = axiosInstance();
 
 export const submissionApi = {
     getSubmissions: async (params: GetSubmissionParams) => {
-        const instance = axiosInstance();
-
         const { data } = await instance.get(`${baseUrl}`, { params });
 
         return data;
     },
 
     getSubmissionById: async (idSubmission: UUID) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.get(`${baseUrl}/${idSubmission}`);
 
@@ -23,7 +21,6 @@ export const submissionApi = {
     },
 
     createSubmission: async (body: SubmissionParams) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.post(`${baseUrl}`, body);
 
@@ -31,7 +28,6 @@ export const submissionApi = {
     },
 
     updateSubmissionById: async (idSubmission: UUID, body: SubmissionParams) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.put(`${baseUrl}/${idSubmission}`, body);
 
@@ -39,7 +35,6 @@ export const submissionApi = {
     },
 
     deleteSubmissionById: async (idSubmission: UUID) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.delete(`${baseUrl}/${idSubmission}`);
 
