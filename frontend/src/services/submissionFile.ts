@@ -3,12 +3,12 @@ import { UUID } from 'crypto';
 import { axiosInstance } from '@/utils/api';
 
 const baseUrl = "/s3-utils";
+const instance = axiosInstance();
 
 export const submissionFileApi = {
     sendFile: async (file: File, idUser: UUID) => {
-        const instance = axiosInstance();
+        
         const formData = new FormData();
-
         formData.append("file", file);
         formData.append("idSubmission", idUser);
 
@@ -22,7 +22,6 @@ export const submissionFileApi = {
     },
 
     getFiles: async () => {
-        const instance = axiosInstance();
 
         const { data } = await instance.post(`${baseUrl}/list`);
 
