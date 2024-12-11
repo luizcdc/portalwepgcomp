@@ -17,3 +17,59 @@ export const getDurationInMinutes = (dateStart: string, dateEnd: string) => {
 
     return d_final.diff(d_inicio, "minute");
 }
+
+export const formatDateEvent = (dateStart: string | undefined, dateEnd: string | undefined): string => {
+  const meses = [
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro"
+  ];
+
+  const d_Start = dayjs(dateStart);
+  const d_end = dayjs(dateEnd);
+
+  const startDate = d_Start.format('DD');
+  const endDate = d_end.format('DD');
+  const startMonth = d_Start.format('MM');
+  const endMonth = d_end.format('MM');
+  const year = d_end.format('YYYY');
+
+  if (startMonth == endMonth) {
+    return `${startDate} a ${endDate} de ${meses[parseInt(endMonth)]} de ${year}`;
+  }
+  return `${startDate} de ${meses[parseInt(startMonth)-1]} a ${endDate} de ${meses[parseInt(endMonth)-1]} de ${year}`;
+};
+
+export const formatDateUniq = (date: string | undefined): string => {
+  const meses = [
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro"
+  ];
+
+  const date_formated = dayjs(date);
+
+  const day = date_formated.format('DD');
+  const month = date_formated.format('MM');
+  const year = date_formated.format('YYYY');
+
+  return `${day} de ${meses[parseInt(month)-1]} de ${year}`;
+};
