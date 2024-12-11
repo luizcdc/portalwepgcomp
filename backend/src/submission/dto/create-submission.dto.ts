@@ -36,6 +36,7 @@ export class CreateSubmissionDto {
   phoneNumber: string;
 
   @IsUUID()
+  @IsOptional()
   proposedPresentationBlockId?: string;
 
   @IsInt({
@@ -44,10 +45,12 @@ export class CreateSubmissionDto {
   @Min(0, {
     message: 'A posição da apresentação deve ser um número não negativo.',
   })
+  @IsOptional()
   proposedPositionWithinBlock?: number;
 
   @IsEnum(SubmissionStatus)
-  status: SubmissionStatus;
+  @IsOptional()
+  status?: SubmissionStatus;
 
   @IsString()
   @IsOptional()

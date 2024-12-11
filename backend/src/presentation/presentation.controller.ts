@@ -9,6 +9,7 @@ import {
   Put,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { PresentationService } from './presentation.service';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
@@ -17,11 +18,55 @@ import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-w
 import { UpdatePresentationWithSubmissionDto } from './dto/update-presentation-with-submission.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from 'src/auth/guards/user-level.guard';
+import { PresentationResponseDto } from './dto/response-presentation.dto';
+import {
+  BookmarkedPresentationsResponseDto,
+  BookmarkPresentationRequestDto,
+  BookmarkPresentationResponseDto,
+} from './dto/bookmark-presentation.dto';
+import { Public, UserLevels } from 'src/auth/decorators/user-level.decorator';
+import { UserLevel } from '@prisma/client';
 
 @Controller('presentation')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class PresentationController {
   constructor(private readonly presentationService: PresentationService) {}
+
+  @Get('bookmarks')
+  bookmarkedPresentations(
+    @Request() req,
+  ): Promise<BookmarkedPresentationsResponseDto> {
+    const userId = req.user.userId;
+
+    return this.presentationService.bookmarkedPresentations(userId);
+  }
+
+  @Post('bookmark')
+  bookmarkPresentation(
+    @Request() req,
+    @Body() bookmarkPresentationRequestDto: BookmarkPresentationRequestDto,
+  ): Promise<BookmarkPresentationResponseDto> {
+    const userId = req.user.userId;
+
+    return this.presentationService.bookmarkPresentation(
+      bookmarkPresentationRequestDto,
+      userId,
+    );
+  }
+
+  @Delete('bookmark')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  removePresentationBookmark(
+    @Request() req,
+    @Query('presentationId') presentationId: string,
+  ): Promise<BookmarkedPresentationsResponseDto> {
+    const userId = req.user.userId;
+
+    return this.presentationService.removePresentationBookmark(
+      presentationId,
+      userId,
+    );
+  }
 
   @Post()
   create(@Body() createPresentationDto: CreatePresentationDto) {
@@ -38,8 +83,11 @@ export class PresentationController {
     );
   }
 
+  @Public()
   @Get()
-  findAll(@Param('eventEditionId') eventEditionId: string) {
+  findAll(
+    @Param('eventEditionId') eventEditionId: string,
+  ): Promise<PresentationResponseDto[]> {
     return this.presentationService.findAllByEventEditionId(eventEditionId);
   }
 
@@ -54,6 +102,7 @@ export class PresentationController {
     return this.presentationService.listUserPresentations(userId);
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.presentationService.findOne(id);

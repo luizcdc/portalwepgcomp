@@ -6,11 +6,13 @@ import {
   DefaultEmailResponseDto,
   DefaultEmailDto,
 } from './mailing.dto';
+import { Public } from 'src/auth/decorators/user-level.decorator';
 
 @Controller('mailing')
 export class MailingController {
   constructor(private readonly mailingService: MailingService) {}
 
+  @Public()
   @Post('/contact')
   async contact(
     @Body() contactDto: ContactRequestDto,

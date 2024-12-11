@@ -9,6 +9,12 @@ import { UpdatePresentationWithSubmissionDto } from './dto/update-presentation-w
 import { PresentationStatus } from '@prisma/client';
 import { SubmissionStatus } from '@prisma/client';
 import { PresentationBlockType } from '@prisma/client';
+import { PresentationResponseDto } from './dto/response-presentation.dto';
+import {
+  BookmarkedPresentationsResponseDto,
+  BookmarkPresentationRequestDto,
+  BookmarkPresentationResponseDto,
+} from './dto/bookmark-presentation.dto';
 
 @Injectable()
 export class PresentationService {
@@ -115,7 +121,6 @@ export class PresentationService {
       abstractText,
       pdfFile,
       phoneNumber,
-      submissionStatus,
       coAdvisor,
       presentationBlockId,
       positionWithinBlock,
@@ -135,7 +140,7 @@ export class PresentationService {
         phoneNumber,
         proposedPresentationBlockId: presentationBlockId,
         proposedPositionWithinBlock: positionWithinBlock,
-        status: submissionStatus,
+        status: SubmissionStatus.Confirmed,
         coAdvisor,
       });
     } catch (error) {
@@ -192,7 +197,20 @@ export class PresentationService {
       },
     });
 
-    return presentations;
+    const presentationResponseDtos: PresentationResponseDto[] = [];
+
+    for (const presentation of presentations) {
+      const presentationTime = await this.calculatePresentationStartTime(
+        presentation.presentationBlockId,
+        presentation.positionWithinBlock,
+      );
+
+      presentationResponseDtos.push(
+        new PresentationResponseDto(presentation, presentationTime),
+      );
+    }
+
+    return presentationResponseDtos;
   }
 
   async findOne(id: string) {
@@ -205,7 +223,13 @@ export class PresentationService {
 
     if (!presentation)
       throw new AppException('Apresentação não encontrada.', 404);
-    return presentation;
+
+    const presentationTime = await this.calculatePresentationStartTime(
+      presentation.presentationBlockId,
+      presentation.positionWithinBlock,
+    );
+
+    return new PresentationResponseDto(presentation, presentationTime);
   }
 
   async update(id: string, updatePresentationDto: UpdatePresentationDto) {
@@ -320,7 +344,6 @@ export class PresentationService {
       abstractText,
       pdfFile,
       phoneNumber,
-      submissionStatus,
       coAdvisor,
       presentationBlockId,
       positionWithinBlock,
@@ -348,7 +371,6 @@ export class PresentationService {
           abstractText,
           pdfFile,
           phoneNumber,
-          status: submissionStatus,
           coAdvisor,
         },
       );
@@ -363,7 +385,6 @@ export class PresentationService {
     let updatedPresentation;
     try {
       updatedPresentation = await this.update(id, {
-        submissionId: updatedSubmission.id,
         presentationBlockId,
         positionWithinBlock,
         status,
@@ -402,14 +423,20 @@ export class PresentationService {
       where: { mainAuthorId: userId },
       include: { Presentation: true },
     });
-  
+
     // Extract presentations directly from the submissions
-    const presentations = submissions.flatMap(submission => submission.Presentation);
-  
+    const presentations = submissions.flatMap(
+      (submission) => submission.Presentation,
+    );
+
     return presentations;
   }
 
-  async updatePresentationForUser(userId: string, presentationId: string, dto: UpdatePresentationDto) {
+  async updatePresentationForUser(
+    userId: string,
+    presentationId: string,
+    dto: UpdatePresentationDto,
+  ) {
     // Check if the presentation belongs to a submission authored by the user
     const presentation = await this.prismaClient.presentation.findFirst({
       where: {
@@ -417,15 +444,159 @@ export class PresentationService {
         submission: { mainAuthorId: userId },
       },
     });
-  
+
     if (!presentation) {
-      throw new AppException('Apresentação não encontrada ou não pertence ao usuário.', 404);
+      throw new AppException(
+        'Apresentação não encontrada ou não pertence ao usuário.',
+        404,
+      );
     }
-  
+
     // Update the presentation
     return this.prismaClient.presentation.update({
       where: { id: presentationId },
       data: dto,
     });
+  }
+
+  private async calculatePresentationStartTime(
+    presentationBlockId: string,
+    positionWithinBlock: number,
+  ): Promise<Date> {
+    const presentationBlock =
+      await this.prismaClient.presentationBlock.findUnique({
+        where: { id: presentationBlockId },
+      });
+
+    if (!presentationBlock)
+      throw new AppException('Bloco de apresentação não encontrado.', 404);
+
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: { id: presentationBlock.eventEditionId },
+    });
+
+    if (!eventEdition) throw new AppException('Evento não encontrado.', 404);
+
+    const presentationDuration = eventEdition.presentationDuration;
+    const startTime = presentationBlock.startTime;
+
+    const presentationTime = new Date(startTime);
+    presentationTime.setMinutes(
+      presentationTime.getMinutes() +
+        positionWithinBlock * presentationDuration,
+    );
+
+    return presentationTime;
+  }
+
+  async bookmarkPresentation(
+    bookmarkPresentationRequestDto: BookmarkPresentationRequestDto,
+    userId: string,
+  ): Promise<BookmarkPresentationResponseDto> {
+    const { presentationId } = bookmarkPresentationRequestDto;
+
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new AppException('Usuário não encontrado.', 404);
+    }
+
+    const presentation = await this.prismaClient.presentation.findUnique({
+      where: {
+        id: presentationId,
+      },
+    });
+
+    if (!presentation) {
+      throw new AppException('Apresentação não encontrada.', 404);
+    }
+
+    const updatedUser = await this.prismaClient.userAccount.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        bookmarkedPresentations: {
+          connect: {
+            id: presentation.id,
+          },
+        },
+      },
+      include: {
+        bookmarkedPresentations: true,
+      },
+    });
+
+    return new BookmarkPresentationResponseDto(
+      updatedUser.bookmarkedPresentations,
+    );
+  }
+
+  async bookmarkedPresentations(
+    userId: string,
+  ): Promise<BookmarkedPresentationsResponseDto> {
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        bookmarkedPresentations: true,
+      },
+    });
+
+    if (!user) {
+      throw new AppException('Usuário não encontrado.', 404);
+    }
+
+    return new BookmarkedPresentationsResponseDto(user.bookmarkedPresentations);
+  }
+
+  async removePresentationBookmark(
+    presentationId: string,
+    userId: string,
+  ): Promise<BookmarkedPresentationsResponseDto> {
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new AppException('Usuário não encontrado.', 404);
+    }
+
+    const presentation = await this.prismaClient.presentation.findUnique({
+      where: {
+        id: presentationId,
+      },
+    });
+
+    if (!presentation) {
+      throw new AppException('Apresentação não encontrada.', 404);
+    }
+
+    const updatedUser = await this.prismaClient.userAccount.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        bookmarkedPresentations: {
+          disconnect: {
+            id: presentation.id,
+          },
+        },
+      },
+      include: {
+        bookmarkedPresentations: true,
+      },
+    });
+
+    return new BookmarkedPresentationsResponseDto(
+      updatedUser.bookmarkedPresentations,
+    );
   }
 }

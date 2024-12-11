@@ -1,11 +1,9 @@
 .carousel-component{
+    .lead {
+        width: 100%;
+    }
     p{
-        text-align: justify;
-
-        @media (max-width: 576px) {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
+        text-align: center;
     }
 
     .title{
@@ -14,21 +12,13 @@
     }
 
     .indicators-content{
-        bottom: 35%;
         z-index: 3;
+        position: relative;
 
         .indicators-buttons{
             border-radius: 50%;
             width: 15px; 
             height: 15px;
-        }
-
-        @media (max-width: 2800px) {          
-            bottom: 30%;     
-        }
-          
-        @media (max-width: 576px) {          
-            bottom: 20%;     
         }
     }
 
@@ -69,22 +59,9 @@
             display: flex;
             flex-direction: column;
             margin-left: 3rem;
-
-            @media (max-width: 900px) {
-                margin-left: 0;
-
-                p:last-of-type{
-                    display: none;
-                }
-             }
-        }
-
-        @media (max-width: 576px) {
-           flex-direction: column; 
-
-           .concept-content{
-             display: none;
-           }
+            p {
+                text-align: justify;
+            }
         }
     }
     
@@ -104,25 +81,45 @@
         justify-content: center;
         color: white;
         position: relative;
-        padding: 1rem 1rem 4rem;
+        padding: 1rem 2rem 4rem;
 
         .image-background{
             z-index: -1;
         }
+    }
+}
 
-        @media (max-width: 2000px) {          
-            height: 70vh;   
-        }
+.carousel-indicators {
+    margin-top: 1rem;
+}
+
+@media (max-width:480px)  {
+    .carousel-slide .carousel-slide-content {
+        justify-content: flex-start !important;
     }
 
+    .carousel-indicators {
+        margin-top: .5rem;
+    }
 
-      @media (max-width: 2800px) { 
-            .shaddow-span  {
-            height: 250px;
-            bottom: 230px;
-            right: 165px;
-            border-radius: 60px;
+    .carousel-component p {
+        text-align: left;
+        
+        font-size: 1rem;
+    }
+
+    .slide-2-content {
+        max-width: 100% !important; 
+
+        .concept-content {
+            margin-top: 0px !important;
+        }
+
+        .info-subtitles{
+            p {
+                text-align: left !important;
             }
         }
+    }
 }
 

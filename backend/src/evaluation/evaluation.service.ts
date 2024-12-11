@@ -1,56 +1,120 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 import { AppException } from 'src/exceptions/app.exception';
-import { CreateEvaluationsDto } from './dto/create-evaluation.dto';
 
 @Injectable()
 export class EvaluationService {
-    constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async registerEvaluation(
-    createEvaluationDto: CreateEvaluationsDto
-  ) {
-    // Verificar se a apresentação existe
-    const presentation = await this.prisma.submission.findUnique({
-      where: { id: createEvaluationDto.submissionId  },
-    });
-    if (!presentation) {
-      throw new AppException("Apresentação não encontrada!", 404)//Error('Presentation not found');
-    }
+  // Create or update evaluation
+  async create(evaluations: CreateEvaluationDto[]) {
+    const results = [];
 
-    // Verificar se o usuário existe
-    const user = await this.prisma.userAccount.findUnique({
-      where: { id: createEvaluationDto.userId },
-    });
-    if (!user) {
-      throw new AppException("Usuário não encontrado!", 404)//Error('User not found');
-    }
-    
-    try {
-      const results = await this.prisma.$transaction(async (prisma) => {
-        const evaluations = [];
-        for (const criteriaGrade of createEvaluationDto.grades) {
-          const evaluation = await prisma.evaluation.create({
-            data: {
-              userId: createEvaluationDto.userId,
-              submissionId: createEvaluationDto.submissionId,
-              comments: createEvaluationDto.comments,
-              name: createEvaluationDto.name,
-              email: createEvaluationDto.email,
-              evaluationCriteriaId: criteriaGrade.evaluationCriteriaId,
-              score: criteriaGrade.score,
-            },
-          });
-          evaluations.push(evaluation);
-        }
-        return evaluations;
+    for (const evaluation of evaluations) {
+      // Verify if presentation exists
+      const presentation = await this.prisma.submission.findUnique({
+        where: { id: evaluation.submissionId },
       });
-      return results;
-    } catch (error) {
+      if (!presentation) {
+        throw new AppException('Apresentação não encontrada.', 404);
+      }
+
+      // Verify if user exists
+      const user = await this.prisma.userAccount.findUnique({
+        where: { id: evaluation.userId },
+      });
+      if (!user) {
+        throw new AppException('Usuário não encontrado.', 404);
+      }
+
+      const existingEvaluation = await this.prisma.evaluation.findFirst({
+        where: {
+          userId: evaluation.userId,
+          submissionId: evaluation.submissionId,
+          evaluationCriteriaId: evaluation.evaluationCriteriaId,
+        },
+      });
+
+      if (existingEvaluation) {
+        // Update existing evaluations
+        const updatedEvaluation = await this.prisma.evaluation.update({
+          where: { id: existingEvaluation.id },
+          data: { score: evaluation.score, comments: evaluation.comments },
+        });
+        results.push(updatedEvaluation);
+      }
+    }
+    // Filter only evaluations that doesn't exists, for a bulk creation
+    const newEvaluations = evaluations.filter(
+      (evaluation) =>
+        !results.some(
+          (res) =>
+            res.userId === evaluation.userId &&
+            res.submissionId === evaluation.submissionId &&
+            res.evaluationCriteriaId === evaluation.evaluationCriteriaId,
+        ),
+    );
+
+    if (newEvaluations.length > 0) {
+      // Creating new evaluations in simple batch
+      await this.prisma.evaluation.createMany({
+        data: newEvaluations,
+      });
+      results.push(...newEvaluations);
+    }
+
+    return results;
+  }
+  // List all evaluations
+  async findAll() {
+    return this.prisma.evaluation.findMany({
+      include: {
+        user: true,
+        evaluationCriteria: true,
+        submission: true,
+      },
+    });
+  }
+
+  // List all evaluations for a specific user
+  async findOne(userId: string) {
+    const evaluations = await this.prisma.evaluation.findMany({
+      where: { userId },
+      include: {
+        evaluationCriteria: true,
+        submission: true,
+      },
+    });
+    if (!evaluations) {
       throw new AppException(
-        'Erro ao registrar avaliações. Tente novamente mais tarde.',
-        500,
+        `Nenhuma avaliação encontrada para o usuário ${userId}`,
+        404,
       );
     }
+    return evaluations;
+  }
+
+  // Calculation of the final grade for a specific submission (5 evaluations for 1 submission made by 1 user)
+  async calculateFinalGrade(submissionId: string) {
+    const evaluations = await this.prisma.evaluation.findMany({
+      where: { submissionId },
+      select: { score: true },
+    });
+
+    if (evaluations.length === 0) {
+      throw new AppException(
+        `Nenhuma avaliação encontrada para o usuário ${submissionId}`,
+        404,
+      );
+    }
+
+    const totalScore = evaluations.reduce(
+      (sum, evaluation) => sum + evaluation.score,
+      0,
+    );
+    const finalGrade = totalScore / evaluations.length;
+
+    return finalGrade;
   }
 }

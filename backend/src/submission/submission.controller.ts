@@ -12,6 +12,7 @@ import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { ResponseSubmissionDto } from './dto/response-submission.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('submission')
 export class SubmissionController {
@@ -23,22 +24,26 @@ export class SubmissionController {
   }
 
   @Get()
+  @ApiQuery({ name: 'eventEditionId', required: true, type: String })
+  @ApiQuery({ name: 'withoutPresentation', required: false, type: Boolean })
+  @ApiQuery({
+    name: 'orderByProposedPresentation',
+    required: false,
+    type: Boolean,
+  })
+  @ApiQuery({ name: 'showConfirmedOnly', required: false, type: Boolean })
   findAll(
     @Query('eventEditionId') eventEditionId: string,
-    @Query('withoutPresentation') withoutPresentation: string = 'false',
+    @Query('withoutPresentation') withoutPresentation: boolean = false,
     @Query('orderByProposedPresentation')
-    orderByProposedPresentation: string = 'false',
-    @Query('showConfirmedOnly') showConfirmedOnly: string = 'false',
+    orderByProposedPresentation: boolean = false,
+    @Query('showConfirmedOnly') showConfirmedOnly: boolean = false,
   ): Promise<ResponseSubmissionDto[]> {
-    const withoutPresentationFlag = withoutPresentation === 'true'; // Convert to boolean
-    const orderByFlag = orderByProposedPresentation === 'true';
-    const showConfirmedOnlyFlag = showConfirmedOnly === 'true';
-
     return this.submissionService.findAll(
       eventEditionId,
-      withoutPresentationFlag,
-      orderByFlag,
-      showConfirmedOnlyFlag,
+      withoutPresentation,
+      orderByProposedPresentation,
+      showConfirmedOnly,
     );
   }
 
