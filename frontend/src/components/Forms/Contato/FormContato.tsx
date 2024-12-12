@@ -63,8 +63,8 @@ export function FormContato() {
       onSubmit={handleSubmit(handleFormContato)}
     >
       <div className="row mb-3">
-        <div className="col-6">
-          <label className="form-label form-title fw-semibold">Nome:</label>
+        <div className="col-12 col-sm-6">
+          <label className="form-label fs-5 text-white fw-semibold">Nome:</label>
           <input
             type="nome"
             className="form-control input-title bg-transparent border-1 text-white shadow-none"
@@ -76,8 +76,8 @@ export function FormContato() {
           <p className="text-warning error-message">{errors.name?.message}</p>
         </div>
 
-        <div className="col-6">
-          <label className="form-label form-title fw-semibold">E-mail:</label>
+        <div className="col-12 col-sm-6">
+          <label className="form-label fs-5 text-white fw-semibold">E-mail:</label>
           <input
             type="email"
             className="form-control input-title bg-transparent border-1 text-white shadow-none"
@@ -91,7 +91,7 @@ export function FormContato() {
       </div>
 
       <div>
-        <label className="form-label form-title fw-semibold">Mensagem:</label>
+        <label className="form-label fs-5 text-white fw-semibold">Mensagem:</label>
         <textarea
           className="form-control input-title bg-transparent border-1 border-white text-white shadow-none"
           placeholder="Digite sua mensagem"

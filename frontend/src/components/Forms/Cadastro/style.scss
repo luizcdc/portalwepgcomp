@@ -1,7 +1,3 @@
-.form-title {
-    font-size: 1.25rem;
-}
-
 .input-title {
     font-size: 0.9rem;
 }
@@ -28,4 +24,14 @@ input::placeholder {
     &:hover {
         background-color: #FFA90F;
     }
+}
+
+.password-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+.eye{
+    cursor: pointer;
 }

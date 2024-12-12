@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  Delete,
+} from '@nestjs/common';
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
-import { CoAuthorDto } from './dto/co-author.dto';
+import { ResponseSubmissionDto } from './dto/response-submission.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('submission')
 export class SubmissionController {
@@ -14,8 +24,27 @@ export class SubmissionController {
   }
 
   @Get()
-  findAll() {
-    return this.submissionService.findAll();
+  @ApiQuery({ name: 'eventEditionId', required: true, type: String })
+  @ApiQuery({ name: 'withoutPresentation', required: false, type: Boolean })
+  @ApiQuery({
+    name: 'orderByProposedPresentation',
+    required: false,
+    type: Boolean,
+  })
+  @ApiQuery({ name: 'showConfirmedOnly', required: false, type: Boolean })
+  findAll(
+    @Query('eventEditionId') eventEditionId: string,
+    @Query('withoutPresentation') withoutPresentation: boolean = false,
+    @Query('orderByProposedPresentation')
+    orderByProposedPresentation: boolean = false,
+    @Query('showConfirmedOnly') showConfirmedOnly: boolean = false,
+  ): Promise<ResponseSubmissionDto[]> {
+    return this.submissionService.findAll(
+      eventEditionId,
+      withoutPresentation,
+      orderByProposedPresentation,
+      showConfirmedOnly,
+    );
   }
 
   @Get(':id')
@@ -24,21 +53,15 @@ export class SubmissionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubmissionDto: UpdateSubmissionDto) {
-    return this.submissionService.update(id, updateSubmissionDto);
-  }
-
-  @Patch(':submissionId/co-authors')
-  async updateCoAuthors(
-    @Param('submissionId') submissionId: string,
-    @Body() coAuthors: CoAuthorDto[],
+  update(
+    @Param('id') id: string,
+    @Body() updateSubmissionDto: UpdateSubmissionDto,
   ) {
-    return await this.submissionService.updateCoAuthors(submissionId, coAuthors);
+    return this.submissionService.update(id, updateSubmissionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.submissionService.remove(id);
   }
-
 }

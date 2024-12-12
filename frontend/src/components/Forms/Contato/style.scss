@@ -1,8 +1,4 @@
-.form-contato{
-    .form-title {
-        font-size: 1.25rem;
-    }
-    
+.form-contato{    
     .input-title {
         font-size: 0.875rem;
     }
@@ -23,6 +19,12 @@
     
         &:hover {
             color: #054B75 !important;
+        }
+    }
+
+    @media (max-width:900px) {
+        button {
+            width: auto;
         }
     }
 }

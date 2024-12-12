@@ -3,13 +3,15 @@ import {
   IsString,
   IsUUID,
   IsEnum,
-  IsISO8601,
   IsInt,
   Min,
   Max,
   MinLength,
+  IsNotEmpty,
+  isISO8601,
 } from 'class-validator';
-// import annotations from swagger
+
+import { Transform } from 'class-transformer';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -45,13 +47,15 @@ export class CreatePresentationBlockDto {
   })
   speakerName?: string;
 
-  @IsISO8601(
-    {},
-    {
-      message:
-        'A data de início da sessão deve estar no formato ISO 8601 (yyyy-mm-ddThh:mm:ss).',
-    },
-  )
+  @IsNotEmpty()
+  @Transform(({ value }) => {
+    if (!isISO8601(value)) {
+      throw new Error(
+        'A data de início da sessão deve ser uma data válida no formato ISO8601.',
+      );
+    }
+    return new Date(value);
+  })
   startTime: Date;
 
   @IsInt({
@@ -61,8 +65,29 @@ export class CreatePresentationBlockDto {
   @Min(5, {
     message: 'A sessão deve ter no mínimo 5 minutos de duração',
   })
+  @IsOptional()
   @Max(720, {
     message: 'A sessão não pode durar mais que 12 horas',
   })
-  duration: number;
+  duration?: number;
+
+  @IsOptional()
+  @Min(1, {
+    message: 'O número de apresentações deve ser no mínimo 1.',
+  })
+  numPresentations?: number;
+
+  @IsOptional()
+  @IsUUID('4', {
+    each: true,
+    message: 'O ID de um dos avaliadores informados é inválido.',
+  })
+  panelists?: string[];
+
+  @IsOptional()
+  @IsUUID('4', {
+    each: true,
+    message: 'O ID de uma das apresentações informadas é inválido.',
+  })
+  presentations?: string[];
 }

@@ -10,13 +10,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { EventEditionService } from './event-edition.service';
-import { CreateEventEditionDto } from './dto/create-event-edition.dto';
-import { UpdateEventEditionDto } from './dto/upddate-event-edition.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UserLevelGuard } from 'src/auth/guards/user-level.guard';
+import {
+  CreateEventEditionDto,
+  CreateFromEventEditionFormDto,
+} from './dto/create-event-edition.dto';
+import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { UserLevel } from '@prisma/client';
-import { UserLevels } from 'src/auth/decorators/user-level.decorator';
+import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { EventEditionResponseDto } from './dto/event-edition-response';
 
 @ApiBearerAuth()
 @Controller('event')
@@ -29,12 +33,23 @@ export class EventEditionController {
     return await this.eventEditionService.create(createEventDto);
   }
 
+  @Post('/create-from-event-edition-form')
+  async createFromEventEditionForm(
+    @Body()
+    createFromEventEditionFormDto: CreateFromEventEditionFormDto,
+  ): Promise<EventEditionResponseDto> {
+    return await this.eventEditionService.createFromEventEditionForm(
+      createFromEventEditionFormDto,
+    );
+  }
+
   @Get()
   @UserLevels(UserLevel.Superadmin)
   async getAll() {
     return await this.eventEditionService.getAll();
   }
 
+  @Public()
   @Get(':id')
   async getById(@Param('id') id: string) {
     return await this.eventEditionService.getById(id);

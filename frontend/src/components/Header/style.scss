@@ -1,3 +1,22 @@
 ul {
     gap: 0.9rem;
 }
+
+.navbar-image {
+    width: 200px !important;
+}
+.navbar-menu-itens {
+    margin-right: 3rem;
+}
+
+@media (max-width:480px)  {
+    .navbar-menu-itens {
+        margin-right: 0 !important;
+    }
+    .vr {
+        display: none;
+    }
+    .container-fluid {
+        justify-content: center !important;
+    }
+}

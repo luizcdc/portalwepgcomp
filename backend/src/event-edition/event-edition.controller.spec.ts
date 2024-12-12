@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEditionController } from './event-edition.controller';
 import { EventEditionService } from './event-edition.service';
-import { CreateEventEditionDto } from './dto/create-event-edition.dto';
-import { UpdateEventEditionDto } from './dto/upddate-event-edition.dto';
+import {
+  CreateEventEditionDto,
+  CreateFromEventEditionFormDto,
+} from './dto/create-event-edition.dto';
+import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 
 describe('EventEditionController', () => {
@@ -11,6 +14,7 @@ describe('EventEditionController', () => {
 
   const mockEventEditionService = {
     create: jest.fn(),
+    createFromEventEditionForm: jest.fn(),
     getAll: jest.fn(),
     getById: jest.fn(),
     update: jest.fn(),
@@ -43,7 +47,6 @@ describe('EventEditionController', () => {
       Object.assign(createDto, {
         name: 'Event 1',
         description: 'Description 1',
-        url: 'https://example.com',
       });
       const createdEvent = new EventEditionResponseDto({
         id: '1',
@@ -53,6 +56,28 @@ describe('EventEditionController', () => {
       jest.spyOn(service, 'create').mockResolvedValue(createdEvent);
 
       const result = await controller.create(createDto);
+      expect(result).toEqual(createdEvent);
+      expect(service.create).toHaveBeenCalledWith(createDto);
+    });
+  });
+
+  describe('createFromEventEditionForm', () => {
+    it('should call service.createFromEventEditionForm with the correct arguments', async () => {
+      const createDto = new CreateFromEventEditionFormDto();
+      Object.assign(createDto, {
+        name: 'Event 1',
+        description: 'Description 1',
+      });
+      const createdEvent = new EventEditionResponseDto({
+        id: '1',
+        ...createDto,
+      });
+
+      jest
+        .spyOn(service, 'createFromEventEditionForm')
+        .mockResolvedValue(createdEvent);
+
+      const result = await controller.createFromEventEditionForm(createDto);
       expect(result).toEqual(createdEvent);
       expect(service.create).toHaveBeenCalledWith(createDto);
     });

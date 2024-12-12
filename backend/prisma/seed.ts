@@ -31,7 +31,6 @@ async function main() {
       description: 'An event for doctoral students to present their research.',
       callForPapersText: 'Submit your papers for review and presentation.',
       partnersText: 'Supported by University of XYZ.',
-      url: 'http://example.com',
       location: 'New York',
       startDate: new Date('2024-05-01'),
       endDate: new Date('2024-05-03'),
@@ -139,15 +138,6 @@ async function main() {
       presentationBlockId: presentationBlock.id,
       positionWithinBlock: 1,
       status: PresentationStatus.ToPresent,
-    },
-  });
-
-  // Seed for CoAuthor
-  await prisma.coAuthor.create({
-    data: {
-      submisionId: submission.id,
-      name: 'Jane Doe',
-      institution: 'University of ABC',
     },
   });
 
