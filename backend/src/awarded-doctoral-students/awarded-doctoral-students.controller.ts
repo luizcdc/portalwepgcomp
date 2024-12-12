@@ -1,6 +1,8 @@
 import { Controller, Get, Param, Query, ParseIntPipe } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AwardedDoctoralStudentsService } from './awarded-doctoral-students.service';
+import { TopPanelistRankingResponseDto } from './dto/reponse-awarded-doctoral-students.dto';
+import { TopAudienceRankingResponseDto } from './dto/reponse-awarded-doctoral-students.dto';
 
 @Controller('awarded-doctoral-students')
 export class AwardedDoctoralStudentsController {
@@ -28,7 +30,7 @@ export class AwardedDoctoralStudentsController {
   async getTopPanelistsRanking(
     @Param('eventEditionId') eventEditionId: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
-  ) {
+  ): Promise<TopPanelistRankingResponseDto> {
     return this.awardedDoctoralStudentsService.findTopPanelistsRanking(
       eventEditionId,
       limit,
@@ -39,7 +41,7 @@ export class AwardedDoctoralStudentsController {
   async getTopAudienceRanking(
     @Param('eventEditionId') eventEditionId: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
-  ) {
+  ): Promise<TopAudienceRankingResponseDto> {
     return this.awardedDoctoralStudentsService.findTopAudienceRanking(
       eventEditionId,
       limit,

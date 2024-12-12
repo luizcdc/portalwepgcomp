@@ -11,7 +11,9 @@ describe('PanelistAwardsController', () => {
       providers: [AwardedPanelistsService],
     }).compile();
 
-    controller = module.get<AwardedPanelistsController>(AwardedPanelistsController);
+    controller = module.get<AwardedPanelistsController>(
+      AwardedPanelistsController,
+    );
   });
 
   it('should be defined', () => {

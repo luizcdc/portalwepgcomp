@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { AwardedPanelistsService } from './awarded-panelists.service';
 import { CreateAwardedPanelistsDto } from './dto/create-awarded-panelists.dto';
+import { ResponsePanelistUserDto } from './dto/response-panelist-users.dto';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 
 @Controller('panelist-awards')
@@ -28,12 +29,24 @@ export class AwardedPanelistsController {
   }
 
   @Get(':eventEditionId')
-  async findAll(@Param('eventEditionId') eventEditionId: string) {
+  @ApiOperation({
+    summary: 'Find all awarded panelists',
+    description: 'Find all awarded panelists for a specific event edition',
+  })
+  async findAll(
+    @Param('eventEditionId') eventEditionId: string,
+  ): Promise<ResponsePanelistUserDto[]> {
     return this.awardedPanelistsService.findAll(eventEditionId);
   }
 
   @Get(':eventEditionId/panelists')
-  async findAllPanelists(@Param('eventEditionId') eventEditionId: string) {
+  @ApiOperation({
+    summary: 'Find all panelists',
+    description: 'Find all panelists for a specific event edition',
+  })
+  async findAllPanelists(
+    @Param('eventEditionId') eventEditionId: string,
+  ): Promise<ResponsePanelistUserDto[]> {
     return this.awardedPanelistsService.findAllPanelists(eventEditionId);
   }
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PanelistStatus } from '@prisma/client';
-import { GetPanelistUsersDto } from './dto/get-panelist-users.dto';
 import { CreateAwardedPanelistsDto } from './dto/create-awarded-panelists.dto';
+import { ResponsePanelistUserDto } from './dto/response-panelist-users.dto';
 import { AppException } from '../exceptions/app.exception';
 
 @Injectable()
@@ -40,7 +40,7 @@ export class AwardedPanelistsService {
 
   async findAllPanelists(
     eventEditionId: string,
-  ): Promise<GetPanelistUsersDto[]> {
+  ): Promise<ResponsePanelistUserDto[]> {
     const panelists = await this.prismaClient.panelist.findMany({
       where: {
         presentationBlock: {
@@ -54,29 +54,24 @@ export class AwardedPanelistsService {
       distinct: ['userId'],
     });
 
-    return panelists.map((panelist) => {
-      const { user } = panelist;
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        registrationNumber: user.registrationNumber,
-        photoFilePath: user.photoFilePath,
-        profile: user.profile,
-        level: user.level,
-      };
-    });
+    return panelists.map(
+      (panelist) => new ResponsePanelistUserDto(panelist.user),
+    );
   }
 
-  async findAll(eventEditionId: string) {
-    return this.prismaClient.awardedPanelist.findMany({
+  async findAll(eventEditionId: string): Promise<ResponsePanelistUserDto[]> {
+    const awardedPanelists = await this.prismaClient.awardedPanelist.findMany({
       where: {
-        eventEditionId: eventEditionId,
+        eventEditionId,
       },
       include: {
         user: true,
       },
     });
+
+    return awardedPanelists.map(
+      (panelist) => new ResponsePanelistUserDto(panelist.user),
+    );
   }
 
   async remove(eventEditionId: string, userId: string) {
