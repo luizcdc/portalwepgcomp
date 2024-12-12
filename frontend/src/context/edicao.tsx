@@ -50,7 +50,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         setEdicoesList([]);
         setEdicao(null);
         console.log("erro ao listar");
-        alert("Erro ao tentar listar!");
       })
       .finally(() => {
         setLoadingEdicoesList(false);
@@ -69,7 +68,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         console.log(err);
         setEdicao(null);
         console.log("erro ao buscar");
-        alert("Erro ao tentar buscar!");
       })
       .finally(() => {
         setLoadingEdicao(false);
@@ -136,7 +134,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         console.log(err);
         setEdicao(null);
         console.log("erro ao atualizar");
-        alert("Erro ao tentar atualizar!");
       })
       .finally(() => {
         setLoadingEdicao(false);
@@ -156,7 +153,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         console.log(err);
         setEdicao(null);
         console.log("erro ao deletar");
-        alert("Erro ao tentar deletar!");
       })
       .finally(() => {
         setLoadingEdicao(false);

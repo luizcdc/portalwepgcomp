@@ -7,7 +7,6 @@ import { z } from "zod";
 import { addDays } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { options } from "./../../../mocks/Forms";
 import { formatOptions } from "@/utils/formatOptions";
 import { useEdicao } from "@/hooks/useEdicao";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
@@ -58,15 +57,13 @@ const formEdicaoSchema = z.object({
     }),
 
   coordenador: z
-    .array(
-      z.object({
-        label: z.string(),
-        value: z.string({
-          invalid_type_error: "Campo inválido!",
-        }),
-      })
-    )
-    .optional(),
+    .string({
+      required_error: "Local do Evento é obrigatório!",
+      invalid_type_error: "Campo inválido!",
+    })
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
+      message: "O campo deve conter apenas letras.",
+    }),
 
   comissao: z
     .array(
@@ -112,20 +109,8 @@ const formEdicaoSchema = z.object({
     )
     .optional(),
 
-  estudantes: z
-    .array(
-      z.object({
-        label: z.string(),
-        value: z.string({
-          invalid_type_error: "Campo inválido!",
-        }),
-      })
-    )
-    .optional(),
-
-  salas: z.string().optional(),
-  sessoes: z.string().optional(),
-  duracao: z.string().optional(),
+  sessoes: z.number().optional(),
+  duracao: z.number().optional(),
   submissao: z
     .string({
       required_error: "O texto para submissão é obrigatório!",
@@ -191,8 +176,6 @@ export function FormEdicao() {
       apoio,
       apoioAd,
       comunicacao,
-      estudantes,
-      salas,
       sessoes,
       duracao,
       submissao,
@@ -210,9 +193,6 @@ export function FormEdicao() {
       !apoio ||
       !apoioAd ||
       !comunicacao ||
-      !estudantes ||
-      !salas ||
-      !sessoes ||
       !duracao ||
       !submissao ||
       !limite
@@ -224,15 +204,13 @@ export function FormEdicao() {
       name: titulo,
       description: descricao,
       location: local,
-      coordinatorId: coordenador?.map((v) => v.value) || [],
-      comissao: comissao?.map((v) => v.value) || [],
-      apoio: apoio?.map((v) => v.value) || [],
-      apoioAd: apoioAd?.map((v) => v.value) || [],
-      comunicacao: comunicacao?.map((v) => v.value) || [],
-      estudantes: estudantes?.map((v) => v.value) || [],
+      coordinatorId: coordenador,
+      organizingCommitteeIds: comissao?.map((v) => v.value) || [],
+      itSupportIds: apoio?.map((v) => v.value) || [],
+      administrativeSupportIds: apoioAd?.map((v) => v.value) || [],
+      communicationIds: comunicacao?.map((v) => v.value) || [],
       presentationDuration: duracao,
-      salas: salas,
-      sessoes: sessoes,
+      presentationPerPresentationBlock: sessoes,
       callForPapersText: submissao,
       startDate: inicio,
       submissionDeadline: limite,
@@ -248,52 +226,54 @@ export function FormEdicao() {
   };
 
   return (
-    <form className="row g-3 w-75" onSubmit={handleSubmit(handleFormEdicao)}>
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
+    <form className='row g-3 w-75' onSubmit={handleSubmit(handleFormEdicao)}>
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
           Nome do evento
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className='text-danger ms-1 form-title'>*</span>
         </label>
         <input
-          type="text"
-          className="form-control input-title"
-          id="nomeEvento"
-          placeholder="WEPGCOMP 202.."
+          type='text'
+          className='form-control input-title'
+          id='nomeEvento'
+          placeholder='WEPGCOMP 202..'
           {...register("titulo")}
         />
-        <p className="text-danger error-message">{errors.titulo?.message}</p>
+        <p className='text-danger error-message'>{errors.titulo?.message}</p>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
           Descrição do evento
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className='text-danger ms-1 form-title'>*</span>
         </label>
         <input
-          type="text"
-          className="form-control input-title"
-          id="descricao"
-          placeholder="Sobre o WEPGCOMP..."
+          type='text'
+          className='form-control input-title'
+          id='descricao'
+          placeholder='Sobre o WEPGCOMP...'
           {...register("descricao")}
         />
-        <p className="text-danger error-message">{errors.descricao?.message}</p>
+        <p className='text-danger error-message'>{errors.descricao?.message}</p>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
           Data e horário de início e fim do evento
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className='text-danger ms-1 form-title'>*</span>
         </label>
-        <div className="d-flex flex-row justify-content-start gap-2 ">
+        <div className='d-flex flex-row justify-content-start gap-2 '>
           <Controller
-            name="inicio"
+            name='inicio'
             control={control}
-            render={() => (
+            render={({ field }) => (
               <DatePicker
-                id="ed-inicio-data"
+                id='ed-inicio-data'
+                onChange={(date) => field.onChange(date?.toISOString() || null)}
+                selected={field.value ? new Date(field.value) : null}
                 showIcon
-                className="form-control datepicker"
-                dateFormat="dd/MM/yyyy"
+                className='form-control datepicker'
+                dateFormat='dd/MM/yyyy'
                 minDate={new Date()}
                 maxDate={addDays(new Date(), 3)}
                 placeholderText={formApresentacoesFields.inicio.placeholder}
@@ -302,17 +282,19 @@ export function FormEdicao() {
               />
             )}
           />
-          <p className="text-danger error-message">{errors.inicio?.message}</p>
+          <p className='text-danger error-message'>{errors.inicio?.message}</p>
 
           <Controller
-            name="final"
+            name='final'
             control={control}
-            render={() => (
+            render={({ field }) => (
               <DatePicker
-                id="ed-final-data"
+                id='ed-final-data'
+                onChange={(date) => field.onChange(date?.toISOString() || null)}
+                selected={field.value ? new Date(field.value) : null}
                 showIcon
-                className="form-control datepicker"
-                dateFormat="dd/MM/yyyy"
+                className='form-control datepicker'
+                dateFormat='dd/MM/yyyy'
                 minDate={new Date()}
                 maxDate={addDays(new Date(), 3)}
                 placeholderText={formApresentacoesFields.inicio.placeholder}
@@ -321,276 +303,212 @@ export function FormEdicao() {
               />
             )}
           />
-          <p className="text-danger error-message">{errors.final?.message}</p>
+          <p className='text-danger error-message'>{errors.final?.message}</p>
         </div>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label  form-title">
+      <div className='col-12 mb-1'>
+        <label className='form-label  form-title'>
           Local do evento
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className='text-danger ms-1 form-title'>*</span>
         </label>
         <input
-          type="text"
-          className="form-control input-title"
-          id="local"
-          placeholder="Digite o local do evento"
+          type='text'
+          className='form-control input-title'
+          id='local'
+          placeholder='Digite o local do evento'
           {...register("local")}
         />
-        <p className="text-danger error-message">{errors.local?.message}</p>
+        <p className='text-danger error-message'>{errors.local?.message}</p>
       </div>
 
-      <div className="d-flex flex-column justify-content-center">
-        <div className="fs-4"> Comissão Organizadora </div>
-        <div className="col-12 mb-1">
-          <label className="form-label  form-title">
+      <div className='d-flex flex-column justify-content-center'>
+        <div className='fs-4'> Comissão Organizadora </div>
+        <div className='col-12 mb-1'>
+          <label className='form-label  form-title'>
             Coordenador(a) geral
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className='text-danger ms-1 form-title'>*</span>
           </label>
-          <Controller
-            name="coordenador"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                id="ed-select"
-                isMulti
-                options={avaliadoresOptions}
-                placeholder="Escolha o(s) usuário(s)"
-                className="basic-multi-select"
-                classNamePrefix="select"
-              />
-            )}
+          <input
+            type='text'
+            className='form-control input-title'
+            id='coordenador"'
+            placeholder='Digite o local do evento'
+            {...register("coordenador")}
           />
-
-          <p className="text-danger error-message">
+          <p className='text-danger error-message'>
             {errors.coordenador?.message}
           </p>
         </div>
-        <div className="col-12 mb-1">
-          <label className="form-label  form-title">
+        <div className='col-12 mb-1'>
+          <label className='form-label  form-title'>
             Comissão organizadora
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className='text-danger ms-1 form-title'>*</span>
           </label>
           <Controller
-            name="comissao"
+            name='comissao'
             control={control}
             render={() => (
               <Select
-                id="ed-select"
+                id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                placeholder="Escolha o(s) usuário(s)"
-                className="basic-multi-select"
-                classNamePrefix="select"
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
               />
             )}
           />
-          <p className="text-danger error-message">
+          <p className='text-danger error-message'>
             {errors.comissao?.message}
           </p>
         </div>
-        <div className="col-12 mb-1">
-          <label className="form-label  form-title">
+        <div className='col-12 mb-1'>
+          <label className='form-label  form-title'>
             Apoio TI
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className='text-danger ms-1 form-title'>*</span>
           </label>
           <Controller
-            name="apoio"
+            name='apoio'
             control={control}
             render={() => (
               <Select
-                id="ed-select"
+                id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                placeholder="Escolha o(s) usuário(s)"
-                className="basic-multi-select"
-                classNamePrefix="select"
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
               />
             )}
           />
 
-          <p className="text-danger error-message">{errors.apoio?.message}</p>
+          <p className='text-danger error-message'>{errors.apoio?.message}</p>
         </div>
 
-        <div className="col-12 mb-1">
-          <label className="form-label  form-title">
+        <div className='col-12 mb-1'>
+          <label className='form-label  form-title'>
             Apoio Administrativo
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className='text-danger ms-1 form-title'>*</span>
           </label>
           <Controller
-            name="apoioAd"
+            name='apoioAd'
             control={control}
             render={() => (
               <Select
-                id="ed-select"
+                id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                placeholder="Escolha o(s) usuário(s)"
-                className="basic-multi-select"
-                classNamePrefix="select"
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
               />
             )}
           />
 
-          <p className="text-danger error-message">{errors.apoioAd?.message}</p>
+          <p className='text-danger error-message'>{errors.apoioAd?.message}</p>
         </div>
 
-        <div className="col-12 mb-1">
-          <label className="form-label  form-title">
+        <div className='col-12 mb-1'>
+          <label className='form-label  form-title'>
             Comunicação
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className='text-danger ms-1 form-title'>*</span>
           </label>
           <Controller
-            name="comunicacao"
+            name='comunicacao'
             control={control}
             render={() => (
               <Select
-                id="ed-select"
+                id='ed-select'
                 isMulti
                 options={avaliadoresOptions}
-                placeholder="Escolha o(s) usuário(s)"
-                className="basic-multi-select"
-                classNamePrefix="select"
+                placeholder='Escolha o(s) usuário(s)'
+                className='basic-multi-select'
+                classNamePrefix='select'
               />
             )}
           />
 
-          <p className="text-danger error-message">
+          <p className='text-danger error-message'>
             {errors.comunicacao?.message}
-          </p>
-        </div>
-
-        <div className="col-12 mb-1">
-          <label className="form-label  form-title">
-            Estudantes Voluntários
-            <span className="text-danger ms-1 form-title">*</span>
-          </label>
-          <Controller
-            name="estudantes"
-            control={control}
-            render={() => (
-              <Select
-                id="ed-select"
-                isMulti
-                options={options}
-                value={selectedOptions}
-                onChange={handleChange}
-                placeholder="Escolha o(s) usuário(s)"
-                className="basic-multi-select"
-                classNamePrefix="select"
-              />
-            )}
-          />
-
-          <p className="text-danger error-message">
-            {errors.estudantes?.message}
           </p>
         </div>
       </div>
 
-      <div className="d-flex flex-column justify-content-start">
-        <div className="fs-4"> Sessões e apresentações </div>
-        <div className="col-12 mb-1">
-          <label className="form-label form-title">
-            Número de salas
-            <span className="text-danger ms-1 form-title">*</span>
-          </label>
-          <input
-            type="text"
-            className="form-control input-title"
-            id="salas"
-            placeholder="Número de salas (sempre serão alocadas como A, B,C...)"
-            {...register("salas")}
-          />
-          <p className="text-danger error-message"> {errors.salas?.message}</p>
-        </div>
+      <div className='d-flex flex-column justify-content-start'>
+        <div className='fs-4'> Sessões e apresentações </div>
 
-        <div className="d-flex flex-row justify-content-start w-50 gap-3">
-          <div className="col-12 mb-1">
-            <label className="form-label form-title">
+        <div className='d-flex flex-row justify-content-start w-50 gap-3'>
+          <div className='col-12 mb-1'>
+            <label className='form-label form-title'>
               Número de sessões
-              <span className="text-danger ms-1 form-title">*</span>
+              <span className='text-danger ms-1 form-title'>*</span>
             </label>
             <input
-              type="text"
-              className="form-control input-title"
-              id="quantidadeSessão"
-              placeholder="Quantidade de sessões"
-              {...register("sessoes")}
+              type='number'
+              className='form-control input-title'
+              id='quantidadeSessão'
+              placeholder='Quantidade de sessões'
+              {...register("sessoes", { valueAsNumber: true })}
             />
-            <p className="text-danger error-message">
+            <p className='text-danger error-message'>
               {errors.sessoes?.message}
             </p>
           </div>
 
-          <div className="col-12 mb-1">
-            <label className="form-label  form-title">
-              Duração da Sessão
-              <span className="text-danger ms-1 form-title">*</span>
+          <div className='col-12 mb-1'>
+            <label className='form-label  form-title'>
+              Duração da Apresentação
+              <span className='text-danger ms-1 form-title'>*</span>
             </label>
             <input
-              type="text"
-              className="form-control input-title"
-              id="sessao"
-              placeholder="ex.: 20 minutos"
+              type='number'
+              className='form-control input-title'
+              id='sessao'
+              placeholder='ex.: 20 minutos'
+              {...register("duracao", { valueAsNumber: true })}
             />
-            <p className="text-danger error-message"></p>
+            <p className='text-danger error-message'></p>
           </div>
         </div>
       </div>
 
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Duração das apresentações
-          <span className="text-danger ms-1 form-title">*</span>
-        </label>
-        <input
-          type="text"
-          className="form-control input-title"
-          id="duracaoSessao"
-          placeholder="ex: 20 minutos, ou seja, 12 minutos + 5 para perguntas + 3 para organização da próxima apresentação"
-          {...register("duracao")}
-        />
-        <p className="text-danger error-message">{errors.duracao?.message}</p>
-      </div>
-
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
+      <div className='col-12 mb-1'>
+        <label className='form-label form-title'>
           Texto da Chamada para Submissão de Trabalhos
-          <span className="text-danger ms-1 form-title">*</span>
+          <span className='text-danger ms-1 form-title'>*</span>
         </label>
         <input
-          type="text"
-          className="form-control input-title"
-          id="submissao"
-          placeholder="Digite o texto aqui"
+          type='text'
+          className='form-control input-title'
+          id='submissao'
+          placeholder='Digite o texto aqui'
           {...register("submissao")}
         />
-        <p className="text-danger error-message">{errors.submissao?.message}</p>
+        <p className='text-danger error-message'>{errors.submissao?.message}</p>
       </div>
 
-      <div className="d-flex flex-column justify-content-start align-items-center gap-4">
-        <div className="col-12 mb-1">
-          <label className="form-label form-title">
+      <div className='d-flex flex-column justify-content-start align-items-center gap-4'>
+        <div className='col-12 mb-1'>
+          <label className='form-label form-title'>
             Data limite para a submissão
-            <span className="text-danger ms-1 form-title">*</span>
+            <span className='text-danger ms-1 form-title'>*</span>
           </label>
-          <div className="input-group listagem-template-content-input w-100">
+          <div className='input-group listagem-template-content-input w-100'>
             <Controller
               control={control}
-              name="limite"
+              name='limite'
               render={({ field }) => (
                 <DatePicker
-                  id="ed-deadline-data"
+                  id='ed-deadline-data'
                   showIcon
                   onChange={(date) =>
                     field.onChange(date?.toISOString() || null)
                   }
                   selected={field.value ? new Date(field.value) : null}
                   placeholderText={formApresentacoesFields.inicio.placeholder}
-                  className="form-control datepicker"
-                  dateFormat="dd/MM/yyyy"
+                  className='form-control datepicker'
+                  dateFormat='dd/MM/yyyy'
                   minDate={new Date()}
                   maxDate={addDays(new Date(), 3)}
                   isClearable
@@ -599,12 +517,12 @@ export function FormEdicao() {
               )}
             />
           </div>
-          <p className="text-danger error-message">{errors.limite?.message}</p>
+          <p className='text-danger error-message'>{errors.limite?.message}</p>
         </div>
       </div>
 
-      <div className="d-grid gap-2 col-3 mx-auto">
-        <button type="submit" className="btn text-white fs-5 submit-button">
+      <div className='d-grid gap-2 col-3 mx-auto'>
+        <button type='submit' className='btn text-white fs-5 submit-button'>
           {confirmButton.label}
         </button>
       </div>
