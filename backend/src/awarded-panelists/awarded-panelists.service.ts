@@ -9,28 +9,38 @@ import { AppException } from '../exceptions/app.exception';
 export class AwardedPanelistsService {
   constructor(private prismaClient: PrismaService) {}
 
-  async registerAwardedPanelists(createAwardedPanelistsDto: CreateAwardedPanelistsDto) {
+  async registerAwardedPanelists(
+    createAwardedPanelistsDto: CreateAwardedPanelistsDto,
+  ) {
     const { eventEditionId, panelists } = createAwardedPanelistsDto;
 
-    const currentAwardedPanelists = await this.prismaClient.awardedPanelist.count({
-      where: { eventEditionId },
-    });
+    const currentAwardedPanelists =
+      await this.prismaClient.awardedPanelist.count({
+        where: { eventEditionId },
+      });
 
     if (currentAwardedPanelists + panelists.length > 3) {
-      throw new AppException('Não é permitido haver mais de 3 avaliadores premiados em uma edição.', 400);
+      throw new AppException(
+        'Não é permitido haver mais de 3 avaliadores premiados em uma edição.',
+        400,
+      );
     }
 
-    const awardedPanelists = await this.prismaClient.awardedPanelist.createMany({
-      data: panelists.map((panelist) => ({
-        eventEditionId: eventEditionId,
-        userId: panelist.userId,
-      })),
-    });
+    const awardedPanelists = await this.prismaClient.awardedPanelist.createMany(
+      {
+        data: panelists.map((panelist) => ({
+          eventEditionId: eventEditionId,
+          userId: panelist.userId,
+        })),
+      },
+    );
 
     return awardedPanelists;
   }
 
-  async findAllPanelists(eventEditionId: string): Promise<GetPanelistUsersDto[]> {
+  async findAllPanelists(
+    eventEditionId: string,
+  ): Promise<GetPanelistUsersDto[]> {
     const panelists = await this.prismaClient.panelist.findMany({
       where: {
         presentationBlock: {
@@ -39,9 +49,9 @@ export class AwardedPanelistsService {
         status: PanelistStatus.Present,
       },
       include: {
-        user: true, 
+        user: true,
       },
-      distinct: ['userId'], 
+      distinct: ['userId'],
     });
 
     return panelists.map((panelist) => {
@@ -64,7 +74,7 @@ export class AwardedPanelistsService {
         eventEditionId: eventEditionId,
       },
       include: {
-        user: true, 
+        user: true,
       },
     });
   }

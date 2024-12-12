@@ -5,36 +5,36 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AwardedDoctoralStudentsService {
   constructor(private prismaClient: PrismaService) {}
 
-  findTopPanelistsRanking(eventEditionId: string) {
+  findTopPanelistsRanking(eventEditionId: string, limit: number = 3) {
     return this.prismaClient.submission.findMany({
       where: {
-        eventEditionId: eventEditionId, 
+        eventEditionId: eventEditionId,
         PanelistRanking: {
-          not: null, 
+          not: null,
         },
       },
       orderBy: {
         PanelistRanking: 'desc',
       },
-      take: 3,
+      take: limit,
       include: {
         mainAuthor: true,
       },
     });
   }
 
-  findTopAudienceRanking(eventEditionId: string) {
+  findTopAudienceRanking(eventEditionId: string, limit: number = 3) {
     return this.prismaClient.submission.findMany({
       where: {
-        eventEditionId: eventEditionId, 
+        eventEditionId: eventEditionId,
         AudienceRanking: {
-          not: null, 
+          not: null,
         },
       },
       orderBy: {
         AudienceRanking: 'desc',
       },
-      take: 3,
+      take: limit,
       include: {
         mainAuthor: true,
       },
