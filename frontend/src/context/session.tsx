@@ -141,7 +141,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           showConfirmButton: false,
         });
 
-        listSessions("e691f604-ea01-4ffa-9f77-3df417490ca2");
+        listSessions("d91250a6-790a-43ce-9688-004d88e33d5a");
       })
       .catch((err) => {
         showAlert({
