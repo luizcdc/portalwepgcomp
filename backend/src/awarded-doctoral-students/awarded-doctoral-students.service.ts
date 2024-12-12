@@ -5,38 +5,50 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AwardedDoctoralStudentsService {
   constructor(private prismaClient: PrismaService) {}
 
-  findTopPanelistsRanking(eventEditionId: string, limit: number = 3) {
-    return this.prismaClient.submission.findMany({
+  async findTopPanelistsRanking(eventEditionId: string, limit: number = 3) {
+    return this.prismaClient.presentation.findMany({
       where: {
-        eventEditionId: eventEditionId,
-        PanelistRanking: {
+        presentationBlock: {
+          eventEditionId: eventEditionId,
+        },
+        publicAverageScore: {
           not: null,
         },
       },
       orderBy: {
-        PanelistRanking: 'desc',
+        publicAverageScore: 'desc',
       },
       take: limit,
       include: {
-        mainAuthor: true,
+        submission: {
+          include: {
+            mainAuthor: true,
+          },
+        },
       },
     });
   }
 
-  findTopAudienceRanking(eventEditionId: string, limit: number = 3) {
-    return this.prismaClient.submission.findMany({
+  async findTopAudienceRanking(eventEditionId: string, limit: number = 3) {
+    return this.prismaClient.presentation.findMany({
       where: {
-        eventEditionId: eventEditionId,
-        AudienceRanking: {
+        presentationBlock: {
+          eventEditionId: eventEditionId,
+        },
+        publicAverageScore: {
           not: null,
         },
       },
       orderBy: {
-        AudienceRanking: 'desc',
+        publicAverageScore: 'desc',
       },
       take: limit,
       include: {
-        mainAuthor: true,
+        submission: {
+          include: {
+            mainAuthor: true,
+          },
+        },
       },
     });
   }
