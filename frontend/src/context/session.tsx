@@ -62,13 +62,10 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .getSessionById(idSession)
       .then((response) => {
         setSessao(response);
-        console.log("encontrado com sucesso");
       })
       .catch((err) => {
         console.log(err);
         setSessao(null);
-        console.log("erro ao buscar");
-        alert("Erro ao tentar buscar!");
       })
       .finally(() => {
         setLoadingSessao(false);
@@ -82,18 +79,15 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .createSession(body)
       .then((response) => {
         setSessao(response);
-        console.log("criado com sucesso");
         showAlert({
           icon: "success",
-          title: "Cadastro realizado com sucesso!",
+          title: "Cadastro de sessão realizado com sucesso!",
           timer: 3000,
           showConfirmButton: false,
         });
       })
       .catch((err) => {
-        console.log(err.response.data.message);
         setSessao(null);
-        console.log("erro ao criar");
         showAlert({
           icon: "error",
           title: "Erro ao cadastrar sessão",
@@ -114,13 +108,24 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .updateSessionById(idSession, body)
       .then((response) => {
         setSessao(response);
-        console.log("atualizado com sucesso");
+        showAlert({
+          icon: "success",
+          title: "Atualização de sessão realizada com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
       })
       .catch((err) => {
         console.log(err);
         setSessao(null);
-        console.log("erro ao atualizar");
-        alert("Erro ao tentar atualizar!");
+        showAlert({
+          icon: "error",
+          title: "Erro ao atualizar sessão",
+          text:
+            err.response?.data?.message ||
+            "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
       })
       .finally(() => {
         setLoadingSessao(false);
@@ -131,9 +136,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
     setLoadingSessao(true);
     sessionApi
       .deleteSessionById(idSession)
-      .then((response) => {
-        console.log(response);
-
+      .then(() => {
         showAlert({
           icon: "success",
           title: "Sessão deletada com sucesso!",

@@ -16,6 +16,8 @@ interface ListagemProps {
   isMyPresentation?: boolean;
   isFavorites?: boolean;
   idModal?: string;
+  idGeneralModal?: string;
+  generalButtonLabel?: string;
   onAddButtonClick?: () => void;
   onChangeSearchValue?: (value: string) => void;
   onClickItem?: (value: string) => void;
@@ -35,7 +37,9 @@ export default function Listagem({
   cardsList,
   onAddButtonClick,
   onChangeSearchValue,
+  generalButtonLabel,
   onClickItem,
+  idGeneralModal,
   onDelete,
   onClear,
 }: Readonly<ListagemProps>) {
@@ -104,6 +108,8 @@ export default function Listagem({
                     ? `${formatDate(card.startTime)}`
                     : card.subtitle
                 }
+                generalButtonLabel={generalButtonLabel}
+                idGeneralModal={idGeneralModal}
                 idModalEdit={idModal}
                 onClickItem={() => onClickItem && onClickItem(card)}
                 onDelete={() => onDelete && onDelete(card?.id ?? "")}

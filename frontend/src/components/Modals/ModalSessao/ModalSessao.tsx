@@ -9,6 +9,14 @@ import FormSessaoApresentacoes from "@/components/Forms/Sessao/FormSessaoApresen
 import FormSessaoGeral from "@/components/Forms/Sessao/FormSessaoGeral";
 import { useSession } from "@/hooks/useSession";
 
+const renderFormContent = (tipo: SessaoTipoEnum) => {
+  return tipo === SessaoTipoEnum["Sessão geral do evento"] ? (
+    <FormSessaoGeral />
+  ) : (
+    <FormSessaoApresentacoes />
+  );
+};
+
 export default function ModalSessao() {
   const { tipo } = ModalSessaoMock;
   const { sessao, setSessao } = useSession();
@@ -65,13 +73,7 @@ export default function ModalSessao() {
           <p className="text-danger error-message"></p>
         </div>
 
-        {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] && (
-          <FormSessaoGeral />
-        )}
-
-        {tipoSessao === SessaoTipoEnum["Sessão de apresentações"] && (
-          <FormSessaoApresentacoes />
-        )}
+        {renderFormContent(tipoSessao)}
       </div>
     </ModalComponent>
   );

@@ -7,6 +7,7 @@ import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { useSession } from "@/hooks/useSession";
 import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";
+import ModalSessaoOrdenarApresentacoes from "@/components/Modals/ModalSessaoOrdenarApresentacoes/ModalSessaoOrdenarApresentacoes";
 
 export default function Sessoes() {
   const { title, userArea, buttonList, eventEditionId } = SessoesMock;
@@ -35,28 +36,31 @@ export default function Sessoes() {
   }, [searchValue, sessoesList]);
 
   return (
-    <ProtectedLayout>
-      <div
-        className="d-flex flex-column"
-        style={{
-          gap: "50px",
-        }}
-      >
-        <Listagem
-          idModal="sessaoModal"
-          title={title}
-          labelAddButton={userArea.add}
-          labelListCardsButton={buttonList}
-          searchPlaceholder={userArea.search}
-          searchValue={searchValue}
-          onChangeSearchValue={(value) => setSearchValue(value)}
-          cardsList={sessionsListValues}
-          onClickItem={getSessionOnList}
-          onClear={() => setSessao(null)}
-          onDelete={(id: string) => deleteSession(id)}
-        />
-        <ModalSessao />
-      </div>
-    </ProtectedLayout>
+    // <ProtectedLayout>
+    <div
+      className="d-flex flex-column"
+      style={{
+        gap: "50px",
+      }}
+    >
+      <Listagem
+        idModal="sessaoModal"
+        title={title}
+        labelAddButton={userArea.add}
+        labelListCardsButton={buttonList}
+        searchPlaceholder={userArea.search}
+        searchValue={searchValue}
+        onChangeSearchValue={(value) => setSearchValue(value)}
+        cardsList={sessionsListValues}
+        idGeneralModal="trocarOrdemApresentacao"
+        generalButtonLabel="Trocar ordem das apresentações"
+        onClickItem={getSessionOnList}
+        onClear={() => setSessao(null)}
+        onDelete={(id: string) => deleteSession(id)}
+      />
+      <ModalSessao />
+      <ModalSessaoOrdenarApresentacoes />
+    </div>
+    // </ProtectedLayout>
   );
 }
