@@ -55,6 +55,12 @@ export class EventEditionController {
     return await this.eventEditionService.getById(id);
   }
 
+  @Public()
+  @Get('year/:year')
+  async getByYear(@Param('year') year: number) {
+    return await this.eventEditionService.getByYear(year);
+  }
+
   @Put(':id')
   async update(
     @Param('id') id: string,
