@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { AwardedPanelistsService } from './awarded-panelists.service';
 import { CreateAwardedPanelistsDto } from './dto/create-awarded-panelists.dto';
 import { ResponsePanelistUserDto } from './dto/response-panelist-users.dto';
+import { CreateAwardedPanelistsResponseDto } from './dto/create-awarded-panelists-response.dto';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 
 @Controller('panelist-awards')
@@ -14,7 +15,7 @@ export class AwardedPanelistsController {
   @ApiOperation({
     summary: 'Register awarded panelists in bulk',
     description:
-      'Register multiple awarded panelists for a specific event edition',
+      'Register multiple awarded panelists for a specific event edition. (The panelist must be present in at least one presentation)',
   })
   @ApiBody({
     type: CreateAwardedPanelistsDto,
@@ -22,7 +23,7 @@ export class AwardedPanelistsController {
   })
   async registerAwardedPanelists(
     @Body() createAwardedPanelistsDto: CreateAwardedPanelistsDto,
-  ) {
+  ): Promise<CreateAwardedPanelistsResponseDto> {
     return this.awardedPanelistsService.registerAwardedPanelists(
       createAwardedPanelistsDto,
     );

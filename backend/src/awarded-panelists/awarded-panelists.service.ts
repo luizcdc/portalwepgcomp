@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PanelistStatus } from '@prisma/client';
 import { CreateAwardedPanelistsDto } from './dto/create-awarded-panelists.dto';
 import { ResponsePanelistUserDto } from './dto/response-panelist-users.dto';
+import { CreateAwardedPanelistsResponseDto } from './dto/create-awarded-panelists-response.dto';
 import { AppException } from '../exceptions/app.exception';
 
 @Injectable()
@@ -12,8 +13,25 @@ export class AwardedPanelistsService {
 
   async registerAwardedPanelists(
     createAwardedPanelistsDto: CreateAwardedPanelistsDto,
-  ) {
+  ): Promise<CreateAwardedPanelistsResponseDto> {
     const { eventEditionId, panelists } = createAwardedPanelistsDto;
+
+    // Check existing awarded panelists
+    const existingAwardedPanelists =
+      await this.prismaClient.awardedPanelist.findMany({
+        where: {
+          eventEditionId,
+          userId: { in: panelists.map((p) => p.userId) },
+        },
+      });
+
+    // Filter out already awarded panelists
+    const newPanelists = panelists.filter(
+      (p) =>
+        !existingAwardedPanelists.some(
+          (existing) => existing.userId === p.userId,
+        ),
+    );
 
     const currentAwardedPanelists =
       await this.prismaClient.awardedPanelist.count({
@@ -21,7 +39,7 @@ export class AwardedPanelistsService {
       });
 
     if (
-      currentAwardedPanelists + panelists.length >
+      currentAwardedPanelists + newPanelists.length >
       this.MAX_AWARDED_PANELISTS
     ) {
       throw new AppException(
@@ -30,28 +48,35 @@ export class AwardedPanelistsService {
       );
     }
 
+    // Validate remaining new panelists
     const validPanelists = await this.prismaClient.panelist.findMany({
       where: {
-        userId: { in: panelists.map((p) => p.userId) },
+        userId: { in: newPanelists.map((p) => p.userId) },
         presentationBlock: { eventEditionId },
         status: PanelistStatus.Present,
       },
+      distinct: ['userId'],
     });
 
-    if (validPanelists.length !== panelists.length) {
+    if (validPanelists.length !== newPanelists.length) {
       throw new AppException('Apenas avaliadores podem ser premiados.', 400);
     }
 
-    const awardedPanelists = await this.prismaClient.awardedPanelist.createMany(
-      {
-        data: panelists.map((panelist) => ({
-          eventEditionId: eventEditionId,
-          userId: panelist.userId,
-        })),
-      },
+    const awardedPanelists = await this.prismaClient.$transaction(
+      newPanelists.map((panelist) =>
+        this.prismaClient.awardedPanelist.create({
+          data: {
+            eventEditionId: eventEditionId,
+            userId: panelist.userId,
+          },
+        }),
+      ),
     );
 
-    return awardedPanelists;
+    return new CreateAwardedPanelistsResponseDto({
+      newAwardedPanelists: awardedPanelists.map((p) => p.userId),
+      alreadyAwardedPanelists: existingAwardedPanelists.map((p) => p.userId),
+    });
   }
 
   async findAllPanelists(
