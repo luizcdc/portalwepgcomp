@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateEventEditionDto,
@@ -135,6 +139,25 @@ export class EventEditionService {
       throw new BadRequestException(
         'Não existe nenhum evento com esse identificador',
       );
+    }
+
+    const eventResponseDto = new EventEditionResponseDto(event);
+
+    return eventResponseDto;
+  }
+
+  async getByYear(year: number) {
+    const event = await this.prismaClient.eventEdition.findFirst({
+      where: {
+        startDate: {
+          gte: new Date(year, 0, 1),
+          lt: new Date(year + 1, 0, 1),
+        },
+      },
+    });
+
+    if (!event) {
+      throw new NotFoundException('Não há eventos para o ano informado');
     }
 
     const eventResponseDto = new EventEditionResponseDto(event);

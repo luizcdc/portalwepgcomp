@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
-import { AppException } from 'src/exceptions/app.exception';
+import { AppException } from '../exceptions/app.exception';
 
 @Injectable()
 export class EvaluationService {

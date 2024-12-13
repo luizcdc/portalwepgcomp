@@ -11,7 +11,8 @@ import { PresentationBlockService } from './presentation-block.service';
 import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto';
 import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto';
 import { ResponsePresentationBlockDto } from './dto/response-presentation-block.dto';
-import { Public } from 'src/auth/decorators/user-level.decorator';
+import { Public } from '../auth/decorators/user-level.decorator';
+import { SwapPresentationsDto } from './dto/swap-presentations.dto';
 
 @Controller('presentation-block')
 export class PresentationBlockController {
@@ -61,5 +62,16 @@ export class PresentationBlockController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.presentationBlockService.remove(id);
+  }
+
+  @Patch(':id/presentations/swap')
+  async swapPresentations(
+    @Param('id') id: string,
+    @Body() swapPresentationsDto: SwapPresentationsDto,
+  ) {
+    return await this.presentationBlockService.swapPresentations(
+      id,
+      swapPresentationsDto,
+    );
   }
 }

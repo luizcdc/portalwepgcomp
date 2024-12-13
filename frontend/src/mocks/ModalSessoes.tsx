@@ -2,7 +2,7 @@ export const ModalSessaoMock = {
   confirmButton: {
     label: "Salvar",
   },
-  eventEditionId: "e691f604-ea01-4ffa-9f77-3df417490ca2",
+  eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
   tipo: {
     label: "Tipo de sessão",
     options: [
@@ -25,7 +25,7 @@ export const ModalSessaoMock = {
       options: [
         {
           id: "d513f05b-0968-4bd7-8bd3-c0c1256b1892",
-          eventEditionId: "e691f604-ea01-4ffa-9f77-3df417490ca2",
+          eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
           name: "Main Conference Hall",
           description: "The main hall for presentations.",
           createdAt: "2024-11-21T01:43:06.611Z",
@@ -69,7 +69,7 @@ export const ModalSessaoMock = {
       options: [
         {
           id: "d513f05b-0968-4bd7-8bd3-c0c1256b1892",
-          eventEditionId: "e691f604-ea01-4ffa-9f77-3df417490ca2",
+          eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
           name: "Main Conference Hall",
           description: "The main hall for presentations.",
           createdAt: "2024-11-21T01:43:06.611Z",
@@ -87,7 +87,7 @@ export const ModalSessaoMock = {
       options: [
         {
           id: "151fde49-1fa2-4f7b-95ef-1f51a73e8ff6",
-          eventEditionId: "e691f604-ea01-4ffa-9f77-3df417490ca2",
+          eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
           userId: "4feb98ae-62c0-4ae2-a594-a8f45593515c",
           level: "Committee",
           name: "Avaliador 1",
