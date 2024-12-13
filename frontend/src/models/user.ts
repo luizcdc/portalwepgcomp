@@ -36,6 +36,7 @@ interface UserLogin {
 
 interface UserProfile {
     name: string;
+    id: string;
     profile: string;
     level: string;
     isActive: boolean;

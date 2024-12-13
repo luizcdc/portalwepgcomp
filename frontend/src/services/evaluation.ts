@@ -5,7 +5,7 @@ const baseUrl = "/evaluations";
 const instance = axiosInstance();
 
 export const evaluationApi = {
-    createEvaluation: async (body: EvaluationParams) => {
+    createEvaluation: async (body: EvaluationParams[]) => {
         const { data } = await instance.post(`${baseUrl}`, body);
 
         return data;

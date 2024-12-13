@@ -12,7 +12,7 @@ interface EvaluationProviderData{
     loadingEvaluation: boolean;
     evaluation: Evaluation | null;
     getEvaluation: (submissionId: string) => void;
-    createEvaluation: (body: EvaluationParams) => void;
+    createEvaluation: (body: EvaluationParams[]) => void;
 }
 
 export const EvaluationContext = createContext<EvaluationProviderData>(
@@ -25,7 +25,7 @@ export const EvaluationProvider = ({children}: EvaluationProps) => {
 
     const { showAlert } = useSweetAlert();
 
-    const createEvaluation = async (body: EvaluationParams) => {
+    const createEvaluation = async (body: EvaluationParams[]) => {
         setLoadingEvaluation(true);
         evaluationApi
         .createEvaluation(body)
