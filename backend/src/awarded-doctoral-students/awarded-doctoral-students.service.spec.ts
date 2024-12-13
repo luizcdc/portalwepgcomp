@@ -15,7 +15,7 @@ describe('AwardedDoctoralStudentsService', () => {
         {
           provide: PrismaService,
           useValue: {
-            submission: {
+            presentation: {
               findMany: jest.fn(),
             },
           },
@@ -23,125 +23,192 @@ describe('AwardedDoctoralStudentsService', () => {
       ],
     }).compile();
 
-    service = module.get<AwardedDoctoralStudentsService>(AwardedDoctoralStudentsService);
+    service = module.get<AwardedDoctoralStudentsService>(
+      AwardedDoctoralStudentsService,
+    );
     prismaService = module.get(PrismaService);
   });
 
-  describe('findTopPanelistsRanking', () => {
-    it('should return the top 3 submissions sorted by PanelistRanking', async () => {
+  describe('findTopEvaluatorsRanking', () => {
+    it('should return the top 3 presentations sorted by evaluatorsAverageScore', async () => {
       const eventEditionId = 'event1';
-      const mockSubmissions = [
-        { id: 'sub1', PanelistRanking: 10, mainAuthor: { name: 'Author 1' } },
-        { id: 'sub2', PanelistRanking: 8, mainAuthor: { name: 'Author 2' } },
-        { id: 'sub3', PanelistRanking: 6, mainAuthor: { name: 'Author 3' } },
+      const mockPresentations = [
+        {
+          id: 'pres1',
+          evaluatorsAverageScore: 10,
+          submission: { mainAuthor: { name: 'Author 1' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
+        {
+          id: 'pres2',
+          evaluatorsAverageScore: 8,
+          submission: { mainAuthor: { name: 'Author 2' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
+        {
+          id: 'pres3',
+          evaluatorsAverageScore: 6,
+          submission: { mainAuthor: { name: 'Author 3' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
       ];
 
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(mockSubmissions);
+      (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
+        mockPresentations,
+      );
 
-      const result = await service.findTopPanelistsRanking(eventEditionId);
+      const result = await service.findTopEvaluatorsRanking(eventEditionId);
 
-      expect(result).toEqual(mockSubmissions);
       expect(result).toHaveLength(3);
-      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+      expect(prismaService.presentation.findMany).toHaveBeenCalledWith({
         where: {
-          eventEditionId,
-          PanelistRanking: {
+          presentationBlock: {
+            eventEditionId,
+          },
+          publicAverageScore: {
             not: null,
           },
         },
         orderBy: {
-          PanelistRanking: 'desc',
+          evaluatorsAverageScore: 'desc',
         },
         take: 3,
         include: {
-          mainAuthor: true,
+          submission: {
+            include: {
+              mainAuthor: true,
+            },
+          },
         },
       });
     });
 
-    it('should return all available submissions if fewer than 3 exist', async () => {
+    it('should return all available presentations if fewer than 3 exist', async () => {
       const eventEditionId = 'event1';
-      const mockSubmissions = [
-        { id: 'sub1', PanelistRanking: 10, mainAuthor: { name: 'Author 1' } },
-        { id: 'sub2', PanelistRanking: 8, mainAuthor: { name: 'Author 2' } },
+      const mockPresentations = [
+        {
+          id: 'pres1',
+          evaluatorsAverageScore: 10,
+          submission: { mainAuthor: { name: 'Author 1' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
+        {
+          id: 'pres2',
+          evaluatorsAverageScore: 8,
+          submission: { mainAuthor: { name: 'Author 2' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
       ];
 
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(mockSubmissions);
+      (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
+        mockPresentations,
+      );
 
-      const result = await service.findTopPanelistsRanking(eventEditionId);
+      const result = await service.findTopEvaluatorsRanking(eventEditionId);
 
-      expect(result).toEqual(mockSubmissions);
       expect(result).toHaveLength(2);
     });
 
-    it('should return an empty array if no submissions exist with rankings', async () => {
+    it('should return an empty array if no presentations exist with rankings', async () => {
       const eventEditionId = 'event1';
-      const mockSubmissions: any[] = [];
+      const mockPresentations: any[] = [];
 
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(mockSubmissions);
+      (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
+        mockPresentations,
+      );
 
-      const result = await service.findTopPanelistsRanking(eventEditionId);
+      const result = await service.findTopEvaluatorsRanking(eventEditionId);
 
-      expect(result).toEqual(mockSubmissions);
+      expect(result).toEqual(mockPresentations);
       expect(result).toHaveLength(0);
     });
   });
 
-  describe('findTopAudienceRanking', () => {
-    it('should return the top 3 submissions sorted by AudienceRanking', async () => {
+  describe('findTopPublicRanking', () => {
+    it('should return the top 3 presentations sorted by publicAverageScore', async () => {
       const eventEditionId = 'event1';
-      const mockSubmissions = [
-        { id: 'sub1', AudienceRanking: 9, mainAuthor: { name: 'Author 1' } },
-        { id: 'sub2', AudienceRanking: 7, mainAuthor: { name: 'Author 2' } },
-        { id: 'sub3', AudienceRanking: 5, mainAuthor: { name: 'Author 3' } },
+      const mockPresentations = [
+        {
+          id: 'pres1',
+          publicAverageScore: 9,
+          submission: { mainAuthor: { name: 'Author 1' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
+        {
+          id: 'pres2',
+          publicAverageScore: 7,
+          submission: { mainAuthor: { name: 'Author 2' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
+        {
+          id: 'pres3',
+          publicAverageScore: 5,
+          submission: { mainAuthor: { name: 'Author 3' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
       ];
 
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(mockSubmissions);
+      (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
+        mockPresentations,
+      );
 
-      const result = await service.findTopAudienceRanking(eventEditionId);
+      const result = await service.findTopPublicRanking(eventEditionId);
 
-      expect(result).toEqual(mockSubmissions);
       expect(result).toHaveLength(3);
-      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+      expect(prismaService.presentation.findMany).toHaveBeenCalledWith({
         where: {
-          eventEditionId,
-          AudienceRanking: {
+          presentationBlock: {
+            eventEditionId,
+          },
+          publicAverageScore: {
             not: null,
           },
         },
         orderBy: {
-          AudienceRanking: 'desc',
+          publicAverageScore: 'desc',
         },
         take: 3,
         include: {
-          mainAuthor: true,
+          submission: {
+            include: {
+              mainAuthor: true,
+            },
+          },
         },
       });
     });
 
-    it('should return all available submissions if fewer than 3 exist', async () => {
+    it('should return all available presentations if fewer than 3 exist', async () => {
       const eventEditionId = 'event1';
-      const mockSubmissions = [
-        { id: 'sub1', AudienceRanking: 9, mainAuthor: { name: 'Author 1' } },
+      const mockPresentations = [
+        {
+          id: 'pres1',
+          publicAverageScore: 9,
+          submission: { mainAuthor: { name: 'Author 1' } },
+          presentationBlock: { eventEditionId: 'event1' },
+        },
       ];
 
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(mockSubmissions);
+      (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
+        mockPresentations,
+      );
 
-      const result = await service.findTopAudienceRanking(eventEditionId);
+      const result = await service.findTopPublicRanking(eventEditionId);
 
-      expect(result).toEqual(mockSubmissions);
       expect(result).toHaveLength(1);
     });
 
-    it('should return an empty array if no submissions exist with rankings', async () => {
+    it('should return an empty array if no presentations exist with rankings', async () => {
       const eventEditionId = 'event1';
-      const mockSubmissions: any[] = [];
+      const mockPresentations: any[] = [];
 
-      (prismaService.submission.findMany as jest.Mock).mockResolvedValue(mockSubmissions);
+      (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
+        mockPresentations,
+      );
 
-      const result = await service.findTopAudienceRanking(eventEditionId);
+      const result = await service.findTopPublicRanking(eventEditionId);
 
-      expect(result).toEqual(mockSubmissions);
+      expect(result).toEqual(mockPresentations);
       expect(result).toHaveLength(0);
     });
   });

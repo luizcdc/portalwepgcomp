@@ -3,10 +3,9 @@ import { AwardedPanelistsService } from './awarded-panelists.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import { CreateAwardedPanelistsDto } from './dto/create-awarded-panelists.dto';
-import { GetPanelistUsersDto } from './dto/response-panelist-users.dto';
 import { Profile } from '@prisma/client';
 import { UserLevel } from '@prisma/client';
-import { PanelistStatus } from '@prisma/client';
+import { ResponsePanelistUserDto } from './dto/response-panelist-users.dto';
 
 jest.mock('../prisma/prisma.service');
 
@@ -26,6 +25,7 @@ describe('AwardedPanelistsService', () => {
               createMany: jest.fn(),
               findMany: jest.fn(),
               delete: jest.fn(),
+              findFirst: jest.fn(),
             },
             panelist: {
               findMany: jest.fn(),
@@ -48,10 +48,21 @@ describe('AwardedPanelistsService', () => {
         panelists: [{ userId: 'user1' }],
       };
 
-      (prismaService.awardedPanelist.count as jest.Mock).mockResolvedValue(mockCount);
-      (prismaService.awardedPanelist.createMany as jest.Mock).mockResolvedValue(mockCreateManyResult);
+      const mockValidPanelists = [{ userId: 'user1' }];
 
-      const result = await service.registerAwardedPanelists(createAwardedPanelistsDto);
+      (prismaService.awardedPanelist.count as jest.Mock).mockResolvedValue(
+        mockCount,
+      );
+      (prismaService.panelist.findMany as jest.Mock).mockResolvedValue(
+        mockValidPanelists,
+      );
+      (prismaService.awardedPanelist.createMany as jest.Mock).mockResolvedValue(
+        mockCreateManyResult,
+      );
+
+      const result = await service.registerAwardedPanelists(
+        createAwardedPanelistsDto,
+      );
 
       expect(result).toEqual(mockCreateManyResult);
       expect(prismaService.awardedPanelist.createMany).toHaveBeenCalledWith({
@@ -66,16 +77,42 @@ describe('AwardedPanelistsService', () => {
         panelists: [{ userId: 'user1' }],
       };
 
-      (prismaService.awardedPanelist.count as jest.Mock).mockResolvedValue(mockCount);
+      (prismaService.awardedPanelist.count as jest.Mock).mockResolvedValue(
+        mockCount,
+      );
 
-      await expect(service.registerAwardedPanelists(createAwardedPanelistsDto)).rejects.toThrow(
-        new AppException('Não é permitido haver mais de 3 avaliadores premiados em uma edição.', 400),
+      await expect(
+        service.registerAwardedPanelists(createAwardedPanelistsDto),
+      ).rejects.toThrow(
+        new AppException(
+          'Não é permitido haver mais de 3 avaliadores premiados em uma edição.',
+          400,
+        ),
+      );
+    });
+
+    it('should throw an AppException if panelists are not valid', async () => {
+      const mockCount = 2;
+      const createAwardedPanelistsDto: CreateAwardedPanelistsDto = {
+        eventEditionId: 'event1',
+        panelists: [{ userId: 'user1' }],
+      };
+
+      (prismaService.awardedPanelist.count as jest.Mock).mockResolvedValue(
+        mockCount,
+      );
+      (prismaService.panelist.findMany as jest.Mock).mockResolvedValue([]);
+
+      await expect(
+        service.registerAwardedPanelists(createAwardedPanelistsDto),
+      ).rejects.toThrow(
+        new AppException('Apenas avaliadores podem ser premiados.', 400),
       );
     });
   });
 
-  describe('findAllPanelist', () => {
-    it('should return all present panelists for an event edition', async () => {
+  describe('findAllPanelists', () => {
+    it('should return all panelists for an event edition', async () => {
       const eventEditionId = 'event1';
       const mockPanelists = [
         {
@@ -90,8 +127,8 @@ describe('AwardedPanelistsService', () => {
           },
         },
       ];
-      const expectedResult: GetPanelistUsersDto[] = [
-        {
+      const expectedResult: ResponsePanelistUserDto[] = [
+        new ResponsePanelistUserDto({
           id: 'user1',
           name: 'John Doe',
           email: 'john.doe@example.com',
@@ -99,10 +136,12 @@ describe('AwardedPanelistsService', () => {
           photoFilePath: '/path/to/photo.jpg',
           profile: Profile.Professor,
           level: UserLevel.Default,
-        },
+        }),
       ];
 
-      (prismaService.panelist.findMany as jest.Mock).mockResolvedValue(mockPanelists);
+      (prismaService.panelist.findMany as jest.Mock).mockResolvedValue(
+        mockPanelists,
+      );
 
       const result = await service.findAllPanelists(eventEditionId);
 
@@ -110,7 +149,6 @@ describe('AwardedPanelistsService', () => {
       expect(prismaService.panelist.findMany).toHaveBeenCalledWith({
         where: {
           presentationBlock: { eventEditionId },
-          status: PanelistStatus.Present,
         },
         include: { user: true },
         distinct: ['userId'],
@@ -118,7 +156,7 @@ describe('AwardedPanelistsService', () => {
     });
   });
 
-  describe('findAllByEventEdition', () => {
+  describe('findAll', () => {
     it('should return all awarded panelists for an event edition', async () => {
       const eventEditionId = 'event1';
       const mockAwardedPanelists = [
@@ -126,15 +164,33 @@ describe('AwardedPanelistsService', () => {
           user: {
             id: 'user1',
             name: 'John Doe',
+            email: 'john.doe@example.com',
+            registrationNumber: '12345',
+            photoFilePath: '/path/to/photo.jpg',
+            profile: Profile.Professor,
+            level: UserLevel.Default,
           },
         },
       ];
+      const expectedResult: ResponsePanelistUserDto[] = [
+        new ResponsePanelistUserDto({
+          id: 'user1',
+          name: 'John Doe',
+          email: 'john.doe@example.com',
+          registrationNumber: '12345',
+          photoFilePath: '/path/to/photo.jpg',
+          profile: Profile.Professor,
+          level: UserLevel.Default,
+        }),
+      ];
 
-      (prismaService.awardedPanelist.findMany as jest.Mock).mockResolvedValue(mockAwardedPanelists);
+      (prismaService.awardedPanelist.findMany as jest.Mock).mockResolvedValue(
+        mockAwardedPanelists,
+      );
 
       const result = await service.findAll(eventEditionId);
 
-      expect(result).toEqual(mockAwardedPanelists);
+      expect(result).toEqual(expectedResult);
       expect(prismaService.awardedPanelist.findMany).toHaveBeenCalledWith({
         where: { eventEditionId },
         include: { user: true },
@@ -143,11 +199,31 @@ describe('AwardedPanelistsService', () => {
   });
 
   describe('remove', () => {
+    it('should throw an exception if the awarded panelist is not found', async () => {
+      const eventEditionId = 'event1';
+      const userId = 'user1';
+
+      (prismaService.awardedPanelist.findFirst as jest.Mock).mockResolvedValue(
+        null,
+      );
+
+      await expect(service.remove(eventEditionId, userId)).rejects.toThrow(
+        new AppException('Avaliador premiado não encontrado.', 404),
+      );
+    });
+
     it('should remove an awarded panelist by eventEditionId and userId', async () => {
       const eventEditionId = 'event1';
       const userId = 'user1';
 
-      (prismaService.awardedPanelist.delete as jest.Mock).mockResolvedValue(undefined);
+      const mockAwardedPanelist = { eventEditionId, userId };
+
+      (prismaService.awardedPanelist.findFirst as jest.Mock).mockResolvedValue(
+        mockAwardedPanelist,
+      );
+      (prismaService.awardedPanelist.delete as jest.Mock).mockResolvedValue(
+        undefined,
+      );
 
       await service.remove(eventEditionId, userId);
 
