@@ -31,6 +31,8 @@ describe('PresentationBlockService', () => {
             presentation: {
               findMany: jest.fn(),
               updateMany: jest.fn(),
+              findUnique: jest.fn(),
+              update: jest.fn(),
             },
             userAccount: {
               findMany: jest.fn(),
@@ -749,6 +751,123 @@ describe('PresentationBlockService', () => {
       });
 
       expect(result).toEqual({});
+    });
+  });
+
+  describe('swapPresentations', () => {
+    it('should successfully swap two presentations', async () => {
+      prismaService.presentation.findUnique = jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            id: 'presentation1',
+            presentationBlockId: 'block1',
+            positionWithinBlock: 1,
+          }),
+        )
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            id: 'presentation2',
+            presentationBlockId: 'block1',
+            positionWithinBlock: 2,
+          }),
+        );
+
+      prismaService.$transaction = jest.fn().mockResolvedValue({});
+
+      const result = await service.swapPresentations('block1', {
+        presentation1Id: 'presentation1',
+        presentation2Id: 'presentation2',
+      });
+
+      expect(prismaService.presentation.findUnique).toHaveBeenCalledTimes(2);
+      expect(prismaService.$transaction).toHaveBeenCalledWith([
+        prismaService.presentation.update({
+          where: { id: 'presentation1' },
+          data: { positionWithinBlock: 2 },
+        }),
+        prismaService.presentation.update({
+          where: { id: 'presentation2' },
+          data: { positionWithinBlock: 1 },
+        }),
+      ]);
+      expect(result).toEqual({ message: 'Apresentações trocadas com sucesso' });
+    });
+
+    it('should throw AppException if presentation 1 is not found', async () => {
+      prismaService.presentation.findUnique = jest
+        .fn()
+        .mockResolvedValueOnce(null);
+
+      await expect(
+        service.swapPresentations('block1', {
+          presentation1Id: 'presentation1',
+          presentation2Id: 'presentation2',
+        }),
+      ).rejects.toThrow(
+        new AppException('Apresentação 1 não foi encontrada nesse bloco', 400),
+      );
+
+      expect(prismaService.presentation.findUnique).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw AppException if presentation 2 is not found', async () => {
+      prismaService.presentation.findUnique = jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            id: 'presentation1',
+            presentationBlockId: 'block1',
+            positionWithinBlock: 1,
+          }),
+        )
+        .mockResolvedValueOnce(null);
+
+      await expect(
+        service.swapPresentations('block1', {
+          presentation1Id: 'presentation1',
+          presentation2Id: 'presentation2',
+        }),
+      ).rejects.toThrow(
+        new AppException('Apresentação 2 não foi encontrada nesse bloco', 400),
+      );
+
+      expect(prismaService.presentation.findUnique).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw AppException if transaction fails', async () => {
+      prismaService.presentation.findUnique = jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            id: 'presentation1',
+            presentationBlockId: 'block1',
+            positionWithinBlock: 1,
+          }),
+        )
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            id: 'presentation2',
+            presentationBlockId: 'block1',
+            positionWithinBlock: 2,
+          }),
+        );
+
+      prismaService.$transaction = jest
+        .fn()
+        .mockRejectedValue(new Error('Transaction Error'));
+
+      await expect(
+        service.swapPresentations('block1', {
+          presentation1Id: 'presentation1',
+          presentation2Id: 'presentation2',
+        }),
+      ).rejects.toThrow(
+        new AppException('Erro interno na troca de apresentações', 500),
+      );
+
+      expect(prismaService.presentation.findUnique).toHaveBeenCalledTimes(2);
+      expect(prismaService.$transaction).toHaveBeenCalled();
     });
   });
 });

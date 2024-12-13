@@ -4,6 +4,7 @@ import { AppException } from '../exceptions/app.exception';
 import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto';
 import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto';
 import { PresentationBlockType } from '@prisma/client';
+import { SwapPresentationsDto } from './dto/swap-presentations.dto';
 
 @Injectable()
 export class PresentationBlockService {
@@ -312,6 +313,60 @@ export class PresentationBlockService {
         id,
       },
     });
+  }
+
+  async swapPresentations(
+    id: string,
+    swapPresentationsDto: SwapPresentationsDto,
+  ) {
+    const { presentation1Id, presentation2Id } = swapPresentationsDto;
+
+    const presentation1 = await this.prismaClient.presentation.findUnique({
+      where: {
+        id: presentation1Id,
+      },
+    });
+
+    if (!presentation1 || presentation1.presentationBlockId !== id) {
+      throw new AppException(
+        'Apresentação 1 não foi encontrada nesse bloco',
+        400,
+      );
+    }
+
+    const presentation2 = await this.prismaClient.presentation.findUnique({
+      where: {
+        id: presentation2Id,
+      },
+    });
+
+    if (!presentation2 || presentation2.presentationBlockId !== id) {
+      throw new AppException(
+        'Apresentação 2 não foi encontrada nesse bloco',
+        400,
+      );
+    }
+
+    const presentation1Position = presentation1.positionWithinBlock;
+    const presentation2Position = presentation2.positionWithinBlock;
+
+    try {
+      await this.prismaClient.$transaction([
+        this.prismaClient.presentation.update({
+          where: { id: presentation1Id },
+          data: { positionWithinBlock: presentation2Position },
+        }),
+        this.prismaClient.presentation.update({
+          where: { id: presentation2Id },
+          data: { positionWithinBlock: presentation1Position },
+        }),
+      ]);
+      return {
+        message: 'Apresentações trocadas com sucesso',
+      };
+    } catch {
+      throw new AppException('Erro interno na troca de apresentações', 500);
+    }
   }
 
   private calculatePresentationStartTime(
