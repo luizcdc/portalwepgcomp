@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-//import { PanelistStatus } from '@prisma/client';
+import { PanelistStatus } from '@prisma/client';
 import { CreateAwardedPanelistsDto } from './dto/create-awarded-panelists.dto';
 import { ResponsePanelistUserDto } from './dto/response-panelist-users.dto';
 import { AppException } from '../exceptions/app.exception';
@@ -34,12 +34,10 @@ export class AwardedPanelistsService {
       where: {
         userId: { in: panelists.map((p) => p.userId) },
         presentationBlock: { eventEditionId },
-        //status: PanelistStatus.Present,
+        status: PanelistStatus.Present,
       },
     });
 
-    console.log(validPanelists);
-    console.log(panelists);
     if (validPanelists.length !== panelists.length) {
       throw new AppException('Apenas avaliadores podem ser premiados.', 400);
     }
@@ -64,7 +62,6 @@ export class AwardedPanelistsService {
         presentationBlock: {
           eventEditionId: eventEditionId,
         },
-        //status: PanelistStatus.Present,
       },
       include: {
         user: true,
