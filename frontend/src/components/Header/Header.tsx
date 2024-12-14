@@ -102,7 +102,7 @@ export default function Header() {
                 onClick={() => handleItemClick("inicio")}
               >
                 <Link className="nav-link text-black" href="/Home">
-                  Inicio
+                  Início
                 </Link>
               </div>
               <div className="vr text-black"></div>
@@ -149,6 +149,26 @@ export default function Header() {
                     href="/Login"
                   >
                     Login
+                  </Link>
+                )}
+              </li>
+              <li className="nav-wall">
+                {signed ? (
+                  null
+                ) : (
+                  <div className="nav-wall vr text-black"></div>
+                )}
+              </li>
+              <li className="nav-item">
+                {signed ? (
+                  null
+                ) : (
+                  <Link
+                    className="nav-link active text-black"
+                    aria-current="page"
+                    href="/Cadastro"
+                  >
+                    Inscrição
                   </Link>
                 )}
               </li>
