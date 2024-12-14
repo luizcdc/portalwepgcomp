@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { MockupPresentention, MockupSchedule } from "@/mocks/Schedule";
 import PresentationModal from "../Modals/ModalApresentação/PresentationModal";
@@ -7,8 +7,17 @@ import ScheduleCard from "../ScheduleCard";
 import Calendar from "../UI/calendar";
 import Modal from "../UI/Modal/Modal";
 import "./style.scss";
+import { SessoesMock } from "@/mocks/Sessoes";
+import { usePresentation } from "@/hooks/usePresentation";
 
 export default function ScheduleSection() {
+  const { eventEditionId } = SessoesMock;
+  const { getPresentationAll, presentationList } = usePresentation();
+
+  useEffect(() => {
+    getPresentationAll(eventEditionId);
+  }, []);
+
   const [date, setDate] = useState<number>(0);
   //const [schedule, setSchedule] = useState<[]>()
   const openModal = useRef<HTMLButtonElement | null>(null);
@@ -110,28 +119,32 @@ export default function ScheduleSection() {
         </div>
 
         <div className="d-flex flex-column programacao-item">
-          {MockupSchedule[date].map((item, index) => {
-            return (
-              <div
-                key={index + item.author}
-                className="d-flex align-items-center w-100"
-                style={{
-                  gap: "40px",
-                }}
-              >
-                <p className="m-0" style={{ width: "44px" }}>
-                  09:00
-                </p>
-                <ScheduleCard
-                  type={item.type}
-                  author={item.author}
-                  title={item.title}
-                  onClickEvent={() => openModalPresentation(item)}
-                />
-                <div className="m-0 programacao-item-aux"></div>
-              </div>
-            );
-          })}
+          {
+            (presentationList) ? 
+            presentationList.map((presentation) => presentation.submission).map((item, index) => {
+              return (
+                <div
+                  key={index + item.mainAuthor?.name}
+                  className="d-flex align-items-center w-100"
+                  style={{
+                    gap: "40px",
+                  }}
+                >
+                  <p className="m-0" style={{ width: "44px" }}>
+                    09:00
+                  </p>
+                  <ScheduleCard
+                    type={item.type}
+                    author={item.mainAuthor?.name}
+                    title={item.title}
+                    onClickEvent={() => openModalPresentation(item)}
+                  />
+                  <div className="m-0 programacao-item-aux"></div>
+                </div>
+              );
+            }) :
+            ""
+          }
         </div>
       </div>
 

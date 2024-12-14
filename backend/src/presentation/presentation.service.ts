@@ -193,7 +193,11 @@ export class PresentationService {
         },
       },
       include: {
-        submission: true,
+        submission: {
+          include: {
+            mainAuthor: true
+          }
+        },
       },
     });
 
@@ -217,7 +221,11 @@ export class PresentationService {
     const presentation = await this.prismaClient.presentation.findUnique({
       where: { id },
       include: {
-        submission: true,
+        submission: {
+          include: {
+            mainAuthor: true
+          }
+        },
       },
     });
 
