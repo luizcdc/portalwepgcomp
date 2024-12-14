@@ -195,7 +195,8 @@ export class PresentationService {
       include: {
         submission: {
           include: {
-            mainAuthor: true
+            mainAuthor: true,
+            advisor: true
           }
         },
       },
@@ -223,7 +224,8 @@ export class PresentationService {
       include: {
         submission: {
           include: {
-            mainAuthor: true
+            mainAuthor: true,
+            advisor: true
           }
         },
       },

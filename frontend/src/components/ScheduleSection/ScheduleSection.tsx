@@ -9,6 +9,8 @@ import Modal from "../UI/Modal/Modal";
 import "./style.scss";
 import { SessoesMock } from "@/mocks/Sessoes";
 import { usePresentation } from "@/hooks/usePresentation";
+import { Presentation } from "@/models/presentation";
+import moment from 'moment';
 
 export default function ScheduleSection() {
   const { eventEditionId } = SessoesMock;
@@ -22,14 +24,14 @@ export default function ScheduleSection() {
   //const [schedule, setSchedule] = useState<[]>()
   const openModal = useRef<HTMLButtonElement | null>(null);
   const [modalContent, setModalContent] =
-    useState<PresentationData>(MockupPresentention);
+    useState<Presentation>({} as Presentation);
 
   function changeDate(date: number) {
     setDate(date);
   }
 
   function openModalPresentation(item) {
-    setModalContent({ ...modalContent, doutorando: item.author });
+    setModalContent(item);
     openModal.current?.click();
   }
 
@@ -121,22 +123,22 @@ export default function ScheduleSection() {
         <div className="d-flex flex-column programacao-item">
           {
             (presentationList) ? 
-            presentationList.map((presentation) => presentation.submission).map((item, index) => {
+            presentationList.map((item, index) => {
               return (
                 <div
-                  key={index + item.mainAuthor?.name}
+                  key={index + item.submission.mainAuthor?.name}
                   className="d-flex align-items-center w-100"
                   style={{
                     gap: "40px",
                   }}
                 >
                   <p className="m-0" style={{ width: "44px" }}>
-                    09:00
+                    {moment(item.presentationTime).format("HH:MM")}
                   </p>
                   <ScheduleCard
-                    type={item.type}
-                    author={item.mainAuthor?.name}
-                    title={item.title}
+                    type={item.submission.type}
+                    author={item.submission.mainAuthor?.name}
+                    title={item.submission.title}
                     onClickEvent={() => openModalPresentation(item)}
                   />
                   <div className="m-0 programacao-item-aux"></div>

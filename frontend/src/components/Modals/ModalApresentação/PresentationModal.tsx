@@ -5,11 +5,13 @@ import { useState } from "react";
 
 import Star from "@/components/UI/Star";
 import avaliar from "@/public/assets/images/avaliar.svg";
+import { Presentation } from "@/models/presentation";
+import moment from 'moment';
 
 export default function PresentationModal({
   props,
 }: {
-  props: PresentationData;
+  props: Presentation;
 }) {
   const [favorite, setFavorite] = useState<boolean>(false);
 
@@ -20,6 +22,9 @@ export default function PresentationModal({
   const handleEvaluateClick = () => {
     window.location.href = `/Avaliacao/${props.id}`;
   };
+
+  const presentationDate = moment(props.presentationTime).format("DD/MM");
+  const presentationTime = moment(props.presentationTime).format("HH:MM");
 
   return (
     <div
@@ -38,7 +43,7 @@ export default function PresentationModal({
           className="fw-semibold text-start"
           style={{ fontSize: "18px", lineHeight: "27px" }}
         >
-          {props.titulo}
+          {props.submission.title}
         </h3>
       </div>
       <div className="d-flex justify-content-between w-100">
@@ -50,12 +55,12 @@ export default function PresentationModal({
             className="d-flex flex-row align-items-start"
             style={{ gap: "10px" }}
           >
-            <strong>{props.doutorando}</strong>
+            <strong>{props.submission.mainAuthor.name}</strong>
             <div> | </div>
-            <div>{props.emailDoutorando}</div>
+            <div>{props.submission.mainAuthor.email}</div>
           </div>
           <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
-            Orientador(a): {props.orientador}
+            Orientador(a): {props.submission.advisor.name}
           </h4>
         </div>
         <div>
@@ -74,7 +79,7 @@ export default function PresentationModal({
             fontSize: "15px",
           }}
         >
-          {props.date} - {props.local} - {props.time}
+          {presentationDate} - SALA A - {presentationTime}
         </em>
         <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
           <Star color={favorite ? "#F17F0C" : "#D9D9D9"} />
@@ -82,7 +87,7 @@ export default function PresentationModal({
       </div>
       <div style={{ textAlign: "justify" }}>
         <strong>Abstract: </strong>
-        {props.descricao}
+        {props.submission.abstract}
       </div>
       <div className="d-flex justify-content-center w-100">
         <button

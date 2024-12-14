@@ -1,5 +1,5 @@
-import { committerMembersApi } from "@/services/CommitteeMember";
-import { Presentation, presentationApi } from "@/services/presentation";
+import { Presentation } from "@/models/presentation";
+import { presentationApi } from "@/services/presentation";
 import { createContext, ReactNode, useState } from "react";
 
 interface PresentationProps {

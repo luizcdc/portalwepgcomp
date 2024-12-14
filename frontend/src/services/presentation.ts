@@ -1,42 +1,5 @@
+import { Presentation } from "@/models/presentation";
 import { axiosInstance } from "@/utils/api";
-
-export interface Presentation {
-    id: string;
-    presentationBlockId: string;
-    positionWithinBlock: number;
-    presentationTime: string;
-    submission: Submission;
-}
-
-export interface Submission {
-    id: string;
-    advisorId: string;
-    mainAuthorId: string;
-    eventEditionId: string;
-    title: string;
-    mainAuthor: UserAccount;
-    type: string;
-    abstract: string;
-    pdfFile: string;
-    phoneNumber: string;
-    proposedPresentationBlockId: any;
-    proposedPositionWithinBlock: any;
-    coAdvisor: any;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface UserAccount {
-    id: string
-    name: string
-    email: string
-    registrationNumber: string
-    photoFilePath: string
-    isActive: boolean
-    createdAt: string
-    updatedAt: string
-}
 
 const baseUrl = "/presentation";
 const instance = axiosInstance();
@@ -51,5 +14,13 @@ export const presentationApi = {
         });
 
         return data;
-    }
+    },
+
+    postPresentationBookmark: async (body: OrientacaoParams) => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.post(`${baseUrl}/bookmark`, body);
+
+        return data;
+    },
 }
