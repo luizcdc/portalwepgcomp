@@ -20,7 +20,7 @@ export default function Modal({
 
   const closeModal = () => {
     setIsOpen(false);
-    document.body.style.overflow = "unset";
+    document.body.style.overflow = "auto";
   };
 
   return (
