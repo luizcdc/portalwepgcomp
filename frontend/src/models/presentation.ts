@@ -7,6 +7,10 @@ export interface Presentation {
   submission: Submission;
 }
 
+export interface PresentationBookmark {
+  bookmarked: boolean;
+}
+
 export interface PresentationBookmarkRegister {
   presentationId: string;
 }

@@ -11,6 +11,7 @@ import { SubmissionStatus } from '@prisma/client';
 import { PresentationBlockType } from '@prisma/client';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
 import {
+  BookmarkedPresentationResponseDto,
   BookmarkedPresentationsResponseDto,
   BookmarkPresentationRequestDto,
   BookmarkPresentationResponseDto,
@@ -544,6 +545,29 @@ export class PresentationService {
     return new BookmarkPresentationResponseDto(
       updatedUser.bookmarkedPresentations,
     );
+  }
+
+  async bookmarkedPresentation(
+    userId: string,
+    presentationId: string
+  ): Promise<BookmarkedPresentationResponseDto> {
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+        bookmarkedPresentations: {
+          every: {
+            id: presentationId
+          }
+        }
+      },
+      include: {
+        bookmarkedPresentations: true,
+      },
+    });
+
+    const bookmarked = !!(user && user.bookmarkedPresentations.length);
+
+    return new BookmarkedPresentationResponseDto(bookmarked);
   }
 
   async bookmarkedPresentations(

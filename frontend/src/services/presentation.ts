@@ -1,4 +1,4 @@
-import { Presentation } from "@/models/presentation";
+import { Presentation, PresentationBookmark, PresentationBookmarkRegister } from "@/models/presentation";
 import { axiosInstance } from "@/utils/api";
 
 const baseUrl = "/presentation";
@@ -16,10 +16,29 @@ export const presentationApi = {
         return data;
     },
 
-    postPresentationBookmark: async (body: OrientacaoParams) => {
+    getPresentationBookmark: async (params: PresentationBookmarkRegister): Promise<PresentationBookmark> => {
+        const { data } = await instance.get(`${baseUrl}/bookmark`, {
+            params,
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        return data;
+    },
+
+    postPresentationBookmark: async (body: PresentationBookmarkRegister) => {
         const instance = axiosInstance();
 
         const { data } = await instance.post(`${baseUrl}/bookmark`, body);
+
+        return data;
+    },
+
+    deletePresentationBookmark: async (params: PresentationBookmarkRegister) => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.delete(`${baseUrl}/bookmark`, {params});
 
         return data;
     },

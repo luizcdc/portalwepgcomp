@@ -8,9 +8,15 @@ export class PresentationResponseDto {
   submission: {
     id: string;
     advisorId: string;
-    advisor: UserAccount;
+    advisor?: {
+      name: string;
+      email: string;
+    };
     mainAuthorId: string;
-    mainAuthor: UserAccount;
+    mainAuthor?: {
+      name: string;
+      email: string;
+    };
     eventEditionId: string;
     title: string;
     abstract: string;
@@ -25,7 +31,7 @@ export class PresentationResponseDto {
   };
 
   constructor(
-    presentation: Presentation & { submission: Submission & { mainAuthor: UserAccount, advisor: UserAccount } },
+    presentation: Presentation & { submission: Submission & { mainAuthor?: UserAccount, advisor?: UserAccount } },
     presentationTime: Date,
   ) {
     this.id = presentation.id;

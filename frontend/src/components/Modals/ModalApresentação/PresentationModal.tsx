@@ -1,22 +1,43 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 import Star from "@/components/UI/Star";
 import avaliar from "@/public/assets/images/avaliar.svg";
-import { Presentation } from "@/models/presentation";
+import { Presentation, PresentationBookmark } from "@/models/presentation";
 import moment from 'moment';
+import { useRouter } from "next/navigation";
+import { usePresentation } from "@/hooks/usePresentation";
 
 export default function PresentationModal({
   props,
 }: {
   props: Presentation;
 }) {
-  const [favorite, setFavorite] = useState<boolean>(false);
+  const presentationBookmarkData = { presentationId: props.id };
+  const { getPresentationBookmark, postPresentationBookmark, deletePresentationBookmark } = usePresentation();
+  const [presentationBookmark, setpresentationBookmark] = useState<PresentationBookmark>();
+  const { signed } = useContext(AuthContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    getPresentationBookmark(presentationBookmarkData)
+      .then(setpresentationBookmark);
+  }, []);
 
   function handleFavorite() {
-    setFavorite(!favorite);
+    if (!signed) {
+      router.push('/Login');
+      return
+    }
+    if (presentationBookmark && presentationBookmark.bookmarked) {
+      deletePresentationBookmark(presentationBookmarkData);
+    } else {
+      postPresentationBookmark(presentationBookmarkData);
+    }
+    setpresentationBookmark({ bookmarked: !(presentationBookmark && presentationBookmark.bookmarked)});
   }
 
   const handleEvaluateClick = () => {
@@ -82,7 +103,10 @@ export default function PresentationModal({
           {presentationDate} - SALA A - {presentationTime}
         </em>
         <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
-          <Star color={favorite ? "#F17F0C" : "#D9D9D9"} />
+          {
+            (presentationBookmark) &&
+            <Star color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"} />
+          }
         </div>
       </div>
       <div style={{ textAlign: "justify" }}>

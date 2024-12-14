@@ -122,8 +122,7 @@ export default function ScheduleSection() {
 
         <div className="d-flex flex-column programacao-item">
           {
-            (presentationList) ? 
-            presentationList.map((item, index) => {
+            presentationList?.length && presentationList.map((item, index) => {
               return (
                 <div
                   key={index + item.submission.mainAuthor?.name}
@@ -144,8 +143,7 @@ export default function ScheduleSection() {
                   <div className="m-0 programacao-item-aux"></div>
                 </div>
               );
-            }) :
-            ""
+            })
           }
         </div>
       </div>

@@ -4,7 +4,10 @@ export class ResponseSubmissionDto {
   id: string;
   advisorId: string;
   mainAuthorId: string;
-  mainAuthor: UserAccount;
+  mainAuthor: {
+    name: string;
+    email: string;
+  };
   eventEditionId: string;
   title: string;
   abstract: string;
