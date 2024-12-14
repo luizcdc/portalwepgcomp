@@ -97,7 +97,7 @@ export class PresentationController {
   @Public()
   @Get()
   findAll(
-    @Param('eventEditionId') eventEditionId: string,
+    @Query('eventEditionId') eventEditionId: string,
   ): Promise<PresentationResponseDto[]> {
     return this.presentationService.findAllByEventEditionId(eventEditionId);
   }
