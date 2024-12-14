@@ -12,7 +12,7 @@ const formContatoSchema = z.object({
       invalid_type_error: "Campo inválido!",
     })
     .regex(/^[a-zA-ZÀ-ÿ]+$/, {
-      message: "O campo deve conter apenas letras.",
+      message: "Preenchimento obrigatório",
     }),
 
   email: z
