@@ -105,6 +105,20 @@ export default function Header() {
                   Início
                 </Link>
               </div>
+              {!signed && <li className="nav-wall">
+                <div className="nav-wall vr text-black"></div>
+              </li>
+              }
+              {!signed && <li className="nav-item">
+                <Link
+                    className="nav-link active text-black"
+                    aria-current="page"
+                    href="/Cadastro"
+                  >
+                    Inscrição
+                  </Link>
+              </li>
+              }
               <div className="vr text-black"></div>
               <div
                 className={`nav-item ${
@@ -149,26 +163,6 @@ export default function Header() {
                     href="/Login"
                   >
                     Login
-                  </Link>
-                )}
-              </li>
-              <li className="nav-wall">
-                {signed ? (
-                  null
-                ) : (
-                  <div className="nav-wall vr text-black"></div>
-                )}
-              </li>
-              <li className="nav-item">
-                {signed ? (
-                  null
-                ) : (
-                  <Link
-                    className="nav-link active text-black"
-                    aria-current="page"
-                    href="/Cadastro"
-                  >
-                    Inscrição
                   </Link>
                 )}
               </li>
