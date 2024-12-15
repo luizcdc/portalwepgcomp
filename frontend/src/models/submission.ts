@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 interface SubmissionParams {
+    eventEditionId: string;
     mainAuthorId: string;
     title: string;
     abstractText: string;
