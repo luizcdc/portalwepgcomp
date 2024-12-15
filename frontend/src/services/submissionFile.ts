@@ -1,12 +1,10 @@
-import { UUID } from 'crypto';
-
 import { axiosInstance } from '@/utils/api';
 
 const baseUrl = "/s3-utils";
 const instance = axiosInstance();
 
 export const submissionFileApi = {
-    sendFile: async (file: File, idUser: UUID) => {
+    sendFile: async (file: File, idUser: string) => {
         
         const formData = new FormData();
         formData.append("file", file);

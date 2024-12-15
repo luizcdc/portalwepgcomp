@@ -1,6 +1,3 @@
-import { UUID } from 'crypto';
-
-import { GetSubmissionParams, SubmissionParams } from '@/models/submission';
 import { axiosInstance } from '@/utils/api';
 
 const baseUrl = "/submission";
@@ -13,7 +10,7 @@ export const submissionApi = {
         return data;
     },
 
-    getSubmissionById: async (idSubmission: UUID) => {
+    getSubmissionById: async (idSubmission: string) => {
 
         const { data } = await instance.get(`${baseUrl}/${idSubmission}`);
 
@@ -27,14 +24,14 @@ export const submissionApi = {
         return data;
     },
 
-    updateSubmissionById: async (idSubmission: UUID, body: SubmissionParams) => {
+    updateSubmissionById: async (idSubmission: string, body: SubmissionParams) => {
 
         const { data } = await instance.put(`${baseUrl}/${idSubmission}`, body);
 
         return data;
     },
 
-    deleteSubmissionById: async (idSubmission: UUID) => {
+    deleteSubmissionById: async (idSubmission: string) => {
 
         const { data } = await instance.delete(`${baseUrl}/${idSubmission}`);
 

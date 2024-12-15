@@ -1,12 +1,12 @@
-import { UUID } from "crypto";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-export interface SubmissionFileParams {
-    idUser: UUID;
+interface SubmissionFileParams {
+    idUser: string;
     pdfFile: File;
 }
 
-export interface SubmissionFile extends SubmissionFileParams {
-    id: UUID;
+interface SubmissionFile extends SubmissionFileParams {
+    id: string;
     createdAt: Date;
     deletedAt: Date;
     updatedAt: Date;
