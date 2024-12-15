@@ -39,11 +39,9 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         try {
             const response = await submissionApi.getSubmissions(params);
             setSubmissionList(response);
-            console.log("Listado com sucesso");
         } catch (err: any) {
             console.error(err);
             setSubmissionList([]);
-            console.log("Erro ao tentar listar");
 
             showAlert({
                 icon: "error",
@@ -64,11 +62,9 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         try {
             const response = await submissionApi.getSubmissionById(idSubmission);
             setSubmission(response);
-            console.log("Encontrado com sucesso");
         } catch (err: any) {
             console.error(err);
             setSubmission(null);
-            console.log("Erro ao buscar");
 
             showAlert({
                 icon: "error",
@@ -99,7 +95,6 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         } catch (err: any) {
             console.error(err);
             setSubmission(null);
-            console.log("Erro ao cadastrar apresentação")
 
             showAlert({
                 icon: "error",
@@ -130,7 +125,6 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         } catch (err: any) {
             console.error(err);
             setSubmission(null);
-            console.log("Erro ao editar");
 
             showAlert({
                 icon: "error",
@@ -161,7 +155,6 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         } catch (err: any) {
             console.error(err);
             setSubmission(null);
-            console.log("Erro ao remover");
 
             showAlert({
                 icon: "error",
