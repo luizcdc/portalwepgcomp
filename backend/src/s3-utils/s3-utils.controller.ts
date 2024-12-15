@@ -6,6 +6,7 @@ import {
   ParseFilePipe,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { S3UtilsService } from './s3-utils.service';
@@ -18,8 +19,10 @@ import {
 } from '@nestjs/swagger';
 import { v4 } from 'uuid';
 import { AppException } from 'src/exceptions/app.exception';
+import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 
 @Controller('s3-utils')
+@UseGuards(ThrottlerGuard) // Habilita o rate limiter
 export class S3UtilsController {
   constructor(private readonly s3UtilsService: S3UtilsService) {}
 
@@ -30,6 +33,13 @@ export class S3UtilsController {
   }
 
   @Post()
+  @Throttle({
+    default: {
+      limit: 5, // The maximum number of requests within the TTL limit
+      ttl: 60, // The number of milliseconds that each request will last in storage
+      blockDuration: 60000, // The number of milliseconds that request will be blocked for that time -> Currently 1 min
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data') // Specify the content type
   @ApiBody({

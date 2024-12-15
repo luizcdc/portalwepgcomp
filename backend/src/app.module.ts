@@ -17,6 +17,9 @@ import { EvaluationModule } from './evaluation/evaluation.module';
 import { S3UtilsModule } from './s3-utils/s3-utils.module';
 import { RoomModule } from './room/room.module';
 import { GuidanceModule } from './guidance/guidance.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { RedisThrottlerStorageService } from './redis/redis-throttler-storage.service';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -36,6 +39,17 @@ import { GuidanceModule } from './guidance/guidance.module';
     S3UtilsModule,
     RoomModule,
     GuidanceModule,
+    RedisModule,
+    ThrottlerModule.forRootAsync({
+      imports: [RedisModule],
+      inject: [RedisThrottlerStorageService],
+      useFactory: async (redisStorage: RedisThrottlerStorageService) => ({
+        ttl: 60, // Janela de tempo em segundos
+        limit: 5, // Limite de requisições
+        storage: redisStorage,
+        throttlers: [],
+      }),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
