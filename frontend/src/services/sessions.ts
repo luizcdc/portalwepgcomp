@@ -43,4 +43,13 @@ export const sessionApi = {
 
         return data;
     },
+
+    swapPresentationsOnSession: async ( idSession: string,
+        body: SwapPresentationsOnSession) => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.patch(`${baseUrl}/${idSession}/presentations/swap`, body);
+
+        return data;
+    },
 }

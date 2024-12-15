@@ -29,23 +29,6 @@ interface Panelist {
   userId: string;
 }
 
-interface Submission {
-  id: string;
-  advisorId: string;
-  mainAuthorId: string;
-  eventEditionId: string;
-  title: string;
-  abstract: string;
-  pdfFile: string;
-  phoneNumber: string;
-  proposedPresentationBlockId: null;
-  proposedPositionWithinBlock: null;
-  coAdvisor: null;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 interface Presentation {
   id: string;
   submissionId: symbol;

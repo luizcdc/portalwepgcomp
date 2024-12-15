@@ -4,12 +4,7 @@ import { useRouter } from "next/navigation";
 import { createContext, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
-import {
-  api,
-  LoginRequest,
-  setTokenLocalStorage,
-  setUserLocalStorage,
-} from "./util";
+import { api, LoginRequest, setTokenLocalStorage } from "./util";
 
 export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
 
@@ -36,7 +31,6 @@ export const AuthProvider = ({ children }) => {
       setUser(payload.data);
       api.defaults.headers.common["Authorization"] = `Bearer ${payload.token}`;
       setTokenLocalStorage(payload.token);
-      setUserLocalStorage(JSON.stringify(payload.data));
 
       showAlert({
         icon: "success",

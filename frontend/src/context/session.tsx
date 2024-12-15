@@ -87,7 +87,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const createSession = async (eventEditionId: string, body: SessaoParams) => {
     setLoadingSessao(true);
 
-    sessionApi
+    return sessionApi
       .createSession(body)
       .then((response) => {
         setSessao(response);
@@ -107,6 +107,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
         }
 
         listSessions(eventEditionId);
+        return true;
       })
       .catch((err) => {
         setSessao(null);
@@ -118,6 +119,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
         });
+        return false;
       })
       .finally(() => {
         setLoadingSessao(false);
@@ -130,7 +132,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
     body: SessaoParams
   ) => {
     setLoadingSessao(true);
-    sessionApi
+    return sessionApi
       .updateSessionById(idSession, body)
       .then((response) => {
         setSessao(response);
@@ -149,9 +151,9 @@ export const SessionProvider = ({ children }: SessionProps) => {
           modalElementButton.click();
         }
         listSessions(eventEditionId);
+        return true;
       })
       .catch((err) => {
-        console.log(err);
         setSessao(null);
         showAlert({
           icon: "error",
@@ -161,6 +163,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
         });
+        return false;
       })
       .finally(() => {
         setLoadingSessao(false);
@@ -230,7 +233,6 @@ export const SessionProvider = ({ children }: SessionProps) => {
         return true;
       })
       .catch((err) => {
-        console.log(err);
         setSessao(null);
         showAlert({
           icon: "error",

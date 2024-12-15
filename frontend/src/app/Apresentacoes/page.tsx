@@ -9,7 +9,7 @@ import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
 
 export default function Apresentacoes() {
-  const { title, userArea, cardsMock, buttonList } = ApresentacoesMock;
+  const { title, userArea, cardsMock } = ApresentacoesMock;
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] =
@@ -29,7 +29,6 @@ export default function Apresentacoes() {
             idModal="editarApresentacaoModal"
             title={title}
             labelAddButton={userArea.add}
-            labelListCardsButton={buttonList}
             searchValue={searchValue}
             onChangeSearchValue={(value) => setSearchValue(value)}
             searchPlaceholder={userArea.search}

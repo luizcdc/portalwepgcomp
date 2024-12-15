@@ -41,7 +41,6 @@ export default function Listagem({
   onDelete,
   onClear,
 }: Readonly<ListagemProps>) {
-  console.log(cardsList);
   return (
     <div className="listagem-template">
       <Banner title={title} />
@@ -100,8 +99,8 @@ export default function Listagem({
             !isFavorites &&
             cardsList?.map((card) => (
               <CardListagem
-                key={card.title}
-                title={card.title}
+                key={card.id}
+                title={card.title ?? "Sem título"}
                 subtitle={
                   title === "Sessões"
                     ? `${formatDate(card.startTime)}`
@@ -109,7 +108,7 @@ export default function Listagem({
                 }
                 generalButtonLabel={generalButtonLabel}
                 idGeneralModal={
-                  title === "Sessões" && card?.type == "Presentation"
+                  card?.type == "Presentation" && !!card?.presentations.length
                     ? idGeneralModal
                     : ""
                 }

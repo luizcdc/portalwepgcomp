@@ -10,11 +10,13 @@ import Listagem from "@/templates/Listagem/Listagem";
 import ModalSessaoOrdenarApresentacoes from "@/components/Modals/ModalSessaoOrdenarApresentacoes/ModalSessaoOrdenarApresentacoes";
 import { useUsers } from "@/hooks/useUsers";
 import { useEdicao } from "@/hooks/useEdicao";
+import { useSubmission } from "@/hooks/useSubmission";
 
 export default function Sessoes() {
   const { title, userArea, eventEditionId } = SessoesMock;
   const { listSessions, sessoesList, deleteSession, setSessao } = useSession();
-  const { listUsers } = useUsers();
+  const { getUsers } = useUsers();
+  const { getSubmissions } = useSubmission();
   const { getEdicaoById } = useEdicao();
 
   const [searchValue, setSearchValue] = useState<string>("");
@@ -32,14 +34,19 @@ export default function Sessoes() {
   useEffect(() => {
     getEdicaoById(eventEditionId);
     listSessions(eventEditionId);
-    listUsers("Professor");
+    getUsers({ profile: "Professor" });
+    getSubmissions({ eventEditionId, withouPresentation: true });
   }, []);
 
   useEffect(() => {
     const newSessionsList =
       sessoesList?.filter((v) => v.title?.includes(searchValue.trim())) ?? [];
     setSessionsListValues(newSessionsList);
-  }, [searchValue, sessoesList]);
+  }, [searchValue]);
+
+  useEffect(() => {
+    setSessionsListValues(sessoesList);
+  }, [sessoesList]);
 
   return (
     <ProtectedLayout>

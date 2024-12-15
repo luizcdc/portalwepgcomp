@@ -17,6 +17,7 @@ import { formatOptions } from "@/utils/formatOptions";
 import { useUsers } from "@/hooks/useUsers";
 import { useEdicao } from "@/hooks/useEdicao";
 import { useEffect } from "react";
+import { useSubmission } from "@/hooks/useSubmission";
 
 const formSessaoApresentacoesSchema = z.object({
   apresentacoes: z
@@ -71,7 +72,8 @@ export default function FormSessaoApresentacoes() {
   const { formApresentacoesFields, confirmButton, eventEditionId } =
     ModalSessaoMock;
   const { createSession, updateSession, sessao, setSessao } = useSession();
-  const { usersList } = useUsers();
+  const { userList } = useUsers();
+  const { submissionList } = useSubmission();
   const { Edicao } = useEdicao();
 
   type FormSessaoApresentacoesSchema = z.infer<
@@ -108,19 +110,18 @@ export default function FormSessaoApresentacoes() {
     "name"
   );
 
-  const apresentacoesOptions =
-    formApresentacoesFields.apresentacoes.options?.map((v) => {
-      return {
-        value: v.id,
-        label: v.submission?.title || "",
-      };
-    });
+  const apresentacoesOptions = submissionList?.map((v) => {
+    return {
+      value: v.id,
+      label: v?.title || "",
+    };
+  });
 
-  const avaliadoresOptions = formatOptions(usersList, "name");
+  const avaliadoresOptions = formatOptions(userList, "name");
 
   const filterTimes = (time: Date) => {
     const hour = time.getHours();
-    return hour < 12 && hour > 6;
+    return hour < 22 && hour > 6;
   };
 
   const handleFormSessaoApresentacoes = (
@@ -135,13 +136,13 @@ export default function FormSessaoApresentacoes() {
     const body = {
       type: "Presentation",
       eventEditionId,
-      apresentacoes: apresentacoes?.length
+      submissions: apresentacoes?.length
         ? apresentacoes?.map((v) => v.value)
         : undefined,
       roomId: sala,
       startTime: inicio,
       numPresentations: n_apresentacoes,
-      avaliadores: avaliadores?.length
+      panelists: avaliadores?.length
         ? avaliadores?.map((v) => v.value)
         : undefined,
     } as SessaoParams;
@@ -168,8 +169,11 @@ export default function FormSessaoApresentacoes() {
     if (sessao) {
       setValue(
         "apresentacoes",
-        sessao?.presentations.map((v) => {
-          return { value: v.id, label: v.submission?.title ?? "" };
+        sessao?.presentations?.map((v) => {
+          return {
+            value: v.submission?.id ?? "",
+            label: v.submission?.title ?? "",
+          };
         })
       );
       setValue("n_apresentacoes", sessao?.numPresentations ?? 0);
