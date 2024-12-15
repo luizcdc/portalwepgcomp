@@ -112,4 +112,17 @@ export class MailingService {
 
     return { message: 'Email sent successfully' };
   }
+
+  async sendEmailConfirmation(email: string, token: string): Promise<void> {
+    const confirmationUrl = `${process.env.APP_URL}/users/confirm-email?token=${token}`;
+    const subject = 'Confirmação de Cadastro';
+    const html = `<p>Clique no link para confirmar seu cadastro: <a href="${confirmationUrl}">${confirmationUrl}</a></p>`;
+
+    await this.mailerTransport.sendMail({
+      from: process.env.MAIL_USER,
+      to: email,
+      subject,
+      html,
+    });
+  }
 }

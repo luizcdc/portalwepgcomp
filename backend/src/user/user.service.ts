@@ -2,13 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { Prisma, Profile, UserAccount, UserLevel } from '@prisma/client';
+import { MailingService } from 'src/mailing/mailing.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaClient: PrismaService) {}
+  constructor(
+    private prismaClient: PrismaService,
+    private jwtService: JwtService,
+    private mailingService: MailingService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const emailExists = await this.prismaClient.userAccount.findUnique({
@@ -59,6 +65,20 @@ export class UserService {
         level: shouldBeSuperAdmin ? UserLevel.Superadmin : UserLevel.Default,
       },
     });
+
+    if (createdUser.emailVerifiedStatus === false) {
+      const token = await this.generateEmailToken(createdUser.id);
+      await this.mailingService.sendEmailConfirmation(createdUser.email, token);
+      await this.prismaClient.userAccount.update({
+        where: {
+          id: createdUser.id,
+        },
+        data: {
+          emailVerificationToken: token,
+          emailVerificationSentAt: new Date(),
+        },
+      });
+    }
 
     const responseUserDto = new ResponseUserDto(createdUser);
 
@@ -251,6 +271,10 @@ export class UserService {
         photoFilePath: true,
         profile: true,
         level: true,
+        emailVerificationToken: true,
+        emailVerifiedAt: true,
+        emailVerificationSentAt: true,
+        emailVerifiedStatus: true,
         isActive: true,
         createdAt: true,
         updatedAt: true,
@@ -258,5 +282,27 @@ export class UserService {
     });
 
     return users.map((user) => new ResponseUserDto(user));
+  }
+
+  private async generateEmailToken(userId: string): Promise<string> {
+    const payload = { id: userId };
+    return this.jwtService.sign(payload, { expiresIn: '24h' });
+  }
+
+  async confirmEmail(token: string): Promise<boolean> {
+    try {
+      const { id } = this.jwtService.verify(token);
+      const user = await this.prismaClient.userAccount.update({
+        where: { id },
+        data: { emailVerifiedStatus: true, emailVerifiedAt: new Date() },
+      });
+
+      return !!user;
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new AppException('Token inválido ou expirado.', 400);
+      }
+      throw error;
+    }
   }
 }

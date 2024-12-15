@@ -8,6 +8,8 @@ import {
   Patch,
   Get,
   Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
@@ -84,5 +86,18 @@ export class UserController {
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   async getAdvisors() {
     return await this.userService.findAll(['Admin', 'Superadmin'], 'Professor');
+  }
+
+  @Post('confirm-email')
+  async confirmEmail(@Query('token') token: string): Promise<string> {
+    const confirmed = await this.userService.confirmEmail(token);
+    if (confirmed) {
+      return 'E-mail confirmado com sucesso.';
+    } else {
+      throw new HttpException(
+        'Falha ao confirmar o e-mail.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
