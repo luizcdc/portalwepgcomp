@@ -7,8 +7,8 @@ import { z } from "zod";
 import { useUsers } from "@/hooks/useUsers";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import "./style.scss";
 import PasswordEye from "@/components/UI/PasswordEye";
+import "./style.scss";
 
 const formCadastroSchema = z
   .object({
@@ -16,7 +16,7 @@ const formCadastroSchema = z
       .string({ invalid_type_error: "Campo Inválido" })
       .min(1, "O nome é obrigatório.")
       .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
-        message: "O campo deve conter apenas letras.",
+        message: "Preenchimento obrigatório.",
       }),
 
     perfil: z.enum(["doutorando", "professor", "ouvinte"], {

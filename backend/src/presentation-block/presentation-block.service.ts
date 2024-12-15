@@ -207,7 +207,7 @@ export class PresentationBlockService {
     });
 
     if (!eventEdition) {
-      throw new Error('Edição do evento não encontrada');
+      throw new AppException('Edição do evento não encontrada', 404);
     }
 
     return Promise.all(
@@ -234,7 +234,7 @@ export class PresentationBlockService {
       });
 
     if (!presentationBlock) {
-      throw new Error('Presentation block not found');
+      throw new AppException('Sessão não encontrada', 404);
     }
 
     return this.processPresentationBlock(presentationBlock);
@@ -392,7 +392,7 @@ export class PresentationBlockService {
     });
 
     if (!eventEdition) {
-      throw new Error('Event edition not found');
+      throw new AppException('Edição do evento não encontrada', 404);
     }
 
     const presentationDuration = eventEdition.presentationDuration;
