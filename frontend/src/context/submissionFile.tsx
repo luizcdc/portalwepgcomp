@@ -34,11 +34,9 @@ export const SubmissionFileProvider = ({ children }: SubmissionFileProps) => {
         try {
             const response = await submissionFileApi.getFiles();
             setSubmissionFileList(response);
-            console.log("Listado com sucesso")
         } catch (err: any) {
             console.error(err);
             setSubmissionFileList([]);
-            console.log("Erro ao tentar listar");
 
             showAlert({
                 icon: "error",
@@ -59,11 +57,9 @@ export const SubmissionFileProvider = ({ children }: SubmissionFileProps) => {
         try {
             const response = await submissionFileApi.sendFile(file, idUser);
             setSubmissionFile(response);
-            console.log("Arquivo enviado com sucesso");
         } catch (err: any) {
             console.error(err);
             setSubmissionFile(null);
-            console.log("Erro ao cadastrar apresentação")
         } finally {
             setLoadingSubmissionFile(false);
         }
