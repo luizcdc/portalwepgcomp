@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSubmissionDto } from './dto/create-submission.dto';
+import {
+  CreateSubmissionDto,
+  CreateSubmissionInCurrentEventDto,
+} from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { ResponseSubmissionDto } from './dto/response-submission.dto';
 import { AppException } from '../exceptions/app.exception';
@@ -367,5 +370,24 @@ export class SubmissionService {
     );
 
     return proposedStartTime;
+  }
+
+  async createInCurrentEvent(
+    createSubmissionInCurrentEventDto: CreateSubmissionInCurrentEventDto,
+  ) {
+    const event = await this.prismaClient.eventEdition.findFirst({
+      where: {
+        isActive: true,
+      },
+    });
+
+    if (!event) {
+      throw new AppException('Não existe nenhum evento ativo no momento.', 404);
+    }
+
+    return this.create({
+      ...createSubmissionInCurrentEventDto,
+      eventEditionId: event.id,
+    });
   }
 }

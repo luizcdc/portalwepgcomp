@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventEditionService } from './event-edition.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateEventEditionDto } from './dto/create-event-edition.dto';
 import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
@@ -15,6 +15,7 @@ describe('EventEditionService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
       updateMany: jest.fn(),
@@ -228,6 +229,47 @@ describe('EventEditionService', () => {
       mockPrismaService.eventEdition.findUnique.mockResolvedValue(null);
 
       await expect(service.getById('1')).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('getByYear', () => {
+    it('should return an event for the given year', async () => {
+      const year = 2022;
+      const event = {
+        id: '1',
+        name: 'Event 1',
+        startDate: new Date(year, 0, 1),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      mockPrismaService.eventEdition.findFirst.mockResolvedValue(event);
+
+      const result = await service.getByYear(year);
+
+      expect(result).toEqual(new EventEditionResponseDto(event));
+      expect(mockPrismaService.eventEdition.findFirst).toHaveBeenCalledWith({
+        where: {
+          startDate: {
+            gte: new Date(year, 0, 1),
+            lt: new Date(year + 1, 0, 1),
+          },
+        },
+      });
+    });
+
+    it('should throw a NotFoundException when no event is found for the given year', async () => {
+      const year = 2022;
+      mockPrismaService.eventEdition.findFirst.mockResolvedValue(null);
+
+      await expect(service.getByYear(year)).rejects.toThrow(NotFoundException);
+      expect(mockPrismaService.eventEdition.findFirst).toHaveBeenCalledWith({
+        where: {
+          startDate: {
+            gte: new Date(year, 0, 1),
+            lt: new Date(year + 1, 0, 1),
+          },
+        },
+      });
     });
   });
 
