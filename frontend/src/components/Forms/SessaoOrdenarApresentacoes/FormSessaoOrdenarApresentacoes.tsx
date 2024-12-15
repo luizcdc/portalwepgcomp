@@ -8,7 +8,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import "./style.scss";
-import { formatOptions } from "@/utils/formatOptions";
+import { useSession } from "@/hooks/useSession";
+import { useEffect, useState } from "react";
 
 const formSessaoOrdenarApresentacoesSchema = z.object({
   apresentacao1: z
@@ -25,7 +26,9 @@ const formSessaoOrdenarApresentacoesSchema = z.object({
 });
 
 export default function FormSessaoOrdenarApresentacoes() {
-  const { confirmButton } = ModalSessaoMock;
+  const [apresentacao1Value, setApresentacao1Value] = useState<string>("");
+  const { confirmButton, eventEditionId } = ModalSessaoMock;
+  const { swapPresentationsOnSession, sessao } = useSession();
 
   type FormSessaoOrdenarApresentacoesSchema = z.infer<
     typeof formSessaoOrdenarApresentacoesSchema
@@ -34,71 +37,40 @@ export default function FormSessaoOrdenarApresentacoes() {
   const {
     register,
     handleSubmit,
+    watch,
+    reset,
+    resetField,
     formState: { errors },
   } = useForm<FormSessaoOrdenarApresentacoesSchema>({
     resolver: zodResolver(formSessaoOrdenarApresentacoesSchema),
   });
 
-  const presentationsMock = [
-    {
-      id: "529ac0f5-da94-4d73-bc53-8ef255c714cc",
-      submissionId: "d71c3dd6-a433-4d5a-961f-e931f4165074",
-      presentationBlockId: "290891e7-df2a-40d0-9882-2c2c6cce968c",
-      positionWithinBlock: 1,
-      status: "ToPresent",
-      startTime: "2024-05-01T12:20:00.000Z",
-      createdAt: "2024-12-11T22:17:55.443Z",
-      updatedAt: "2024-12-11T22:17:55.443Z",
-      title: "The Impact of AI in Modern Research",
-      submission: {
-        id: "d71c3dd6-a433-4d5a-961f-e931f4165074",
-        advisorId: "980f9547-7406-4f80-9640-b52809b260bf",
-        mainAuthorId: "980f9547-7406-4f80-9640-b52809b260bf",
-        eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
-        abstract: "A study on how AI impacts modern research methodologies.",
-        pdfFile: "path/to/document.pdf",
-        phoneNumber: "123-456-7890",
-        proposedPresentationBlockId: null,
-        proposedPositionWithinBlock: null,
-        coAdvisor: null,
-        status: "Submitted",
-        createdAt: "2024-12-11T22:17:50.792Z",
-        updatedAt: "2024-12-11T22:17:50.792Z",
-      },
-    },
-    {
-      id: "529ac0f5-da94-4d73-bc53-8ef255c714cd",
-      submissionId: "d71c3dd6-a433-4d5a-961f-e931f4165074",
-      presentationBlockId: "290891e7-df2a-40d0-9882-2c2c6cce968c",
-      positionWithinBlock: 2,
-      status: "ToPresent",
-      startTime: "2024-05-01T12:20:00.000Z",
-      createdAt: "2024-12-11T22:17:55.443Z",
-      updatedAt: "2024-12-11T22:17:55.443Z",
-      title: "The Impact of AI in Modern Research 2",
-      submission: {
-        id: "d71c3dd6-a433-4d5a-961f-e931f4165074",
-        advisorId: "980f9547-7406-4f80-9640-b52809b260bf",
-        mainAuthorId: "980f9547-7406-4f80-9640-b52809b260bf",
-        eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
-        abstract: "A study on how AI impacts modern research methodologies.",
-        pdfFile: "path/to/document.pdf",
-        phoneNumber: "123-456-7890",
-        proposedPresentationBlockId: null,
-        proposedPositionWithinBlock: null,
-        coAdvisor: null,
-        status: "Submitted",
-        createdAt: "2024-12-11T22:17:50.792Z",
-        updatedAt: "2024-12-11T22:17:50.792Z",
-      },
-    },
-  ];
-
-  const apresentacoesOptions = formatOptions(presentationsMock, "title");
+  const apresentacoesOptions = sessao?.presentations?.map((v) => {
+    return {
+      value: v.id,
+      label: v.submission?.title || "",
+    };
+  });
 
   const handleFormSessaoApresentacoes = (
     data: FormSessaoOrdenarApresentacoesSchema
-  ) => {};
+  ) => {
+    if (!data.apresentacao1 || !data.apresentacao2) {
+      throw new Error("Uma dos campos está vazio");
+    }
+
+    swapPresentationsOnSession(sessao?.id || "", eventEditionId, {
+      presentation1Id: data.apresentacao1,
+      presentation2Id: data.apresentacao2,
+    }).then((status) => (status ? reset() : undefined));
+  };
+
+  useEffect(() => {
+    if (watch("apresentacao1") !== apresentacao1Value) {
+      resetField("apresentacao2");
+      setApresentacao1Value(watch("apresentacao1"));
+    }
+  }, [watch("apresentacao1")]);
 
   return (
     <form
@@ -115,7 +87,9 @@ export default function FormSessaoOrdenarApresentacoes() {
           className="form-select"
           {...register("apresentacao1")}
         >
-          <option hidden>Selecione uma apresentação</option>
+          <option value="" hidden>
+            Selecione uma apresentação
+          </option>
           {apresentacoesOptions?.map((op, i) => (
             <option id={`apres1-op${i}`} key={op.value} value={op.value}>
               {op.label}
@@ -136,14 +110,19 @@ export default function FormSessaoOrdenarApresentacoes() {
         <select
           id="apresentacao2-id"
           className="form-select"
+          disabled={!watch("apresentacao1")}
           {...register("apresentacao2")}
         >
-          <option hidden>Selecione outra apresentação</option>
-          {apresentacoesOptions?.map((op, i) => (
-            <option id={`apres2-op${i}`} key={op.value} value={op.value}>
-              {op.label}
-            </option>
-          ))}
+          <option value="" hidden>
+            Selecione outra apresentação
+          </option>
+          {apresentacoesOptions
+            ?.filter((v) => v.value !== watch("apresentacao1"))
+            ?.map((op, i) => (
+              <option id={`apres2-op${i}`} key={op.value} value={op.value}>
+                {op.label}
+              </option>
+            ))}
         </select>
 
         <p className="text-danger error-message">

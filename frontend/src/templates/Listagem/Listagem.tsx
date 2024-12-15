@@ -12,7 +12,6 @@ interface ListagemProps {
   searchPlaceholder: string;
   cardsList: any[];
   searchValue?: string;
-  labelListCardsButton?: string;
   isMyPresentation?: boolean;
   isFavorites?: boolean;
   idModal?: string;
@@ -29,7 +28,6 @@ export default function Listagem({
   idModal,
   title,
   labelAddButton,
-  labelListCardsButton,
   searchPlaceholder,
   searchValue,
   isMyPresentation,
@@ -43,6 +41,7 @@ export default function Listagem({
   onDelete,
   onClear,
 }: Readonly<ListagemProps>) {
+  console.log(cardsList);
   return (
     <div className="listagem-template">
       <Banner title={title} />
@@ -109,7 +108,11 @@ export default function Listagem({
                     : card.subtitle
                 }
                 generalButtonLabel={generalButtonLabel}
-                idGeneralModal={idGeneralModal}
+                idGeneralModal={
+                  title === "Sessões" && card?.type == "Presentation"
+                    ? idGeneralModal
+                    : ""
+                }
                 idModalEdit={idModal}
                 onClickItem={() => onClickItem && onClickItem(card)}
                 onDelete={() => onDelete && onDelete(card?.id ?? "")}
@@ -144,23 +147,6 @@ export default function Listagem({
             </div>
           )}
         </div>
-        <button
-          className="listagem-template-mais-cards"
-          style={{
-            visibility:
-              isMyPresentation || cardsList.length <= 4 ? "hidden" : "visible",
-          }}
-        >
-          {labelListCardsButton}
-
-          <Image
-            className="listagem-template-mais-cards-icon"
-            src="/assets/images/seta.svg"
-            alt=""
-            width={24}
-            height={24}
-          />
-        </button>
       </div>
     </div>
   );

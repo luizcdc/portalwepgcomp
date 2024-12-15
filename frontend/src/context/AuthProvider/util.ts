@@ -6,6 +6,10 @@ export function setTokenLocalStorage(token: any){
     localStorage.setItem("@Auth:token", token)
 }
 
+export function setUserLocalStorage(token: any){
+  localStorage.setItem("@Auth:user", token)
+}
+
 export function getUserLocalStorage() {
   const storageToken = localStorage.getItem("@Auth:token");
 

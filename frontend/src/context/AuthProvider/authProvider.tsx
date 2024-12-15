@@ -1,7 +1,12 @@
 "use client";
 
 import { createContext, useState } from "react";
-import { api, LoginRequest, setTokenLocalStorage } from "./util";
+import {
+  api,
+  LoginRequest,
+  setTokenLocalStorage,
+  setUserLocalStorage,
+} from "./util";
 import { useRouter } from "next/navigation";
 import { useSweetAlert } from "@/hooks/useAlert";
 
@@ -30,6 +35,7 @@ export const AuthProvider = ({ children }) => {
       setUser(payload.data);
       api.defaults.headers.common["Authorization"] = `Bearer ${payload.token}`;
       setTokenLocalStorage(payload.token);
+      setUserLocalStorage(JSON.stringify(payload.data));
 
       showAlert({
         icon: "success",

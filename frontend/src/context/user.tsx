@@ -14,7 +14,10 @@ interface UserProviderData {
   loadingCreateUser: boolean;
   loadingSendEmail: boolean;
   loadingResetPassword: boolean;
+  loadingUsersList: boolean;
   user: User | null;
+  usersList: User[];
+  listUsers: (profiles?: string, roles?: string) => Promise<void>;
   registerUser: (body: RegisterUserParams) => Promise<void>;
   resetPasswordSendEmail: (body: ResetPasswordSendEmailParams) => Promise<void>;
   resetPassword: (body: ResetPasswordParams) => Promise<void>;
@@ -26,13 +29,31 @@ export const UserContext = createContext<UserProviderData>(
 
 export const UserProvider = ({ children }: UserProps) => {
   const [loadingCreateUser, setLoadingCreateUser] = useState<boolean>(false);
+  const [loadingUsersList, setLoadingUsersList] = useState<boolean>(false);
   const [loadingSendEmail, setLoadingSendEmail] = useState<boolean>(false);
   const [loadingResetPassword, setLoadingResetPassword] =
     useState<boolean>(false);
+  const [usersList, setUsetsList] = useState<User[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
   const { showAlert } = useSweetAlert();
   const router = useRouter();
+
+  const listUsers = async (profiles?: string, roles?: string) => {
+    setLoadingUsersList(true);
+    userApi
+      .listUsers(profiles, roles)
+      .then((response) => {
+        setUsetsList(response);
+      })
+      .catch((err) => {
+        console.log(err);
+        setUsetsList([]);
+      })
+      .finally(() => {
+        setLoadingUsersList(false);
+      });
+  };
 
   const registerUser = async (body: RegisterUserParams) => {
     setLoadingCreateUser(true);
@@ -133,7 +154,10 @@ export const UserProvider = ({ children }: UserProps) => {
         loadingCreateUser,
         loadingSendEmail,
         loadingResetPassword,
+        loadingUsersList,
         user,
+        usersList,
+        listUsers,
         registerUser,
         resetPasswordSendEmail,
         resetPassword,

@@ -23,9 +23,21 @@ interface SessionProviderData {
   setSessao: Dispatch<SetStateAction<Sessao | null>>;
   listSessions: (eventEditionId: string) => void;
   getSessionById: (idSession: string) => void;
-  createSession: (body: SessaoParams) => void;
-  updateSession: (idSession: string, body: SessaoParams) => void;
-  deleteSession: (idSession: string) => void;
+  createSession: (
+    eventEditionId: string,
+    body: SessaoParams
+  ) => Promise<boolean>;
+  updateSession: (
+    idSession: string,
+    eventEditionId: string,
+    body: SessaoParams
+  ) => Promise<boolean>;
+  deleteSession: (idSession: string, eventEditionId: string) => void;
+  swapPresentationsOnSession: (
+    idSession: string,
+    eventEditionId: string,
+    body: SwapPresentationsOnSession
+  ) => Promise<boolean>;
 }
 
 export const SessionContext = createContext<SessionProviderData>(
@@ -72,7 +84,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
       });
   };
 
-  const createSession = async (body: SessaoParams) => {
+  const createSession = async (eventEditionId: string, body: SessaoParams) => {
     setLoadingSessao(true);
 
     sessionApi
@@ -85,6 +97,16 @@ export const SessionProvider = ({ children }: SessionProps) => {
           timer: 3000,
           showConfirmButton: false,
         });
+
+        const modalElementButton = document.getElementById(
+          "sessaoModalClose"
+        ) as HTMLButtonElement;
+
+        if (modalElementButton) {
+          modalElementButton.click();
+        }
+
+        listSessions(eventEditionId);
       })
       .catch((err) => {
         setSessao(null);
@@ -102,7 +124,11 @@ export const SessionProvider = ({ children }: SessionProps) => {
       });
   };
 
-  const updateSession = async (idSession: string, body: SessaoParams) => {
+  const updateSession = async (
+    idSession: string,
+    eventEditionId: string,
+    body: SessaoParams
+  ) => {
     setLoadingSessao(true);
     sessionApi
       .updateSessionById(idSession, body)
@@ -114,6 +140,15 @@ export const SessionProvider = ({ children }: SessionProps) => {
           timer: 3000,
           showConfirmButton: false,
         });
+
+        const modalElementButton = document.getElementById(
+          "sessaoModalClose"
+        ) as HTMLButtonElement;
+
+        if (modalElementButton) {
+          modalElementButton.click();
+        }
+        listSessions(eventEditionId);
       })
       .catch((err) => {
         console.log(err);
@@ -132,7 +167,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
       });
   };
 
-  const deleteSession = async (idSession: string) => {
+  const deleteSession = async (idSession: string, eventEditionId: string) => {
     setLoadingSessao(true);
     sessionApi
       .deleteSessionById(idSession)
@@ -144,7 +179,9 @@ export const SessionProvider = ({ children }: SessionProps) => {
           showConfirmButton: false,
         });
 
-        listSessions("d91250a6-790a-43ce-9688-004d88e33d5a");
+        listSessions(eventEditionId);
+
+        return true;
       })
       .catch((err) => {
         showAlert({
@@ -155,9 +192,58 @@ export const SessionProvider = ({ children }: SessionProps) => {
             "Ocorreu um erro durante a deleção. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
         });
+        return false;
       })
       .finally(() => {
         setSessao(null);
+        setLoadingSessao(false);
+      });
+  };
+
+  const swapPresentationsOnSession = async (
+    idSession: string,
+    eventEditionId: string,
+    body: SwapPresentationsOnSession
+  ) => {
+    setLoadingSessao(true);
+    return sessionApi
+      .swapPresentationsOnSession(idSession, body)
+      .then((response) => {
+        setSessao(response);
+        showAlert({
+          icon: "success",
+          title:
+            "Troca na ordem das apresentações da sessão realizada com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+        listSessions(eventEditionId);
+
+        const modalElementButton = document.getElementById(
+          "trocarOrdemApresentacaoClose"
+        ) as HTMLButtonElement;
+
+        if (modalElementButton) {
+          modalElementButton.click();
+        }
+
+        return true;
+      })
+      .catch((err) => {
+        console.log(err);
+        setSessao(null);
+        showAlert({
+          icon: "error",
+          title: "Erro na troca da ordem das apresentações da sessão",
+          text:
+            err.response?.data?.message ||
+            "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
+
+        return false;
+      })
+      .finally(() => {
         setLoadingSessao(false);
       });
   };
@@ -175,6 +261,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
         createSession,
         updateSession,
         deleteSession,
+        swapPresentationsOnSession,
       }}
     >
       {children}

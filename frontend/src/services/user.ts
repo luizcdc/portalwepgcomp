@@ -5,6 +5,17 @@ const baseUrl = "/users";
 const authBaseUrl = "/auth";
 
 export const userApi = {
+    listUsers: async (profiles?: string, roles?: string) => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.get(`${baseUrl}`, {params: {
+            profiles,
+            roles
+        }});
+
+        return data;
+    },
+
     registerUser: async (body: RegisterUserParams) => {
         const instance = axiosInstance();
 

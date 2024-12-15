@@ -8,10 +8,14 @@ import { useSession } from "@/hooks/useSession";
 import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";
 import ModalSessaoOrdenarApresentacoes from "@/components/Modals/ModalSessaoOrdenarApresentacoes/ModalSessaoOrdenarApresentacoes";
+import { useUsers } from "@/hooks/useUsers";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Sessoes() {
-  const { title, userArea, buttonList, eventEditionId } = SessoesMock;
+  const { title, userArea, eventEditionId } = SessoesMock;
   const { listSessions, sessoesList, deleteSession, setSessao } = useSession();
+  const { listUsers } = useUsers();
+  const { getEdicaoById } = useEdicao();
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] =
@@ -26,7 +30,9 @@ export default function Sessoes() {
   };
 
   useEffect(() => {
+    getEdicaoById(eventEditionId);
     listSessions(eventEditionId);
+    listUsers("Professor");
   }, []);
 
   useEffect(() => {
@@ -36,31 +42,30 @@ export default function Sessoes() {
   }, [searchValue, sessoesList]);
 
   return (
-    // <ProtectedLayout>
-    <div
-      className="d-flex flex-column"
-      style={{
-        gap: "50px",
-      }}
-    >
-      <Listagem
-        idModal="sessaoModal"
-        title={title}
-        labelAddButton={userArea.add}
-        labelListCardsButton={buttonList}
-        searchPlaceholder={userArea.search}
-        searchValue={searchValue}
-        onChangeSearchValue={(value) => setSearchValue(value)}
-        cardsList={sessionsListValues}
-        idGeneralModal="trocarOrdemApresentacao"
-        generalButtonLabel="Trocar ordem das apresentações"
-        onClickItem={getSessionOnList}
-        onClear={() => setSessao(null)}
-        onDelete={(id: string) => deleteSession(id)}
-      />
-      <ModalSessao />
-      <ModalSessaoOrdenarApresentacoes />
-    </div>
-    // </ProtectedLayout>
+    <ProtectedLayout>
+      <div
+        className="d-flex flex-column"
+        style={{
+          gap: "50px",
+        }}
+      >
+        <Listagem
+          idModal="sessaoModal"
+          title={title}
+          labelAddButton={userArea.add}
+          searchPlaceholder={userArea.search}
+          searchValue={searchValue}
+          onChangeSearchValue={(value) => setSearchValue(value)}
+          cardsList={sessionsListValues}
+          idGeneralModal="trocarOrdemApresentacao"
+          generalButtonLabel="Trocar ordem das apresentações"
+          onClickItem={getSessionOnList}
+          onClear={() => setSessao(null)}
+          onDelete={(id: string) => deleteSession(id, eventEditionId)}
+        />
+        <ModalSessao />
+        <ModalSessaoOrdenarApresentacoes />
+      </div>
+    </ProtectedLayout>
   );
 }
