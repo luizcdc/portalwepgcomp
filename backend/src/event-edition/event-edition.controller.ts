@@ -62,6 +62,7 @@ export class EventEditionController {
   }
 
   @Put(':id')
+  @UserLevels(UserLevel.Superadmin)
   async update(
     @Param('id') id: string,
     @Body() updateEventRequestDTO: UpdateEventEditionDto,
@@ -70,11 +71,13 @@ export class EventEditionController {
   }
 
   @Patch('active/:id')
+  @UserLevels(UserLevel.Superadmin)
   async setActive(@Param('id') id: string) {
     return await this.eventEditionService.setActive(id);
   }
 
   @Delete(':id')
+  @UserLevels(UserLevel.Superadmin)
   async delete(@Param('id') id: string) {
     return await this.eventEditionService.delete(id);
   }
