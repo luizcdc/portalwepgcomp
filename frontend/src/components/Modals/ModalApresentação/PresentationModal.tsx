@@ -59,8 +59,17 @@ export default function PresentationModal({
           </h4>
         </div>
         <div>
-          <button className="btn border border-0" onClick={handleEvaluateClick}>
-            <Image src={avaliar} width={40} height={25} alt="Avaliar" />
+          <button
+            className="fw-semibold bg-white"
+            onClick={handleEvaluateClick}
+            style={{
+              border: "2px solid #FFA90F",
+              borderRadius: "20px",
+              color: "#FFA90F",
+              padding: "3px 20px",
+            }}
+          >
+            Avaliar
           </button>
         </div>
       </div>
@@ -80,11 +89,7 @@ export default function PresentationModal({
           <Star color={favorite ? "#F17F0C" : "#D9D9D9"} />
         </div>
       </div>
-      <div style={{ textAlign: "justify" }}>
-        <strong>Abstract: </strong>
-        {props.descricao}
-      </div>
-      <div className="d-flex justify-content-center w-100">
+      <div className="d-flex justify-content-left w-100">
         <button
           className="fw-semibold bg-white"
           style={{
@@ -95,8 +100,12 @@ export default function PresentationModal({
             width: "302px",
           }}
         >
-          Acessar Apresentação
+          Baixar apresentação
         </button>
+      </div>
+      <div style={{ textAlign: "justify" }}>
+        <strong>Abstract: </strong>
+        {props.descricao}
       </div>
     </div>
   );
