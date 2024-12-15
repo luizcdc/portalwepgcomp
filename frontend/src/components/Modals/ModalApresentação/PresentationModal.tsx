@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import Star from "@/components/UI/Star";
 
+import "./style.scss";
+
 export default function PresentationModal({
   props,
 }: {
@@ -58,14 +60,8 @@ export default function PresentationModal({
         </div>
         <div>
           <button
-            className="fw-semibold bg-white"
+            className="avaliar-button"
             onClick={handleEvaluateClick}
-            style={{
-              border: "2px solid #FFA90F",
-              borderRadius: "20px",
-              color: "#FFA90F",
-              padding: "3px 20px",
-            }}
           >
             Avaliar
           </button>
@@ -86,20 +82,19 @@ export default function PresentationModal({
         <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
           <Star color={favorite ? "#F17F0C" : "#D9D9D9"} />
         </div>
-      </div>
-      <div className="d-flex justify-content-left w-100">
-        <button
-          className="fw-semibold bg-white"
-          style={{
-            border: "2px solid #FFA90F",
-            borderRadius: "20px",
-            color: "#FFA90F",
-            padding: "3px 20px",
-            width: "302px",
-          }}
-        >
-          Baixar apresentação
-        </button>
+        <div>
+          <button
+            className="fw-semibold bg-white"
+            style={{
+              border: "none",
+              borderRadius: "20px",
+              color: "#FFA90F",
+              padding: "3px 20px",
+            }}
+          >
+            Baixar apresentação
+          </button>
+        </div>
       </div>
       <div style={{ textAlign: "justify" }}>
         <strong>Abstract: </strong>
