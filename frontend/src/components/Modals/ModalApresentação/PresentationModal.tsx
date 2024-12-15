@@ -1,10 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 
 import Star from "@/components/UI/Star";
-import avaliar from "@/public/assets/images/avaliar.svg";
 
 export default function PresentationModal({
   props,
