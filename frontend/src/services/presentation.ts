@@ -28,16 +28,12 @@ export const presentationApi = {
     },
 
     postPresentationBookmark: async (body: PresentationBookmarkRegister) => {
-        const instance = axiosInstance();
-
         const { data } = await instance.post(`${baseUrl}/bookmark`, body);
 
         return data;
     },
 
     deletePresentationBookmark: async (params: PresentationBookmarkRegister) => {
-        const instance = axiosInstance();
-
         const { data } = await instance.delete(`${baseUrl}/bookmark`, {params});
 
         return data;
