@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { MockupPresentention, MockupSchedule } from "@/mocks/Schedule";
 import PresentationModal from "../Modals/ModalApresentação/PresentationModal";
@@ -7,6 +7,7 @@ import ScheduleCard from "../ScheduleCard";
 import Calendar from "../UI/calendar";
 import Modal from "../UI/Modal/Modal";
 import "./style.scss";
+import { useSession } from "@/hooks/useSession";
 
 export default function ScheduleSection() {
   const [date, setDate] = useState<number>(0);
@@ -14,6 +15,15 @@ export default function ScheduleSection() {
   const openModal = useRef<HTMLButtonElement | null>(null);
   const [modalContent, setModalContent] =
     useState<PresentationData>(MockupPresentention);
+  const { listSessions, sessoesList } = useSession();
+  const presentatios[]
+
+  useEffect(() => { //Subistituir o ID depois pelo id geral da aplicação
+    listSessions("d91250a6-790a-43ce-9688-004d88e33d5a");
+  }, [])
+  
+  presentatios = listSessions.presentations
+  
 
   function changeDate(date: number) {
     setDate(date);

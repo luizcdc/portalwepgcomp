@@ -6,9 +6,9 @@ const baseUrl = "/presentation-block";
 export const sessionApi = {
     listSessions: async (idEdition: string) => {
         const instance = axiosInstance();
-
+        console.log("idEvento: ", idEdition)
         const { data } = await instance.get(`${baseUrl}/event-edition/${idEdition}`);
-
+        console.log("Data: ", data)
         return data;
     },
 
