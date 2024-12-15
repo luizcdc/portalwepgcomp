@@ -91,6 +91,7 @@ export function FormCadastroApresentacao() {
       await sendFile(file, user.id);
 
       const submissionData = {
+        eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
         mainAuthorId: user.id,
         title: data.titulo,
         abstractText: data.abstract,
