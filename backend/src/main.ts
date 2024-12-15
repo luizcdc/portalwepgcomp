@@ -14,9 +14,9 @@ async function bootstrap() {
     origin: [
       'https://portal-wepgcomp-client-development.vercel.app',
       'https://portal-wepgcomp-client.vercel.app',
-      `http://localhost:${process.env.FRONTEND_LOCAL_PORT}`
+      `http://localhost:${process.env.FRONTEND_LOCAL_PORT}`,
     ],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   });
 
   const config = new DocumentBuilder()

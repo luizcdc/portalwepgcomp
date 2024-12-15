@@ -7,10 +7,17 @@ import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { useSession } from "@/hooks/useSession";
 import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";
+import ModalSessaoOrdenarApresentacoes from "@/components/Modals/ModalSessaoOrdenarApresentacoes/ModalSessaoOrdenarApresentacoes";
+import { useUsers } from "@/hooks/useUsers";
+import { useEdicao } from "@/hooks/useEdicao";
+import { useSubmission } from "@/hooks/useSubmission";
 
 export default function Sessoes() {
-  const { title, userArea, buttonList, eventEditionId } = SessoesMock;
+  const { title, userArea, eventEditionId } = SessoesMock;
   const { listSessions, sessoesList, deleteSession, setSessao } = useSession();
+  const { getUsers } = useUsers();
+  const { getSubmissions } = useSubmission();
+  const { getEdicaoById } = useEdicao();
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] =
@@ -25,14 +32,21 @@ export default function Sessoes() {
   };
 
   useEffect(() => {
+    getEdicaoById(eventEditionId);
     listSessions(eventEditionId);
+    getUsers({ profile: "Professor" });
+    getSubmissions({ eventEditionId, withouPresentation: true });
   }, []);
 
   useEffect(() => {
     const newSessionsList =
       sessoesList?.filter((v) => v.title?.includes(searchValue.trim())) ?? [];
     setSessionsListValues(newSessionsList);
-  }, [searchValue, sessoesList]);
+  }, [searchValue]);
+
+  useEffect(() => {
+    setSessionsListValues(sessoesList);
+  }, [sessoesList]);
 
   return (
     <ProtectedLayout>
@@ -46,16 +60,18 @@ export default function Sessoes() {
           idModal="sessaoModal"
           title={title}
           labelAddButton={userArea.add}
-          labelListCardsButton={buttonList}
           searchPlaceholder={userArea.search}
           searchValue={searchValue}
           onChangeSearchValue={(value) => setSearchValue(value)}
           cardsList={sessionsListValues}
+          idGeneralModal="trocarOrdemApresentacao"
+          generalButtonLabel="Trocar ordem das apresentações"
           onClickItem={getSessionOnList}
           onClear={() => setSessao(null)}
-          onDelete={(id: string) => deleteSession(id)}
+          onDelete={(id: string) => deleteSession(id, eventEditionId)}
         />
         <ModalSessao />
+        <ModalSessaoOrdenarApresentacoes />
       </div>
     </ProtectedLayout>
   );

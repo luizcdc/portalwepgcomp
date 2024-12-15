@@ -18,7 +18,6 @@ export default function Edicoes() {
       <Listagem
         title={title}
         labelAddButton={userArea.add}
-        labelListCardsButton={buttonList}
         searchPlaceholder={userArea.search}
         cardsList={cardsMock}
         onDelete={(id: string) => deleteEdicao(id)}

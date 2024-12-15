@@ -12,10 +12,11 @@ interface ListagemProps {
   searchPlaceholder: string;
   cardsList: any[];
   searchValue?: string;
-  labelListCardsButton?: string;
   isMyPresentation?: boolean;
   isFavorites?: boolean;
   idModal?: string;
+  idGeneralModal?: string;
+  generalButtonLabel?: string;
   onAddButtonClick?: () => void;
   onChangeSearchValue?: (value: string) => void;
   onClickItem?: (value: string) => void;
@@ -27,7 +28,6 @@ export default function Listagem({
   idModal,
   title,
   labelAddButton,
-  labelListCardsButton,
   searchPlaceholder,
   searchValue,
   isMyPresentation,
@@ -35,7 +35,9 @@ export default function Listagem({
   cardsList,
   onAddButtonClick,
   onChangeSearchValue,
+  generalButtonLabel,
   onClickItem,
+  idGeneralModal,
   onDelete,
   onClear,
 }: Readonly<ListagemProps>) {
@@ -97,12 +99,18 @@ export default function Listagem({
             !isFavorites &&
             cardsList?.map((card) => (
               <CardListagem
-                key={card.title}
-                title={card.title}
+                key={card.id}
+                title={card.title ?? "Sem título"}
                 subtitle={
                   title === "Sessões"
                     ? `${formatDate(card.startTime)}`
                     : card.subtitle
+                }
+                generalButtonLabel={generalButtonLabel}
+                idGeneralModal={
+                  card?.type == "Presentation" && !!card?.presentations.length
+                    ? idGeneralModal
+                    : ""
                 }
                 idModalEdit={idModal}
                 onClickItem={() => onClickItem && onClickItem(card)}
@@ -138,23 +146,6 @@ export default function Listagem({
             </div>
           )}
         </div>
-        <button
-          className="listagem-template-mais-cards"
-          style={{
-            visibility:
-              isMyPresentation || cardsList.length <= 4 ? "hidden" : "visible",
-          }}
-        >
-          {labelListCardsButton}
-
-          <Image
-            className="listagem-template-mais-cards-icon"
-            src="/assets/images/seta.svg"
-            alt=""
-            width={24}
-            height={24}
-          />
-        </button>
       </div>
     </div>
   );
