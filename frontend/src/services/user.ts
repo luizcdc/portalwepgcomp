@@ -1,5 +1,4 @@
 "use client"
-import { GetUserParams, RegisterUserParams, ResetPasswordParams, ResetPasswordSendEmailParams } from '@/models/user';
 import { axiosInstance } from '@/utils/api';
 
 const baseUrl = "/users";

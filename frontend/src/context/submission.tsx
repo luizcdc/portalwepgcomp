@@ -1,8 +1,6 @@
-import { UUID } from "crypto";
 import { createContext, ReactNode, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
-import { GetSubmissionParams, Submission, SubmissionParams } from "@/models/submission";
 import { submissionApi } from "@/services/submission";
 
 interface SubmissionProps {
@@ -15,10 +13,10 @@ interface SubmissionProviderData {
     submissionList: Submission[];
     submission: Submission | null;
     getSubmissions: (params: GetSubmissionParams) => void;
-    getSubmissionById: (idSubmission: UUID) => void;
+    getSubmissionById: (idSubmission: string) => void;
     createSubmission: (body: SubmissionParams) => void;
-    updateSubmissionById: (idSubmission: UUID, body: SubmissionParams) => void;
-    deleteSubmissionById: (idSubmission: UUID) => void;
+    updateSubmissionById: (idSubmission: string, body: SubmissionParams) => void;
+    deleteSubmissionById: (idSubmission: string) => void;
 }
 
 export const SubmissionContext = createContext<SubmissionProviderData>(
@@ -56,7 +54,7 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         }
     }
 
-    const getSubmissionById = async (idSubmission: UUID) => {
+    const getSubmissionById = async (idSubmission: string) => {
         setLoadingSubmission(true);
 
         try {
@@ -109,7 +107,7 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         }
     }
 
-    const updateSubmissionById = async (idSubmission: UUID, body: SubmissionParams) => {
+    const updateSubmissionById = async (idSubmission: string, body: SubmissionParams) => {
         setLoadingSubmission(true);
 
         try {
@@ -139,7 +137,7 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         }
     }
 
-    const deleteSubmissionById = async (idSubmission: UUID) => {
+    const deleteSubmissionById = async (idSubmission: string) => {
         setLoadingSubmission(true);
 
         try {

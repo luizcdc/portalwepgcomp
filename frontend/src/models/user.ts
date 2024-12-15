@@ -1,14 +1,14 @@
-import { UUID } from "crypto";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
 type RoleType = "Superadmin" | "Admin" | "Default";
 
-export interface GetUserParams {
+interface GetUserParams {
     profile?: ProfileType;
     role?: RoleType;
 }
 
-export interface RegisterUserParams {
+interface RegisterUserParams {
     name: string,
     email: string,
     password: string,
@@ -19,29 +19,29 @@ export interface RegisterUserParams {
     registrationNumber?: string
 }
 
-export interface User extends RegisterUserParams {
-    id: UUID,
+interface User extends RegisterUserParams {
+    id: string,
     createdAt: Date;
     deletedAt: Date;
     updatedAt: Date;
 }
 
-export interface ResetPasswordSendEmailParams {
+interface ResetPasswordSendEmailParams {
     email: string,
 }
 
-export interface ResetPasswordParams {
+interface ResetPasswordParams {
     token: string,
     newPassword: string,
 }
 
-export interface UserLogin {
+interface UserLogin {
     email: string,
     password: string
 }
 
-export interface UserProfile {
-    id: UUID;
+interface UserProfile {
+    id: string;
     name: string;
     profile: string;
     level: string;

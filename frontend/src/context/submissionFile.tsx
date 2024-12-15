@@ -1,8 +1,6 @@
-import { UUID } from "crypto";
 import { createContext, ReactNode, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
-import { SubmissionFile } from "@/models/submissionFile";
 import { submissionFileApi } from "@/services/submissionFile";
 
 interface SubmissionFileProps {
@@ -15,7 +13,7 @@ interface SubmissionFileProviderData {
     submissionFileList: SubmissionFile[];
     submissionFile: SubmissionFile | null;
     getFiles: () => Promise<void>;
-    sendFile: (file: File, idSubmission: UUID) => Promise<void>;
+    sendFile: (file: File, idSubmission: string) => Promise<void>;
 }
 
 export const SubmissionFileContext = createContext<SubmissionFileProviderData>(
@@ -55,7 +53,7 @@ export const SubmissionFileProvider = ({ children }: SubmissionFileProps) => {
         }
     }
 
-    const sendFile = async (file: File, idUser: UUID) => {
+    const sendFile = async (file: File, idUser: string) => {
         setLoadingSubmissionFile(true);
 
         try {

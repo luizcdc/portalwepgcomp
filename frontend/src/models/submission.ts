@@ -1,25 +1,25 @@
-import { UUID } from "crypto";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-export interface SubmissionParams {
-    mainAuthorId: UUID;
+interface SubmissionParams {
+    mainAuthorId: string;
     title: string;
     abstractText: string;
-    advisorId: UUID;
+    advisorId: string;
     coAdvisor?: string;
     dateSuggestion?: Date;
     pdfFile: string;
     phoneNumber: string;
 }
 
-export interface GetSubmissionParams {
-    eventEditionId: UUID;
+interface GetSubmissionParams {
+    eventEditionId: string;
     withouPresentation?: boolean;
     orderByProposedPresentation?: boolean;
     showConfirmedOnly?: boolean;
 }
 
-export interface Submission extends SubmissionParams {
-    id: UUID;
+interface Submission extends SubmissionParams {
+    id: string;
     createdAt: Date;
     deletedAt: Date;
     updatedAt: Date;
