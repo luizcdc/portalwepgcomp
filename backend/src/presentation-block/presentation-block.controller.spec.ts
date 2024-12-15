@@ -6,6 +6,7 @@ import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto'
 import { ResponsePresentationBlockDto } from './dto/response-presentation-block.dto';
 import { PresentationBlockType } from '@prisma/client';
 import { SwapPresentationsDto } from './dto/swap-presentations.dto';
+import { AppException } from '../exceptions/app.exception';
 
 describe('PresentationBlockController', () => {
   let controller: PresentationBlockController;
@@ -113,8 +114,11 @@ describe('PresentationBlockController', () => {
 
     it('should return null when not found', async () => {
       const id = '999';
-
-      mockPresentationBlockService.findOne.mockResolvedValue(null);
+      // the service will raise an exception if the block is not found, not return null
+      // let's mock it raising an exception
+      mockPresentationBlockService.findOne.mockRejectedValue(
+        new AppException('Presentation block not found', 404),
+      );
 
       const result = await controller.findOne(id);
 
