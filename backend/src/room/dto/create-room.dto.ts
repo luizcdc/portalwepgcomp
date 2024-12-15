@@ -3,7 +3,7 @@ import { IsString, IsOptional, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class CreateRoomDto {
   @IsUUID()
-  @ApiProperty({ example: 'e691f604-ea01-4ffa-9f77-3df417490ca2' })
+  @ApiProperty({ example: 'd91250a6-790a-43ce-9688-004d88e33d5a' })
   eventEditionId: string;
 
   @IsNotEmpty()

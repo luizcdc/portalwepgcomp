@@ -9,7 +9,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { SubmissionService } from './submission.service';
-import { CreateSubmissionDto } from './dto/create-submission.dto';
+import {
+  CreateSubmissionDto,
+  CreateSubmissionInCurrentEventDto,
+} from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { ResponseSubmissionDto } from './dto/response-submission.dto';
 import { ApiQuery } from '@nestjs/swagger';
@@ -21,6 +24,16 @@ export class SubmissionController {
   @Post()
   create(@Body() createSubmissionDto: CreateSubmissionDto) {
     return this.submissionService.create(createSubmissionDto);
+  }
+
+  @Post('/create-in-current-event')
+  createInCurrentEvent(
+    @Body()
+    createSubmissionInCurrentEventDto: CreateSubmissionInCurrentEventDto,
+  ) {
+    return this.submissionService.createInCurrentEvent(
+      createSubmissionInCurrentEventDto,
+    );
   }
 
   @Get()

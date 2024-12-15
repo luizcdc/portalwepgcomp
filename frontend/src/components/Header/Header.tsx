@@ -102,9 +102,23 @@ export default function Header() {
                 onClick={() => handleItemClick("inicio")}
               >
                 <Link className="nav-link text-black" href="/Home">
-                  Inicio
+                  Início
                 </Link>
               </div>
+              {!signed && <li className="nav-wall">
+                <div className="nav-wall vr text-black"></div>
+              </li>
+              }
+              {!signed && <li className="nav-item">
+                <Link
+                    className="nav-link active text-black"
+                    aria-current="page"
+                    href="/Cadastro"
+                  >
+                    Inscrição
+                  </Link>
+              </li>
+              }
               <div className="vr text-black"></div>
               <div
                 className={`nav-item ${

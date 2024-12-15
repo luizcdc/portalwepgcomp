@@ -55,7 +55,14 @@ export class EventEditionController {
     return await this.eventEditionService.getById(id);
   }
 
+  @Public()
+  @Get('year/:year')
+  async getByYear(@Param('year') year: number) {
+    return await this.eventEditionService.getByYear(year);
+  }
+
   @Put(':id')
+  @UserLevels(UserLevel.Superadmin)
   async update(
     @Param('id') id: string,
     @Body() updateEventRequestDTO: UpdateEventEditionDto,
@@ -64,11 +71,13 @@ export class EventEditionController {
   }
 
   @Patch('active/:id')
+  @UserLevels(UserLevel.Superadmin)
   async setActive(@Param('id') id: string) {
     return await this.eventEditionService.setActive(id);
   }
 
   @Delete(':id')
+  @UserLevels(UserLevel.Superadmin)
   async delete(@Param('id') id: string) {
     return await this.eventEditionService.delete(id);
   }
