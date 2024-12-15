@@ -87,7 +87,7 @@ export class CreatePresentationBlockDto {
   @IsOptional()
   @IsUUID('4', {
     each: true,
-    message: 'O ID de uma das apresentações informadas é inválido.',
+    message: 'O ID de um dos trabalhos informados é inválido.',
   })
-  presentations?: string[];
+  submissions?: string[];
 }
