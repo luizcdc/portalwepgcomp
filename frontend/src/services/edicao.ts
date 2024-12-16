@@ -20,6 +20,14 @@ export const edicaoApi = {
         return data;
     },
 
+    getEdicaoByYear: async (year: string) => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.get(`${baseUrl}/year/${year}`);
+
+        return data;
+    },
+
     createEdicao: async (body: EdicaoParams) => {
 
         const { data } = await instance.post(`${baseUrl}/create-from-event-edition-form`, body);
@@ -40,6 +48,7 @@ export const edicaoApi = {
 
         return data;
     },
+
     deleteEdicaoById: async (idEdicao: string) => {
 
         const { data } = await instance.delete(`${baseUrl}/${idEdicao}`);

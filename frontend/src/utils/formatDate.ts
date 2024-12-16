@@ -1,4 +1,7 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
+dayjs.extend(isSameOrAfter);
 
 export const formatDate = (dateStart: string): string => {
     const d_Start = dayjs(dateStart);
@@ -43,8 +46,10 @@ export const formatDateEvent = (dateStart: string | undefined, dateEnd: string |
   const endMonth = d_end.format('MM');
   const year = d_end.format('YYYY');
 
+ 
+
   if (startMonth == endMonth) {
-    return `${startDate} a ${endDate} de ${meses[parseInt(endMonth)]} de ${year}`;
+    return `${startDate} a ${endDate} de ${meses[parseInt(startMonth)-1 ]} de ${year}`;
   }
   return `${startDate} de ${meses[parseInt(startMonth)-1]} a ${endDate} de ${meses[parseInt(endMonth)-1]} de ${year}`;
 };

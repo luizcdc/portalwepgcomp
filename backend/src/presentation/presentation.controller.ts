@@ -20,6 +20,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from 'src/auth/guards/user-level.guard';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
 import {
+  BookmarkedPresentationResponseDto,
   BookmarkedPresentationsResponseDto,
   BookmarkPresentationRequestDto,
   BookmarkPresentationResponseDto,
@@ -39,6 +40,16 @@ export class PresentationController {
     const userId = req.user.userId;
 
     return this.presentationService.bookmarkedPresentations(userId);
+  }
+
+  @Get('bookmark')
+  bookmarkedPresentation(
+    @Request() req,
+    @Query('presentationId') presentationId: string,
+  ): Promise<BookmarkedPresentationResponseDto> {
+    const userId = req.user.userId;
+
+    return this.presentationService.bookmarkedPresentation(userId, presentationId);
   }
 
   @Post('bookmark')

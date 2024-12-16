@@ -13,18 +13,18 @@ import { useEdicao } from "@/hooks/useEdicao";
 import { useSubmission } from "@/hooks/useSubmission";
 
 export default function Sessoes() {
-  const { title, userArea, eventEditionId } = SessoesMock;
+  const { title, userArea } = SessoesMock;
   const { listSessions, sessoesList, deleteSession, setSessao } = useSession();
   const { getUsers } = useUsers();
   const { getSubmissions } = useSubmission();
-  const { getEdicaoById } = useEdicao();
+  const { Edicao } = useEdicao();
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] =
     useState<Sessao[]>(sessoesList);
 
   const getSessionOnList = (card: any) => {
-    const sessaoValue = sessoesList.find((v) => v.id === card.id);
+    const sessaoValue = sessoesList?.find((v) => v.id === card.id);
 
     if (sessaoValue?.id) {
       setSessao(sessaoValue);
@@ -32,21 +32,27 @@ export default function Sessoes() {
   };
 
   useEffect(() => {
-    getEdicaoById(eventEditionId);
-    listSessions(eventEditionId);
+    listSessions(Edicao?.id ?? "");
     getUsers({ profile: "Professor" });
-    getSubmissions({ eventEditionId, withouPresentation: true });
+    getSubmissions({
+      eventEditionId: Edicao?.id ?? "",
+      withouPresentation: true,
+    });
   }, []);
 
   useEffect(() => {
-    const newSessionsList =
-      sessoesList?.filter((v) => v.title?.includes(searchValue.trim())) ?? [];
-    setSessionsListValues(newSessionsList);
-  }, [searchValue]);
+    if (sessoesList.length) {
+      const newSessionsList =
+        sessoesList?.filter(
+          (v) => !v.title || v.title?.includes(searchValue.trim())
+        ) ?? [];
+      setSessionsListValues(newSessionsList);
+    }
+  }, [sessoesList, searchValue]);
 
   useEffect(() => {
     setSessionsListValues(sessoesList);
-  }, [sessoesList]);
+  }, []);
 
   return (
     <ProtectedLayout>
@@ -68,7 +74,7 @@ export default function Sessoes() {
           generalButtonLabel="Trocar ordem das apresentações"
           onClickItem={getSessionOnList}
           onClear={() => setSessao(null)}
-          onDelete={(id: string) => deleteSession(id, eventEditionId)}
+          onDelete={(id: string) => deleteSession(id, Edicao?.id ?? "")}
         />
         <ModalSessao />
         <ModalSessaoOrdenarApresentacoes />

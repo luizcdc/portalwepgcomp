@@ -22,8 +22,9 @@ export default function Favoritos() {
     setSessionsListValues(newSessionsList);
   }, [searchValue]);
 
+  // TODO: Integrar com os modelos de apresentação
   const [modalContent, setModalContent] =
-    useState<PresentationData>(MockupPresentention);
+    useState<any>(MockupPresentention);
 
   function openModalPresentation(item) {
     setModalContent({ ...modalContent, ...item });

@@ -54,3 +54,17 @@ export class BookmarkedPresentationsResponseDto {
     this.bookmarkedPresentations = bookmarkedPresentations;
   }
 }
+
+export class BookmarkedPresentationResponseDto {
+  @ApiProperty({
+    type: Object,
+    example: {
+      bookmarked: true
+    },
+  })
+  bookmarked: boolean;
+
+  constructor(bookmarked: boolean) {
+    this.bookmarked = bookmarked;
+  }
+}

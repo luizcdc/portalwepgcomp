@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Image from "next/image";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import "./protectedLayout.scss";
 import { useRouter } from "next/navigation";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export const ProtectedLayout = ({
   children,
@@ -11,6 +12,12 @@ export const ProtectedLayout = ({
 }) => {
   const router = useRouter();
   const { signed } = useContext(AuthContext);
+
+  const { getEdicaoByYear } = useEdicao();
+
+  useEffect(() => {
+    getEdicaoByYear("2024");
+  }, []);
 
   if (!signed) {
     setTimeout(() => {

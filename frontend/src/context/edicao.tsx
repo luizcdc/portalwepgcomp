@@ -18,6 +18,7 @@ interface EdicaoProviderData {
   Edicao: Edicao | null;
   listEdicao: () => void;
   getEdicaoById: (idEdicao: string) => void;
+  getEdicaoByYear: (year: string) => void;
   createEdicao: (body: EdicaoParams) => void;
   updateEdicao: (idEdicao: string, body: EdicaoParams) => void;
   updateEdicaoActivate: (idEdicao: string, body: EdicaoParams) => void;
@@ -42,10 +43,11 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
     try {
       const response = await edicaoApi.listEdicao();
       setEdicoesList(response);
+      setEdicao(response[0]);
       return response;
     } catch (err: any) {
-      console.error(err);
       setEdicoesList([]);
+      setEdicao(null);
       showAlert({
         icon: "error",
         title: "Erro ao listar apresentações",
@@ -64,7 +66,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       const response = await edicaoApi.getEdicaoById(idEdicao);
       setEdicao(response);
     } catch (err: any) {
-      console.error(err);
       setEdicao(null);
       showAlert({
         icon: "error",
@@ -73,8 +74,24 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         confirmButtonText: "Retornar",
       });
     } finally {
-      setLoadingEdicao(false);
+      setLoadingEdicoesList(false);
     }
+  };
+
+  const getEdicaoByYear = async (year: string) => {
+    setLoadingEdicao(true);
+    edicaoApi
+      .getEdicaoByYear(year)
+      .then((response) => {
+        setEdicao(response);
+      })
+      .catch((err) => {
+        console.log(err);
+        setEdicao(null);
+      })
+      .finally(() => {
+        setLoadingEdicao(false);
+      });
   };
 
   const createEdicao = async (body: EdicaoParams) => {
@@ -203,6 +220,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         edicoesList,
         listEdicao,
         getEdicaoById,
+        getEdicaoByYear,
         createEdicao,
         updateEdicao,
         updateEdicaoActivate,
