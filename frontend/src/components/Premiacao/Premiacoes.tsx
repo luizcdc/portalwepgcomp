@@ -1,13 +1,22 @@
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { premiacoesAvaliadoresMock, premiacoesBancaMock, premiacoesPublicoMock } from '@/mocks/Premiacao';
 import PremiacaoCategoria from './PremiacaoCategoria';
 
 import "./style.scss";
+import { useEdicao } from '@/hooks/useEdicao';
+import { usePremiacao } from '@/hooks/usePremiacao';
 
 export default function Premiacoes({ categoria }: { categoria: "banca" | "avaliadores" | "publico" }) {
     const [searchTerm, setSearchTerm] = useState('');
+    const { Edicao } = useEdicao();
+
+    const { getPremiacoes } = usePremiacao();
+    
+    useEffect(() => {
+        getPremiacoes(Edicao?.id);
+    }, []);
 
     const getAwards = () => {
         switch (categoria) {
