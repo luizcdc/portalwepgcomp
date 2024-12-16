@@ -45,7 +45,7 @@ jobs:
           envkey_MAIL_HOST: "smtp.gmail.com"
           envkey_MAIL_PORT: "587"
           envkey_S3_AWS_REGION: ${{ vars.S3_AWS_REGION }}
-          envkey_S3_AWS_ACCESS_KEY_ID: ${{ secrets.S3_AWS_ACCESS_KEY_ID }}
+          envkey_S3_AWS_ACCESS_KEY_ID: ${{ vars.S3_AWS_ACCESS_KEY_ID }}
           envkey_S3_AWS_SECRET_ACCESS_KEY: ${{ vars.S3_AWS_SECRET_ACCESS_KEY }}
           envkey_S3_AWS_BUCKET_NAME: ${{ vars.S3_AWS_BUCKET_NAME }}
           file_name: .env
