@@ -181,7 +181,7 @@ export function FormEdicao() {
     }
 
     await createEdicao(body);
-    router.push("/Edicoes");
+    router.push("/Home");
   };
 
   return (
