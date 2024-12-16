@@ -19,8 +19,10 @@ interface SessionProviderData {
   loadingSessoesList: boolean;
   loadingSessao: boolean;
   sessoesList: Sessao[];
+  presentationList: PresentationBlock[];
   sessao: Sessao | null;
   setSessao: Dispatch<SetStateAction<Sessao | null>>;
+  listPresentations: (eventEditionId: string) => void;
   listSessions: (eventEditionId: string) => void;
   getSessionById: (idSession: string) => void;
   createSession: (body: SessaoParams) => void;
@@ -37,8 +39,24 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const [loadingSessao, setLoadingSessao] = useState<boolean>(false);
   const [sessoesList, setSessoesList] = useState<Sessao[]>([]);
   const [sessao, setSessao] = useState<Sessao | null>(null);
+  const [presentationList, setPresentationList] = useState<PresentationBlock[]>([]);
 
   const { showAlert } = useSweetAlert();
+
+  const listPresentations = async (eventEditionId: string) => {
+    setLoadingSessoesList(true);
+    sessionApi
+      .listSessions(eventEditionId)
+      .then((response) => {        
+        setPresentationList(response[0].presentations);
+      })
+      .catch((err) => {
+        console.log(err);
+        setPresentationList([]);
+      })
+      .finally(() => {
+      });
+  };
 
   const listSessions = async (eventEditionId: string) => {
     setLoadingSessoesList(true);
@@ -165,9 +183,11 @@ export const SessionProvider = ({ children }: SessionProps) => {
         loadingSessao,
         loadingSessoesList,
         sessao,
-        setSessao,
+        presentationList,
         sessoesList,
+        setSessao,
         listSessions,
+        listPresentations,
         getSessionById,
         createSession,
         updateSession,

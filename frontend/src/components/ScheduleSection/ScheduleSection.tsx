@@ -16,15 +16,42 @@ export default function ScheduleSection() {
   const [modalContent, setModalContent] =
     useState<PresentationData>(MockupPresentention);
   const { listSessions, sessoesList } = useSession();
-  const presentatios[]
+  const { listPresentations, presentationList } = useSession();
+  
+
+  useEffect(() => { //Subistituir o ID depois pelo id geral da aplicação
+    listPresentations("d91250a6-790a-43ce-9688-004d88e33d5a");
+  }, [])
 
   useEffect(() => { //Subistituir o ID depois pelo id geral da aplicação
     listSessions("d91250a6-790a-43ce-9688-004d88e33d5a");
   }, [])
   
-  presentatios = listSessions.presentations
-  
+  console.log("Secoes: ",sessoesList)
+  console.log("Presentation: ", presentationList)
 
+  const groupPresentationsByDate = (presentations: any[]) => {
+    const grouped: { [key: string]: any[] } = {};
+
+    presentations.forEach((presentation) => {
+      const startDate = new Date(presentation.startTime).toLocaleDateString(); // Extract date (ignoring time)
+      if (!grouped[startDate]) {
+        grouped[startDate] = [];
+      }
+      grouped[startDate].push(presentation);
+    });
+
+    // Sort presentations within each date by startTime
+    for (const date in grouped) {
+      grouped[date].sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+    }
+
+    return grouped;
+  };
+
+  const groupedPresentations = groupPresentationsByDate(presentationList);
+
+  console.log("gruoptratado: ", groupedPresentations );
   function changeDate(date: number) {
     setDate(date);
   }
@@ -67,6 +94,8 @@ export default function ScheduleSection() {
             <Calendar color={date == 0 ? "white" : "#FFA90F"} />
             12 de novembro
           </button>
+
+          
           <button
             className="d-flex text-start align-items-center"
             style={{
@@ -118,6 +147,24 @@ export default function ScheduleSection() {
           </p>
           <p className="m-0" style={{ width: "44px" }}></p>
         </div>
+        
+
+
+
+
+        {Object.keys(groupedPresentations).map((date) => (
+          <div key={date} className="presentation-group">
+            <h3>{date}</h3>
+
+          {groupedPresentations[date].map((presentation) => (
+                <div key={presentation.id} className="presentation-card">
+                  <p><strong>Title:</strong> {presentation.title || "No title"}</p>
+                  <p><strong>Author:</strong> {presentation.submission.mainAuthorId}</p>
+                  <p><strong>Start Time:</strong> {new Date(presentation.startTime).toLocaleTimeString()}</p>
+                </div>
+              ))}
+            </div>
+          ))}
 
         <div className="d-flex flex-column programacao-item">
           {MockupSchedule[date].map((item, index) => {
