@@ -11,103 +11,96 @@ import "./style.scss";
 import { usePresentation } from "@/hooks/usePresentation";
 import { Presentation } from "@/models/presentation";
 import moment from "moment";
+import "moment/locale/pt-br";
 import { useEdicao } from "@/hooks/useEdicao";
 
 export default function ScheduleSection() {
   const { getPresentationAll, presentationList } = usePresentation();
   const { Edicao } = useEdicao();
 
-  const [date, setDate] = useState<number>(0);
-  //const [schedule, setSchedule] = useState<[]>()
+  const [dates, setDates] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const openModal = useRef<HTMLButtonElement | null>(null);
   const [modalContent, setModalContent] = useState<Presentation>(
     {} as Presentation
   );
 
-  function changeDate(date: number) {
-    setDate(date);
+  useEffect(() => {
+    moment.locale("pt-br");
+  }, []);
+
+  function generateDatesBetween(startDate: string, endDate: string): string[] {
+    const datesArray: string[] = [];
+    const currentDate = moment(startDate);
+    const finalDate = moment(endDate);
+
+    while (currentDate.isSameOrBefore(finalDate)) {
+      datesArray.push(currentDate.format("YYYY-MM-DD"));
+      currentDate.add(1, "day");
+    }
+
+    return datesArray;
   }
 
-  function openModalPresentation(item) {
+  function changeDate(date: string) {
+    setSelectedDate(date);
+  }
+
+  function openModalPresentation(item: Presentation) {
     setModalContent(item);
     openModal.current?.click();
   }
 
   useEffect(() => {
-    if (Edicao?.id) {
+    if (Edicao?.id && Edicao.startDate && Edicao.endDate) {
       getPresentationAll(Edicao?.id);
+      const generatedDates = generateDatesBetween(
+        Edicao.startDate,
+        Edicao.endDate
+      );
+      setDates(generatedDates);
+      setSelectedDate(generatedDates[0]);
     }
-  }, [Edicao?.id]);
+  }, [Edicao]);
 
   return (
-    <div id="Programacao">
+    <div id='Programacao'>
       <div
-        className="d-flex flex-column w-100"
+        className='d-flex flex-column w-100'
         style={{
           gap: "15px",
         }}
       >
-        <h1 className="fw-bold text-center display-4 progamacao-title">
+        <h1 className='fw-bold text-center display-4 progamacao-title'>
           Programação
         </h1>
-        <div className="d-flex justify-content-center programacao-dias">
-          <button
-            className="d-flex align-items-center fw-bold flex-start"
-            style={{
-              fontSize: "16px",
-              lineHeight: "30px",
-              gap: "10px",
-              backgroundColor: date == 0 ? "#FFA90F" : "white",
-              color: date == 0 ? "white" : "#FFA90F",
-              padding: "10px 25px",
-              borderRadius: "25px",
-              border: date == 0 ? "3px solid #FFA90F" : "3px solid #FFA90F",
-            }}
-            onClick={() => changeDate(0)}
-          >
-            <Calendar color={date == 0 ? "white" : "#FFA90F"} />
-            12 de novembro
-          </button>
-          <button
-            className="d-flex text-start align-items-center"
-            style={{
-              fontSize: "16px",
-              fontWeight: "700",
-              lineHeight: "30px",
-              gap: "10px",
-              backgroundColor: date == 1 ? "#FFA90F" : "white",
-              color: date == 1 ? "white" : "#FFA90F",
-              padding: "10px 25px",
-              borderRadius: "25px",
-              border: date == 1 ? "3px solid #FFA90F" : "3px solid #FFA90F",
-            }}
-            onClick={() => changeDate(1)}
-          >
-            <Calendar color={date == 1 ? "white" : "#FFA90F"} />
-            13 de novembro
-          </button>
-          <button
-            className="d-flex align-items-center text-start"
-            style={{
-              fontSize: "16px",
-              fontWeight: "700",
-              lineHeight: "30px",
-              gap: "10px",
-              backgroundColor: date == 2 ? "#FFA90F" : "white",
-              color: date == 2 ? "white" : "#FFA90F",
-              padding: "10px 25px",
-              borderRadius: "25px",
-              border: date == 2 ? "3px solid #FFA90F" : "3px solid #FFA90F",
-            }}
-            onClick={() => changeDate(2)}
-          >
-            <Calendar color={date == 2 ? "white" : "#FFA90F"} />
-            14 de novembro
-          </button>
+
+        <div className='d-flex justify-content-center programacao-dias'>
+          {dates.map((date, index) => (
+            <button
+              key={index}
+              className='d-flex align-items-center fw-bold flex-start'
+              style={{
+                fontSize: "16px",
+                lineHeight: "30px",
+                gap: "10px",
+                backgroundColor: selectedDate === date ? "#FFA90F" : "white",
+                color: selectedDate === date ? "white" : "#FFA90F",
+                padding: "10px 25px",
+                borderRadius: "25px",
+                border: "3px solid #FFA90F",
+              }}
+              onClick={() => changeDate(date)}
+            >
+              <Calendar color={selectedDate === date ? "white" : "#FFA90F"} />
+              {moment(date).format("DD [de] MMMM")}
+            </button>
+          ))}
         </div>
-        <div className="programacao-sala">
+
+        <div className='programacao-sala'>
           <p
-            className="fw-bold text-white m-0 text-center w-100"
+            className='fw-bold text-white m-0 text-center w-100'
             style={{
               fontSize: "13px",
               lineHeight: "50px",
@@ -115,22 +108,27 @@ export default function ScheduleSection() {
           >
             SALA A
           </p>
-          <p className="m-0" style={{ width: "44px" }}></p>
+          <p className='m-0' style={{ width: "44px" }}></p>
         </div>
 
-        <div className="d-flex flex-column programacao-item">
+        <div className='d-flex flex-column programacao-item'>
           {!!presentationList?.length &&
-            presentationList.map((item, index) => {
-              return (
+            presentationList
+              .filter(
+                (item) =>
+                  moment(item.presentationTime).format("YYYY-MM-DD") ===
+                  moment(selectedDate).format("YYYY-MM-DD")
+              )
+              .map((item, index) => (
                 <div
                   key={index + item.submission.mainAuthor?.name}
-                  className="d-flex align-items-center w-100"
+                  className='d-flex align-items-center w-100'
                   style={{
                     gap: "40px",
                   }}
                 >
-                  <p className="m-0" style={{ width: "44px" }}>
-                    {moment(item.presentationTime).format("HH:MM")}
+                  <p className='m-0' style={{ width: "44px" }}>
+                    {moment(item.presentationTime).format("HH:mm")}
                   </p>
                   <ScheduleCard
                     type={item.submission.type}
@@ -138,17 +136,16 @@ export default function ScheduleSection() {
                     title={item.submission.title}
                     onClickEvent={() => openModalPresentation(item)}
                   />
-                  <div className="m-0 programacao-item-aux"></div>
+                  <div className='m-0 programacao-item-aux'></div>
                 </div>
-              );
-            })}
+              ))}
 
           {!presentationList?.length && (
-            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
-              <h4 className="empty-list mb-0">
+            <div className='d-flex align-items-center justify-content-center p-3 mt-4 me-5'>
+              <h4 className='empty-list mb-0'>
                 <Image
-                  src="/assets/images/empty_box.svg"
-                  alt="Lista vazia"
+                  src='/assets/images/empty_box.svg'
+                  alt='Lista vazia'
                   width={90}
                   height={90}
                 />
