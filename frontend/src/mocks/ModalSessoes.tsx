@@ -2,7 +2,6 @@ export const ModalSessaoMock = {
   confirmButton: {
     label: "Salvar",
   },
-  eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
   tipo: {
     label: "Tipo de sessão",
     options: [

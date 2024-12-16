@@ -18,6 +18,7 @@ interface EdicaoProviderData {
   Edicao: Edicao | null;
   listEdicao: () => void;
   getEdicaoById: (idEdicao: string) => void;
+  getEdicaoByYear: (year: string) => void;
   createEdicao: (body: EdicaoParams) => void;
   updateEdicao: (idEdicao: string, body: EdicaoParams) => void;
   updateEdicaoActivate: (idEdicao: string, body: EdicaoParams) => void;
@@ -43,14 +44,11 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       .then((response) => {
         setEdicoesList(response);
         setEdicao(response[0]);
-        console.log("listado com sucesso");
       })
       .catch((err) => {
         console.log(err);
         setEdicoesList([]);
         setEdicao(null);
-        console.log("erro ao listar");
-        alert("Erro ao tentar listar!");
       })
       .finally(() => {
         setLoadingEdicoesList(false);
@@ -63,13 +61,26 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       .getEdicaoById(idEdicao)
       .then((response) => {
         setEdicao(response);
-        console.log("encontrado com sucesso");
       })
       .catch((err) => {
         console.log(err);
         setEdicao(null);
-        console.log("erro ao buscar");
-        alert("Erro ao tentar buscar!");
+      })
+      .finally(() => {
+        setLoadingEdicao(false);
+      });
+  };
+
+  const getEdicaoByYear = async (year: string) => {
+    setLoadingEdicao(true);
+    edicaoApi
+      .getEdicaoByYear(year)
+      .then((response) => {
+        setEdicao(response);
+      })
+      .catch((err) => {
+        console.log(err);
+        setEdicao(null);
       })
       .finally(() => {
         setLoadingEdicao(false);
@@ -172,6 +183,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         edicoesList,
         listEdicao,
         getEdicaoById,
+        getEdicaoByYear,
         createEdicao,
         updateEdicao,
         updateEdicaoActivate,

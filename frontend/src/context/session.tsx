@@ -110,7 +110,6 @@ export const SessionProvider = ({ children }: SessionProps) => {
         return true;
       })
       .catch((err) => {
-        setSessao(null);
         showAlert({
           icon: "error",
           title: "Erro ao cadastrar sessão",
@@ -154,7 +153,6 @@ export const SessionProvider = ({ children }: SessionProps) => {
         return true;
       })
       .catch((err) => {
-        setSessao(null);
         showAlert({
           icon: "error",
           title: "Erro ao atualizar sessão",

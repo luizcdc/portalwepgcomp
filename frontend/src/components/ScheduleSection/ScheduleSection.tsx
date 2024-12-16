@@ -1,29 +1,28 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
+import Image from "next/image";
+
 import PresentationModal from "../Modals/ModalApresentação/PresentationModal";
 import ScheduleCard from "../ScheduleCard";
 import Calendar from "../UI/calendar";
 import Modal from "../UI/Modal/Modal";
 import "./style.scss";
-import { SessoesMock } from "@/mocks/Sessoes";
 import { usePresentation } from "@/hooks/usePresentation";
 import { Presentation } from "@/models/presentation";
-import moment from 'moment';
+import moment from "moment";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function ScheduleSection() {
-  const { eventEditionId } = SessoesMock;
   const { getPresentationAll, presentationList } = usePresentation();
-
-  useEffect(() => {
-    getPresentationAll(eventEditionId);
-  }, []);
+  const { Edicao } = useEdicao();
 
   const [date, setDate] = useState<number>(0);
   //const [schedule, setSchedule] = useState<[]>()
   const openModal = useRef<HTMLButtonElement | null>(null);
-  const [modalContent, setModalContent] =
-    useState<Presentation>({} as Presentation);
+  const [modalContent, setModalContent] = useState<Presentation>(
+    {} as Presentation
+  );
 
   function changeDate(date: number) {
     setDate(date);
@@ -34,19 +33,21 @@ export default function ScheduleSection() {
     openModal.current?.click();
   }
 
+  useEffect(() => {
+    if (Edicao?.id) {
+      getPresentationAll(Edicao?.id);
+    }
+  }, [Edicao?.id]);
+
   return (
-    <div
-      id="Programacao"
-    >
+    <div id="Programacao">
       <div
         className="d-flex flex-column w-100"
         style={{
           gap: "15px",
         }}
       >
-        <h1
-          className="fw-bold text-center display-4 progamacao-title"
-        >
+        <h1 className="fw-bold text-center display-4 progamacao-title">
           Programação
         </h1>
         <div className="d-flex justify-content-center programacao-dias">
@@ -104,9 +105,7 @@ export default function ScheduleSection() {
             14 de novembro
           </button>
         </div>
-        <div
-          className="programacao-sala"
-        >
+        <div className="programacao-sala">
           <p
             className="fw-bold text-white m-0 text-center w-100"
             style={{
@@ -120,8 +119,8 @@ export default function ScheduleSection() {
         </div>
 
         <div className="d-flex flex-column programacao-item">
-          {
-            presentationList?.length && presentationList.map((item, index) => {
+          {!!presentationList?.length &&
+            presentationList.map((item, index) => {
               return (
                 <div
                   key={index + item.submission.mainAuthor?.name}
@@ -142,8 +141,21 @@ export default function ScheduleSection() {
                   <div className="m-0 programacao-item-aux"></div>
                 </div>
               );
-            })
-          }
+            })}
+
+          {!presentationList?.length && (
+            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+              <h4 className="empty-list mb-0">
+                <Image
+                  src="/assets/images/empty_box.svg"
+                  alt="Lista vazia"
+                  width={90}
+                  height={90}
+                />
+                Essa lista ainda está vazia
+              </h4>
+            </div>
+          )}
         </div>
       </div>
 

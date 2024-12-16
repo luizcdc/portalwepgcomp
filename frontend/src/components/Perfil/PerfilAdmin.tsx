@@ -43,6 +43,11 @@ export default function PerfilAdmin() {
           </Link>
         </li>
         <li>
+          <Link className="dropdown-item" href="/Favoritos">
+            Favoritos
+          </Link>
+        </li>
+        <li>
           <Link className="dropdown-item" href="/Home" onClick={logout}>
             Sair
           </Link>

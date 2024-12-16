@@ -5,11 +5,12 @@ import { useEffect, useState } from "react";
 
 import "./style.scss";
 import { useOrientacao } from "@/hooks/useOrientacao";
-import { SessoesMock } from "@/mocks/Sessoes";
+
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function OrientacoesAudiencia() {
-  const { eventEditionId } = SessoesMock;
   const { putOrientacao, orientacoes } = useOrientacao();
+  const { Edicao } = useEdicao();
 
   const [content, setContent] = useState(orientacoes?.audienceGuidance || "");
 
@@ -18,7 +19,7 @@ export default function OrientacoesAudiencia() {
 
     if (idOrientacao) {
       putOrientacao(idOrientacao, {
-        eventEditionId,
+        eventEditionId: Edicao?.id ?? "",
         audienceGuidance: content,
       });
     }
