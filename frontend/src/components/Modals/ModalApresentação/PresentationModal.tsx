@@ -1,5 +1,6 @@
 "use client";
 
+import "./style.scss";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
@@ -85,8 +86,11 @@ export default function PresentationModal({
           </h4>
         </div>
         <div>
-          <button className="btn border border-0" onClick={handleEvaluateClick}>
-            <Image src={avaliar} width={40} height={25} alt="Avaliar" />
+          <button
+            className="avaliar-button"
+            onClick={handleEvaluateClick}
+          >
+            Avaliar
           </button>
         </div>
       </div>
@@ -108,24 +112,23 @@ export default function PresentationModal({
             <Star color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"} />
           }
         </div>
+        <div>
+          <button
+            className="fw-semibold bg-white"
+            style={{
+              border: "none",
+              borderRadius: "20px",
+              color: "#FFA90F",
+              padding: "3px 20px",
+            }}
+          >
+            Baixar apresentação
+          </button>
+        </div>
       </div>
       <div style={{ textAlign: "justify" }}>
         <strong>Abstract: </strong>
         {props.submission.abstract}
-      </div>
-      <div className="d-flex justify-content-center w-100">
-        <button
-          className="fw-semibold bg-white"
-          style={{
-            border: "2px solid #FFA90F",
-            borderRadius: "20px",
-            color: "#FFA90F",
-            padding: "3px 20px",
-            width: "302px",
-          }}
-        >
-          Acessar Apresentação
-        </button>
       </div>
     </div>
   );

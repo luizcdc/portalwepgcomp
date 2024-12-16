@@ -230,7 +230,7 @@ export const MockupPresentention =
     "mainAuthor": "Maria de Jesus",
     "emailDoutorando": "mariadejesus@ufba.br",
     "orientador": "João da Silva",
-    "date": "11/11",
+    "date": "11/11/2025",
     "local": "Sala A ",
     "time": "14:30",
     "descricao": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vestibulum justo vitae eros efficitur, sit amet tristique lacus accumsan. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Aenean vitae lacus sit amet ligula vehicula congue nec nec nisl. Proin vel eros nec lacus consequat cursus. Integer efficitur ipsum in enim fermentum fermentum. Nulla volutpat consectetur ante, at convallis sapien auctor et. Duis auctor est sed massa posuere, at scelerisque ipsum porttitor.",
