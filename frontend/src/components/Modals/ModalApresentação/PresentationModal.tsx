@@ -1,12 +1,10 @@
 "use client";
 
 import "./style.scss";
-import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 import Star from "@/components/UI/Star";
-import avaliar from "@/public/assets/images/avaliar.svg";
 import { Presentation, PresentationBookmark } from "@/models/presentation";
 import moment from 'moment';
 import { useRouter } from "next/navigation";
