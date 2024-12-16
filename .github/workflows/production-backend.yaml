@@ -42,9 +42,12 @@ jobs:
           envkey_POSTGRES_DB: "wepgcomp"
           envkey_POSTGRES_USER: "root"
           envkey_POSTGRES_PORT: "5432"
-          envkey_MAIL_HOST: "smtp.sendgrid.net"
+          envkey_MAIL_HOST: "smtp.gmail.com"
           envkey_MAIL_PORT: "587"
-          envkey_ORGANIZER_EMAIL: "wepgcompportal@gmail.com"
+          envkey_S3_AWS_REGION: ${{ secrets.S3_AWS_REGION }}
+          envkey_S3_AWS_ACCESS_KEY_ID: ${{ secrets.S3_AWS_ACCESS_KEY_ID }}
+          envkey_S3_AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_AWS_SECRET_ACCESS_KEY }}
+          envkey_S3_AWS_BUCKET_NAME: ${{ secrets.S3_AWS_BUCKET_NAME }}
           file_name: .env
           some_other_variable: foobar
           directory: backend
