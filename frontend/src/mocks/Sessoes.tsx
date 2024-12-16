@@ -1,6 +1,5 @@
 export const SessoesMock = {
   title: "Sessões",
-  eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
   userArea: {
     add: "Incluir sessão",
     search: "Pesquise pelo nome da sessão",
