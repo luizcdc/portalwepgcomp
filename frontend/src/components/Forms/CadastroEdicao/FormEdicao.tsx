@@ -1,6 +1,6 @@
 "use client";
-import { useContext, useState } from "react";
-import Select, { MultiValue } from "react-select";
+import { useContext } from "react";
+import Select from "react-select";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
