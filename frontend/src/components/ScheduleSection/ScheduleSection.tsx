@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { MockupPresentention, MockupSchedule } from "@/mocks/Schedule";
 import PresentationModal from "../Modals/ModalApresentação/PresentationModal";
 import ScheduleCard from "../ScheduleCard";
 import Calendar from "../UI/calendar";
