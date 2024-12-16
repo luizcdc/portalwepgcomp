@@ -5,21 +5,50 @@ import { useEffect, useState } from "react";
 import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
 import { SubmissionProvider } from "@/context/submission";
 import { SubmissionFileProvider } from "@/context/submissionFile";
+import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Apresentacoes() {
-  const { title, userArea, cardsMock } = ApresentacoesMock;
+  const { title, userArea } = ApresentacoesMock;
 
   const [searchValue, setSearchValue] = useState<string>("");
-  const [sessionsListValues, setSessionsListValues] =
-    useState<any[]>(cardsMock);
+
+  const { Edicao } = useEdicao();
+
+  const {
+    submissionList,
+    getSubmissions,
+    loadingSubmissionList,
+    deleteSubmissionById,
+  } = useSubmission();
+
+  const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
 
   useEffect(() => {
-    const newSessionsList =
-      cardsMock?.filter((v) => v.name?.includes(searchValue.trim())) ?? [];
-    setSessionsListValues(newSessionsList);
-  }, [searchValue]);
+    const params = {
+      eventEditionId: Edicao?.id ?? "",
+    };
+    getSubmissions(params);
+  }, [getSubmissions]);
+
+  useEffect(() => {
+    const filteredSessions = submissionList.filter((v) =>
+      v.title.toLowerCase().includes(searchValue.trim().toLowerCase())
+    );
+    setSessionsListValues(filteredSessions);
+  }, [searchValue, submissionList]);
+
+  const handleDelete = async (submissionId: string) => {
+    await deleteSubmissionById(submissionId);
+
+    const updatedSubmissions = submissionList.filter(
+      (submission) => submission.id !== submissionId
+    );
+
+    setSessionsListValues(updatedSubmissions);
+  };
 
   return (
     <SubmissionFileProvider>
@@ -32,7 +61,13 @@ export default function Apresentacoes() {
             searchValue={searchValue}
             onChangeSearchValue={(value) => setSearchValue(value)}
             searchPlaceholder={userArea.search}
-            cardsList={sessionsListValues}
+            cardsList={sessionsListValues.map((submission) => ({
+              id: submission.id,
+              title: submission.title,
+              subtitle: submission.abstract,
+            }))}
+            isLoading={loadingSubmissionList}
+            onDelete={handleDelete}
           />
           <ModalEditarCadastro />
         </div>
