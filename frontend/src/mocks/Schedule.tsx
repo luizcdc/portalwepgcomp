@@ -227,7 +227,7 @@ export const MockupPresentention =
 {
     "id": "1",
     "titulo": "Titulo da Apresentação",
-    "doutorando": "Maria de Jesus",
+    "mainAuthor": "Maria de Jesus",
     "emailDoutorando": "mariadejesus@ufba.br",
     "orientador": "João da Silva",
     "date": "11/11",
