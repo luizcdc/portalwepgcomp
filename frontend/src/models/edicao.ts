@@ -15,7 +15,7 @@ interface EdicaoParams {
   presentationDuration?: number;
   callForPapersText?: string;
   submissionDeadline?: string;
-  partnersText:string
+  partnersText?:string
 
 }
 
