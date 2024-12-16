@@ -111,10 +111,6 @@ const formEdicaoSchema = z.object({
 });
 
 export function FormEdicao() {
-  const [selectedOptions, setSelectedOptions] = useState<
-    MultiValue<OptionType>
-  >([]);
-
   type FormEdicaoSchema = z.infer<typeof formEdicaoSchema>;
   const { createEdicao, updateEdicao, Edicao } = useEdicao();
   const { user } = useContext(AuthContext);
