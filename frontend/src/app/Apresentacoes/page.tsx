@@ -18,6 +18,7 @@ export default function Apresentacoes() {
     submissionList,
     getSubmissions,
     loadingSubmissionList,
+    deleteSubmissionById,
   } = useSubmission();
 
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
@@ -36,6 +37,17 @@ export default function Apresentacoes() {
     setSessionsListValues(filteredSessions);
   }, [searchValue, submissionList]);
 
+  const handleDelete = async (submissionId: string) => {
+    await deleteSubmissionById(submissionId);
+    
+    const updatedSubmissions = submissionList.filter(
+      (submission) => submission.id !== submissionId
+    );
+    
+    setSessionsListValues(updatedSubmissions);
+  };
+
+
   return (
     <SubmissionFileProvider>
       <SubmissionProvider>
@@ -48,10 +60,12 @@ export default function Apresentacoes() {
             onChangeSearchValue={(value) => setSearchValue(value)}
             searchPlaceholder={userArea.search}
             cardsList={sessionsListValues.map((submission) => ({
+              id: submission.id,
               title: submission.title,
               subtitle: submission.abstract,
             }))}
-            isLoading={loadingSubmissionList} 
+            isLoading={loadingSubmissionList}
+            onDelete={handleDelete}
           />
           <ModalEditarCadastro />
         </div>
