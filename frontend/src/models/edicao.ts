@@ -11,12 +11,14 @@ interface EdicaoParams {
   itSupportIds?: string[];
   administrativeSupportIds?: string[];
   communicationIds?: string[];
-  presentationPerPresentationBlock?: number;
+  presentationsPerPresentationBlock?: number;
   presentationDuration?: number;
   callForPapersText?: string;
   submissionDeadline?: string;
+  partnersText:string
 
 }
+
 
 interface Edicao extends EdicaoParams {
   id: string;
