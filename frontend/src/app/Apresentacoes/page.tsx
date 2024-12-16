@@ -8,11 +8,14 @@ import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
 
   const [searchValue, setSearchValue] = useState<string>("");
+
+  const { Edicao } = useEdicao();
 
   const {
     submissionList,
@@ -25,7 +28,7 @@ export default function Apresentacoes() {
 
   useEffect(() => {
     const params = {
-      eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
+      eventEditionId: Edicao?.id ?? "",
     };
     getSubmissions(params);
   }, [getSubmissions]);
@@ -39,14 +42,13 @@ export default function Apresentacoes() {
 
   const handleDelete = async (submissionId: string) => {
     await deleteSubmissionById(submissionId);
-    
+
     const updatedSubmissions = submissionList.filter(
       (submission) => submission.id !== submissionId
     );
-    
+
     setSessionsListValues(updatedSubmissions);
   };
-
 
   return (
     <SubmissionFileProvider>
