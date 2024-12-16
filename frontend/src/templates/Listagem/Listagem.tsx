@@ -1,10 +1,12 @@
 "use client";
 
-import CardListagem from "@/components/CardListagem/CardListagem";
-import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
-import "./style.scss";
+
+import CardListagem from "@/components/CardListagem/CardListagem";
 import Banner from "@/components/UI/Banner";
+import { formatDate } from "@/utils/formatDate";
+
+import "./style.scss";
 
 interface ListagemProps {
   title: string;
@@ -14,6 +16,7 @@ interface ListagemProps {
   searchValue?: string;
   isMyPresentation?: boolean;
   isFavorites?: boolean;
+  isLoading?: boolean;
   idModal?: string;
   idGeneralModal?: string;
   generalButtonLabel?: string;
