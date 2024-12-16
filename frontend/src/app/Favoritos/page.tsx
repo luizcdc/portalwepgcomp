@@ -3,7 +3,7 @@
 import PresentationModal from "@/components/Modals/ModalApresentação/PresentationModal";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { FavoritosMock } from "@/mocks/Favoritos";
-import { MockupPresentention } from "@/mocks/Schedule";
+import { MockupPresentention2 } from "@/mocks/Schedule";
 import Listagem from "@/templates/Listagem/Listagem";
 import Modal from "../../components/UI/Modal/Modal";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +24,7 @@ export default function Favoritos() {
 
   // TODO: Integrar com os modelos de apresentação
   const [modalContent, setModalContent] =
-    useState<any>(MockupPresentention);
+    useState<any>(MockupPresentention2);
 
   function openModalPresentation(item) {
     setModalContent({ ...modalContent, ...item });
