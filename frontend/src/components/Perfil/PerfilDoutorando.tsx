@@ -28,6 +28,11 @@ export default function PerfilDoutorando() {
           </Link>
         </li>
         <li>
+          <Link className="dropdown-item" href="/Favoritos">
+            Favoritos
+          </Link>
+        </li>
+        <li>
           <Link className="dropdown-item" href="/Home" onClick={logout}>
             Sair
           </Link>

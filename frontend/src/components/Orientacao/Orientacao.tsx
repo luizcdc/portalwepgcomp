@@ -5,13 +5,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
 import "./style.scss";
-import { SessoesMock } from "@/mocks/Sessoes";
+
 import { useOrientacao } from "@/hooks/useOrientacao";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Orientacao() {
-  const { eventEditionId } = SessoesMock;
   const { postOrientacao, putOrientacao, getOrientacoes, orientacoes } =
     useOrientacao();
+
+  const { Edicao } = useEdicao();
 
   const [content, setContent] = useState(orientacoes?.summary || "");
 
@@ -19,9 +21,12 @@ export default function Orientacao() {
     const idOrientacao = orientacoes?.id;
 
     if (idOrientacao) {
-      putOrientacao(idOrientacao, { eventEditionId, summary: content });
+      putOrientacao(idOrientacao, {
+        eventEditionId: Edicao?.id ?? "",
+        summary: content,
+      });
     } else {
-      postOrientacao({ eventEditionId, summary: content });
+      postOrientacao({ eventEditionId: Edicao?.id ?? "", summary: content });
     }
   };
 
