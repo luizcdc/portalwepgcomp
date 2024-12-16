@@ -46,7 +46,17 @@ export class PresentationBlockController {
   async findOne(
     @Param('id') id: string,
   ): Promise<ResponsePresentationBlockDto> {
-    const presentationBlock = await this.presentationBlockService.findOne(id);
+    // try exception
+    let presentationBlock = null;
+    try {
+      presentationBlock = await this.presentationBlockService.findOne(id);
+    } catch (error) {
+      return null;
+    }
+
+    if (!presentationBlock) {
+      return null;
+    }
 
     return new ResponsePresentationBlockDto(presentationBlock);
   }
