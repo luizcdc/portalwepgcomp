@@ -21,7 +21,8 @@ const findPresentationById = (id: string) => {
 
 export default function Avaliacao() {
   const pathname = usePathname();
-  const [presentation, setPresentation] = useState<PresentationData | null>(
+  // TODO: Integrar com os modelos de apresentação
+  const [presentation, setPresentation] = useState<any | null>(
     null
   );
 
