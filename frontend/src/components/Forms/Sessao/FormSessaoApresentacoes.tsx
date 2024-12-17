@@ -69,8 +69,7 @@ const formSessaoApresentacoesSchema = z.object({
 });
 
 export default function FormSessaoApresentacoes() {
-  const { formApresentacoesFields, confirmButton, eventEditionId } =
-    ModalSessaoMock;
+  const { formApresentacoesFields, confirmButton } = ModalSessaoMock;
   const { createSession, updateSession, sessao, setSessao } = useSession();
   const { userList } = useUsers();
   const { submissionList } = useSubmission();
@@ -135,7 +134,7 @@ export default function FormSessaoApresentacoes() {
 
     const body = {
       type: "Presentation",
-      eventEditionId,
+      eventEditionId: Edicao?.id ?? "",
       submissions: apresentacoes?.length
         ? apresentacoes?.map((v) => v.value)
         : undefined,
@@ -148,7 +147,7 @@ export default function FormSessaoApresentacoes() {
     } as SessaoParams;
 
     if (sessao?.id) {
-      updateSession(sessao?.id, eventEditionId, body).then((status) => {
+      updateSession(sessao?.id, Edicao?.id ?? "", body).then((status) => {
         if (status) {
           reset();
           setSessao(null);
@@ -157,7 +156,7 @@ export default function FormSessaoApresentacoes() {
       return;
     }
 
-    createSession(eventEditionId, body).then((status) => {
+    createSession(Edicao?.id ?? "", body).then((status) => {
       if (status) {
         reset();
         setSessao(null);
@@ -185,8 +184,14 @@ export default function FormSessaoApresentacoes() {
           return { value: v.id, label: v.user?.name ?? "" };
         })
       );
+    } else {
+      setValue("apresentacoes", []);
+      setValue("n_apresentacoes", 0);
+      setValue("sala", "");
+      setValue("inicio", "");
+      setValue("avaliadores", []);
     }
-  }, []);
+  }, [sessao?.id]);
 
   return (
     <form

@@ -16,6 +16,12 @@ import { useEffect } from "react";
 import { useEdicao } from "@/hooks/useEdicao";
 import dayjs from "dayjs";
 
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const formSessaoGeralSchema = z.object({
   titulo: z
     .string({
@@ -57,7 +63,7 @@ const formSessaoGeralSchema = z.object({
 });
 
 export default function FormSessaoGeral() {
-  const { formGeralFields, confirmButton, eventEditionId } = ModalSessaoMock;
+  const { formGeralFields, confirmButton } = ModalSessaoMock;
   const { createSession, updateSession, sessao, setSessao } = useSession();
   const { Edicao } = useEdicao();
 
@@ -106,7 +112,7 @@ export default function FormSessaoGeral() {
 
     const body = {
       type: "General",
-      eventEditionId,
+      eventEditionId: Edicao?.id ?? "",
       title: titulo,
       speakerName: nome,
       roomId: sala,
@@ -115,7 +121,8 @@ export default function FormSessaoGeral() {
     } as SessaoParams;
 
     if (sessao?.id) {
-      updateSession(sessao?.id, eventEditionId, body).then((status) => {
+      updateSession(sessao?.id, Edicao?.id ?? "", body).then((status) => {
+        console.log(status);
         if (status) {
           reset();
           setSessao(null);
@@ -124,7 +131,7 @@ export default function FormSessaoGeral() {
       return;
     }
 
-    createSession(eventEditionId, body).then((status) => {
+    createSession(Edicao?.id ?? "", body).then((status) => {
       if (status) {
         reset();
         setSessao(null);
@@ -144,8 +151,14 @@ export default function FormSessaoGeral() {
           .add(sessao?.duration ?? 0, "minute")
           .toISOString()
       );
+    } else {
+      setValue("titulo", "");
+      setValue("nome", "");
+      setValue("sala", "");
+      setValue("inicio", "");
+      setValue("final", "");
     }
-  }, []);
+  }, [sessao?.id]);
 
   return (
     <form
@@ -226,8 +239,12 @@ export default function FormSessaoGeral() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                minDate={new Date(Edicao?.startDate || "")}
-                maxDate={new Date(Edicao?.endDate || "")}
+                minDate={dayjs(Edicao?.startDate || "")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
+                maxDate={dayjs(Edicao?.endDate || "")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formGeralFields.inicio.placeholder}

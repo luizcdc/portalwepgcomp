@@ -33,6 +33,11 @@ export default function PerfilOuvinte() {
           </Link>
         </li>
         <li>
+          <Link className="dropdown-item" href="/Favoritos">
+            Favoritos
+          </Link>
+        </li>
+        <li>
           <li>
             <Link className="dropdown-item" href="/Home" onClick={logout}>
               Sair
