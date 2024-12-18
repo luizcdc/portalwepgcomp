@@ -2,6 +2,18 @@ ul {
     gap: 0.9rem;
 }
 
+.fixed {
+    position: fixed;
+    width: 100vw;
+    background-color: white;
+    z-index: 100;
+    height: 126px;
+}
+
+.header-placeholder {
+    height: 126px;
+}
+
 .navbar-image {
     width: 350px !important;
 }
@@ -13,6 +25,8 @@ ul {
 }
 
 @media (max-width:480px)  {
+    
+    
     .navbar-menu-itens {
         margin-right: 0 !important;
     }
@@ -21,5 +35,15 @@ ul {
     }
     .container-fluid {
         justify-content: center !important;
+    }
+}
+
+@media (max-width: 445px) {
+    .fixed {
+        height: 180px;
+    }
+    
+    .header-placeholder {
+        height: 180px;
     }
 }

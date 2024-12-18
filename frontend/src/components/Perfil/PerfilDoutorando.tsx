@@ -17,11 +17,11 @@ export default function PerfilDoutorando() {
         <i className="bi bi-list fs-3"></i>
       </button>
       <ul className="dropdown-menu dropdown-menu-end border-3 border-light">
-        <li>
+        {/* <li>
           <Link className="dropdown-item" href="#">
             Emitir Certificado
           </Link>
-        </li>
+        </li> */}
         <li>
           <Link className="dropdown-item" href="/MinhasApresentacoes">
             Apresentação

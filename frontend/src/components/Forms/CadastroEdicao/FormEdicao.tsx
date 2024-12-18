@@ -397,7 +397,7 @@ export function FormEdicao() {
 
           <div className='col-12 mb-1'>
             <label className='form-label  form-title'>
-              Duração da Apresentação
+              Duração da Apresentação (minutos)
               <span className='text-danger ms-1 form-title'>*</span>
             </label>
             <input

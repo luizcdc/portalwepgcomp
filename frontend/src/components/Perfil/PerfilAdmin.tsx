@@ -19,14 +19,14 @@ export default function PerfilAdmin() {
       <ul className="dropdown-menu dropdown-menu-end border-3 border-light">
         <li>
           <Link className="dropdown-item" href="/Edicoes">
-            Cadastrar Evento
+            Edições do Evento
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link className="dropdown-item" href="#">
             Emitir Certificado
           </Link>
-        </li>
+        </li> */}
         <li>
           <Link className="dropdown-item" href="/Apresentacoes">
             Apresentações
