@@ -11,6 +11,7 @@ import "./style.scss";
 interface ListagemProps {
   title: string;
   labelAddButton?: string;
+  isAddButtonDisabled?: boolean;
   searchPlaceholder: string;
   cardsList: any[];
   searchValue?: string;
@@ -31,6 +32,7 @@ export default function Listagem({
   idModal,
   title,
   labelAddButton,
+  isAddButtonDisabled,
   searchPlaceholder,
   searchValue,
   isMyPresentation,
@@ -55,7 +57,8 @@ export default function Listagem({
               data-bs-toggle={idModal ? "modal" : undefined}
               data-bs-target={idModal ? `#${idModal}` : undefined}
               onClick={idModal ? onClear : onAddButtonClick}
-            >
+              disabled={isAddButtonDisabled}
+              >
               {labelAddButton}
               <Image
                 src="/assets/images/add.svg"
