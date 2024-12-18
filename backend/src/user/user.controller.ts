@@ -76,8 +76,9 @@ export class UserController {
       return Array.isArray(input) ? input : [input];
     };
 
-    const rolesArray = toArray(roles);
-    const profilesArray = toArray(profiles);
+    const rolesArray = roles === undefined ? undefined : toArray(roles);
+    const profilesArray =
+      profiles === undefined ? undefined : toArray(profiles);
 
     return await this.userService.findAll(rolesArray, profilesArray);
   }
@@ -85,6 +86,6 @@ export class UserController {
   @Get('advisors')
   @UserLevels(UserLevel.Default, UserLevel.Admin, UserLevel.Superadmin)
   async getAdvisors() {
-    return await this.userService.findAll([], Profile.Professor);
+    return await this.userService.findAll(undefined, Profile.Professor);
   }
 }

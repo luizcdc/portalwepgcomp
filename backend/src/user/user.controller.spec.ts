@@ -244,7 +244,7 @@ describe('UserController', () => {
 
       const result = await controller.getUsers('Admin');
 
-      expect(userService.findAll).toHaveBeenCalledWith('Admin', undefined);
+      expect(userService.findAll).toHaveBeenCalledWith(['Admin'], undefined);
       expect(result).toEqual(
         usersMock.map((user) => new ResponseUserDto(user)),
       );
@@ -273,7 +273,7 @@ describe('UserController', () => {
 
       const result = await controller.getUsers(undefined, 'Listener');
 
-      expect(userService.findAll).toHaveBeenCalledWith(undefined, 'Listener');
+      expect(userService.findAll).toHaveBeenCalledWith(undefined, ['Listener']);
       expect(result).toEqual(
         usersMock.map((user) => new ResponseUserDto(user)),
       );
