@@ -2,6 +2,18 @@ ul {
     gap: 0.9rem;
 }
 
+.fixed {
+    position: fixed;
+    width: 100vw;
+    background-color: white;
+    z-index: 100;
+    height: 126px;
+}
+
+.header-placeholder {
+    height: 126px;
+}
+
 .navbar-image {
     width: 350px !important;
 }
