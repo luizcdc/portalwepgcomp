@@ -5,18 +5,18 @@ import { useEffect, useState } from "react";
 import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
 import { SubmissionProvider } from "@/context/submission";
 import { SubmissionFileProvider } from "@/context/submissionFile";
+import { useAuth } from "@/hooks/useAuth";
+import { useEdicao } from "@/hooks/useEdicao";
 import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
-import { useEdicao } from "@/hooks/useEdicao";
+
+import "./style.scss";
 
 export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
-
-  const [searchValue, setSearchValue] = useState<string>("");
-
   const { Edicao } = useEdicao();
-
+  const { user } = useAuth();
   const {
     submissionList,
     getSubmissions,
@@ -24,14 +24,25 @@ export default function Apresentacoes() {
     deleteSubmissionById,
   } = useSubmission();
 
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(true);
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
 
   useEffect(() => {
     const params = {
-      eventEditionId: Edicao?.id ?? "",
+      eventEditionId: Edicao?.id || "",
     };
     getSubmissions(params);
-  }, []);
+  }, [Edicao, getSubmissions]);
+
+  useEffect(() => {
+    if (Edicao?.id && user?.id) {
+      const hasSubmission = submissionList.some(
+        (submission) => submission.mainAuthorId === user.id && submission.eventEditionId === Edicao.id
+      );
+      setIsAddButtonDisabled(hasSubmission);
+    }
+  }, [Edicao, user, submissionList]);
 
   useEffect(() => {
     const filteredSessions = submissionList.filter((v) =>
@@ -68,6 +79,7 @@ export default function Apresentacoes() {
             }))}
             isLoading={loadingSubmissionList}
             onDelete={handleDelete}
+            isAddButtonDisabled={isAddButtonDisabled}
           />
           <ModalEditarCadastro />
         </div>
