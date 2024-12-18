@@ -12,7 +12,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
 import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
-import { UserLevel } from '@prisma/client';
+import { Profile, UserLevel } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -31,11 +31,13 @@ export class UserController {
   }
 
   @Post('set-admin')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   async setAdmin(@Body() setAdminDto: SetAdminDto) {
     return await this.userService.setAdmin(setAdminDto);
   }
 
   @Post('set-super-admin')
+  @UserLevels(UserLevel.Superadmin)
   async setSuperAdmin(@Body() setAdminDto: SetAdminDto) {
     return await this.userService.setSuperAdmin(setAdminDto);
   }
@@ -81,8 +83,8 @@ export class UserController {
   }
 
   @Get('advisors')
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @UserLevels(UserLevel.Default, UserLevel.Admin, UserLevel.Superadmin)
   async getAdvisors() {
-    return await this.userService.findAll(['Admin', 'Superadmin'], 'Professor');
+    return await this.userService.findAll([], Profile.Professor);
   }
 }

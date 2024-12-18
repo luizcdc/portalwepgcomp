@@ -188,8 +188,8 @@ describe('UserController', () => {
           password: 'hashedPassword123',
           registrationNumber: '2023001',
           photoFilePath: 'path/to/photo1.jpg',
-          level: UserLevel.Admin, 
-          profile: Profile.Professor, 
+          level: UserLevel.Admin,
+          profile: Profile.Professor,
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -201,24 +201,26 @@ describe('UserController', () => {
           password: 'hashedPassword456',
           registrationNumber: '2023002',
           photoFilePath: 'path/to/photo2.jpg',
-          level: UserLevel.Default, 
-          profile: Profile.Listener, 
+          level: UserLevel.Default,
+          profile: Profile.Listener,
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       ];
-  
-      jest.spyOn(userService, 'findAll').mockResolvedValue(
-        usersMock.map(user => new ResponseUserDto(user))
-      );
-  
+
+      jest
+        .spyOn(userService, 'findAll')
+        .mockResolvedValue(usersMock.map((user) => new ResponseUserDto(user)));
+
       const result = await controller.getUsers();
-  
+
       expect(userService.findAll).toHaveBeenCalledWith(undefined, undefined);
-      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
-  
+
     it('should return users filtered by role', async () => {
       const usersMock = [
         {
@@ -228,24 +230,26 @@ describe('UserController', () => {
           password: 'hashedPassword123',
           registrationNumber: '2023001',
           photoFilePath: 'path/to/photo1.jpg',
-          level: UserLevel.Admin, 
-          profile: Profile.Professor, 
+          level: UserLevel.Admin,
+          profile: Profile.Professor,
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       ];
-  
-      jest.spyOn(userService, 'findAll').mockResolvedValue(
-        usersMock.map(user => new ResponseUserDto(user))
-      );
-  
+
+      jest
+        .spyOn(userService, 'findAll')
+        .mockResolvedValue(usersMock.map((user) => new ResponseUserDto(user)));
+
       const result = await controller.getUsers('Admin');
-  
+
       expect(userService.findAll).toHaveBeenCalledWith('Admin', undefined);
-      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
-  
+
     it('should return users filtered by profile', async () => {
       const usersMock = [
         {
@@ -255,24 +259,26 @@ describe('UserController', () => {
           password: 'hashedPassword456',
           registrationNumber: '2023002',
           photoFilePath: 'path/to/photo2.jpg',
-          level: UserLevel.Default, 
-          profile: Profile.Listener, 
+          level: UserLevel.Default,
+          profile: Profile.Listener,
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       ];
-  
-      jest.spyOn(userService, 'findAll').mockResolvedValue(
-        usersMock.map(user => new ResponseUserDto(user))
-      );
-  
+
+      jest
+        .spyOn(userService, 'findAll')
+        .mockResolvedValue(usersMock.map((user) => new ResponseUserDto(user)));
+
       const result = await controller.getUsers(undefined, 'Listener');
-  
+
       expect(userService.findAll).toHaveBeenCalledWith(undefined, 'Listener');
-      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
-  
+
     it('should return users filtered by both role and profile', async () => {
       const usersMock = [
         {
@@ -282,22 +288,27 @@ describe('UserController', () => {
           password: 'hashedPassword123',
           registrationNumber: '2023001',
           photoFilePath: 'path/to/photo1.jpg',
-          level: UserLevel.Admin, 
-          profile: Profile.Professor, 
+          level: UserLevel.Admin,
+          profile: Profile.Professor,
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       ];
-  
-      jest.spyOn(userService, 'findAll').mockResolvedValue(
-        usersMock.map(user => new ResponseUserDto(user))
-      );
-  
+
+      jest
+        .spyOn(userService, 'findAll')
+        .mockResolvedValue(usersMock.map((user) => new ResponseUserDto(user)));
+
       const result = await controller.getUsers('Admin', 'Professor');
-  
-      expect(userService.findAll).toHaveBeenCalledWith('Admin', 'Professor');
-      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+
+      expect(userService.findAll).toHaveBeenCalledWith(
+        ['Admin'],
+        ['Professor'],
+      );
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
   });
 });
