@@ -3,17 +3,20 @@
 import { useEffect, useState } from "react";
 
 import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
+import { getEventEditionIdStorage } from '@/context/AuthProvider/util';
 import { SubmissionProvider } from "@/context/submission";
 import { SubmissionFileProvider } from "@/context/submissionFile";
+import { useAuth } from "@/hooks/useAuth";
 import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
-import { getEventEditionIdStorage } from '@/context/AuthProvider/util';
 
 export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
+  const { user } = useAuth();
 
-  const [searchValue, setSearchValue] = useState<string>("");
+  const eventEditionId = getEventEditionIdStorage();
+  const userId = user?.id;
 
   const {
     submissionList,
@@ -22,15 +25,26 @@ export default function Apresentacoes() {
     deleteSubmissionById,
   } = useSubmission();
 
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(true);
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
 
+
   useEffect(() => {
-    const eventEditionId = getEventEditionIdStorage();
     const params = {
       eventEditionId: eventEditionId ?? "",
     };
     getSubmissions(params);
-  }, []);
+  }, [eventEditionId, getSubmissions]);
+
+  useEffect(() => {
+    if (userId) {
+      const hasSubmission = submissionList.some(
+        (submission) => submission.mainAuthorId === user.id && submission.eventEditionId === eventEditionId
+      );
+      setIsAddButtonDisabled(hasSubmission);
+    }
+  }, [user, userId, submissionList, eventEditionId]);
 
   useEffect(() => {
     const filteredSessions = submissionList.filter((v) =>
@@ -67,6 +81,7 @@ export default function Apresentacoes() {
             }))}
             isLoading={loadingSubmissionList}
             onDelete={handleDelete}
+            isAddButtonDisabled={isAddButtonDisabled}
           />
           <ModalEditarCadastro />
         </div>
