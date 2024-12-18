@@ -25,6 +25,8 @@ ul {
 }
 
 @media (max-width:480px)  {
+    
+    
     .navbar-menu-itens {
         margin-right: 0 !important;
     }
@@ -33,5 +35,15 @@ ul {
     }
     .container-fluid {
         justify-content: center !important;
+    }
+}
+
+@media (max-width: 445px) {
+    .fixed {
+        height: 180px;
+    }
+    
+    .header-placeholder {
+        height: 180px;
     }
 }
