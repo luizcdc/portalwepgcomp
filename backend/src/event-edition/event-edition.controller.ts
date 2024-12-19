@@ -43,6 +43,18 @@ export class EventEditionController {
     );
   }
 
+  @Put('/update-from-event-edition-form/:id')
+  async updateFromEventEditionForm(
+    @Param('id') id: string,
+    @Body()
+    createFromEventEditionFormDto: CreateFromEventEditionFormDto,
+  ): Promise<EventEditionResponseDto> {
+    return await this.eventEditionService.updateFromEventEditionForm(
+      id,
+      createFromEventEditionFormDto,
+    );
+  }
+
   @Get()
   @UserLevels(UserLevel.Superadmin)
   async getAll() {
