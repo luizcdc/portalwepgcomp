@@ -186,35 +186,72 @@ export class EventEditionService {
     updateFromEventEditionFormDto: UpdateFromEventEditionFormDto,
   ): Promise<EventEditionResponseDto> {
     const updatedEvent = await this.update(id, updateFromEventEditionFormDto);
+  
+    const { organizingCommitteeIds, itSupportIds, administrativeSupportIds, communicationIds, coordinatorId } = updateFromEventEditionFormDto;
+  
+    if (coordinatorId) {
+      const coordinator = await this.prismaClient.userAccount.findUnique({
+        where: {
+          id: coordinatorId,
+        },
+      });
+  
+      if (coordinator !== null) {
+         // Remove all roles for the user in this event edition
+        await this.prismaClient.committeeMember.deleteMany({
+          where: {
+            eventEditionId: id,
+            userId: coordinatorId,
+          },
+        });
 
-    const { organizingCommitteeIds, itSupportIds, administrativeSupportIds, communicationIds } = updateFromEventEditionFormDto;
-
+        // Remove existing coordinator if any
+        await this.prismaClient.committeeMember.deleteMany({
+          where: {
+            eventEditionId: id,
+            level: CommitteeLevel.Coordinator,
+            role: CommitteeRole.OrganizingCommittee,
+          },
+        });
+  
+        // Add new coordinator
+        await this.prismaClient.committeeMember.create({
+          data: {
+            eventEditionId: id,
+            userId: coordinatorId,
+            level: CommitteeLevel.Coordinator,
+            role: CommitteeRole.OrganizingCommittee,
+          },
+        });
+      }
+    }
+  
     await this.updateCommitteeMembersFromArray(
       id,
       organizingCommitteeIds,
       CommitteeRole.OrganizingCommittee,
     );
-
+  
     await this.updateCommitteeMembersFromArray(
       id,
       itSupportIds,
       CommitteeRole.ITSupport,
     );
-
+  
     await this.updateCommitteeMembersFromArray(
       id,
       administrativeSupportIds,
       CommitteeRole.AdministativeSupport,
     );
-
+  
     await this.updateCommitteeMembersFromArray(
       id,
       communicationIds,
       CommitteeRole.Communication,
     );
-
+  
     const eventResponseDto = new EventEditionResponseDto(updatedEvent);
-
+  
     return eventResponseDto;
   }
 
@@ -248,8 +285,6 @@ export class EventEditionService {
     );
   }
 
-
-
   async update(id: string, updateEventEdition: UpdateEventEditionDto) {
     const event = await this.prismaClient.eventEdition.findUnique({
       where: {
@@ -268,6 +303,7 @@ export class EventEditionService {
       'itSupportIds',
       'administrativeSupportIds',
       'communicationIds',
+      'coordinatorId',
     ];
 
     const filteredData = Object.fromEntries(
