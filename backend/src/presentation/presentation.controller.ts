@@ -17,7 +17,7 @@ import { UpdatePresentationDto } from './dto/update-presentation.dto';
 import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-with-submission.dto';
 import { UpdatePresentationWithSubmissionDto } from './dto/update-presentation-with-submission.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { UserLevelGuard } from 'src/auth/guards/user-level.guard';
+import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
 import {
   BookmarkedPresentationResponseDto,
@@ -25,7 +25,7 @@ import {
   BookmarkPresentationRequestDto,
   BookmarkPresentationResponseDto,
 } from './dto/bookmark-presentation.dto';
-import { Public, UserLevels } from 'src/auth/decorators/user-level.decorator';
+import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevel } from '@prisma/client';
 
 @Controller('presentation')
@@ -34,6 +34,7 @@ export class PresentationController {
   constructor(private readonly presentationService: PresentationService) {}
 
   @Get('bookmarks')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   bookmarkedPresentations(
     @Request() req,
   ): Promise<BookmarkedPresentationsResponseDto> {
@@ -43,16 +44,21 @@ export class PresentationController {
   }
 
   @Get('bookmark')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   bookmarkedPresentation(
     @Request() req,
     @Query('presentationId') presentationId: string,
   ): Promise<BookmarkedPresentationResponseDto> {
     const userId = req.user.userId;
 
-    return this.presentationService.bookmarkedPresentation(userId, presentationId);
+    return this.presentationService.bookmarkedPresentation(
+      userId,
+      presentationId,
+    );
   }
 
   @Post('bookmark')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   bookmarkPresentation(
     @Request() req,
     @Body() bookmarkPresentationRequestDto: BookmarkPresentationRequestDto,
@@ -80,11 +86,13 @@ export class PresentationController {
   }
 
   @Post()
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   create(@Body() createPresentationDto: CreatePresentationDto) {
     return this.presentationService.create(createPresentationDto);
   }
 
   @Post('with-submission')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   createWithSubmission(
     @Body()
     createPresentationWithSubmissionDto: CreatePresentationWithSubmissionDto,
@@ -108,6 +116,7 @@ export class PresentationController {
    * @returns List of presentations for the logged-in user.
    */
   @Get('my')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   listPresentations(@Request() req) {
     const userId = req.user.userId; // User ID extracted from the JWT
     return this.presentationService.listUserPresentations(userId);
@@ -127,6 +136,7 @@ export class PresentationController {
    * @returns Updated presentation.
    */
   @Put(':id/my')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   updatePresentationForUser(
     @Request() req,
     @Param('id') id: string,
@@ -141,6 +151,7 @@ export class PresentationController {
   }
 
   @Patch(':id')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   update(
     @Param('id') id: string,
     @Body() updatePresentationDto: UpdatePresentationDto,
@@ -149,6 +160,7 @@ export class PresentationController {
   }
 
   @Patch('with-submission/:id')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   updateWithSubmission(
     @Param('id') id: string,
     @Body()
@@ -161,6 +173,7 @@ export class PresentationController {
   }
 
   @Delete(':id')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   remove(@Param('id') id: string) {
     return this.presentationService.remove(id);
   }
