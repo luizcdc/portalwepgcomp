@@ -34,6 +34,7 @@ export class EventEditionController {
   }
 
   @Post('/create-from-event-edition-form')
+  @UserLevels(UserLevel.Superadmin)
   async createFromEventEditionForm(
     @Body()
     createFromEventEditionFormDto: CreateFromEventEditionFormDto,
@@ -44,7 +45,7 @@ export class EventEditionController {
   }
 
   @Get()
-  @UserLevels(UserLevel.Superadmin)
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   async getAll() {
     return await this.eventEditionService.getAll();
   }
