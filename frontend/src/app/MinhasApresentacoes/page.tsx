@@ -5,18 +5,15 @@ import { MinhasApresentacoesMock } from "@/mocks/MinhasApresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
 import { useRouter } from "next/navigation";
 
+import "./style.scss";
+
 export default function MinhasApresentacoes() {
   const { title, userArea, cardsMock } = MinhasApresentacoesMock;
   const router = useRouter();
 
   return (
     <ProtectedLayout>
-      <div
-        className="d-flex flex-column"
-        style={{
-          gap: "50px",
-        }}
-      >
+      <div className="d-flex flex-column before-list">
         <Listagem
           title={title}
           labelAddButton={userArea.add}
