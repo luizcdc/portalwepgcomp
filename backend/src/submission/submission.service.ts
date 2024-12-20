@@ -72,6 +72,14 @@ export class SubmissionService {
       throw new AppException('Edição do evento não encontrada.', 404);
     }
 
+    const submissionDeadline = eventEditionExists.submissionDeadline;
+    if (new Date() > submissionDeadline) {
+      throw new AppException(
+        'O prazo para submissão de trabalhos nessa edição do evento já chegou ao fim.',
+        400,
+      );
+    }
+
     const submissionStatus = status || SubmissionStatus.Submitted;
 
     if (

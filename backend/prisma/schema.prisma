@@ -169,7 +169,7 @@ model Evaluation {
   createdAt            DateTime           @default(now()) @map("created_at")
   updatedAt            DateTime           @updatedAt @map("updated_at")
   user                 UserAccount?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id]) //  Nao sei se esta correto
+  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id]) //  onDelete: Restrict
   submission           Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
   @@map("evaluation")
