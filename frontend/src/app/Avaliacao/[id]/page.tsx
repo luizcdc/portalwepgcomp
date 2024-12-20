@@ -23,7 +23,8 @@ const findPresentationById = (id: string) => {
 
 export default function Avaliacao({ params }) {
   const pathname = usePathname();
-  const [presentation, setPresentation] = useState<PresentationData | null>(
+  // TODO: Integrar com os modelos de apresentação
+  const [presentation, setPresentation] = useState<any | null>(
     null
   );
   const [saveEvaluation, setSaveEvaluation] = useState<{ score1: number, score2: number, score3: number, score4: number, score5: number }>({ score1: 0, score2: 0, score3: 0, score4: 0, score5: 0 });

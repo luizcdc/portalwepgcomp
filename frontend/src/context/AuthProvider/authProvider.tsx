@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
-import { api, LoginRequest, setTokenLocalStorage } from "./util";
+import { api, getUserLocalStorage, LoginRequest, setTokenLocalStorage, setUserLocalStorage } from "./util";
 
 export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
 
@@ -20,6 +20,13 @@ export const AuthProvider = ({ children }) => {
   const { showAlert } = useSweetAlert();
   const router = useRouter();
 
+  useEffect(() => {
+    const userSigned = getUserLocalStorage();
+    if (userSigned) {
+      setUser(JSON.parse(userSigned));
+    }
+  }, []);
+  
   const singIn = async ({ email, password }) => {
     try {
       const response = await LoginRequest(email, password);
@@ -31,6 +38,7 @@ export const AuthProvider = ({ children }) => {
       setUser(payload.data);
       api.defaults.headers.common["Authorization"] = `Bearer ${payload.token}`;
       setTokenLocalStorage(payload.token);
+      setUserLocalStorage(payload.data);
 
       showAlert({
         icon: "success",

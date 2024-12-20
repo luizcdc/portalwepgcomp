@@ -11,7 +11,9 @@ interface CardListagem {
   title: string;
   subtitle: string;
   showFavorite?: boolean;
+  generalButtonLabel?: string;
   idModalEdit?: string;
+  idGeneralModal?: string;
   onClickItem?: () => void;
   onDelete?: () => void;
 }
@@ -20,7 +22,9 @@ export default function CardListagem({
   title,
   subtitle,
   onClickItem,
+  generalButtonLabel,
   showFavorite,
+  idGeneralModal,
   idModalEdit,
   onDelete,
 }: Readonly<CardListagem>) {
@@ -33,14 +37,19 @@ export default function CardListagem({
         <p>{subtitle}</p>
       </div>
       <div className="buttons-area">
+        {!!idGeneralModal && !!generalButtonLabel && (
+          <button
+            className="button-general"
+            data-bs-toggle="modal"
+            data-bs-target={`#${idGeneralModal}`}
+          >
+            {generalButtonLabel}
+          </button>
+        )}
         {showFavorite ? (
           <Star color={"#F17F0C"} />
         ) : (
-          <button
-            className="button-edit"
-            data-bs-toggle="modal"
-            data-bs-target={`#${idModalEdit}`}
-          >
+          <button data-bs-toggle="modal" data-bs-target={`#${idModalEdit}`}>
             <Image
               src="/assets/images/edit.svg"
               alt="edit button"

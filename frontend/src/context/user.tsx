@@ -59,15 +59,13 @@ export const UserProvider = ({ children }: UserProps) => {
       showAlert({
         icon: "error",
         title: "Erro ao listar usuários",
-        text:
-          err.response?.data?.message ||
-          "Ocorreu um erro durante a busca.",
+        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
         confirmButtonText: "Retornar",
       });
     } finally {
       setLoadingUserList(false);
     }
-  }
+  };
 
   const registerUser = async (body: RegisterUserParams) => {
     setLoadingCreateUser(true);
@@ -168,11 +166,11 @@ export const UserProvider = ({ children }: UserProps) => {
     try {
       const response = await userApi.getAdvisors();
       setAdvisors(response);
-      console.log("Listado com sucesso")
+      console.log("Listado com sucesso");
     } catch (err: any) {
       console.error(err);
       setAdvisors([]);
-      console.log("Erro ao buscar")
+      console.log("Erro ao buscar");
 
       showAlert({
         icon: "error",
@@ -185,7 +183,7 @@ export const UserProvider = ({ children }: UserProps) => {
     } finally {
       setLoadingAdvisors(false);
     }
-  }
+  };
 
   return (
     <UserContext.Provider

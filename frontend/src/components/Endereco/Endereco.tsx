@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
-import { SessoesMock } from "@/mocks/Sessoes";
 import { useEdicao } from "@/hooks/useEdicao";
 
 import "./style.scss";
@@ -25,10 +24,9 @@ export default function Endereco() {
   const [content, setContent] = useState("");
 
   const { updateEdicao, Edicao } = useEdicao();
-  const { eventEditionId } = SessoesMock;
 
   const handleEditAdress = () => {
-    updateEdicao(eventEditionId, { location: content });
+    updateEdicao(Edicao?.id ?? "", { location: content });
   };
 
   const latitude = -13.0;

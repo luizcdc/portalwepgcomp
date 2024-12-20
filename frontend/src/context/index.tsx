@@ -3,9 +3,11 @@ import { ComposeProviders } from "@/components/ComposeProviders";
 import { UserProvider } from "./user";
 import { SessionProvider } from "./session";
 import { EvaluationProvider } from "./evaluation";
-import { EdicaoProvider } from "./edicao";
 import { OrientacaoProvider } from "./orientacoes";
 import { CommitterProvider } from "./commiteeMember";
+import { EdicaoProvider } from "./edicao";
+import { PresentationProvider } from "./presentation";
+import { SubmissionProvider } from "./submission";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -17,10 +19,12 @@ const Providers = ({ children }: ProvidersProps) => {
       with={[
         UserProvider,
         SessionProvider,
-        EdicaoProvider, 
         EvaluationProvider,
+        EdicaoProvider,
+        PresentationProvider,
         CommitterProvider,
         OrientacaoProvider,
+        SubmissionProvider,
       ]}
     >
       {children}
