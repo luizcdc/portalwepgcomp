@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation"; // Usando usePathname para capturar o caminho
 import { useContext, useEffect, useState } from "react";
+import Image from "next/image";
 
 import Rating from "@/components/Rating/Rating";
 import Banner from "@/components/UI/Banner";
@@ -24,46 +25,17 @@ const findPresentationById = (id: string) => {
 export default function Avaliacao({ params }) {
   const pathname = usePathname();
   // TODO: Integrar com os modelos de apresentação
-  const [presentation, setPresentation] = useState<any | null>(
-    null
-  );
-  const [saveEvaluation, setSaveEvaluation] = useState<{ score1: number, score2: number, score3: number, score4: number, score5: number }>({ score1: 0, score2: 0, score3: 0, score4: 0, score5: 0 });
-  const {createEvaluation, getEvaluation, getEvaluationByUser} = useEvaluation();
+  const [presentation, setPresentation] = useState<any | null>(null);
+  const [saveEvaluation, setSaveEvaluation] = useState<Evaluation[]>([]);
+  const { createEvaluation, getEvaluation, getEvaluationByUser } = useEvaluation();
   const { user } = useContext(AuthContext);
 
   const sendEvaluation = () => {
-    const body = [
-      {
-        userId: user?.id ?? "",
-        submissionId: params?.id ?? "",
-        evaluationCriteriaId: "",
-        score: saveEvaluation.score1,
-      },
-      {
-        userId: user?.id ?? "",
-        submissionId: params?.id ?? "",
-        evaluationCriteriaId: "",
-        score: saveEvaluation.score2,
-      },
-      {
-        userId: user?.id ?? "",
-        submissionId: params?.id ?? "",
-        evaluationCriteriaId: "",
-        score: saveEvaluation.score3,
-      },
-      {
-        userId: user?.id ?? "",
-        submissionId: params?.id ?? "",
-        evaluationCriteriaId: "",
-        score: saveEvaluation.score4,
-      },
-      {
-        userId: user?.id ?? "",
-        submissionId: params?.id ?? "",
-        evaluationCriteriaId: "",
-        score: saveEvaluation.score5,
-      },
-    ];
+    const body: EvaluationParams[] =
+      saveEvaluation?.map((criteria) => {
+        const { evaluationCriteriaId, submissionId, score, userId } = criteria;
+        return { evaluationCriteriaId, submissionId, score, userId };
+      }) ?? [];
 
     createEvaluation(body);
   };
@@ -91,64 +63,56 @@ export default function Avaliacao({ params }) {
 
   return (
     <div
-      className='d-flex flex-column'
+      className="d-flex flex-column"
       style={{
         gap: "10px",
       }}
     >
-      <Banner title='Avaliação' />
+      <Banner title="Avaliação" />
 
-      <div className='avalieApresentacao'>
-
-        <div className='avalieElementos'>
-          <div className='avalieIdentificador'>
-            <div className='avalieApresentador'>{presentation?.doutorando}</div>
-            <div className='avaliePesquisa'>{presentation?.titulo}</div>
+      <div className="avalieApresentacao">
+        <div className="avalieElementos">
+          <div className="avalieIdentificador">
+            <div className="avalieApresentador">{presentation?.doutorando}</div>
+            <div className="avaliePesquisa">{presentation?.titulo}</div>
           </div>
         </div>
 
-        <div className='avaliePerguntas'>
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              1. Quão satisfeito(a) você ficou com o conteúdo da pesquisa
-              apresentada?
+        <div className="avaliePerguntas">
+          {saveEvaluation?.map((criteria, devIndex) => (
+            <div key={criteria.evaluationCriteriaId} className="avalieQuestion">
+              <div className="avalieTexto">
+                `${devIndex + 1}. ${criteria.name}`
+              </div>
+              <Rating
+                value={criteria.score}
+                onChange={(value) =>
+                  setSaveEvaluation([
+                    ...saveEvaluation,
+                    { ...criteria, score: value },
+                  ])
+                }
+              />
             </div>
-            <Rating value={saveEvaluation.score1} onChange={(value) => setSaveEvaluation({...saveEvaluation,  score1: value})}/>
-          </div>
-
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              2. Quão satisfeito(a) você ficou com a qualidade e clareza da
-              apresentação?
+          ))}
+          {!saveEvaluation.length && (
+            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+              <h4 className="empty-list mb-0">
+                <Image
+                  src="/assets/images/empty_box.svg"
+                  alt="Lista vazia"
+                  width={90}
+                  height={90}
+                />
+                Essa lista ainda está vazia
+              </h4>
             </div>
-            <Rating value={saveEvaluation.score2} onChange={(value) => setSaveEvaluation({...saveEvaluation,  score2: value})}/>
-          </div>
-
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              3. Quão bem a pesquisa abordou e explicou o problema central?
-            </div>
-            <Rating value={saveEvaluation.score3} onChange={(value) => setSaveEvaluation({...saveEvaluation,  score3: value})}/>
-          </div>
-
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              4. Quão clara e prática você considera a solução proposta pela
-              pesquisa?
-            </div>
-            <Rating value={saveEvaluation.score4} onChange={(value) => setSaveEvaluation({...saveEvaluation,  score4: value})}/>
-          </div>
-
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              5. Como você avalia a qualidade e aplicabilidade dos resultados
-              apresentados?
-            </div>
-            <Rating value={saveEvaluation.score5} onChange={(value) => setSaveEvaluation({...saveEvaluation,  score5: value})}/>
-          </div>
+          )}
         </div>
 
-        <button className='avalieButton' onClick={sendEvaluation}>Enviar</button>
+        <button className="avalieButton" onClick={sendEvaluation}>
+          Enviar
+        </button>
       </div>
     </div>
   );
