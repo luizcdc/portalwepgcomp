@@ -153,12 +153,11 @@ describe('SubmissionService', () => {
       ]);
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event123',
-        submissionDeadline: new Date(Date.now() + 86400000), // tomorrow
+        submissionDeadline: new Date(Date.now() + 86400000),
       });
       (prismaService.submission.findFirst as jest.Mock)
-        .mockResolvedValueOnce(null) // for mainAuthorAlreadySubmitted check
+        .mockResolvedValueOnce(null)
         .mockResolvedValueOnce({
-          // for sameTittleExists check
           id: 'existing-submission',
           title: 'Test Submission',
         });
@@ -178,7 +177,7 @@ describe('SubmissionService', () => {
       ]);
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event123',
-        submissionDeadline: new Date(Date.now() - 86400000), // yesterday
+        submissionDeadline: new Date(Date.now() - 86400000),
       });
       (prismaService.submission.findFirst as jest.Mock).mockResolvedValue(null);
 
