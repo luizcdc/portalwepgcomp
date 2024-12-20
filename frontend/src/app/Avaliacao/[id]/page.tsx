@@ -27,7 +27,7 @@ export default function Avaliacao({ params }) {
     null
   );
   const [saveEvaluation, setSaveEvaluation] = useState<{ score1: number, score2: number, score3: number, score4: number, score5: number }>({ score1: 0, score2: 0, score3: 0, score4: 0, score5: 0 });
-  const {createEvaluation, getEvaluation} = useEvaluation();
+  const {createEvaluation, getEvaluation, getEvaluationByUser} = useEvaluation();
   const { user } = useContext(AuthContext);
 
   const sendEvaluation = () => {
@@ -70,14 +70,14 @@ export default function Avaliacao({ params }) {
   useEffect(() => {
     if (pathname) {
       const id = pathname.split("/").pop();
-      getEvaluation(user?.id ?? "");
+      getEvaluationByUser(user?.id ?? "");
 
       if (id) {
         const foundPresentation = findPresentationById(id);
         console.log(foundPresentation);
 
         if (foundPresentation) {
-          getEvaluation(user?.id ?? "");
+          getEvaluationByUser(user?.id ?? "");
           setPresentation({
             id,
             titulo: foundPresentation.title,
@@ -147,7 +147,7 @@ export default function Avaliacao({ params }) {
           </div>
         </div>
 
-        <button className='avalieButton' onClick={() => {console.log(saveEvaluation)}}>Enviar</button>
+        <button className='avalieButton' onClick={sendEvaluation}>Enviar</button>
       </div>
     </div>
   );

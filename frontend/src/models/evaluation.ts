@@ -7,4 +7,6 @@ interface EvaluationParams{
 
 interface Evaluation extends EvaluationParams{
     id: string;
+    email: string;
+    name: string;
 }

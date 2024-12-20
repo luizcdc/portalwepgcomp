@@ -11,6 +11,12 @@ export const evaluationApi = {
         return data;
     },
 
+    getEvaluationByUser: async (userId: string) => {
+        const { data } = await instance.get(`${baseUrl}?userId=${userId}`);
+
+        return data;
+    },
+
     getEvaluation: async (submissionId: string) => {
         const { data } = await instance.get(`${baseUrl}/submission/${submissionId}/final-grade`);
 

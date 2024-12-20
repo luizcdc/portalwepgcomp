@@ -12,6 +12,7 @@ interface EvaluationProviderData{
     loadingEvaluation: boolean;
     evaluation: Evaluation | null;
     getEvaluation: (submissionId: string) => void;
+    getEvaluationByUser: (userId: string) => void;
     createEvaluation: (body: EvaluationParams[]) => void;
 }
 
@@ -54,6 +55,21 @@ export const EvaluationProvider = ({children}: EvaluationProps) => {
         })
     }
 
+    const getEvaluationByUser = async (userId: string) => {
+        setLoadingEvaluation(true);
+        evaluationApi
+        .getEvaluationByUser(userId)
+        .then((response) => {
+            setEvaluation(response);
+        })
+        .catch((err) => {
+            setEvaluation(null);
+        })
+        .finally(() => {
+            setLoadingEvaluation(false);
+        })
+    }
+
     const getEvaluation = async (submissionId: string) => {
         setLoadingEvaluation(true);
         evaluationApi
@@ -75,6 +91,7 @@ export const EvaluationProvider = ({children}: EvaluationProps) => {
             loadingEvaluation,
             evaluation,
             createEvaluation,
+            getEvaluationByUser,
             getEvaluation
         }}>
             {children}
