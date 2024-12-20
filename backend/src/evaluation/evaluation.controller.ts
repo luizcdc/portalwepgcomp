@@ -16,7 +16,6 @@ import { UserLevels } from '../auth/decorators/user-level.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@ApiBearerAuth()
 @Controller('evaluations')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class EvaluationController {
@@ -24,6 +23,7 @@ export class EvaluationController {
 
   @Post()
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create new evaluations.',
   })
@@ -42,6 +42,7 @@ export class EvaluationController {
 
   @Get()
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Find evaluations' })
   @ApiQuery({
     name: 'userId',
@@ -58,6 +59,7 @@ export class EvaluationController {
 
   @Get('submission/:submissionId/final-grade')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async calculateFinalGrade(@Param('submissionId') submissionId: string) {
     return await this.evaluationService.calculateFinalGrade(submissionId);
   }

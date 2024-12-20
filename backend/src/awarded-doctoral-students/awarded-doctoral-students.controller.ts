@@ -2,12 +2,10 @@ import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AwardedDoctoralStudentsService } from './awarded-doctoral-students.service';
 import { RankingResponseDtoDto } from './dto/reponse-awarded-doctoral-students.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { Public } from '../auth/decorators/user-level.decorator';
 
-@ApiBearerAuth()
 @Controller('awarded-doctoral-students')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class AwardedDoctoralStudentsController {

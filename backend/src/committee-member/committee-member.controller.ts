@@ -18,7 +18,6 @@ import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { UserLevel } from '@prisma/client';
 import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 
-@ApiBearerAuth()
 @Controller('committee-member')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class CommitteeMemberController {
@@ -28,6 +27,7 @@ export class CommitteeMemberController {
 
   @Post()
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async create(@Body() createCommitteeMemberDto: CreateCommitteeMemberDto) {
     return await this.committeeMemberService.create(createCommitteeMemberDto);
   }
@@ -46,6 +46,7 @@ export class CommitteeMemberController {
 
   @Patch(':id')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async update(
     @Param('id') id: string,
     @Body() updateCommitteeMemberDto: UpdateCommitteeMemberDto,
@@ -58,6 +59,7 @@ export class CommitteeMemberController {
 
   @Patch()
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async updateByUserAndEvent(
     @Query('userId') userId: string,
     @Query('eventEditionId') eventEditionId: string,
@@ -73,12 +75,14 @@ export class CommitteeMemberController {
 
   @Delete(':id')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async remove(@Param('id') id: string) {
     return await this.committeeMemberService.remove(id);
   }
 
   @Delete()
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async removeByUserAndEvent(
     @Query('userId') userId: string,
     @Query('eventEditionId') eventEditionId: string,

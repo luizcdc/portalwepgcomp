@@ -27,6 +27,7 @@ import {
 } from './dto/bookmark-presentation.dto';
 import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevel } from '@prisma/client';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('presentation')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
@@ -35,6 +36,7 @@ export class PresentationController {
 
   @Get('bookmarks')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   bookmarkedPresentations(
     @Request() req,
   ): Promise<BookmarkedPresentationsResponseDto> {
@@ -45,6 +47,7 @@ export class PresentationController {
 
   @Get('bookmark')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   bookmarkedPresentation(
     @Request() req,
     @Query('presentationId') presentationId: string,
@@ -59,6 +62,7 @@ export class PresentationController {
 
   @Post('bookmark')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   bookmarkPresentation(
     @Request() req,
     @Body() bookmarkPresentationRequestDto: BookmarkPresentationRequestDto,
@@ -73,6 +77,7 @@ export class PresentationController {
 
   @Delete('bookmark')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   removePresentationBookmark(
     @Request() req,
     @Query('presentationId') presentationId: string,
@@ -87,12 +92,14 @@ export class PresentationController {
 
   @Post()
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   create(@Body() createPresentationDto: CreatePresentationDto) {
     return this.presentationService.create(createPresentationDto);
   }
 
   @Post('with-submission')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   createWithSubmission(
     @Body()
     createPresentationWithSubmissionDto: CreatePresentationWithSubmissionDto,
@@ -117,6 +124,7 @@ export class PresentationController {
    */
   @Get('my')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   listPresentations(@Request() req) {
     const userId = req.user.userId; // User ID extracted from the JWT
     return this.presentationService.listUserPresentations(userId);
@@ -137,6 +145,7 @@ export class PresentationController {
    */
   @Put(':id/my')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   updatePresentationForUser(
     @Request() req,
     @Param('id') id: string,
@@ -152,6 +161,7 @@ export class PresentationController {
 
   @Patch(':id')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   update(
     @Param('id') id: string,
     @Body() updatePresentationDto: UpdatePresentationDto,
@@ -161,6 +171,7 @@ export class PresentationController {
 
   @Patch('with-submission/:id')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   updateWithSubmission(
     @Param('id') id: string,
     @Body()
@@ -174,6 +185,7 @@ export class PresentationController {
 
   @Delete(':id')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.presentationService.remove(id);
   }

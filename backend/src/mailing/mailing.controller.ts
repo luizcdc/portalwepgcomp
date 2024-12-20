@@ -6,19 +6,20 @@ import {
   DefaultEmailResponseDto,
   DefaultEmailDto,
 } from './mailing.dto';
-import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
+import { UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevel } from '@prisma/client';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('mailing')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class MailingController {
   constructor(private readonly mailingService: MailingService) {}
 
-  @Public()
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   @Post('/contact')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   async contact(
     @Body() contactDto: ContactRequestDto,
   ): Promise<ContactResponseDto> {
@@ -27,6 +28,7 @@ export class MailingController {
 
   @Post('/send')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   async send(
     @Body() sendDto: DefaultEmailDto,
   ): Promise<DefaultEmailResponseDto> {
