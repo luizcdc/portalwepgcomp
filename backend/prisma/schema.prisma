@@ -169,7 +169,7 @@ model Evaluation {
   createdAt            DateTime           @default(now()) @map("created_at")
   updatedAt            DateTime           @updatedAt @map("updated_at")
   user                 UserAccount?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id]) //  onDelete: Restrict
+  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id], onDelete: Restrict) 
   submission           Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
   @@map("evaluation")
@@ -190,8 +190,8 @@ model Submission {
   status                      SubmissionStatus @map("status")
   createdAt                   DateTime         @default(now()) @map("created_at")
   updatedAt                   DateTime         @updatedAt @map("updated_at")
-  advisor                     UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id]) // onDelete: Restrict
-  mainAuthor                  UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id]) // onDelete: Restrict
+  advisor                     UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id], onDelete: Restrict) 
+  mainAuthor                  UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id], onDelete: Cascade)
   eventEdition                EventEdition     @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
   Evaluation                  Evaluation[]
   Presentation                Presentation[]
@@ -218,7 +218,7 @@ model AwardedPanelist {
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
-  user           UserAccount  @relation(fields: [userId], references: [id]) // onDelete: CASCADE
+  user           UserAccount  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([eventEditionId, userId])
   @@map("awarded_panelist")
