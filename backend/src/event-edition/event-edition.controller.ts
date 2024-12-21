@@ -22,18 +22,21 @@ import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 
-@ApiBearerAuth()
 @Controller('event')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class EventEditionController {
   constructor(private readonly eventEditionService: EventEditionService) {}
 
   @Post()
+  @UserLevels(UserLevel.Superadmin)
+  @ApiBearerAuth()
   async create(@Body() createEventDto: CreateEventEditionDto) {
     return await this.eventEditionService.create(createEventDto);
   }
 
   @Post('/create-from-event-edition-form')
+  @UserLevels(UserLevel.Superadmin)
+  @ApiBearerAuth()
   async createFromEventEditionForm(
     @Body()
     createFromEventEditionFormDto: CreateFromEventEditionFormDto,
@@ -44,7 +47,8 @@ export class EventEditionController {
   }
 
   @Get()
-  @UserLevels(UserLevel.Superadmin)
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async getAll() {
     return await this.eventEditionService.getAll();
   }
@@ -63,6 +67,7 @@ export class EventEditionController {
 
   @Put(':id')
   @UserLevels(UserLevel.Superadmin)
+  @ApiBearerAuth()
   async update(
     @Param('id') id: string,
     @Body() updateEventRequestDTO: UpdateEventEditionDto,
@@ -72,12 +77,14 @@ export class EventEditionController {
 
   @Patch('active/:id')
   @UserLevels(UserLevel.Superadmin)
+  @ApiBearerAuth()
   async setActive(@Param('id') id: string) {
     return await this.eventEditionService.setActive(id);
   }
 
   @Delete(':id')
   @UserLevels(UserLevel.Superadmin)
+  @ApiBearerAuth()
   async delete(@Param('id') id: string) {
     return await this.eventEditionService.delete(id);
   }

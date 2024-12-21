@@ -778,7 +778,9 @@ describe('UserService', () => {
         },
       ];
 
-      prismaService.userAccount.findMany = jest.fn().mockResolvedValue(usersMock);
+      prismaService.userAccount.findMany = jest
+        .fn()
+        .mockResolvedValue(usersMock);
 
       const result = await service.findAll();
 
@@ -799,7 +801,9 @@ describe('UserService', () => {
         },
       });
 
-      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
 
     it('should return users filtered by role', async () => {
@@ -819,7 +823,9 @@ describe('UserService', () => {
         },
       ];
 
-      prismaService.userAccount.findMany = jest.fn().mockResolvedValue(usersMock);
+      prismaService.userAccount.findMany = jest
+        .fn()
+        .mockResolvedValue(usersMock);
 
       const result = await service.findAll('Admin');
 
@@ -840,7 +846,9 @@ describe('UserService', () => {
         },
       });
 
-      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
 
     it('should return users filtered by profile', async () => {
@@ -860,7 +868,9 @@ describe('UserService', () => {
         },
       ];
 
-      prismaService.userAccount.findMany = jest.fn().mockResolvedValue(usersMock);
+      prismaService.userAccount.findMany = jest
+        .fn()
+        .mockResolvedValue(usersMock);
 
       const result = await service.findAll(undefined, 'Listener');
 
@@ -881,7 +891,9 @@ describe('UserService', () => {
         },
       });
 
-      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
 
     it('should return users filtered by both role and profile', async () => {
@@ -901,7 +913,9 @@ describe('UserService', () => {
         },
       ];
 
-      prismaService.userAccount.findMany = jest.fn().mockResolvedValue(usersMock);
+      prismaService.userAccount.findMany = jest
+        .fn()
+        .mockResolvedValue(usersMock);
 
       const result = await service.findAll('Admin', 'Professor');
 
@@ -922,7 +936,9 @@ describe('UserService', () => {
         },
       });
 
-      expect(result).toEqual(usersMock.map(user => new ResponseUserDto(user)));
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
   });
 });

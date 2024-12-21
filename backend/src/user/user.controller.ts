@@ -12,13 +12,12 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
 import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
-import { UserLevel } from '@prisma/client';
+import { Profile, UserLevel } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
-@ApiBearerAuth()
 @Controller('users')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class UserController {
@@ -31,23 +30,29 @@ export class UserController {
   }
 
   @Post('set-admin')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async setAdmin(@Body() setAdminDto: SetAdminDto) {
     return await this.userService.setAdmin(setAdminDto);
   }
 
   @Post('set-super-admin')
+  @UserLevels(UserLevel.Superadmin)
+  @ApiBearerAuth()
   async setSuperAdmin(@Body() setAdminDto: SetAdminDto) {
     return await this.userService.setSuperAdmin(setAdminDto);
   }
 
   @Delete('delete/:id')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async remove(@Param('id') id: string) {
     return await this.userService.remove(id);
   }
 
   @Patch('activate/:id')
   @UserLevels(UserLevel.Superadmin)
+  @ApiBearerAuth()
   async activateUser(@Param('id') id: string) {
     return this.userService.activateProfessor(id);
   }
@@ -65,6 +70,8 @@ export class UserController {
     description:
       'Filter by profiles (e.g., "Professor", "Listener"). Accepts multiple values.',
   })
+  @UserLevels(UserLevel.Default, UserLevel.Admin, UserLevel.Superadmin)
+  @ApiBearerAuth()
   async getUsers(
     @Query('roles') roles?: string | string[],
     @Query('profiles') profiles?: string | string[],
@@ -74,15 +81,17 @@ export class UserController {
       return Array.isArray(input) ? input : [input];
     };
 
-    const rolesArray = toArray(roles);
-    const profilesArray = toArray(profiles);
+    const rolesArray = roles === undefined ? undefined : toArray(roles);
+    const profilesArray =
+      profiles === undefined ? undefined : toArray(profiles);
 
     return await this.userService.findAll(rolesArray, profilesArray);
   }
 
   @Get('advisors')
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @UserLevels(UserLevel.Default, UserLevel.Admin, UserLevel.Superadmin)
+  @ApiBearerAuth()
   async getAdvisors() {
-    return await this.userService.findAll(['Admin', 'Superadmin'], 'Professor');
+    return await this.userService.findAll(undefined, Profile.Professor);
   }
 }

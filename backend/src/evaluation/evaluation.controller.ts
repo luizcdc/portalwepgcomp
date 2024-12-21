@@ -1,12 +1,29 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { EvaluationService } from './evaluation.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { UserLevelGuard } from '../auth/guards/user-level.guard';
+import { UserLevel } from '@prisma/client';
+import { UserLevels } from '../auth/decorators/user-level.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+
 @Controller('evaluations')
+@UseGuards(JwtAuthGuard, UserLevelGuard)
 export class EvaluationController {
   constructor(private readonly evaluationService: EvaluationService) {}
 
   @Post()
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create new evaluations.',
   })
@@ -24,6 +41,8 @@ export class EvaluationController {
   }
 
   @Get()
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Find evaluations' })
   @ApiQuery({
     name: 'userId',
@@ -39,6 +58,8 @@ export class EvaluationController {
   }
 
   @Get('submission/:submissionId/final-grade')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   async calculateFinalGrade(@Param('submissionId') submissionId: string) {
     return await this.evaluationService.calculateFinalGrade(submissionId);
   }
