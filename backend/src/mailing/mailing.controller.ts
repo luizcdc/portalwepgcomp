@@ -6,7 +6,7 @@ import {
   DefaultEmailResponseDto,
   DefaultEmailDto,
 } from './mailing.dto';
-import { UserLevels } from '../auth/decorators/user-level.decorator';
+import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevel } from '@prisma/client';
@@ -19,7 +19,6 @@ export class MailingController {
 
   @Post('/contact')
   @Public()
-  @ApiBearerAuth()
   async contact(
     @Body() contactDto: ContactRequestDto,
   ): Promise<ContactResponseDto> {
@@ -27,7 +26,7 @@ export class MailingController {
   }
 
   @Post('/send')
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   @ApiBearerAuth()
   async send(
     @Body() sendDto: DefaultEmailDto,

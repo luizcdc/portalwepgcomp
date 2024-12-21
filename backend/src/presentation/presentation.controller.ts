@@ -170,7 +170,7 @@ export class PresentationController {
   }
 
   @Patch('with-submission/:id')
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   @ApiBearerAuth()
   updateWithSubmission(
     @Param('id') id: string,

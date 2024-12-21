@@ -1,19 +1,13 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AwardedDoctoralStudentsService } from './awarded-doctoral-students.service';
 import { RankingResponseDtoDto } from './dto/reponse-awarded-doctoral-students.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { UserLevelGuard } from '../auth/guards/user-level.guard';
-import { Public } from '../auth/decorators/user-level.decorator';
-
 @Controller('awarded-doctoral-students')
-@UseGuards(JwtAuthGuard, UserLevelGuard)
 export class AwardedDoctoralStudentsController {
   constructor(
     private readonly awardedDoctoralStudentsService: AwardedDoctoralStudentsService,
   ) {}
 
-  @Public()
   @Get('top-panelists/:eventEditionId')
   @ApiOperation({
     summary: 'Get top submissions ranked by panelists',
@@ -42,7 +36,6 @@ export class AwardedDoctoralStudentsController {
     );
   }
 
-  @Public()
   @Get('top-audience/:eventEditionId')
   @ApiOperation({
     summary: 'Get top submissions ranked by audience',
