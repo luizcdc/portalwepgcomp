@@ -18,7 +18,7 @@ export class MailingController {
   constructor(private readonly mailingService: MailingService) {}
 
   @Post('/contact')
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @Public()
   @ApiBearerAuth()
   async contact(
     @Body() contactDto: ContactRequestDto,
