@@ -6,7 +6,7 @@ import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { Prisma, Profile, UserAccount, UserLevel } from '@prisma/client';
-import { MailingService } from 'src/mailing/mailing.service';
+import { MailingService } from '../mailing/mailing.service';
 
 @Injectable()
 export class UserService {

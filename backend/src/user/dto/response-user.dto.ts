@@ -11,6 +11,10 @@ export class ResponseUserDto {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  emailVerifiedStatus: boolean;
+  emailVerificationToken?: string;
+  emailVerifiedAt?: Date;
+  emailVerificationSentAt?: Date;
 
   constructor(user: UserAccount) {
     this.id = user.id;
@@ -23,5 +27,9 @@ export class ResponseUserDto {
     this.isActive = user.isActive;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
+    this.emailVerifiedStatus = user.emailVerifiedStatus;
+    this.emailVerificationToken = user.emailVerificationToken;
+    this.emailVerifiedAt = user.emailVerifiedAt;
+    this.emailVerificationSentAt = user.emailVerificationSentAt;
   }
 }
