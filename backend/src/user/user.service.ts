@@ -251,13 +251,20 @@ export class UserService {
     profiles?: string | string[],
   ): Promise<ResponseUserDto[]> {
     const whereClause: any = {};
-
-    if (roles && Array.isArray(roles) && roles.length > 0) {
-      whereClause.level = { in: roles };
+    if (roles) {
+      if (Array.isArray(roles) && roles.length > 0) {
+        whereClause.level = { in: roles };
+      } else if (typeof roles === 'string') {
+        whereClause.level = roles;
+      }
     }
 
-    if (profiles && Array.isArray(profiles) && profiles.length > 0) {
-      whereClause.profile = { in: profiles };
+    if (profiles) {
+      if (Array.isArray(profiles) && profiles.length > 0) {
+        whereClause.profile = { in: profiles };
+      } else if (typeof profiles === 'string') {
+        whereClause.profile = profiles;
+      }
     }
 
     const users = await this.prismaClient.userAccount.findMany({

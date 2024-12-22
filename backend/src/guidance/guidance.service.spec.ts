@@ -109,32 +109,29 @@ describe('GuidanceService', () => {
         authorGuidance: 'Descrição da Orientação Atualizada',
         reviewerGuidance: 'Descrição da Orientação Atualizada',
         audienceGuidance: 'Descrição da Orientação Atualizada',
-        updatedAt: new Date('2021-07-02T00:00:00.000Z'),
       };
 
       const mockUpdatedGuidance = {
         ...mockExistingGuidance,
         ...updateDto,
-        updatedAt: new Date('2021-07-02T00:00:00.000Z'),
       };
 
-      // Mock getActiveInstance to return the existing guidance
+      // Mock findUnique to return the existing guidance
       jest
-        .spyOn(service, 'getActiveInstance')
-        .mockResolvedValue(mockExistingGuidance as ResponseGuidanceDto);
+        .spyOn(prismaService.guidance, 'findUnique')
+        .mockResolvedValue(mockExistingGuidance);
 
       (prismaService.guidance.update as jest.Mock).mockResolvedValue(
         mockUpdatedGuidance,
       );
 
-      const result = await service.update(updateDto);
+      const result = await service.update('guidance-1', updateDto);
 
-      expect(service.getActiveInstance).toHaveBeenCalledTimes(1);
       expect(prismaService.guidance.update).toHaveBeenCalledWith({
         where: { id: mockExistingGuidance.id }, // Corrected from mockActiveEventEdition.id
         data: updateDto,
       });
-      expect(result).toEqual(mockUpdatedGuidance);
+      expect(result).toEqual(new ResponseGuidanceDto(mockUpdatedGuidance));
     });
   });
 
@@ -146,14 +143,14 @@ describe('GuidanceService', () => {
         reviewerGuidance: 'Descrição da nova orientação',
         audienceGuidance: 'Descrição da nova orientação',
         eventEditionId: mockActiveEventEdition.id,
-        createdAt: new Date('2021-07-01T00:00:00.000Z'),
-        updatedAt: new Date('2021-07-01T00:00:00.000Z'),
       };
 
       const mockCreatedGuidance = {
         id: 'guidance-1',
         ...createDto,
         eventEditionId: mockActiveEventEdition.id,
+        createdAt: new Date('2021-07-01T00:00:00.000Z'),
+        updatedAt: new Date('2021-07-01T00:00:00.000Z'),
       };
 
       // Mock the findActive method of EventEditionService
@@ -176,7 +173,6 @@ describe('GuidanceService', () => {
         },
       });
 
-      expect(result).toBeInstanceOf(ResponseGuidanceDto);
       expect(result).toEqual(new ResponseGuidanceDto(mockCreatedGuidance));
     });
   });
@@ -218,7 +214,7 @@ describe('GuidanceService', () => {
 
       // Validate the result message
       expect(result).toEqual({
-        message: 'Intância de orientação removida com sucesso.',
+        message: 'Instância de orientação removida com sucesso.',
       });
     });
 
@@ -228,7 +224,7 @@ describe('GuidanceService', () => {
       (prismaService.guidance.findUnique as jest.Mock).mockResolvedValue(null);
 
       await expect(service.remove(nonExistentId)).rejects.toThrow(
-        new AppException('Intância de orientação não encontrada.', 404),
+        new AppException('Instância de orientação não encontrada.', 404),
       );
 
       expect(prismaService.guidance.findUnique).toHaveBeenCalledWith({
