@@ -6,12 +6,17 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto, Profile } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { Prisma, UserLevel } from '@prisma/client';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { MailingService } from '../mailing/mailing.service';
 
 jest.mock('bcrypt');
 
 describe('UserService', () => {
   let service: UserService;
   let prismaService: PrismaService;
+  let jwtService: JwtService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let mailingService: MailingService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +28,7 @@ describe('UserService', () => {
             userAccount: {
               findUnique: jest.fn(),
               create: jest.fn(),
+              update: jest.fn(),
               databaseHasProfessors: jest.fn(),
               setAdmin: jest.fn(),
               isAdmin: jest.fn(),
@@ -31,11 +37,27 @@ describe('UserService', () => {
             },
           },
         },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn(),
+            verify: jest.fn(),
+          },
+        },
+        {
+          provide: MailingService,
+          useValue: {
+            sendEmailConfirmation: jest.fn(),
+            sendEmail: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
     prismaService = module.get<PrismaService>(PrismaService);
+    jwtService = module.get<JwtService>(JwtService);
+    mailingService = module.get<MailingService>(MailingService);
   });
 
   it('should be defined', () => {
@@ -88,7 +110,7 @@ describe('UserService', () => {
 
       await expect(service.create(createUserDto)).rejects.toThrow(
         new AppException(
-          'O número de matrícula é obrigatório para estudantes de doutorado.',
+          'O número de matrícula é obrigatório para estudantes de doutorado e professores.',
           400,
         ),
       );
@@ -138,6 +160,7 @@ describe('UserService', () => {
       prismaService.userAccount.create = jest.fn().mockResolvedValue({
         id: '1',
         name: 'John',
+        registrationNumber: '2021001',
         email: 'newuser@example.com',
         photoFilePath: null,
         profile: 'Professor',
@@ -157,6 +180,7 @@ describe('UserService', () => {
       const createUserDto: CreateUserDto = {
         name: 'John',
         email: 'newuser@example.com',
+        registrationNumber: '2021001',
         password: 'password123',
         profile: Profile.Professor,
       };
@@ -180,6 +204,7 @@ describe('UserService', () => {
       prismaService.userAccount.create = jest.fn().mockResolvedValue({
         id: '1',
         name: 'John',
+        registrationNumber: '2021001',
         email: 'newuser@example.com',
         photoFilePath: null,
         profile: 'Professor',
@@ -199,6 +224,7 @@ describe('UserService', () => {
       const createUserDto: CreateUserDto = {
         name: 'John',
         email: 'newuser@example.com',
+        registrationNumber: '2021001',
         password: 'password123',
         profile: Profile.Professor,
       };
@@ -762,6 +788,10 @@ describe('UserService', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
+          emailVerifiedStatus: false,
+          emailVerificationToken: null,
+          emailVerifiedAt: null,
+          emailVerificationSentAt: new Date(),
         },
         {
           id: '2',
@@ -775,6 +805,10 @@ describe('UserService', () => {
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          emailVerifiedStatus: false,
+          emailVerificationToken: null,
+          emailVerifiedAt: null,
+          emailVerificationSentAt: new Date(),
         },
       ];
 
@@ -798,6 +832,10 @@ describe('UserService', () => {
           isActive: true,
           createdAt: true,
           updatedAt: true,
+          emailVerifiedStatus: true,
+          emailVerificationToken: true,
+          emailVerifiedAt: true,
+          emailVerificationSentAt: true,
         },
       });
 
@@ -820,6 +858,10 @@ describe('UserService', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
+          emailVerifiedStatus: false,
+          emailVerificationToken: null,
+          emailVerifiedAt: null,
+          emailVerificationSentAt: new Date(),
         },
       ];
 
@@ -843,6 +885,10 @@ describe('UserService', () => {
           isActive: true,
           createdAt: true,
           updatedAt: true,
+          emailVerifiedStatus: true,
+          emailVerificationToken: true,
+          emailVerifiedAt: true,
+          emailVerificationSentAt: true,
         },
       });
 
@@ -865,6 +911,10 @@ describe('UserService', () => {
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          emailVerifiedStatus: false,
+          emailVerificationToken: null,
+          emailVerifiedAt: null,
+          emailVerificationSentAt: new Date(),
         },
       ];
 
@@ -888,6 +938,10 @@ describe('UserService', () => {
           isActive: true,
           createdAt: true,
           updatedAt: true,
+          emailVerifiedStatus: true,
+          emailVerificationToken: true,
+          emailVerifiedAt: true,
+          emailVerificationSentAt: true,
         },
       });
 
@@ -910,6 +964,10 @@ describe('UserService', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
+          emailVerifiedStatus: false,
+          emailVerificationToken: null,
+          emailVerifiedAt: null,
+          emailVerificationSentAt: new Date(),
         },
       ];
 
@@ -933,12 +991,84 @@ describe('UserService', () => {
           isActive: true,
           createdAt: true,
           updatedAt: true,
+          emailVerifiedStatus: true,
+          emailVerificationToken: true,
+          emailVerifiedAt: true,
+          emailVerificationSentAt: true,
         },
       });
 
       expect(result).toEqual(
         usersMock.map((user) => new ResponseUserDto(user)),
       );
+    });
+  });
+
+  describe('UserService - confirmEmail', () => {
+    it('should confirm the email successfully for a valid token', async () => {
+      const token = 'valid-token';
+      const mockId = 'user-id';
+      const userMock = {
+        id: '1',
+        name: 'John Doe',
+        email: 'john@example.com',
+        password: 'hashedPassword',
+        registrationNumber: 'REG123',
+        photoFilePath: 'photo/path',
+        profile: Profile.Professor,
+        level: UserLevel.Admin,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerifiedStatus: false,
+        emailVerificationToken: null,
+        emailVerifiedAt: null,
+        emailVerificationSentAt: new Date(),
+      };
+
+      jest.spyOn(jwtService, 'verify').mockReturnValue({ id: mockId });
+      jest
+        .spyOn(prismaService.userAccount, 'update')
+        .mockResolvedValue(userMock);
+
+      const result = await service.confirmEmail(token);
+
+      expect(jwtService.verify).toHaveBeenCalledWith(token);
+      expect(prismaService.userAccount.update).toHaveBeenCalledWith({
+        where: { id: mockId },
+        data: { emailVerifiedStatus: true, emailVerifiedAt: expect.any(Date) },
+      });
+      expect(result).toBe(true);
+    });
+
+    it('should throw AppException for an expired or invalid token', async () => {
+      const token = 'expired-token';
+
+      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
+        throw new TokenExpiredError('Token expirado', new Date());
+      });
+
+      await expect(service.confirmEmail(token)).rejects.toThrow(
+        new AppException('Token inválido ou expirado.', 400),
+      );
+
+      expect(jwtService.verify).toHaveBeenCalledWith(token);
+      expect(prismaService.userAccount.update).not.toHaveBeenCalled();
+    });
+
+    it('should rethrow unexpected errors', async () => {
+      const token = 'error-token';
+
+      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
+        throw new Error('Unexpected error');
+      });
+
+      await expect(service.confirmEmail(token)).rejects.toThrow(
+        'Unexpected error',
+      );
+
+      expect(jwtService.verify).toHaveBeenCalledWith(token);
+      expect(prismaService.userAccount.update).not.toHaveBeenCalled();
     });
   });
 });
