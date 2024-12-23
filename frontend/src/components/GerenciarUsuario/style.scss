@@ -1,0 +1,115 @@
+.gerenciador {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.filtros {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.pesquisar {
+    display: flex;
+    flex-direction: row;
+    
+  .form-control {
+    border: solid;
+    border-color: #ffa90f !important;
+    border-width: 2px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    width: 379px;
+    height: 45px;
+    font-size: 14px;
+    padding-left: 5px;
+
+    &:focus{
+        outline: none;
+        box-shadow: none;
+    }
+  }
+
+  .search-button {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    max-width: 45px;
+    max-height: 45px;
+    background-color: #ffa90f;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #E68A00;
+    }
+  }
+}
+.status {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  border: solid;
+  border-color: #ffa90f;
+  border-width: 2px;
+  border-radius: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.filtrar {
+  font-size: 14px;
+  color: #adb5bd;
+}
+
+.button-ativo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid;
+  border-color: #019a34;
+  border-width: 2px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  width: 123px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.button-pendente {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid;
+  border-color: #e8b301;
+  border-width: 2px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  width: 123px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.button-inativo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid;
+  border-color: #45414a;
+  border-width: 2px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  width: 123px;
+  height: 22px;
+  cursor: pointer;
+}
