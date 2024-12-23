@@ -52,10 +52,45 @@ async function main() {
   const evaluationCriteria = await prisma.evaluationCriteria.create({
     data: {
       eventEditionId: eventEdition.id,
-      title: 'Originality',
-      description: 'Evaluate the originality of the research.',
-      weightRadio: 0.3,
+      title:
+        'Quão satisfeito(a) você ficou com o conteúdo da pesquisa apresentada?',
+      description: 'Avalie o conteúdo da pesquisa apresentada.',
+      weightRadio: 1,
     },
+  });
+  const evaluationCriteriaData = [
+    {
+      eventEditionId: eventEdition.id,
+      title:
+        'Quão satisfeito(a) você ficou com a qualidade e clareza da apresentação?',
+      description: 'Avalie a qualidade e clareza da apresentação.',
+      weightRadio: 1,
+    },
+    {
+      eventEditionId: eventEdition.id,
+      title: 'Quão bem a pesquisa abordou e explicou o problema central?',
+      description: 'Avalie como a pesquisa explicou o problema central.',
+      weightRadio: 1,
+    },
+    {
+      eventEditionId: eventEdition.id,
+      title:
+        'Quão clara e prática você considera a solução proposta pela pesquisa?',
+      description: 'Avalie a clareza e praticidade da solução proposta.',
+      weightRadio: 1,
+    },
+    {
+      eventEditionId: eventEdition.id,
+      title:
+        'Como você avalia a qualidade e aplicabilidade dos resultados apresentados?',
+      description:
+        'Avalie a qualidade e aplicabilidade dos resultados apresentados.',
+      weightRadio: 1,
+    },
+  ];
+
+  await prisma.evaluationCriteria.createMany({
+    data: evaluationCriteriaData,
   });
 
   // Seed for Submission
