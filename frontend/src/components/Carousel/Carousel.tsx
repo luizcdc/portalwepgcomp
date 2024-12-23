@@ -6,9 +6,11 @@ import Link from "next/link";
 import CarouselSlide from "./CarouselSlide";
 import { useEdicao } from "@/hooks/useEdicao";
 import { formatDateEvent, formatDateUniq } from "@/utils/formatDate";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Carousel() {
   const { Edicao } = useEdicao();
+  const { signed } = useAuth();
   const { slide1, slide2, slide3 } = CarouselMock;
 
   return (
@@ -77,13 +79,15 @@ export default function Carousel() {
             Data limite para submissão:{" "}
             {formatDateUniq(Edicao?.submissionDeadline)}
           </p>
-
-          <Link
-            className="btn btn-outline-light mt-3 px-4 py-2 schedule-button"
-            href="/Login"
-          >
-            {slide3.labelButton}
-          </Link>
+          
+          { signed ? '' : 
+            <Link
+              className="btn btn-outline-light mt-3 px-4 py-2 schedule-button"
+              href="/Login"
+            >
+              {slide3.labelButton}
+            </Link>
+          }
         </CarouselSlide>
       </div>
     </div>
