@@ -37,7 +37,7 @@ export const edicaoApi = {
 
     updateEdicaoById: async (idEdicao: string, body: EdicaoParams) => {
 
-        const { data } = await instance.put(`${baseUrl}/${idEdicao}`, body);
+        const { data } = await instance.put(`${baseUrl}/update-from-event-edition-form/${idEdicao}`, body);
 
         return data;
     },

@@ -9,7 +9,7 @@ import {
   CreateFromEventEditionFormDto,
 } from './dto/create-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
-import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
+import { UpdateEventEditionDto, UpdateFromEventEditionFormDto } from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole } from '@prisma/client';
 @Injectable()
 export class EventEditionService {
@@ -181,6 +181,110 @@ export class EventEditionService {
     return eventResponseDto;
   }
 
+  async updateFromEventEditionForm(
+    id: string,
+    updateFromEventEditionFormDto: UpdateFromEventEditionFormDto,
+  ): Promise<EventEditionResponseDto> {
+    const updatedEvent = await this.update(id, updateFromEventEditionFormDto);
+  
+    const { organizingCommitteeIds, itSupportIds, administrativeSupportIds, communicationIds, coordinatorId } = updateFromEventEditionFormDto;
+  
+    if (coordinatorId) {
+      const coordinator = await this.prismaClient.userAccount.findUnique({
+        where: {
+          id: coordinatorId,
+        },
+      });
+  
+      if (coordinator !== null) {
+         // Remove all roles for the user in this event edition
+        await this.prismaClient.committeeMember.deleteMany({
+          where: {
+            eventEditionId: id,
+            userId: coordinatorId,
+          },
+        });
+
+        // Remove existing coordinator if any
+        await this.prismaClient.committeeMember.deleteMany({
+          where: {
+            eventEditionId: id,
+            level: CommitteeLevel.Coordinator,
+            role: CommitteeRole.OrganizingCommittee,
+          },
+        });
+  
+        // Add new coordinator
+        await this.prismaClient.committeeMember.create({
+          data: {
+            eventEditionId: id,
+            userId: coordinatorId,
+            level: CommitteeLevel.Coordinator,
+            role: CommitteeRole.OrganizingCommittee,
+          },
+        });
+      }
+    }
+  
+    await this.updateCommitteeMembersFromArray(
+      id,
+      organizingCommitteeIds,
+      CommitteeRole.OrganizingCommittee,
+    );
+  
+    await this.updateCommitteeMembersFromArray(
+      id,
+      itSupportIds,
+      CommitteeRole.ITSupport,
+    );
+  
+    await this.updateCommitteeMembersFromArray(
+      id,
+      administrativeSupportIds,
+      CommitteeRole.AdministativeSupport,
+    );
+  
+    await this.updateCommitteeMembersFromArray(
+      id,
+      communicationIds,
+      CommitteeRole.Communication,
+    );
+  
+    const eventResponseDto = new EventEditionResponseDto(updatedEvent);
+  
+    return eventResponseDto;
+  }
+
+  async updateCommitteeMembersFromArray(
+    eventEditionId: string,
+    ids: Array<string>,
+    role: CommitteeRole,
+  ) {
+    if (!ids || !ids.length) return;
+
+    await Promise.all(
+      ids.map(async (id) => {
+        await this.prismaClient.committeeMember.upsert({
+          where: {
+            eventEditionId_userId: {
+              eventEditionId,
+              userId: id,
+            },
+          },
+          update: {
+            role,
+          },
+          create: {
+            eventEditionId,
+            userId: id,
+            level: CommitteeLevel.Committee,
+            role,
+          },
+        });
+      }),
+    );
+  }
+
   async update(id: string, updateEventEdition: UpdateEventEditionDto) {
     const event = await this.prismaClient.eventEdition.findUnique({
       where: {
@@ -193,11 +297,24 @@ export class EventEditionService {
         'Não existe nenhum evento com esse identificador',
       );
     }
+
+    const fieldsToIgnore = [
+      'organizingCommitteeIds',
+      'itSupportIds',
+      'administrativeSupportIds',
+      'communicationIds',
+      'coordinatorId',
+    ];
+
+    const filteredData = Object.fromEntries(
+      Object.entries(updateEventEdition).filter(([key, value]) => value !== undefined && !fieldsToIgnore.includes(key),),
+    );
+
     const updatedEvent = await this.prismaClient.eventEdition.update({
       where: {
         id,
       },
-      data: updateEventEdition,
+      data: filteredData,
     });
 
     const eventResponseDto = new EventEditionResponseDto(updatedEvent);

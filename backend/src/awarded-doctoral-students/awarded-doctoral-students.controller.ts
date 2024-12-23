@@ -2,7 +2,6 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AwardedDoctoralStudentsService } from './awarded-doctoral-students.service';
 import { RankingResponseDtoDto } from './dto/reponse-awarded-doctoral-students.dto';
-
 @Controller('awarded-doctoral-students')
 export class AwardedDoctoralStudentsController {
   constructor(
