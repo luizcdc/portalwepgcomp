@@ -13,19 +13,12 @@ import {
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.guidance.deleteMany();
-  await prisma.awardedPanelist.deleteMany();
-  await prisma.certificate.deleteMany();
-  await prisma.evaluation.deleteMany();
-  await prisma.panelist.deleteMany();
-  await prisma.presentation.deleteMany();
-  await prisma.presentationBlock.deleteMany();
-  await prisma.submission.deleteMany();
-  await prisma.room.deleteMany();
-  await prisma.evaluationCriteria.deleteMany();
-  await prisma.committeeMember.deleteMany();
-  await prisma.eventEdition.deleteMany();
-  await prisma.userAccount.deleteMany();
+  // TRUNCATE ALL TABLES THAT ARE FULLY INDEPENDENT FROM EACH OTHER
+  // EVEN INDIRECTLY:
+  await prisma.$executeRaw`SET session_replication_role = 'replica';`;
+  await prisma.$executeRawUnsafe('TRUNCATE TABLE "event_edition" CASCADE;');
+  await prisma.$executeRawUnsafe('TRUNCATE TABLE "user_account" CASCADE;');
+  await prisma.$executeRaw`SET session_replication_role = 'origin';`;
 
   await prisma.userAccount.createMany({
     data: [
