@@ -13,6 +13,20 @@ import {
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.guidance.deleteMany();
+  await prisma.awardedPanelist.deleteMany();
+  await prisma.certificate.deleteMany();
+  await prisma.evaluation.deleteMany();
+  await prisma.panelist.deleteMany();
+  await prisma.presentation.deleteMany();
+  await prisma.presentationBlock.deleteMany();
+  await prisma.submission.deleteMany();
+  await prisma.room.deleteMany();
+  await prisma.evaluationCriteria.deleteMany();
+  await prisma.committeeMember.deleteMany();
+  await prisma.eventEdition.deleteMany();
+  await prisma.userAccount.deleteMany();
+
   await prisma.userAccount.createMany({
     data: [
       {
@@ -88,6 +102,27 @@ async function main() {
       {
         name: 'Doctoral Student Default 3',
         email: 'docdefault3@example.com',
+        password: '1234$Ad@',
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+      },
+      {
+        name: 'Doctoral Student Default 4',
+        email: 'docdefault4@example.com',
+        password: '1234$Ad@',
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+      },
+      {
+        name: 'Doctoral Student Default 5',
+        email: 'docdefault5@example.com',
+        password: '1234$Ad@',
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+      },
+      {
+        name: 'Doctoral Student Default 6',
+        email: 'docdefault6@example.com',
         password: '1234$Ad@',
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
@@ -242,6 +277,54 @@ async function main() {
         status: SubmissionStatus.Submitted,
       },
     }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[0].id,
+        mainAuthorId: doctoralStudents[3].id,
+        eventEditionId: eventEdition.id,
+        title: 'Machine Learning in Healthcare',
+        abstract: 'Investigating ML applications in healthcare diagnosis.',
+        pdfFile: 'path/to/document4.pdf',
+        phoneNumber: '123-456-7893',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[1].id,
+        mainAuthorId: doctoralStudents[4].id,
+        eventEditionId: eventEdition.id,
+        title: 'Cloud Computing Security',
+        abstract: 'Analysis of security challenges in cloud computing.',
+        pdfFile: 'path/to/document5.pdf',
+        phoneNumber: '123-456-7894',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[2].id,
+        mainAuthorId: doctoralStudents[5].id,
+        eventEditionId: eventEdition.id,
+        title: 'Internet of Things Networks',
+        abstract: 'Study of IoT network architectures and protocols.',
+        pdfFile: 'path/to/document6.pdf',
+        phoneNumber: '123-456-7895',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[0].id,
+        mainAuthorId: doctoralStudents[6].id,
+        eventEditionId: eventEdition.id,
+        title: 'Big Data Analytics',
+        abstract: 'Exploring big data analytics and visualization tools.',
+        pdfFile: 'path/to/document7.pdf',
+        phoneNumber: '123-456-7896',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
   ];
 
   const evaluationCriteria = await prisma.evaluationCriteria.findMany({
@@ -278,17 +361,41 @@ async function main() {
     },
   });
 
-  let position = 0;
-  for (const submission of submissions) {
+  const presentationBlock2 = await prisma.presentationBlock.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      roomId: room.id,
+      type: PresentationBlockType.Presentation,
+      title: 'Apresentações de Pesquisa em Computação Quântica',
+      startTime: new Date('2024-05-01T10:00:00'),
+      duration:
+        eventEdition.presentationDuration *
+        eventEdition.presentationsPerPresentationBlock,
+    },
+  });
+
+  // First three submissions to presentationBlock 1
+  for (let i = 0; i < 3; i++) {
     await prisma.presentation.create({
       data: {
-        submissionId: submission.id,
+        submissionId: submissions[i].id,
         presentationBlockId: presentationBlock.id,
-        positionWithinBlock: position,
+        positionWithinBlock: i,
         status: PresentationStatus.ToPresent,
       },
     });
-    position++;
+  }
+
+  // Next three submissions to presentationBlock 2
+  for (let i = 3; i < 6; i++) {
+    await prisma.presentation.create({
+      data: {
+        submissionId: submissions[i].id,
+        presentationBlockId: presentationBlock2.id,
+        positionWithinBlock: i - 3,
+        status: PresentationStatus.ToPresent,
+      },
+    });
   }
 
   const panelistUsers = professors.slice(0, 4);
