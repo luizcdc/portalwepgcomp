@@ -26,6 +26,10 @@ describe('EventEditionService', () => {
     committeeMember: {
       create: jest.fn(),
     },
+    evaluationCriteria: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+    },
     $transaction: jest.fn(),
   };
 
@@ -50,6 +54,9 @@ describe('EventEditionService', () => {
 
   describe('create', () => {
     it('should create an event edition and return it', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
       const createDto = new CreateEventEditionDto();
       Object.assign(createDto, {
         name: 'Event 1',
@@ -77,10 +84,17 @@ describe('EventEditionService', () => {
       const result = await service.create(createDto);
       expect(result).toEqual(new EventEditionResponseDto(createdEvent));
       expect(mockPrismaService.eventEdition.create).toHaveBeenCalledWith({
-        data: createDto,
+        data: {
+          ...createDto,
+          isActive: true,
+        },
       });
     });
+
     it('should create an event edition and a committee member if coordinatorId is provided', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
       const createDto = new CreateEventEditionDto();
       Object.assign(createDto, {
         name: 'Event with Coordinator',
@@ -137,7 +151,11 @@ describe('EventEditionService', () => {
         },
       });
     });
+
     it('should create an event edition without creating a committee member if coordinatorId is invalid', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
       const createDto = new CreateEventEditionDto();
       Object.assign(createDto, {
         name: 'Event without Valid Coordinator',
@@ -166,6 +184,9 @@ describe('EventEditionService', () => {
     });
 
     it('should handle Prisma errors gracefully', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
       const createDto = new CreateEventEditionDto();
       Object.assign(createDto, {
         name: 'Event With Error',
@@ -179,6 +200,142 @@ describe('EventEditionService', () => {
       await expect(service.create(createDto)).rejects.toThrow('Database Error');
 
       expect(mockPrismaService.eventEdition.create).toHaveBeenCalled();
+    });
+
+    it('should copy evaluation criteria from the most recent active event', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
+      const createDto = new CreateEventEditionDto();
+      Object.assign(createDto, {
+        name: 'Event with Criteria',
+        description: 'Event description',
+        callForPapersText: 'Call for Papers',
+        partnersText: 'Partners',
+        location: 'Location 3',
+        startDate: new Date(),
+        endDate: new Date(),
+        submissionDeadline: new Date(),
+        presentationDuration: 60,
+        presentationsPerPresentationBlock: 4,
+      });
+
+      const activeEvent = {
+        id: 'activeEventId',
+        name: 'Active Event',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const evaluationCriteria = [
+        {
+          id: 'criteria1',
+          eventEditionId: 'activeEventId',
+          title: 'Criteria 1',
+          description: 'Description 1',
+          weightRadio: 1,
+        },
+        {
+          id: 'criteria2',
+          eventEditionId: 'activeEventId',
+          title: 'Criteria 2',
+          description: 'Description 2',
+          weightRadio: 2,
+        },
+      ];
+
+      const createdEvent = {
+        id: '4',
+        ...createDto,
+        isActive: false,
+        isEvaluationRestrictToLoggedUsers: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockPrismaService.eventEdition.findFirst.mockResolvedValue(activeEvent);
+      mockPrismaService.evaluationCriteria.findMany.mockResolvedValue(
+        evaluationCriteria,
+      );
+      mockPrismaService.eventEdition.create.mockResolvedValue(createdEvent);
+
+      const result = await service.create(createDto);
+
+      expect(result).toEqual(new EventEditionResponseDto(createdEvent));
+      expect(mockPrismaService.eventEdition.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          name: 'Event with Criteria',
+        }),
+      });
+      expect(
+        mockPrismaService.evaluationCriteria.findMany,
+      ).toHaveBeenCalledWith({
+        where: { eventEditionId: 'activeEventId' },
+      });
+      expect(mockPrismaService.evaluationCriteria.create).toHaveBeenCalledTimes(
+        2,
+      );
+      expect(mockPrismaService.evaluationCriteria.create).toHaveBeenCalledWith({
+        data: {
+          eventEditionId: '4',
+          title: 'Criteria 1',
+          description: 'Description 1',
+          weightRadio: 1,
+        },
+      });
+      expect(mockPrismaService.evaluationCriteria.create).toHaveBeenCalledWith({
+        data: {
+          eventEditionId: '4',
+          title: 'Criteria 2',
+          description: 'Description 2',
+          weightRadio: 2,
+        },
+      });
+    });
+
+    it('should not copy evaluation criteria if no active event exists', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
+      const createDto = new CreateEventEditionDto();
+      Object.assign(createDto, {
+        name: 'Event without Active Event',
+        description: 'Event description',
+        callForPapersText: 'Call for Papers',
+        partnersText: 'Partners',
+        location: 'Location 4',
+        startDate: new Date(),
+        endDate: new Date(),
+        submissionDeadline: new Date(),
+        presentationDuration: 60,
+        presentationsPerPresentationBlock: 4,
+      });
+
+      const createdEvent = {
+        id: '5',
+        ...createDto,
+        isActive: false,
+        isEvaluationRestrictToLoggedUsers: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockPrismaService.eventEdition.findFirst.mockResolvedValue(null);
+      mockPrismaService.eventEdition.create.mockResolvedValue(createdEvent);
+
+      const result = await service.create(createDto);
+
+      expect(result).toEqual(new EventEditionResponseDto(createdEvent));
+      expect(mockPrismaService.eventEdition.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          name: 'Event without Active Event',
+        }),
+      });
+
+      expect(
+        mockPrismaService.evaluationCriteria.create,
+      ).not.toHaveBeenCalled();
     });
   });
 
