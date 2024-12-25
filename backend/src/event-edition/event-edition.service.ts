@@ -9,52 +9,92 @@ import {
   CreateFromEventEditionFormDto,
 } from './dto/create-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
-import { UpdateEventEditionDto, UpdateFromEventEditionFormDto } from './dto/update-event-edition.dto';
+import {
+  UpdateEventEditionDto,
+  UpdateFromEventEditionFormDto,
+} from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole } from '@prisma/client';
+
 @Injectable()
 export class EventEditionService {
   constructor(private prismaClient: PrismaService) {}
 
   async create(createEventEditionDto: CreateEventEditionDto) {
-    const createdEventEdition = await this.prismaClient.eventEdition.create({
-      data: {
-        name: createEventEditionDto.name,
-        description: createEventEditionDto.description,
-        callForPapersText: createEventEditionDto.callForPapersText,
-        partnersText: createEventEditionDto.partnersText,
-        location: createEventEditionDto.location,
-        startDate: createEventEditionDto.startDate,
-        endDate: createEventEditionDto.endDate,
-        submissionDeadline: createEventEditionDto.submissionDeadline,
-        isEvaluationRestrictToLoggedUsers:
-          createEventEditionDto.isEvaluationRestrictToLoggedUsers,
-        presentationDuration: createEventEditionDto.presentationDuration,
-        presentationsPerPresentationBlock:
-          createEventEditionDto.presentationsPerPresentationBlock,
-      },
-    });
-
-    if (createEventEditionDto.coordinatorId) {
-      const coordinator = await this.prismaClient.userAccount.findUnique({
+    return this.prismaClient.$transaction(async (prisma) => {
+      const activeEvent = await prisma.eventEdition.findFirst({
         where: {
-          id: createEventEditionDto.coordinatorId,
+          isActive: true,
+        },
+        orderBy: {
+          startDate: 'desc',
         },
       });
-      if (coordinator !== null) {
-        await this.prismaClient.committeeMember.create({
-          data: {
-            eventEditionId: createdEventEdition.id,
-            userId: createEventEditionDto.coordinatorId,
-            level: CommitteeLevel.Coordinator,
-            role: CommitteeRole.OrganizingCommittee,
+      let evaluationCriteria = [];
+      if (activeEvent != null) {
+        evaluationCriteria = await prisma.evaluationCriteria.findMany({
+          where: {
+            eventEditionId: activeEvent?.id,
           },
         });
       }
-    }
 
-    const eventResponseDto = new EventEditionResponseDto(createdEventEdition);
+      const createdEventEdition = await prisma.eventEdition.create({
+        data: {
+          name: createEventEditionDto.name,
+          description: createEventEditionDto.description,
+          callForPapersText: createEventEditionDto.callForPapersText,
+          partnersText: createEventEditionDto.partnersText,
+          location: createEventEditionDto.location,
+          startDate: createEventEditionDto.startDate,
+          endDate: createEventEditionDto.endDate,
+          submissionDeadline: createEventEditionDto.submissionDeadline,
+          isEvaluationRestrictToLoggedUsers:
+            createEventEditionDto.isEvaluationRestrictToLoggedUsers,
+          presentationDuration: createEventEditionDto.presentationDuration,
+          presentationsPerPresentationBlock:
+            createEventEditionDto.presentationsPerPresentationBlock,
+          isActive: true,
+        },
+      });
 
-    return eventResponseDto;
+      // Copy evaluation criteria if they exist
+      if (evaluationCriteria != null && evaluationCriteria.length > 0) {
+        await Promise.all(
+          evaluationCriteria.map((criteria) =>
+            prisma.evaluationCriteria.create({
+              data: {
+                eventEditionId: createdEventEdition.id,
+                title: criteria.title,
+                description: criteria.description,
+                weightRadio: criteria.weightRadio,
+              },
+            }),
+          ),
+        );
+      }
+
+      if (createEventEditionDto.coordinatorId) {
+        const coordinator = await prisma.userAccount.findUnique({
+          where: {
+            id: createEventEditionDto.coordinatorId,
+          },
+        });
+        if (coordinator !== null) {
+          await prisma.committeeMember.create({
+            data: {
+              eventEditionId: createdEventEdition.id,
+              userId: createEventEditionDto.coordinatorId,
+              level: CommitteeLevel.Coordinator,
+              role: CommitteeRole.OrganizingCommittee,
+            },
+          });
+        }
+      }
+
+      const eventResponseDto = new EventEditionResponseDto(createdEventEdition);
+
+      return eventResponseDto;
+    });
   }
 
   async createFromEventEditionForm(
@@ -186,18 +226,24 @@ export class EventEditionService {
     updateFromEventEditionFormDto: UpdateFromEventEditionFormDto,
   ): Promise<EventEditionResponseDto> {
     const updatedEvent = await this.update(id, updateFromEventEditionFormDto);
-  
-    const { organizingCommitteeIds, itSupportIds, administrativeSupportIds, communicationIds, coordinatorId } = updateFromEventEditionFormDto;
-  
+
+    const {
+      organizingCommitteeIds,
+      itSupportIds,
+      administrativeSupportIds,
+      communicationIds,
+      coordinatorId,
+    } = updateFromEventEditionFormDto;
+
     if (coordinatorId) {
       const coordinator = await this.prismaClient.userAccount.findUnique({
         where: {
           id: coordinatorId,
         },
       });
-  
+
       if (coordinator !== null) {
-         // Remove all roles for the user in this event edition
+        // Remove all roles for the user in this event edition
         await this.prismaClient.committeeMember.deleteMany({
           where: {
             eventEditionId: id,
@@ -213,7 +259,7 @@ export class EventEditionService {
             role: CommitteeRole.OrganizingCommittee,
           },
         });
-  
+
         // Add new coordinator
         await this.prismaClient.committeeMember.create({
           data: {
@@ -225,33 +271,33 @@ export class EventEditionService {
         });
       }
     }
-  
+
     await this.updateCommitteeMembersFromArray(
       id,
       organizingCommitteeIds,
       CommitteeRole.OrganizingCommittee,
     );
-  
+
     await this.updateCommitteeMembersFromArray(
       id,
       itSupportIds,
       CommitteeRole.ITSupport,
     );
-  
+
     await this.updateCommitteeMembersFromArray(
       id,
       administrativeSupportIds,
       CommitteeRole.AdministativeSupport,
     );
-  
+
     await this.updateCommitteeMembersFromArray(
       id,
       communicationIds,
       CommitteeRole.Communication,
     );
-  
+
     const eventResponseDto = new EventEditionResponseDto(updatedEvent);
-  
+
     return eventResponseDto;
   }
 
@@ -307,7 +353,9 @@ export class EventEditionService {
     ];
 
     const filteredData = Object.fromEntries(
-      Object.entries(updateEventEdition).filter(([key, value]) => value !== undefined && !fieldsToIgnore.includes(key),),
+      Object.entries(updateEventEdition).filter(
+        ([key, value]) => value !== undefined && !fieldsToIgnore.includes(key),
+      ),
     );
 
     const updatedEvent = await this.prismaClient.eventEdition.update({
