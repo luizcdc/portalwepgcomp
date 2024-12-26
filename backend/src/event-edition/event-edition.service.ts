@@ -37,35 +37,10 @@ export class EventEditionService {
           },
         });
       }
-      const submissionDeadline =
-        createEventEditionDto.submissionDeadline instanceof Date
-          ? createEventEditionDto.submissionDeadline
-          : new Date(createEventEditionDto.submissionDeadline);
-
-      if (submissionDeadline <= new Date()) {
-        throw new BadRequestException(
-          'O fim do período de submissão deve ser no futuro.',
-        );
-      } else if (submissionDeadline > createEventEditionDto.startDate) {
-        throw new BadRequestException(
-          'O fim do período de submissão deve ser anterior ao início do evento.',
-        );
-      }
-
-      if (createEventEditionDto.submissionStartDate) {
-        const submissionStartDate =
-          createEventEditionDto.submissionStartDate instanceof Date
-            ? createEventEditionDto.submissionStartDate
-            : new Date(createEventEditionDto.submissionStartDate);
-
-        if (submissionStartDate >= submissionDeadline) {
-          throw new BadRequestException(
-            'A data de início do período de submissão deve ser anterior ao fim do período de submissão.',
-          );
-        }
-      } else {
+      if (!createEventEditionDto.submissionStartDate) {
         createEventEditionDto.submissionStartDate = new Date();
       }
+      this.validateSubmissionPeriod(createEventEditionDto);
 
       const createdEventEdition = await prisma.eventEdition.create({
         data: {
@@ -127,6 +102,47 @@ export class EventEditionService {
 
       return eventResponseDto;
     });
+  }
+
+  private validateSubmissionPeriod(
+    createEventEditionDto: CreateEventEditionDto | UpdateEventEditionDto,
+  ) {
+    let submissionDeadline = createEventEditionDto.submissionDeadline;
+    if (submissionDeadline) {
+      submissionDeadline =
+        submissionDeadline instanceof Date
+          ? submissionDeadline
+          : new Date(submissionDeadline);
+    } else if (createEventEditionDto.startDate) {
+      submissionDeadline = createEventEditionDto.startDate;
+    }
+
+    if (submissionDeadline && submissionDeadline <= new Date()) {
+      throw new BadRequestException(
+        'O fim do período de submissão deve ser no futuro.',
+      );
+    } else if (
+      submissionDeadline &&
+      createEventEditionDto.startDate &&
+      submissionDeadline > createEventEditionDto.startDate
+    ) {
+      throw new BadRequestException(
+        'O fim do período de submissão deve ser anterior ao início do evento.',
+      );
+    }
+
+    if (createEventEditionDto.submissionStartDate) {
+      const submissionStartDate =
+        createEventEditionDto.submissionStartDate instanceof Date
+          ? createEventEditionDto.submissionStartDate
+          : new Date(createEventEditionDto.submissionStartDate);
+
+      if (submissionDeadline && submissionStartDate >= submissionDeadline) {
+        throw new BadRequestException(
+          'A data de início do período de submissão deve ser anterior ao fim do período de submissão.',
+        );
+      }
+    }
   }
 
   async createFromEventEditionForm(
@@ -267,6 +283,8 @@ export class EventEditionService {
       coordinatorId,
     } = updateFromEventEditionFormDto;
 
+    this.validateSubmissionPeriod(updateFromEventEditionFormDto);
+
     if (coordinatorId) {
       const coordinator = await this.prismaClient.userAccount.findUnique({
         where: {
@@ -375,7 +393,7 @@ export class EventEditionService {
         'Não existe nenhum evento com esse identificador',
       );
     }
-
+    this.validateSubmissionPeriod(updateEventEdition);
     const fieldsToIgnore = [
       'organizingCommitteeIds',
       'itSupportIds',
