@@ -104,4 +104,9 @@ export class EventEditionController {
   async delete(@Param('id') id: string) {
     return await this.eventEditionService.delete(id);
   }
+
+  @Post('/remove-admins-from-ended-events')
+  async removeAdminsFromEvent () {
+    return await this.eventEditionService.removeAdminsFromEndedEvents();
+  }
 }

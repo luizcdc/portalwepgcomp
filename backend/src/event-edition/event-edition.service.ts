@@ -9,11 +9,10 @@ import {
   CreateFromEventEditionFormDto,
 } from './dto/create-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
-import {
-  UpdateEventEditionDto,
-  UpdateFromEventEditionFormDto,
-} from './dto/update-event-edition.dto';
-import { CommitteeLevel, CommitteeRole } from '@prisma/client';
+
+import { UpdateEventEditionDto, UpdateFromEventEditionFormDto } from './dto/update-event-edition.dto';
+import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class EventEditionService {
@@ -146,7 +145,7 @@ export class EventEditionService {
   ) {
     await Promise.all(
       ids.map(async (id) => {
-        await this.prismaClient.committeeMember.create({
+        const committeeMember = await this.prismaClient.committeeMember.create({
           data: {
             eventEditionId: eventEditionId,
             userId: id,
@@ -154,8 +153,28 @@ export class EventEditionService {
             role,
           },
         });
+
+        if (committeeMember) {
+          await this.updateUserLevel(id, committeeMember.level);
+        }
+
       }),
     );
+  }
+
+  private async updateUserLevel(userId: string, committeeLevel: CommitteeLevel) {
+    // logic to update user level based in committeLevel
+    const userLevel =
+      committeeLevel === CommitteeLevel.Coordinator
+        ? UserLevel.Superadmin
+        : UserLevel.Admin;
+  
+    await this.prismaClient.userAccount.update({
+      where: { id: userId },
+      data: {
+        level: userLevel,
+      },
+    });
   }
 
   async getAll() {
@@ -269,6 +288,9 @@ export class EventEditionService {
             role: CommitteeRole.OrganizingCommittee,
           },
         });
+
+      // Update user level for the new coordinator
+      await this.updateUserLevel(coordinatorId, CommitteeLevel.Coordinator);
       }
     }
 
@@ -310,7 +332,7 @@ export class EventEditionService {
 
     await Promise.all(
       ids.map(async (id) => {
-        await this.prismaClient.committeeMember.upsert({
+        const committeeMember = await this.prismaClient.committeeMember.upsert({
           where: {
             eventEditionId_userId: {
               eventEditionId,
@@ -327,6 +349,11 @@ export class EventEditionService {
             role,
           },
         });
+
+      // Update user level when a new committee member is added
+      if (committeeMember) {
+        await this.updateUserLevel(id, committeeMember.level);
+      }
       }),
     );
   }
@@ -426,5 +453,58 @@ export class EventEditionService {
     const eventResponseDto = new EventEditionResponseDto(deletedEvent);
 
     return eventResponseDto;
+  }
+
+   // Define cron job to run daily at midnight
+  @Cron('0 0 * * *')
+  async removeAdminsFromEndedEvents() {
+    const now = new Date();
+
+    const endedEvents = await this.prismaClient.eventEdition.findMany({
+      where: {
+        endDate: {
+          lte: now,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });  
+    
+    if(endedEvents.length === 0) {
+      console.log('Nenhum evento finalizado encontrado.');
+      return;
+    }
+
+    const eventIds = endedEvents.map(event => event.id);
+
+    const adminsToRemove = await this.prismaClient.committeeMember.findMany({
+      where: {
+        eventEditionId: {in: eventIds},
+        level: CommitteeLevel.Committee 
+      },
+        select: {
+          userId: true,
+        },
+    });
+
+    if(adminsToRemove.length === 0) {
+      console.log('Nenhum administrador encontrado.');
+      return;
+    }
+
+    const adminIds = adminsToRemove.map(admin => admin.userId);
+
+    await this.prismaClient.userAccount.updateMany({
+      where: {
+        id: {in: adminIds},
+        level: {not: UserLevel.Superadmin},
+      },
+      data: {
+        level: UserLevel.Default,
+      },
+    });
+
+    console.log(`${adminIds.length} usuários atualizados para nível Default.`);
   }
 }
