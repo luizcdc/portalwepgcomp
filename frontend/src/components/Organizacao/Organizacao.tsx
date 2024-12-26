@@ -21,7 +21,7 @@ export default function Organizacao(/*{props} : {props: OrganizacaoProps}*/) {
 
     const coordenador = useMemo(() => {
         const coord = committerList.find(
-            (member) => member.level === "Coordinator" && member.role === " "
+            (member) => member.level === "Coordinator" && member.role === "OrganizingCommittee"
         );
         return coord ? coord.userName : " ";
     }, [committerList]);
@@ -37,6 +37,9 @@ export default function Organizacao(/*{props} : {props: OrganizacaoProps}*/) {
         if (committerList.length === 0) return groups;
 
         committerList.forEach((member) => {
+            // Exclui coordenador da lista de 'comissao'
+            if (member.level === "Coordinator") return;
+
             switch (member.role) {
                 case "OrganizingCommittee":
                     groups.comissao.push(member.userName);
@@ -82,7 +85,7 @@ export default function Organizacao(/*{props} : {props: OrganizacaoProps}*/) {
                 <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Coordenação geral:</span> {coordenador}</p>
                 <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Comissão organizadora:</span> {formatTeam(groupedMembers.comissao)}</p>
                 <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Apoio à TI:</span> {formatTeam(groupedMembers.ti)}</p>
-                <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Comunicação:</span> {formatTeam(groupedMembers.comunicaco)}</p>
+                <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Comunicação:</span> {formatTeam(groupedMembers.comunicacao)}</p>
                 <p><span style={{fontWeight: "700", color: "#F17F0C"}}>Apoio administrativo:</span> {formatTeam(groupedMembers.administracao)}</p>
             </div>
         </div>

@@ -39,13 +39,6 @@ export const AuthProvider = ({ children }) => {
       api.defaults.headers.common["Authorization"] = `Bearer ${payload.token}`;
       setTokenLocalStorage(payload.token);
       setUserLocalStorage(payload.data);
-
-      showAlert({
-        icon: "success",
-        title: "Login realizado com sucesso!",
-        timer: 3000,
-        showConfirmButton: false,
-      });
     } catch (err: any) {
       setUser(null);
 
