@@ -145,6 +145,49 @@ describe('SubmissionService', () => {
         ),
       );
     });
+
+    it('should throw error if submission with same title exists', async () => {
+      (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
+        { id: 'author123' },
+        { id: 'advisor-id', profile: Profile.Professor },
+      ]);
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        id: 'event123',
+        submissionDeadline: new Date(Date.now() + 86400000),
+      });
+      (prismaService.submission.findFirst as jest.Mock)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({
+          id: 'existing-submission',
+          title: 'Test Submission',
+        });
+
+      await expect(service.create(validCreateSubmissionDto)).rejects.toThrow(
+        new AppException(
+          'Já existe uma submissão com o mesmo título para essa edição do evento.',
+          400,
+        ),
+      );
+    });
+
+    it('should throw error if submission deadline has passed', async () => {
+      (prismaService.userAccount.findMany as jest.Mock).mockResolvedValue([
+        { id: 'author123' },
+        { id: 'advisor-id', profile: Profile.Professor },
+      ]);
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        id: 'event123',
+        submissionDeadline: new Date(Date.now() - 86400000),
+      });
+      (prismaService.submission.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.create(validCreateSubmissionDto)).rejects.toThrow(
+        new AppException(
+          'O prazo para submissão de trabalhos nessa edição do evento já chegou ao fim.',
+          400,
+        ),
+      );
+    });
   });
 
   describe('findAll', () => {
@@ -269,6 +312,30 @@ describe('SubmissionService', () => {
       await expect(
         service.update('invalidId', {} as UpdateSubmissionDto),
       ).rejects.toThrow(new AppException('Submissão não encontrada.', 404));
+    });
+
+    it('should throw error if updating to a title that already exists', async () => {
+      (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
+        id: 'submission123',
+        eventEditionId: 'event123',
+        title: 'Old Title',
+      });
+
+      (prismaService.submission.findFirst as jest.Mock).mockResolvedValue({
+        id: 'existing-submission',
+        title: 'Updated Submission',
+      });
+
+      await expect(
+        service.update('submission123', {
+          title: 'Updated Submission',
+        }),
+      ).rejects.toThrow(
+        new AppException(
+          'Já existe uma submissão com o mesmo título para essa edição do evento.',
+          400,
+        ),
+      );
     });
   });
 
