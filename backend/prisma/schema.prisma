@@ -111,6 +111,7 @@ model EventEdition {
   location                          String            @map("location") @db.Text
   startDate                         DateTime          @map("start_date")
   endDate                           DateTime          @map("end_date")
+  submissionStartDate               DateTime          @map("submission_start_date")
   submissionDeadline                DateTime          @map("submission_deadline")
   isActive                          Boolean           @default(false) @map("is_active")
   isEvaluationRestrictToLoggedUsers Boolean           @default(true) @map("is_evaluation_restrict_to_logged_users")
@@ -120,10 +121,10 @@ model EventEdition {
   updatedAt                         DateTime          @updatedAt @map("updated_at")
   submissions                       Submission[]
   committeeMembers                  CommitteeMember[]
-  certificates                      Certificate[]
   awardedPanelists                  AwardedPanelist[]
   rooms                             Room[]
   Guidance                          Guidance[]
+  Certificate                       Certificate[]
 
   @@map("event_edition")
 }
@@ -242,7 +243,7 @@ model Certificate {
   email          String       @map("email") @db.VarChar(255)
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
-  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id])
+  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
 
   @@map("certificate")
 }
