@@ -208,28 +208,33 @@ async function main() {
     data: [
       {
         eventEditionId: eventEdition.id,
-        title: 'Originalidade',
-        description: 'Avaliar a originalidade da pesquisa.',
+        title: 'Conteúdo',
+        description:
+          'Quão satisfeito(a) você ficou com o conteúdo da pesquisa apresentada?',
       },
       {
         eventEditionId: eventEdition.id,
-        title: 'Relevância',
-        description: 'Avaliar a relevância da pesquisa para a área.',
+        title: 'Qualidade e Clareza',
+        description:
+          'Quão satisfeito(a) você ficou com a qualidade e clareza da apresentação?',
       },
       {
         eventEditionId: eventEdition.id,
-        title: 'Metodologia',
-        description: 'Avaliar a solidez da metodologia de pesquisa.',
+        title: 'Relevância ao Tema',
+        description:
+          'Quão bem a pesquisa abordou e explicou o problema central?',
       },
       {
         eventEditionId: eventEdition.id,
-        title: 'Clareza',
-        description: 'Avaliar a clareza da apresentação e escrita.',
+        title: 'Solução proposta',
+        description:
+          'Quão clara e prática você considera a solução proposta pela pesquisa?',
       },
       {
         eventEditionId: eventEdition.id,
-        title: 'Impacto',
-        description: 'Avaliar o potencial impacto dos resultados da pesquisa.',
+        title: 'Resultados',
+        description:
+          'Como você avalia a qualidade e aplicabilidade dos resultados apresentados?',
       },
     ],
   });
