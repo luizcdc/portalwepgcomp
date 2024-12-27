@@ -9,52 +9,91 @@ import {
   CreateFromEventEditionFormDto,
 } from './dto/create-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
+
 import { UpdateEventEditionDto, UpdateFromEventEditionFormDto } from './dto/update-event-edition.dto';
-import { CommitteeLevel, CommitteeRole } from '@prisma/client';
+import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
+import { Cron } from '@nestjs/schedule';
+
 @Injectable()
 export class EventEditionService {
   constructor(private prismaClient: PrismaService) {}
 
   async create(createEventEditionDto: CreateEventEditionDto) {
-    const createdEventEdition = await this.prismaClient.eventEdition.create({
-      data: {
-        name: createEventEditionDto.name,
-        description: createEventEditionDto.description,
-        callForPapersText: createEventEditionDto.callForPapersText,
-        partnersText: createEventEditionDto.partnersText,
-        location: createEventEditionDto.location,
-        startDate: createEventEditionDto.startDate,
-        endDate: createEventEditionDto.endDate,
-        submissionDeadline: createEventEditionDto.submissionDeadline,
-        isEvaluationRestrictToLoggedUsers:
-          createEventEditionDto.isEvaluationRestrictToLoggedUsers,
-        presentationDuration: createEventEditionDto.presentationDuration,
-        presentationsPerPresentationBlock:
-          createEventEditionDto.presentationsPerPresentationBlock,
-      },
-    });
-
-    if (createEventEditionDto.coordinatorId) {
-      const coordinator = await this.prismaClient.userAccount.findUnique({
+    return this.prismaClient.$transaction(async (prisma) => {
+      const activeEvent = await prisma.eventEdition.findFirst({
         where: {
-          id: createEventEditionDto.coordinatorId,
+          isActive: true,
+        },
+        orderBy: {
+          startDate: 'desc',
         },
       });
-      if (coordinator !== null) {
-        await this.prismaClient.committeeMember.create({
-          data: {
-            eventEditionId: createdEventEdition.id,
-            userId: createEventEditionDto.coordinatorId,
-            level: CommitteeLevel.Coordinator,
-            role: CommitteeRole.OrganizingCommittee,
+      let evaluationCriteria = [];
+      if (activeEvent != null) {
+        evaluationCriteria = await prisma.evaluationCriteria.findMany({
+          where: {
+            eventEditionId: activeEvent?.id,
           },
         });
       }
-    }
 
-    const eventResponseDto = new EventEditionResponseDto(createdEventEdition);
+      const createdEventEdition = await prisma.eventEdition.create({
+        data: {
+          name: createEventEditionDto.name,
+          description: createEventEditionDto.description,
+          callForPapersText: createEventEditionDto.callForPapersText,
+          partnersText: createEventEditionDto.partnersText,
+          location: createEventEditionDto.location,
+          startDate: createEventEditionDto.startDate,
+          endDate: createEventEditionDto.endDate,
+          submissionDeadline: createEventEditionDto.submissionDeadline,
+          isEvaluationRestrictToLoggedUsers:
+            createEventEditionDto.isEvaluationRestrictToLoggedUsers,
+          presentationDuration: createEventEditionDto.presentationDuration,
+          presentationsPerPresentationBlock:
+            createEventEditionDto.presentationsPerPresentationBlock,
+          isActive: true,
+        },
+      });
 
-    return eventResponseDto;
+      // Copy evaluation criteria if they exist
+      if (evaluationCriteria != null && evaluationCriteria.length > 0) {
+        await Promise.all(
+          evaluationCriteria.map((criteria) =>
+            prisma.evaluationCriteria.create({
+              data: {
+                eventEditionId: createdEventEdition.id,
+                title: criteria.title,
+                description: criteria.description,
+                weightRadio: criteria.weightRadio,
+              },
+            }),
+          ),
+        );
+      }
+
+      if (createEventEditionDto.coordinatorId) {
+        const coordinator = await prisma.userAccount.findUnique({
+          where: {
+            id: createEventEditionDto.coordinatorId,
+          },
+        });
+        if (coordinator !== null) {
+          await prisma.committeeMember.create({
+            data: {
+              eventEditionId: createdEventEdition.id,
+              userId: createEventEditionDto.coordinatorId,
+              level: CommitteeLevel.Coordinator,
+              role: CommitteeRole.OrganizingCommittee,
+            },
+          });
+        }
+      }
+
+      const eventResponseDto = new EventEditionResponseDto(createdEventEdition);
+
+      return eventResponseDto;
+    });
   }
 
   async createFromEventEditionForm(
@@ -106,7 +145,7 @@ export class EventEditionService {
   ) {
     await Promise.all(
       ids.map(async (id) => {
-        await this.prismaClient.committeeMember.create({
+        const committeeMember = await this.prismaClient.committeeMember.create({
           data: {
             eventEditionId: eventEditionId,
             userId: id,
@@ -114,8 +153,28 @@ export class EventEditionService {
             role,
           },
         });
+
+        if (committeeMember) {
+          await this.updateUserLevel(id, committeeMember.level);
+        }
+
       }),
     );
+  }
+
+  private async updateUserLevel(userId: string, committeeLevel: CommitteeLevel) {
+    // logic to update user level based in committeLevel
+    const userLevel =
+      committeeLevel === CommitteeLevel.Coordinator
+        ? UserLevel.Superadmin
+        : UserLevel.Admin;
+  
+    await this.prismaClient.userAccount.update({
+      where: { id: userId },
+      data: {
+        level: userLevel,
+      },
+    });
   }
 
   async getAll() {
@@ -186,18 +245,24 @@ export class EventEditionService {
     updateFromEventEditionFormDto: UpdateFromEventEditionFormDto,
   ): Promise<EventEditionResponseDto> {
     const updatedEvent = await this.update(id, updateFromEventEditionFormDto);
-  
-    const { organizingCommitteeIds, itSupportIds, administrativeSupportIds, communicationIds, coordinatorId } = updateFromEventEditionFormDto;
-  
+
+    const {
+      organizingCommitteeIds,
+      itSupportIds,
+      administrativeSupportIds,
+      communicationIds,
+      coordinatorId,
+    } = updateFromEventEditionFormDto;
+
     if (coordinatorId) {
       const coordinator = await this.prismaClient.userAccount.findUnique({
         where: {
           id: coordinatorId,
         },
       });
-  
+
       if (coordinator !== null) {
-         // Remove all roles for the user in this event edition
+        // Remove all roles for the user in this event edition
         await this.prismaClient.committeeMember.deleteMany({
           where: {
             eventEditionId: id,
@@ -213,7 +278,7 @@ export class EventEditionService {
             role: CommitteeRole.OrganizingCommittee,
           },
         });
-  
+
         // Add new coordinator
         await this.prismaClient.committeeMember.create({
           data: {
@@ -223,35 +288,38 @@ export class EventEditionService {
             role: CommitteeRole.OrganizingCommittee,
           },
         });
+
+      // Update user level for the new coordinator
+      await this.updateUserLevel(coordinatorId, CommitteeLevel.Coordinator);
       }
     }
-  
+
     await this.updateCommitteeMembersFromArray(
       id,
       organizingCommitteeIds,
       CommitteeRole.OrganizingCommittee,
     );
-  
+
     await this.updateCommitteeMembersFromArray(
       id,
       itSupportIds,
       CommitteeRole.ITSupport,
     );
-  
+
     await this.updateCommitteeMembersFromArray(
       id,
       administrativeSupportIds,
       CommitteeRole.AdministativeSupport,
     );
-  
+
     await this.updateCommitteeMembersFromArray(
       id,
       communicationIds,
       CommitteeRole.Communication,
     );
-  
+
     const eventResponseDto = new EventEditionResponseDto(updatedEvent);
-  
+
     return eventResponseDto;
   }
 
@@ -264,7 +332,7 @@ export class EventEditionService {
 
     await Promise.all(
       ids.map(async (id) => {
-        await this.prismaClient.committeeMember.upsert({
+        const committeeMember = await this.prismaClient.committeeMember.upsert({
           where: {
             eventEditionId_userId: {
               eventEditionId,
@@ -281,6 +349,11 @@ export class EventEditionService {
             role,
           },
         });
+
+      // Update user level when a new committee member is added
+      if (committeeMember) {
+        await this.updateUserLevel(id, committeeMember.level);
+      }
       }),
     );
   }
@@ -307,7 +380,9 @@ export class EventEditionService {
     ];
 
     const filteredData = Object.fromEntries(
-      Object.entries(updateEventEdition).filter(([key, value]) => value !== undefined && !fieldsToIgnore.includes(key),),
+      Object.entries(updateEventEdition).filter(
+        ([key, value]) => value !== undefined && !fieldsToIgnore.includes(key),
+      ),
     );
 
     const updatedEvent = await this.prismaClient.eventEdition.update({
@@ -378,5 +453,58 @@ export class EventEditionService {
     const eventResponseDto = new EventEditionResponseDto(deletedEvent);
 
     return eventResponseDto;
+  }
+
+   // Define cron job to run daily at midnight
+  @Cron('0 0 * * *')
+  async removeAdminsFromEndedEvents() {
+    const now = new Date();
+
+    const endedEvents = await this.prismaClient.eventEdition.findMany({
+      where: {
+        endDate: {
+          lte: now,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });  
+    
+    if(endedEvents.length === 0) {
+      console.log('Nenhum evento finalizado encontrado.');
+      return;
+    }
+
+    const eventIds = endedEvents.map(event => event.id);
+
+    const adminsToRemove = await this.prismaClient.committeeMember.findMany({
+      where: {
+        eventEditionId: {in: eventIds},
+        level: CommitteeLevel.Committee 
+      },
+        select: {
+          userId: true,
+        },
+    });
+
+    if(adminsToRemove.length === 0) {
+      console.log('Nenhum administrador encontrado.');
+      return;
+    }
+
+    const adminIds = adminsToRemove.map(admin => admin.userId);
+
+    await this.prismaClient.userAccount.updateMany({
+      where: {
+        id: {in: adminIds},
+        level: {not: UserLevel.Superadmin},
+      },
+      data: {
+        level: UserLevel.Default,
+      },
+    });
+
+    console.log(`${adminIds.length} usuários atualizados para nível Default.`);
   }
 }
