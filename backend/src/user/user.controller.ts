@@ -8,7 +8,6 @@ import {
   Patch,
   Get,
   Query,
-  HttpException,
   HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -18,6 +17,7 @@ import { Profile, UserLevel } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { AppException } from '../exceptions/app.exception';
 
 @ApiTags('Users')
 @Controller('users')
@@ -98,12 +98,14 @@ export class UserController {
   }
 
   @Post('confirm-email')
-  async confirmEmail(@Query('token') token: string): Promise<string> {
+  async confirmEmail(
+    @Query('token') token: string,
+  ): Promise<{ message: string }> {
     const confirmed = await this.userService.confirmEmail(token);
     if (confirmed) {
-      return 'E-mail confirmado com sucesso.';
+      return { message: 'E-mail confirmado com sucesso.' };
     } else {
-      throw new HttpException(
+      throw new AppException(
         'Falha ao confirmar o e-mail.',
         HttpStatus.BAD_REQUEST,
       );

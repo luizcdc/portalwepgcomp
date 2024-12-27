@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { Prisma, Profile, UserAccount, UserLevel } from '@prisma/client';
@@ -66,14 +66,12 @@ export class UserService {
       },
     });
 
-    if (createdUser.emailVerifiedStatus === false) {
+    if (createdUser.isVerified === false) {
       const token = await this.generateEmailToken(createdUser.id);
       await this.mailingService.sendEmailConfirmation(createdUser.email, token);
-      await this.prismaClient.userAccount.update({
-        where: {
-          id: createdUser.id,
-        },
+      await this.prismaClient.emailVerification.create({
         data: {
+          userId: createdUser.id,
           emailVerificationToken: token,
           emailVerificationSentAt: new Date(),
         },
@@ -278,10 +276,7 @@ export class UserService {
         photoFilePath: true,
         profile: true,
         level: true,
-        emailVerificationToken: true,
-        emailVerifiedAt: true,
-        emailVerificationSentAt: true,
-        emailVerifiedStatus: true,
+        isVerified: true,
         isActive: true,
         createdAt: true,
         updatedAt: true,
@@ -296,17 +291,46 @@ export class UserService {
     return this.jwtService.sign(payload, { expiresIn: '24h' });
   }
 
+  private async isTokenUsed(token: string): Promise<boolean> {
+    const tokenRecord = await this.prismaClient.emailVerification.findFirst({
+      where: {
+        emailVerificationToken: token,
+        emailVerifiedAt: {
+          not: null,
+        },
+      },
+    });
+
+    return !!tokenRecord;
+  }
+
   async confirmEmail(token: string): Promise<boolean> {
     try {
+      const tokenUsed = await this.isTokenUsed(token);
+      if (tokenUsed) {
+        throw new AppException('Token já utilizado.', 400);
+      }
       const { id } = this.jwtService.verify(token);
-      const user = await this.prismaClient.userAccount.update({
-        where: { id },
-        data: { emailVerifiedStatus: true, emailVerifiedAt: new Date() },
+      const user = await this.prismaClient.$transaction(async (prisma) => {
+        const updatedUser = await prisma.userAccount.update({
+          where: { id },
+          data: { isVerified: true },
+        });
+
+        await prisma.emailVerification.update({
+          where: { userId: id },
+          data: { emailVerifiedAt: new Date() },
+        });
+
+        return updatedUser;
       });
 
       return !!user;
     } catch (error) {
-      if (error instanceof TokenExpiredError) {
+      if (
+        error instanceof TokenExpiredError ||
+        error instanceof JsonWebTokenError
+      ) {
         throw new AppException('Token inválido ou expirado.', 400);
       }
       throw error;

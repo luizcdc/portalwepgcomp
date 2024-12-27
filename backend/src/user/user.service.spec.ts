@@ -5,7 +5,7 @@ import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto, Profile } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
-import { Prisma, UserLevel } from '@prisma/client';
+import { Prisma, PrismaClient, UserLevel } from '@prisma/client';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { MailingService } from '../mailing/mailing.service';
 
@@ -34,7 +34,24 @@ describe('UserService', () => {
               isAdmin: jest.fn(),
               setSuperAdmin: jest.fn(),
               delete: jest.fn(),
+              findFirst: jest.fn(),
             },
+            emailVerification: {
+              findFirst: jest.fn(),
+              update: jest.fn(),
+              create: jest.fn(),
+            },
+            $transaction: jest.fn(async (callback) => {
+              const prismaMock = {
+                userAccount: {
+                  update: jest.fn(), // Mock de update para userAccount
+                },
+                emailVerification: {
+                  update: jest.fn(), // Mock de update para emailVerification
+                },
+              };
+              return callback(prismaMock as unknown as Partial<PrismaService>);
+            }),
           },
         },
         {
@@ -788,10 +805,7 @@ describe('UserService', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
-          emailVerifiedStatus: false,
-          emailVerificationToken: null,
-          emailVerifiedAt: null,
-          emailVerificationSentAt: new Date(),
+          isVerified: false,
         },
         {
           id: '2',
@@ -805,10 +819,7 @@ describe('UserService', () => {
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
-          emailVerifiedStatus: false,
-          emailVerificationToken: null,
-          emailVerifiedAt: null,
-          emailVerificationSentAt: new Date(),
+          isVerified: false,
         },
       ];
 
@@ -832,10 +843,7 @@ describe('UserService', () => {
           isActive: true,
           createdAt: true,
           updatedAt: true,
-          emailVerifiedStatus: true,
-          emailVerificationToken: true,
-          emailVerifiedAt: true,
-          emailVerificationSentAt: true,
+          isVerified: true,
         },
       });
 
@@ -858,10 +866,7 @@ describe('UserService', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
-          emailVerifiedStatus: false,
-          emailVerificationToken: null,
-          emailVerifiedAt: null,
-          emailVerificationSentAt: new Date(),
+          isVerified: false,
         },
       ];
 
@@ -885,10 +890,7 @@ describe('UserService', () => {
           isActive: true,
           createdAt: true,
           updatedAt: true,
-          emailVerifiedStatus: true,
-          emailVerificationToken: true,
-          emailVerifiedAt: true,
-          emailVerificationSentAt: true,
+          isVerified: true,
         },
       });
 
@@ -911,10 +913,7 @@ describe('UserService', () => {
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
-          emailVerifiedStatus: false,
-          emailVerificationToken: null,
-          emailVerifiedAt: null,
-          emailVerificationSentAt: new Date(),
+          isVerified: false,
         },
       ];
 
@@ -938,10 +937,7 @@ describe('UserService', () => {
           isActive: true,
           createdAt: true,
           updatedAt: true,
-          emailVerifiedStatus: true,
-          emailVerificationToken: true,
-          emailVerifiedAt: true,
-          emailVerificationSentAt: true,
+          isVerified: true,
         },
       });
 
@@ -964,10 +960,7 @@ describe('UserService', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
-          emailVerifiedStatus: false,
-          emailVerificationToken: null,
-          emailVerifiedAt: null,
-          emailVerificationSentAt: new Date(),
+          isVerified: false,
         },
       ];
 
@@ -991,10 +984,7 @@ describe('UserService', () => {
           isActive: true,
           createdAt: true,
           updatedAt: true,
-          emailVerifiedStatus: true,
-          emailVerificationToken: true,
-          emailVerifiedAt: true,
-          emailVerificationSentAt: true,
+          isVerified: true,
         },
       });
 
@@ -1020,25 +1010,74 @@ describe('UserService', () => {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-        emailVerifiedStatus: false,
-        emailVerificationToken: null,
-        emailVerifiedAt: null,
-        emailVerificationSentAt: new Date(),
+        isVerified: true,
       };
 
       jest.spyOn(jwtService, 'verify').mockReturnValue({ id: mockId });
       jest
-        .spyOn(prismaService.userAccount, 'update')
-        .mockResolvedValue(userMock);
+        .spyOn(prismaService, '$transaction')
+        .mockImplementation(async (callback) => {
+          const prismaMock = {
+            userAccount: {
+              update: jest.fn().mockResolvedValue(userMock),
+            },
+            emailVerification: {
+              update: jest.fn().mockResolvedValue({}),
+            },
+            $executeRaw: jest.fn(),
+            $executeRawUnsafe: jest.fn(),
+            $queryRaw: jest.fn(),
+            $queryRawUnsafe: jest.fn(),
+            $connect: jest.fn(),
+            $disconnect: jest.fn(),
+            $on: jest.fn(),
+            $use: jest.fn(),
+            $extends: jest.fn(),
+          } as unknown as PrismaClient;
+
+          return callback(prismaMock);
+        });
 
       const result = await service.confirmEmail(token);
 
       expect(jwtService.verify).toHaveBeenCalledWith(token);
-      expect(prismaService.userAccount.update).toHaveBeenCalledWith({
-        where: { id: mockId },
-        data: { emailVerifiedStatus: true, emailVerifiedAt: expect.any(Date) },
-      });
+      expect(prismaService.$transaction).toHaveBeenCalled();
       expect(result).toBe(true);
+    });
+
+    it('should throw an exception when the token is already used', async () => {
+      const token = 'used-token';
+
+      // Mocka o Prisma para simular que o token já foi utilizado
+
+      const emailVerificationMock = {
+        id: '1',
+        userId: '1',
+        emailVerificationToken: token,
+        emailVerificationSentAt: new Date(),
+        emailVerifiedAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      prismaService.emailVerification.findFirst = jest
+        .fn()
+        .mockResolvedValue(emailVerificationMock);
+
+      // Executa o método e espera que ele lance a exceção
+      await expect(service.confirmEmail(token)).rejects.toThrow(
+        new AppException('Token já utilizado.', 400),
+      );
+
+      // Verifica se o Prisma foi chamado com os argumentos corretos
+      expect(prismaService.emailVerification.findFirst).toHaveBeenCalledWith({
+        where: {
+          emailVerificationToken: token,
+          emailVerifiedAt: {
+            not: null,
+          },
+        },
+      });
     });
 
     it('should throw AppException for an expired or invalid token', async () => {

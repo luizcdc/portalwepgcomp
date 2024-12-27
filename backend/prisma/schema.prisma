@@ -88,30 +88,41 @@ enum AdminApprovalStatus {
 }
 
 model UserAccount {
-  id                       String              @id @default(uuid()) @map("id")
-  name                     String              @map("name") @db.VarChar(255)
-  email                    String              @unique @map("email") @db.VarChar(255)
-  password                 String              @map("password") @db.VarChar(255)
-  registrationNumber       String?             @unique @map("registration_number") @db.VarChar(20)
-  photoFilePath            String?             @map("photo_file_path") @db.VarChar(255)
-  profile                  Profile             @default(DoctoralStudent) @map("profile")
-  level                    UserLevel           @default(Default) @map("level")
-  isActive                 Boolean             @default(true) @map("is_active")
-  advisorFor               Submission[]        @relation("AdvisorRelation")
-  mainAuthored             Submission[]        @relation("MainAuthorRelation")
-  createdAt                DateTime            @default(now()) @map("created_at")
-  updatedAt                DateTime            @updatedAt @map("updated_at")
-  emailVerifiedStatus      Boolean             @default(false) @map("email_verified_status")
-  emailVerificationToken   String?             @unique @map("email_verification_token")
-  emailVerifiedAt          DateTime?           @map("email_verified_at")
-  emailVerificationSentAt  DateTime?           @map("email_verification_sent_at")
-  committeeMemberships     CommitteeMember[]
-  evaluations              Evaluation[]
-  panelistAwards           AwardedPanelist[]
-  panelistParticipations   Panelist[]
-  bookmarkedPresentations  Presentation[]
+  id                      String             @id @default(uuid()) @map("id")
+  name                    String             @map("name") @db.VarChar(255)
+  email                   String             @unique @map("email") @db.VarChar(255)
+  password                String             @map("password") @db.VarChar(255)
+  registrationNumber      String?            @unique @map("registration_number") @db.VarChar(20)
+  photoFilePath           String?            @map("photo_file_path") @db.VarChar(255)
+  profile                 Profile            @default(DoctoralStudent) @map("profile")
+  level                   UserLevel          @default(Default) @map("level")
+  isActive                Boolean            @default(true) @map("is_active")
+  advisorFor              Submission[]       @relation("AdvisorRelation")
+  mainAuthored            Submission[]       @relation("MainAuthorRelation")
+  createdAt               DateTime           @default(now()) @map("created_at")
+  updatedAt               DateTime           @updatedAt @map("updated_at")
+  isVerified              Boolean            @default(false) @map("is_verified")
+  committeeMemberships    CommitteeMember[]
+  evaluations             Evaluation[]
+  panelistAwards          AwardedPanelist[]
+  panelistParticipations  Panelist[]
+  bookmarkedPresentations Presentation[]
+  EmailVerification       EmailVerification?
 
   @@map("user_account")
+}
+
+model EmailVerification {
+  id                      String      @id @default(uuid()) @map("id")
+  userId                  String      @unique @map("user_id")
+  emailVerificationToken  String?     @unique @map("email_verification_token")
+  emailVerifiedAt         DateTime?   @map("email_verified_at")
+  emailVerificationSentAt DateTime?   @map("email_verification_sent_at")
+  createdAt               DateTime    @default(now()) @map("created_at")
+  updatedAt               DateTime    @updatedAt @map("updated_at")
+  user                    UserAccount @relation(fields: [userId], references: [id])
+
+  @@map("email_verification")
 }
 
 model EventEdition {
