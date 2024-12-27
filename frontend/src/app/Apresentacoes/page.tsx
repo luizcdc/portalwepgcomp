@@ -8,14 +8,12 @@ import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
-import { useEdicao } from "@/hooks/useEdicao";
+import { getEventEditionIdStorage } from '@/context/AuthProvider/util';
 
 export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
 
   const [searchValue, setSearchValue] = useState<string>("");
-
-  const { Edicao } = useEdicao();
 
   const {
     submissionList,
@@ -27,8 +25,9 @@ export default function Apresentacoes() {
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
 
   useEffect(() => {
+    const eventEditionId = getEventEditionIdStorage();
     const params = {
-      eventEditionId: Edicao?.id ?? "",
+      eventEditionId: eventEditionId ?? "",
     };
     getSubmissions(params);
   }, []);
