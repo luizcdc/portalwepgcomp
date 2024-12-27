@@ -28,6 +28,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.Professor,
         level: UserLevel.Superadmin,
+        isVerified: true,
       },
       {
         name: 'Doctoral Student Admin',
@@ -35,6 +36,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.DoctoralStudent,
         level: UserLevel.Admin,
+        isVerified: true,
       },
       {
         name: 'Prof Admin',
@@ -42,6 +44,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.Professor,
         level: UserLevel.Admin,
+        isVerified: true,
       },
       {
         name: 'Listener Admin',
@@ -49,6 +52,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.Listener,
         level: UserLevel.Admin,
+        isVerified: true,
       },
       {
         name: 'Prof Default',
@@ -56,6 +60,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.Professor,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Listener Default',
@@ -63,6 +68,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.Listener,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Doctoral Student Default',
@@ -70,6 +76,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Prof Default 2',
@@ -77,6 +84,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.Professor,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Prof Default 3',
@@ -84,6 +92,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.Professor,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Doctoral Student Default 2',
@@ -91,6 +100,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Doctoral Student Default 3',
@@ -98,6 +108,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Doctoral Student Default 4',
@@ -105,6 +116,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Doctoral Student Default 5',
@@ -112,6 +124,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
+        isVerified: true,
       },
       {
         name: 'Doctoral Student Default 6',
@@ -119,6 +132,7 @@ async function main() {
         password: '1234$Ad@',
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
+        isVerified: true,
       },
     ],
   });
