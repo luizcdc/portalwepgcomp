@@ -74,19 +74,21 @@ describe('AuthService', () => {
         level: 'Default',
         password: 'hashedPassword', // Simulated hashed password
       };
-    
+
       // Mock dependencies
       jest.spyOn(userService, 'findByEmail').mockResolvedValue(mockUser as any);
-      jest.spyOn(bcrypt, 'compare').mockImplementation(async (password, hashedPassword) => {
-        return password === 'password' && hashedPassword === 'hashedPassword'; // Simulate bcrypt.compare behavior
-      });
-    
+      jest
+        .spyOn(bcrypt, 'compare')
+        .mockImplementation(async (password, hashedPassword) => {
+          return password === 'password' && hashedPassword === 'hashedPassword'; // Simulate bcrypt.compare behavior
+        });
+
       // Call the service method
       const result = await authService.signIn({
         email: 'test@example.com',
         password: 'password',
       });
-    
+
       // Assertions
       expect(result.data).toEqual({
         id: '1',
@@ -95,12 +97,11 @@ describe('AuthService', () => {
         isActive: true,
         level: 'Default',
       });
-    
+
       // Verify mocks were called
       expect(userService.findByEmail).toHaveBeenCalledWith('test@example.com');
       expect(bcrypt.compare).toHaveBeenCalledWith('password', 'hashedPassword'); // Ensure the proper arguments are passed
-    });    
-    
+    });
 
     it('should throw an exception if credentials are invalid', async () => {
       const mockUser = {
@@ -113,6 +114,7 @@ describe('AuthService', () => {
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
         isActive: true,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -151,6 +153,7 @@ describe('AuthService', () => {
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
         isActive: true,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
