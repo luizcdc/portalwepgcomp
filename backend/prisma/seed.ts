@@ -9,6 +9,7 @@ import {
   PresentationBlockType,
   PresentationStatus,
 } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -20,121 +21,127 @@ async function main() {
   await prisma.$executeRawUnsafe('TRUNCATE TABLE "user_account" CASCADE;');
   await prisma.$executeRaw`SET session_replication_role = 'origin';`;
 
+  const users_data = [
+    {
+      name: 'Prof Superadmin',
+      email: 'profsuperadmin@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Superadmin,
+      isVerified: true,
+    },
+    {
+      name: 'Doctoral Student Admin',
+      email: 'docadmin@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Admin,
+      isVerified: true,
+    },
+    {
+      name: 'Prof Admin',
+      email: 'profadmin@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Admin,
+      isVerified: true,
+    },
+    {
+      name: 'Listener Admin',
+      email: 'listadmin@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Listener,
+      level: UserLevel.Admin,
+      isVerified: true,
+    },
+    {
+      name: 'Prof Default',
+      email: 'profdefault@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Listener Default',
+      email: 'listdefault@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Listener,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doctoral Student Default',
+      email: 'docdefault@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Prof Default 2',
+      email: 'profdefault2@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Prof Default 3',
+      email: 'profdefault3@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doctoral Student Default 2',
+      email: 'docdefault2@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doctoral Student Default 3',
+      email: 'docdefault3@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doctoral Student Default 4',
+      email: 'docdefault4@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doctoral Student Default 5',
+      email: 'docdefault5@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doctoral Student Default 6',
+      email: 'docdefault6@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+  ];
+
+  for (const user of users_data) {
+    user.password = await bcrypt.hash(user.password, 10);
+  }
+
   await prisma.userAccount.createMany({
-    data: [
-      {
-        name: 'Prof Superadmin',
-        email: 'profsuperadmin@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Superadmin,
-        isVerified: true,
-      },
-      {
-        name: 'Doctoral Student Admin',
-        email: 'docadmin@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Admin,
-        isVerified: true,
-      },
-      {
-        name: 'Prof Admin',
-        email: 'profadmin@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Admin,
-        isVerified: true,
-      },
-      {
-        name: 'Listener Admin',
-        email: 'listadmin@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Listener,
-        level: UserLevel.Admin,
-        isVerified: true,
-      },
-      {
-        name: 'Prof Default',
-        email: 'profdefault@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Listener Default',
-        email: 'listdefault@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Listener,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Doctoral Student Default',
-        email: 'docdefault@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Prof Default 2',
-        email: 'profdefault2@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Prof Default 3',
-        email: 'profdefault3@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Doctoral Student Default 2',
-        email: 'docdefault2@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Doctoral Student Default 3',
-        email: 'docdefault3@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Doctoral Student Default 4',
-        email: 'docdefault4@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Doctoral Student Default 5',
-        email: 'docdefault5@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-      {
-        name: 'Doctoral Student Default 6',
-        email: 'docdefault6@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-        isVerified: true,
-      },
-    ],
+    data: users_data,
   });
 
   const users = await prisma.userAccount.findMany();
