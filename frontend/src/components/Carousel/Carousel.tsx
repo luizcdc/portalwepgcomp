@@ -83,7 +83,7 @@ export default function Carousel() {
           { signed ? '' : 
             <Link
               className="btn btn-outline-light mt-3 px-4 py-2 schedule-button"
-              href="/Login"
+              href="/Cadastro"
             >
               {slide3.labelButton}
             </Link>
