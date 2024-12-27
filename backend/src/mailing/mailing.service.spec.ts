@@ -58,10 +58,10 @@ describe('ContactService', () => {
     it('should send a confirmation email with the correct parameters', async () => {
       const email = 'test@example.com';
       const token = 'validToken123';
-      process.env.APP_URL = 'http://localhost:3000';
+      process.env.FRONTEND_URL = 'http://localhost:3000';
       process.env.MAIL_USER = 'no-reply@example.com';
 
-      const expectedUrl = `${process.env.APP_URL}/users/confirm-email?token=${token}`;
+      const expectedUrl = `${process.env.FRONTEND_URL}/users/confirm-email?token=${token}`;
       const expectedSubject = 'Confirmação de Cadastro';
       const expectedHtml = `<p>Clique no link para confirmar seu cadastro: <a href="${expectedUrl}">${expectedUrl}</a></p>`;
 
@@ -79,7 +79,7 @@ describe('ContactService', () => {
     it('should throw an error if sendMail fails', async () => {
       const email = 'test@example.com';
       const token = 'validToken123';
-      process.env.APP_URL = 'http://localhost:3000';
+      process.env.FRONTEND_URL = 'http://localhost:3000';
       process.env.MAIL_USER = 'no-reply@example.com';
 
       const error = new Error('Failed to send email');
@@ -93,7 +93,7 @@ describe('ContactService', () => {
     it('should handle unexpected errors gracefully', async () => {
       const email = 'test@example.com';
       const token = 'validToken123';
-      process.env.APP_URL = 'http://localhost:3000';
+      process.env.FRONTEND_URL = 'http://localhost:3000';
       process.env.MAIL_USER = 'no-reply@example.com';
 
       const unexpectedError = new AppException(

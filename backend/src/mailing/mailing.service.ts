@@ -114,7 +114,7 @@ export class MailingService {
   }
 
   async sendEmailConfirmation(email: string, token: string): Promise<void> {
-    const confirmationUrl = `${process.env.APP_URL}/users/confirm-email?token=${token}`;
+    const confirmationUrl = `${process.env.FRONTEND_URL}/users/confirm-email?token=${token}`;
     const subject = 'Confirmação de Cadastro';
     const html = `<p>Clique no link para confirmar seu cadastro: <a href="${confirmationUrl}">${confirmationUrl}</a></p>`;
 
