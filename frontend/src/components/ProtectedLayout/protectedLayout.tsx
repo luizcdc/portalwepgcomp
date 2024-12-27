@@ -1,6 +1,4 @@
-import React, { useContext, useEffect } from "react";
-import Image from "next/image";
-import { AuthContext } from "@/context/AuthProvider/authProvider";
+import React, { useEffect } from "react";
 import "./protectedLayout.scss";
 import { useRouter } from "next/navigation";
 import { useEdicao } from "@/hooks/useEdicao";
