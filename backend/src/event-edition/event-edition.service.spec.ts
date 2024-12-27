@@ -6,6 +6,9 @@ import { CreateEventEditionDto } from './dto/create-event-edition.dto';
 import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 
+const oneDay = 24 * 60 * 60 * 1000;
+const today = new Date();
+
 describe('EventEditionService', () => {
   let service: EventEditionService;
   let prismaService: PrismaService;
@@ -64,9 +67,10 @@ describe('EventEditionService', () => {
         callForPapersText: 'Text',
         partnersText: 'Partners',
         location: 'Location 1',
-        startDate: new Date(),
-        endDate: new Date(),
-        submissionDeadline: new Date(),
+        startDate: new Date(today.getTime() + 7 * oneDay),
+        endDate: new Date(today.getTime() + 8 * oneDay),
+        submissionStartDate: new Date(today.getTime() + 3 * oneDay),
+        submissionDeadline: new Date(today.getTime() + 5 * oneDay),
         presentationDuration: 30,
         presentationsPerPresentationBlock: 2,
       });
@@ -76,8 +80,8 @@ describe('EventEditionService', () => {
         ...createDto,
         isActive: false,
         isEvaluationRestrictToLoggedUsers: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: today,
+        updatedAt: today,
       };
       mockPrismaService.eventEdition.create.mockResolvedValue(createdEvent);
 
@@ -102,9 +106,9 @@ describe('EventEditionService', () => {
         callForPapersText: 'Call for Papers',
         partnersText: 'Partners',
         location: 'Location 2',
-        startDate: new Date(),
-        endDate: new Date(),
-        submissionDeadline: new Date(),
+        startDate: new Date(today.getTime() + 7 * oneDay),
+        endDate: new Date(today.getTime() + 8 * oneDay),
+        submissionDeadline: new Date(today.getTime() + 5 * oneDay),
         presentationDuration: 45,
         presentationsPerPresentationBlock: 3,
         coordinatorId: 'coordinator123',
@@ -213,9 +217,9 @@ describe('EventEditionService', () => {
         callForPapersText: 'Call for Papers',
         partnersText: 'Partners',
         location: 'Location 3',
-        startDate: new Date(),
-        endDate: new Date(),
-        submissionDeadline: new Date(),
+        startDate: new Date(today.getTime() + 7 * oneDay),
+        endDate: new Date(today.getTime() + 8 * oneDay),
+        submissionDeadline: new Date(today.getTime() + 5 * oneDay),
         presentationDuration: 60,
         presentationsPerPresentationBlock: 4,
       });
@@ -305,9 +309,9 @@ describe('EventEditionService', () => {
         callForPapersText: 'Call for Papers',
         partnersText: 'Partners',
         location: 'Location 4',
-        startDate: new Date(),
-        endDate: new Date(),
-        submissionDeadline: new Date(),
+        startDate: new Date(today.getTime() + 7 * oneDay),
+        endDate: new Date(today.getTime() + 8 * oneDay),
+        submissionDeadline: new Date(today.getTime() + 5 * oneDay),
         presentationDuration: 60,
         presentationsPerPresentationBlock: 4,
       });
@@ -336,6 +340,57 @@ describe('EventEditionService', () => {
       expect(
         mockPrismaService.evaluationCriteria.create,
       ).not.toHaveBeenCalled();
+    });
+    // TODO: three more tests: can't have submissionDeadline after eventStartDate, can't have submissionDeadline in the past,
+    // can't have submissionStartDate after submissionDeadline
+    it('should throw error when submissionDeadline is after eventStartDate', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
+      const createDto = new CreateEventEditionDto();
+      Object.assign(createDto, {
+        name: 'Invalid Event',
+        startDate: new Date(today.getTime() + 3 * oneDay),
+        submissionDeadline: new Date(today.getTime() + 5 * oneDay),
+      });
+
+      await expect(service.create(createDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockPrismaService.eventEdition.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw error when submissionDeadline is in the past', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
+      const createDto = new CreateEventEditionDto();
+      Object.assign(createDto, {
+        name: 'Invalid Event',
+        submissionDeadline: new Date(today.getTime() - oneDay),
+      });
+
+      await expect(service.create(createDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockPrismaService.eventEdition.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw error when submissionStartDate is after submissionDeadline', async () => {
+      mockPrismaService.$transaction.mockImplementation(async (cb) =>
+        cb(prismaService),
+      );
+      const createDto = new CreateEventEditionDto();
+      Object.assign(createDto, {
+        name: 'Invalid Event',
+        submissionStartDate: new Date(today.getTime() + 5 * oneDay),
+        submissionDeadline: new Date(today.getTime() + 3 * oneDay),
+      });
+
+      await expect(service.create(createDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockPrismaService.eventEdition.create).not.toHaveBeenCalled();
     });
   });
 

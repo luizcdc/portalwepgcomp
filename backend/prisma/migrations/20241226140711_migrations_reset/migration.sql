@@ -1,110 +1,26 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Author` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Certificate` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Committee` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `DoctoralStudent` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Evaluation` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Event` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Presentation` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Professor` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Work` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
-CREATE TYPE "UserLevel" AS ENUM ('Superadmin', 'Admin', 'Default');
+CREATE TYPE "profile" AS ENUM ('DoctoralStudent', 'Professor', 'Listener');
 
 -- CreateEnum
-CREATE TYPE "CommitteeLevel" AS ENUM ('Committee', 'Coordinator');
+CREATE TYPE "user_level" AS ENUM ('Superadmin', 'Admin', 'Default');
 
 -- CreateEnum
-CREATE TYPE "CommitteeRole" AS ENUM ('OrganizingCommittee', 'StudentVolunteers', 'AdministativeSupport', 'Communication', 'ITSupport');
+CREATE TYPE "committee_level" AS ENUM ('Committee', 'Coordinator');
 
 -- CreateEnum
-CREATE TYPE "PresentationStatus" AS ENUM ('ToPresent', 'Presented', 'NotPresented');
+CREATE TYPE "committee_role" AS ENUM ('OrganizingCommittee', 'StudentVolunteers', 'AdministativeSupport', 'Communication', 'ITSupport');
 
 -- CreateEnum
-CREATE TYPE "SubmissionStatus" AS ENUM ('Submitted', 'Confirmed', 'Rejected');
+CREATE TYPE "presentation_status" AS ENUM ('ToPresent', 'Presented', 'NotPresented');
 
 -- CreateEnum
-CREATE TYPE "PanelistStatus" AS ENUM ('Pending', 'Confirmed', 'Rejected', 'Present', 'Missing');
+CREATE TYPE "submission_status" AS ENUM ('Submitted', 'Confirmed', 'Rejected');
 
 -- CreateEnum
-CREATE TYPE "PresentationBlockType" AS ENUM ('General', 'Presentation');
+CREATE TYPE "panelist_status" AS ENUM ('Pending', 'Confirmed', 'Rejected', 'Present', 'Missing');
 
--- AlterEnum
-ALTER TYPE "Profile" ADD VALUE 'Listener';
-
--- DropForeignKey
-ALTER TABLE "Author" DROP CONSTRAINT "Author_workId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Certificate" DROP CONSTRAINT "Certificate_eventId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Committee" DROP CONSTRAINT "Committee_eventId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Committee" DROP CONSTRAINT "Committee_professorId_fkey";
-
--- DropForeignKey
-ALTER TABLE "DoctoralStudent" DROP CONSTRAINT "DoctoralStudent_userId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Evaluation" DROP CONSTRAINT "Evaluation_committeeId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Evaluation" DROP CONSTRAINT "Evaluation_workId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Presentation" DROP CONSTRAINT "Presentation_workId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Professor" DROP CONSTRAINT "Professor_userId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Work" DROP CONSTRAINT "Work_doctoralStudentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Work" DROP CONSTRAINT "Work_eventId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Work" DROP CONSTRAINT "Work_professorId_fkey";
-
--- DropTable
-DROP TABLE "Author";
-
--- DropTable
-DROP TABLE "Certificate";
-
--- DropTable
-DROP TABLE "Committee";
-
--- DropTable
-DROP TABLE "DoctoralStudent";
-
--- DropTable
-DROP TABLE "Evaluation";
-
--- DropTable
-DROP TABLE "Event";
-
--- DropTable
-DROP TABLE "Presentation";
-
--- DropTable
-DROP TABLE "Professor";
-
--- DropTable
-DROP TABLE "User";
-
--- DropTable
-DROP TABLE "Work";
-
--- DropEnum
-DROP TYPE "Status";
+-- CreateEnum
+CREATE TYPE "presentation_block_type" AS ENUM ('General', 'Presentation');
 
 -- CreateTable
 CREATE TABLE "user_account" (
@@ -114,8 +30,8 @@ CREATE TABLE "user_account" (
     "password" VARCHAR(255) NOT NULL,
     "registration_number" VARCHAR(20),
     "photo_file_path" VARCHAR(255),
-    "profile" "Profile" NOT NULL DEFAULT 'DoctoralStudent',
-    "level" "UserLevel" NOT NULL DEFAULT 'Default',
+    "profile" "profile" NOT NULL DEFAULT 'DoctoralStudent',
+    "level" "user_level" NOT NULL DEFAULT 'Default',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -130,12 +46,12 @@ CREATE TABLE "event_edition" (
     "description" TEXT NOT NULL,
     "call_for_papers_text" TEXT NOT NULL,
     "partners_text" TEXT NOT NULL,
-    "url" VARCHAR(255) NOT NULL,
-    "location" VARCHAR(255) NOT NULL,
+    "location" TEXT NOT NULL,
     "start_date" TIMESTAMP(3) NOT NULL,
     "end_date" TIMESTAMP(3) NOT NULL,
+    "submission_start_date" TIMESTAMP(3) NOT NULL,
     "submission_deadline" TIMESTAMP(3) NOT NULL,
-    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "is_active" BOOLEAN NOT NULL DEFAULT false,
     "is_evaluation_restrict_to_logged_users" BOOLEAN NOT NULL DEFAULT true,
     "presentation_duration" INTEGER NOT NULL DEFAULT 20,
     "presentations_per_presentation_block" INTEGER NOT NULL DEFAULT 6,
@@ -150,8 +66,8 @@ CREATE TABLE "committee_member" (
     "id" TEXT NOT NULL,
     "event_edition_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "level" "CommitteeLevel" NOT NULL,
-    "role" "CommitteeRole" NOT NULL,
+    "level" "committee_level" NOT NULL,
+    "role" "committee_role" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -197,9 +113,10 @@ CREATE TABLE "submission" (
     "abstract" TEXT NOT NULL,
     "pdf_file" VARCHAR(255) NOT NULL,
     "phone_number" VARCHAR(20) NOT NULL,
-    "linkedin_url" VARCHAR(255),
-    "ranking" INTEGER,
-    "status" "SubmissionStatus" NOT NULL,
+    "proposed_presentation_block_id" TEXT,
+    "proposed_position_within_block" INTEGER,
+    "co_advisor" VARCHAR(255),
+    "status" "submission_status" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -211,7 +128,7 @@ CREATE TABLE "panelist" (
     "id" TEXT NOT NULL,
     "presentation_block_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "status" "PanelistStatus" NOT NULL DEFAULT 'Confirmed',
+    "status" "panelist_status" NOT NULL DEFAULT 'Confirmed',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -257,7 +174,7 @@ CREATE TABLE "presentation_block" (
     "id" TEXT NOT NULL,
     "event_edition_id" TEXT NOT NULL,
     "room_id" TEXT,
-    "type" "PresentationBlockType" NOT NULL,
+    "type" "presentation_block_type" NOT NULL,
     "title" VARCHAR(255),
     "speaker_name" VARCHAR(255),
     "start_time" TIMESTAMP(3) NOT NULL,
@@ -273,24 +190,34 @@ CREATE TABLE "presentation" (
     "id" TEXT NOT NULL,
     "submission_id" TEXT NOT NULL,
     "presentation_block_id" TEXT NOT NULL,
-    "position_within_block" VARCHAR(255) NOT NULL,
-    "status" "PresentationStatus" NOT NULL,
+    "position_within_block" INTEGER NOT NULL,
+    "status" "presentation_status" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "public_average_score" DOUBLE PRECISION,
+    "evaluators_average_score" DOUBLE PRECISION,
 
     CONSTRAINT "presentation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "co_author" (
+CREATE TABLE "guidance" (
     "id" TEXT NOT NULL,
-    "submision_id" TEXT NOT NULL,
-    "name" VARCHAR(255) NOT NULL,
-    "institution" VARCHAR(255) NOT NULL,
+    "summary" TEXT,
+    "authors_guidance" TEXT,
+    "reviewers_guidance" TEXT,
+    "audience_guidance" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "event_edition_id" TEXT,
 
-    CONSTRAINT "co_author_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "guidance_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_PresentationToUserAccount" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
 );
 
 -- CreateIndex
@@ -301,6 +228,12 @@ CREATE UNIQUE INDEX "user_account_registration_number_key" ON "user_account"("re
 
 -- CreateIndex
 CREATE UNIQUE INDEX "committee_member_event_edition_id_user_id_key" ON "committee_member"("event_edition_id", "user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_PresentationToUserAccount_AB_unique" ON "_PresentationToUserAccount"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_PresentationToUserAccount_B_index" ON "_PresentationToUserAccount"("B");
 
 -- AddForeignKey
 ALTER TABLE "committee_member" ADD CONSTRAINT "committee_member_event_edition_id_fkey" FOREIGN KEY ("event_edition_id") REFERENCES "event_edition"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -342,13 +275,19 @@ ALTER TABLE "awarded_panelist" ADD CONSTRAINT "awarded_panelist_user_id_fkey" FO
 ALTER TABLE "room" ADD CONSTRAINT "room_event_edition_id_fkey" FOREIGN KEY ("event_edition_id") REFERENCES "event_edition"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "certificate" ADD CONSTRAINT "certificate_event_edition_id_fkey" FOREIGN KEY ("event_edition_id") REFERENCES "event_edition"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "certificate" ADD CONSTRAINT "certificate_event_edition_id_fkey" FOREIGN KEY ("event_edition_id") REFERENCES "event_edition"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "presentation" ADD CONSTRAINT "presentation_submission_id_fkey" FOREIGN KEY ("submission_id") REFERENCES "submission"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "presentation" ADD CONSTRAINT "presentation_submission_id_fkey" FOREIGN KEY ("submission_id") REFERENCES "submission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "presentation" ADD CONSTRAINT "presentation_presentation_block_id_fkey" FOREIGN KEY ("presentation_block_id") REFERENCES "presentation_block"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "co_author" ADD CONSTRAINT "co_author_submision_id_fkey" FOREIGN KEY ("submision_id") REFERENCES "submission"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "guidance" ADD CONSTRAINT "guidance_event_edition_id_fkey" FOREIGN KEY ("event_edition_id") REFERENCES "event_edition"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PresentationToUserAccount" ADD CONSTRAINT "_PresentationToUserAccount_A_fkey" FOREIGN KEY ("A") REFERENCES "presentation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PresentationToUserAccount" ADD CONSTRAINT "_PresentationToUserAccount_B_fkey" FOREIGN KEY ("B") REFERENCES "user_account"("id") ON DELETE CASCADE ON UPDATE CASCADE;

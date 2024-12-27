@@ -10,7 +10,10 @@ import {
 } from './dto/create-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 
-import { UpdateEventEditionDto, UpdateFromEventEditionFormDto } from './dto/update-event-edition.dto';
+import {
+  UpdateEventEditionDto,
+  UpdateFromEventEditionFormDto,
+} from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
 import { Cron } from '@nestjs/schedule';
 
@@ -36,6 +39,10 @@ export class EventEditionService {
           },
         });
       }
+      if (!createEventEditionDto.submissionStartDate) {
+        createEventEditionDto.submissionStartDate = new Date();
+      }
+      this.validateSubmissionPeriod(createEventEditionDto);
 
       const createdEventEdition = await prisma.eventEdition.create({
         data: {
@@ -47,6 +54,7 @@ export class EventEditionService {
           startDate: createEventEditionDto.startDate,
           endDate: createEventEditionDto.endDate,
           submissionDeadline: createEventEditionDto.submissionDeadline,
+          submissionStartDate: createEventEditionDto.submissionStartDate,
           isEvaluationRestrictToLoggedUsers:
             createEventEditionDto.isEvaluationRestrictToLoggedUsers,
           presentationDuration: createEventEditionDto.presentationDuration,
@@ -94,6 +102,47 @@ export class EventEditionService {
 
       return eventResponseDto;
     });
+  }
+
+  private validateSubmissionPeriod(
+    createEventEditionDto: CreateEventEditionDto | UpdateEventEditionDto,
+  ) {
+    let submissionDeadline = createEventEditionDto.submissionDeadline;
+    if (submissionDeadline) {
+      submissionDeadline =
+        submissionDeadline instanceof Date
+          ? submissionDeadline
+          : new Date(submissionDeadline);
+    } else if (createEventEditionDto.startDate) {
+      submissionDeadline = createEventEditionDto.startDate;
+    }
+
+    if (submissionDeadline && submissionDeadline <= new Date()) {
+      throw new BadRequestException(
+        'O fim do período de submissão deve ser no futuro.',
+      );
+    } else if (
+      submissionDeadline &&
+      createEventEditionDto.startDate &&
+      submissionDeadline > createEventEditionDto.startDate
+    ) {
+      throw new BadRequestException(
+        'O fim do período de submissão deve ser anterior ao início do evento.',
+      );
+    }
+
+    if (createEventEditionDto.submissionStartDate) {
+      const submissionStartDate =
+        createEventEditionDto.submissionStartDate instanceof Date
+          ? createEventEditionDto.submissionStartDate
+          : new Date(createEventEditionDto.submissionStartDate);
+
+      if (submissionDeadline && submissionStartDate >= submissionDeadline) {
+        throw new BadRequestException(
+          'A data de início do período de submissão deve ser anterior ao fim do período de submissão.',
+        );
+      }
+    }
   }
 
   async createFromEventEditionForm(
@@ -157,18 +206,20 @@ export class EventEditionService {
         if (committeeMember) {
           await this.updateUserLevel(id, committeeMember.level);
         }
-
       }),
     );
   }
 
-  private async updateUserLevel(userId: string, committeeLevel: CommitteeLevel) {
+  private async updateUserLevel(
+    userId: string,
+    committeeLevel: CommitteeLevel,
+  ) {
     // logic to update user level based in committeLevel
     const userLevel =
       committeeLevel === CommitteeLevel.Coordinator
         ? UserLevel.Superadmin
         : UserLevel.Admin;
-  
+
     await this.prismaClient.userAccount.update({
       where: { id: userId },
       data: {
@@ -254,6 +305,8 @@ export class EventEditionService {
       coordinatorId,
     } = updateFromEventEditionFormDto;
 
+    this.validateSubmissionPeriod(updateFromEventEditionFormDto);
+
     if (coordinatorId) {
       const coordinator = await this.prismaClient.userAccount.findUnique({
         where: {
@@ -289,8 +342,8 @@ export class EventEditionService {
           },
         });
 
-      // Update user level for the new coordinator
-      await this.updateUserLevel(coordinatorId, CommitteeLevel.Coordinator);
+        // Update user level for the new coordinator
+        await this.updateUserLevel(coordinatorId, CommitteeLevel.Coordinator);
       }
     }
 
@@ -350,10 +403,10 @@ export class EventEditionService {
           },
         });
 
-      // Update user level when a new committee member is added
-      if (committeeMember) {
-        await this.updateUserLevel(id, committeeMember.level);
-      }
+        // Update user level when a new committee member is added
+        if (committeeMember) {
+          await this.updateUserLevel(id, committeeMember.level);
+        }
       }),
     );
   }
@@ -370,7 +423,7 @@ export class EventEditionService {
         'Não existe nenhum evento com esse identificador',
       );
     }
-
+    this.validateSubmissionPeriod(updateEventEdition);
     const fieldsToIgnore = [
       'organizingCommitteeIds',
       'itSupportIds',
@@ -455,7 +508,7 @@ export class EventEditionService {
     return eventResponseDto;
   }
 
-   // Define cron job to run daily at midnight
+  // Define cron job to run daily at midnight
   @Cron('0 0 * * *')
   async removeAdminsFromEndedEvents() {
     const now = new Date();
@@ -469,36 +522,36 @@ export class EventEditionService {
       select: {
         id: true,
       },
-    });  
-    
-    if(endedEvents.length === 0) {
+    });
+
+    if (endedEvents.length === 0) {
       console.log('Nenhum evento finalizado encontrado.');
       return;
     }
 
-    const eventIds = endedEvents.map(event => event.id);
+    const eventIds = endedEvents.map((event) => event.id);
 
     const adminsToRemove = await this.prismaClient.committeeMember.findMany({
       where: {
-        eventEditionId: {in: eventIds},
-        level: CommitteeLevel.Committee 
+        eventEditionId: { in: eventIds },
+        level: CommitteeLevel.Committee,
       },
-        select: {
-          userId: true,
-        },
+      select: {
+        userId: true,
+      },
     });
 
-    if(adminsToRemove.length === 0) {
+    if (adminsToRemove.length === 0) {
       console.log('Nenhum administrador encontrado.');
       return;
     }
 
-    const adminIds = adminsToRemove.map(admin => admin.userId);
+    const adminIds = adminsToRemove.map((admin) => admin.userId);
 
     await this.prismaClient.userAccount.updateMany({
       where: {
-        id: {in: adminIds},
-        level: {not: UserLevel.Superadmin},
+        id: { in: adminIds },
+        level: { not: UserLevel.Superadmin },
       },
       data: {
         level: UserLevel.Default,

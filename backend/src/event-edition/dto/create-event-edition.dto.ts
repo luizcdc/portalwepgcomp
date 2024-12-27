@@ -36,6 +36,10 @@ export class CreateEventEditionDto {
   endDate: Date;
 
   @IsISO8601()
+  @IsOptional()
+  submissionStartDate?: Date;
+
+  @IsISO8601()
   submissionDeadline: Date;
 
   @IsOptional()

@@ -103,27 +103,28 @@ model UserAccount {
 }
 
 model EventEdition {
-  id                                String            @id @default(uuid()) @map("id")
-  name                              String            @map("name") @db.VarChar(255)
-  description                       String            @map("description") @db.Text
-  callForPapersText                 String            @map("call_for_papers_text") @db.Text
-  partnersText                      String            @map("partners_text") @db.Text
-  location                          String            @map("location") @db.Text
-  startDate                         DateTime          @map("start_date")
-  endDate                           DateTime          @map("end_date")
-  submissionDeadline                DateTime          @map("submission_deadline")
-  isActive                          Boolean           @default(false) @map("is_active")
-  isEvaluationRestrictToLoggedUsers Boolean           @default(true) @map("is_evaluation_restrict_to_logged_users")
-  presentationDuration              Int               @default(20) @map("presentation_duration")
-  presentationsPerPresentationBlock Int               @default(6) @map("presentations_per_presentation_block")
-  createdAt                         DateTime          @default(now()) @map("created_at")
-  updatedAt                         DateTime          @updatedAt @map("updated_at")
+  id                                String              @id @default(uuid()) @map("id")
+  name                              String              @map("name") @db.VarChar(255)
+  description                       String              @map("description") @db.Text
+  callForPapersText                 String              @map("call_for_papers_text") @db.Text
+  partnersText                      String              @map("partners_text") @db.Text
+  location                          String              @map("location") @db.Text
+  startDate                         DateTime            @map("start_date")
+  endDate                           DateTime            @map("end_date")
+  submissionStartDate               DateTime            @map("submission_start_date")
+  submissionDeadline                DateTime            @map("submission_deadline")
+  isActive                          Boolean             @default(false) @map("is_active")
+  isEvaluationRestrictToLoggedUsers Boolean             @default(true) @map("is_evaluation_restrict_to_logged_users")
+  presentationDuration              Int                 @default(20) @map("presentation_duration")
+  presentationsPerPresentationBlock Int                 @default(6) @map("presentations_per_presentation_block")
+  createdAt                         DateTime            @default(now()) @map("created_at")
+  updatedAt                         DateTime            @updatedAt @map("updated_at")
   submissions                       Submission[]
   committeeMembers                  CommitteeMember[]
-  certificates                      Certificate[]
   awardedPanelists                  AwardedPanelist[]
   rooms                             Room[]
-  Guidance                          Guidance[]
+  guidance                          Guidance?
+  certificates                      Certificate[]
   presentationBlocks                PresentationBlock[]
 
   @@map("event_edition")
@@ -169,7 +170,7 @@ model Evaluation {
   createdAt            DateTime           @default(now()) @map("created_at")
   updatedAt            DateTime           @updatedAt @map("updated_at")
   user                 UserAccount?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id], onDelete: Restrict) 
+  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id], onDelete: Restrict)
   submission           Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
   @@map("evaluation")
@@ -190,7 +191,7 @@ model Submission {
   status                      SubmissionStatus @map("status")
   createdAt                   DateTime         @default(now()) @map("created_at")
   updatedAt                   DateTime         @updatedAt @map("updated_at")
-  advisor                     UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id], onDelete: Restrict) 
+  advisor                     UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id], onDelete: Restrict)
   mainAuthor                  UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id], onDelete: Cascade)
   eventEdition                EventEdition     @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
   Evaluation                  Evaluation[]
@@ -260,8 +261,8 @@ model PresentationBlock {
   createdAt      DateTime              @default(now()) @map("created_at")
   updatedAt      DateTime              @updatedAt @map("updated_at")
   eventEdition   EventEdition          @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
-  presentations Presentation[]
-  panelists     Panelist[]
+  presentations  Presentation[]
+  panelists      Panelist[]
 
   @@map("presentation_block")
 }
@@ -279,21 +280,21 @@ model Presentation {
   submission             Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   presentationBlock      PresentationBlock  @relation(fields: [presentationBlockId], references: [id], onDelete: Cascade)
 
-  bookmarkedUsers        UserAccount[]
+  bookmarkedUsers UserAccount[]
 
   @@map("presentation")
 }
 
 model Guidance {
-  id               String        @id @default(uuid()) @map("id")
-  summary          String?       @map("summary") @db.Text
-  authorGuidance   String?       @map("authors_guidance") @db.Text
-  reviewerGuidance String?       @map("reviewers_guidance") @db.Text
-  audienceGuidance String?       @map("audience_guidance") @db.Text
-  createdAt        DateTime      @default(now()) @map("created_at")
-  updatedAt        DateTime      @updatedAt @map("updated_at")
-  eventEditionId   String?       @map("event_edition_id")
-  eventEdition     EventEdition? @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
+  id               String       @id @default(uuid()) @map("id")
+  summary          String?      @map("summary") @db.Text
+  authorGuidance   String?      @map("authors_guidance") @db.Text
+  reviewerGuidance String?      @map("reviewers_guidance") @db.Text
+  audienceGuidance String?      @map("audience_guidance") @db.Text
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  eventEditionId   String       @unique @map("event_edition_id")
+  eventEdition     EventEdition @relation(fields: [eventEditionId], references: [id])
 
   @@map("guidance")
 }
