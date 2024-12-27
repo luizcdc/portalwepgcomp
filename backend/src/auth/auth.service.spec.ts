@@ -65,42 +65,42 @@ describe('AuthService', () => {
   });
 
   describe('signIn', () => {
-    it('should return a token if credentials are valid', async () => {
+    it('should return user data if credentials are valid', async () => {
       const mockUser = {
+        id: '1',
         name: 'Test User',
-        id: '1', // Alterado para string
-        email: 'test@example.com',
-        password: 'hashed',
-        registrationNumber: '123456',
-        photoFilePath: '/path/to/photo',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
+        profile: 'DoctoralStudent',
         isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        level: 'Default',
+        password: 'hashedPassword', // Simulated hashed password
       };
-      const mockToken = 'mockToken';
 
-      jest.spyOn(userService, 'findByEmail').mockResolvedValue(mockUser);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      jest.spyOn(jwtService, 'signAsync').mockResolvedValue(mockToken);
+      // Mock dependencies
+      jest.spyOn(userService, 'findByEmail').mockResolvedValue(mockUser as any);
+      jest
+        .spyOn(bcrypt, 'compare')
+        .mockImplementation(async (password, hashedPassword) => {
+          return password === 'password' && hashedPassword === 'hashedPassword'; // Simulate bcrypt.compare behavior
+        });
 
+      // Call the service method
       const result = await authService.signIn({
         email: 'test@example.com',
         password: 'password',
       });
 
-      expect(result).toEqual({ token: mockToken });
-      expect(userService.findByEmail).toHaveBeenCalledWith('test@example.com');
-      expect(bcrypt.compare).toHaveBeenCalledWith(
-        'password',
-        mockUser.password,
-      );
-      expect(jwtService.signAsync).toHaveBeenCalledWith({
-        userId: mockUser.id,
-        email: mockUser.email,
-        level: mockUser.level,
+      // Assertions
+      expect(result.data).toEqual({
+        id: '1',
+        name: 'Test User',
+        profile: 'DoctoralStudent',
+        isActive: true,
+        level: 'Default',
       });
+
+      // Verify mocks were called
+      expect(userService.findByEmail).toHaveBeenCalledWith('test@example.com');
+      expect(bcrypt.compare).toHaveBeenCalledWith('password', 'hashedPassword'); // Ensure the proper arguments are passed
     });
 
     it('should throw an exception if credentials are invalid', async () => {
@@ -114,6 +114,7 @@ describe('AuthService', () => {
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
         isActive: true,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -152,6 +153,7 @@ describe('AuthService', () => {
         profile: Profile.DoctoralStudent,
         level: UserLevel.Default,
         isActive: true,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

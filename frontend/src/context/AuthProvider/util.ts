@@ -11,6 +11,10 @@ export function setUserLocalStorage(user: UserProfile) {
   localStorage.setItem("@Auth:user", userString);
 }
 
+export function setEventEditionIdStorage(eventEditionId: string) {
+  localStorage.setItem("@Session:eventEditionId", eventEditionId);
+}
+
 export function getTokenLocalStorage() {
   const storageToken = localStorage.getItem("@Auth:token");
 
@@ -25,6 +29,15 @@ export function getUserLocalStorage() {
 
   if (storageUser) {
     return storageUser;
+  }
+  return null;
+}
+
+export function getEventEditionIdStorage() {
+  const eventEditionId = localStorage.getItem("@Session:eventEditionId");
+
+  if (eventEditionId) {
+    return eventEditionId;
   }
   return null;
 }
