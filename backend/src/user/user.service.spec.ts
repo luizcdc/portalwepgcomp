@@ -88,7 +88,7 @@ describe('UserService', () => {
 
       await expect(service.create(createUserDto)).rejects.toThrow(
         new AppException(
-          'O número de matrícula é obrigatório para estudantes de doutorado.',
+          'O número de matrícula é obrigatório para estudantes de doutorado e professores.',
           400,
         ),
       );
@@ -134,36 +134,41 @@ describe('UserService', () => {
     });
 
     it('should create first professor as super admin', async () => {
-      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(null);
+      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(null); // Ensure user does not exist
       prismaService.userAccount.create = jest.fn().mockResolvedValue({
         id: '1',
         name: 'John',
         email: 'newuser@example.com',
         photoFilePath: null,
         profile: 'Professor',
-        level: 'Superadmin',
+        registrationNumber: 'PROF001',
+        level: 'Superadmin', // Ensure level is Superadmin
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
-
+    
       service.checkProfessorShouldBeSuperAdmin = jest
         .fn()
-        .mockResolvedValue(true);
-
+        .mockResolvedValue(true); // Ensure this is set to true
+    
       const hashedPassword = 'hashedPassword';
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
-
+    
       const createUserDto: CreateUserDto = {
         name: 'John',
         email: 'newuser@example.com',
         password: 'password123',
         profile: Profile.Professor,
+        registrationNumber: 'PROF001', // Add registration number
       };
-
+    
       const result = await service.create(createUserDto);
-
+    
+      // Verify password was hashed
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
+    
+      // Verify the user was created with the correct level
       expect(prismaService.userAccount.create).toHaveBeenCalledWith({
         data: {
           ...createUserDto,
@@ -171,41 +176,48 @@ describe('UserService', () => {
           level: 'Superadmin',
         },
       });
+    
+      // Ensure the result is as expected
       expect(result).toBeInstanceOf(ResponseUserDto);
       expect(result.email).toEqual(createUserDto.email);
     });
-
+    
     it('should create second professor as regular user', async () => {
-      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(null);
+      prismaService.userAccount.findUnique = jest.fn().mockResolvedValue(null); // Ensure user does not exist
       prismaService.userAccount.create = jest.fn().mockResolvedValue({
-        id: '1',
-        name: 'John',
+        id: '2',
+        name: 'Jane',
         email: 'newuser@example.com',
         photoFilePath: null,
         profile: 'Professor',
-        level: 'Superadmin',
+        registrationNumber: 'PROF002',
+        level: 'Default', // Ensure level is Default
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
-
+    
       service.checkProfessorShouldBeSuperAdmin = jest
         .fn()
-        .mockResolvedValue(false);
-
+        .mockResolvedValue(false); // Ensure this is set to false
+    
       const hashedPassword = 'hashedPassword';
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
-
+    
       const createUserDto: CreateUserDto = {
-        name: 'John',
+        name: 'Jane',
         email: 'newuser@example.com',
         password: 'password123',
         profile: Profile.Professor,
+        registrationNumber: 'PROF002', // Add registration number
       };
-
+    
       const result = await service.create(createUserDto);
-
+    
+      // Verify password was hashed
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
+    
+      // Verify the user was created with the correct level
       expect(prismaService.userAccount.create).toHaveBeenCalledWith({
         data: {
           ...createUserDto,
@@ -213,11 +225,13 @@ describe('UserService', () => {
           level: 'Default',
         },
       });
+    
+      // Ensure the result is as expected
       expect(result).toBeInstanceOf(ResponseUserDto);
       expect(result.email).toEqual(createUserDto.email);
     });
   });
-
+    
   describe('findByEmail', () => {
     it('should return a user by email', async () => {
       const userMock = {

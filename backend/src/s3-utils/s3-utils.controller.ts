@@ -17,7 +17,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { v4 } from 'uuid';
-import { AppException } from 'src/exceptions/app.exception';
+import { AppException } from '../exceptions/app.exception';
 
 @Controller('s3-utils')
 export class S3UtilsController {
