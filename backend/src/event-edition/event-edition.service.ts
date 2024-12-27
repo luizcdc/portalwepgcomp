@@ -10,7 +10,10 @@ import {
 } from './dto/create-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
 
-import { UpdateEventEditionDto, UpdateFromEventEditionFormDto } from './dto/update-event-edition.dto';
+import {
+  UpdateEventEditionDto,
+  UpdateFromEventEditionFormDto,
+} from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
 import { Cron } from '@nestjs/schedule';
 
@@ -51,9 +54,7 @@ export class EventEditionService {
           startDate: createEventEditionDto.startDate,
           endDate: createEventEditionDto.endDate,
           submissionDeadline: createEventEditionDto.submissionDeadline,
-          submissionStartDate: createEventEditionDto.submissionStartDate
-            ? createEventEditionDto.submissionStartDate
-            : new Date(),
+          submissionStartDate: createEventEditionDto.submissionStartDate,
           isEvaluationRestrictToLoggedUsers:
             createEventEditionDto.isEvaluationRestrictToLoggedUsers,
           presentationDuration: createEventEditionDto.presentationDuration,
@@ -205,18 +206,20 @@ export class EventEditionService {
         if (committeeMember) {
           await this.updateUserLevel(id, committeeMember.level);
         }
-
       }),
     );
   }
 
-  private async updateUserLevel(userId: string, committeeLevel: CommitteeLevel) {
+  private async updateUserLevel(
+    userId: string,
+    committeeLevel: CommitteeLevel,
+  ) {
     // logic to update user level based in committeLevel
     const userLevel =
       committeeLevel === CommitteeLevel.Coordinator
         ? UserLevel.Superadmin
         : UserLevel.Admin;
-  
+
     await this.prismaClient.userAccount.update({
       where: { id: userId },
       data: {
@@ -339,8 +342,8 @@ export class EventEditionService {
           },
         });
 
-      // Update user level for the new coordinator
-      await this.updateUserLevel(coordinatorId, CommitteeLevel.Coordinator);
+        // Update user level for the new coordinator
+        await this.updateUserLevel(coordinatorId, CommitteeLevel.Coordinator);
       }
     }
 
@@ -400,10 +403,10 @@ export class EventEditionService {
           },
         });
 
-      // Update user level when a new committee member is added
-      if (committeeMember) {
-        await this.updateUserLevel(id, committeeMember.level);
-      }
+        // Update user level when a new committee member is added
+        if (committeeMember) {
+          await this.updateUserLevel(id, committeeMember.level);
+        }
       }),
     );
   }
@@ -505,7 +508,7 @@ export class EventEditionService {
     return eventResponseDto;
   }
 
-   // Define cron job to run daily at midnight
+  // Define cron job to run daily at midnight
   @Cron('0 0 * * *')
   async removeAdminsFromEndedEvents() {
     const now = new Date();
@@ -519,36 +522,36 @@ export class EventEditionService {
       select: {
         id: true,
       },
-    });  
-    
-    if(endedEvents.length === 0) {
+    });
+
+    if (endedEvents.length === 0) {
       console.log('Nenhum evento finalizado encontrado.');
       return;
     }
 
-    const eventIds = endedEvents.map(event => event.id);
+    const eventIds = endedEvents.map((event) => event.id);
 
     const adminsToRemove = await this.prismaClient.committeeMember.findMany({
       where: {
-        eventEditionId: {in: eventIds},
-        level: CommitteeLevel.Committee 
+        eventEditionId: { in: eventIds },
+        level: CommitteeLevel.Committee,
       },
-        select: {
-          userId: true,
-        },
+      select: {
+        userId: true,
+      },
     });
 
-    if(adminsToRemove.length === 0) {
+    if (adminsToRemove.length === 0) {
       console.log('Nenhum administrador encontrado.');
       return;
     }
 
-    const adminIds = adminsToRemove.map(admin => admin.userId);
+    const adminIds = adminsToRemove.map((admin) => admin.userId);
 
     await this.prismaClient.userAccount.updateMany({
       where: {
-        id: {in: adminIds},
-        level: {not: UserLevel.Superadmin},
+        id: { in: adminIds },
+        level: { not: UserLevel.Superadmin },
       },
       data: {
         level: UserLevel.Default,
