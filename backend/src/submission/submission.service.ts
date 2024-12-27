@@ -72,7 +72,29 @@ export class SubmissionService {
       throw new AppException('Edição do evento não encontrada.', 404);
     }
 
+    const submissionDeadline = eventEditionExists.submissionDeadline;
+    if (new Date() > submissionDeadline) {
+      throw new AppException(
+        'O prazo para submissão de trabalhos nessa edição do evento já chegou ao fim.',
+        400,
+      );
+    }
+
     const submissionStatus = status || SubmissionStatus.Submitted;
+
+    const sameTittleExists = await this.prismaClient.submission.findFirst({
+      where: {
+        title,
+        eventEditionId,
+      },
+    });
+
+    if (sameTittleExists) {
+      throw new AppException(
+        'Já existe uma submissão com o mesmo título para essa edição do evento.',
+        400,
+      );
+    }
 
     if (
       proposedPresentationBlockId &&
@@ -235,6 +257,23 @@ export class SubmissionService {
       if (mainAuthorAlreadySubmitted) {
         throw new AppException(
           'Autor principal já submeteu uma apresentação para esta edição do evento.',
+          400,
+        );
+      }
+    }
+
+    if (title) {
+      const sameTittleExists = await this.prismaClient.submission.findFirst({
+        where: {
+          title,
+          eventEditionId: existingSubmission.eventEditionId,
+          NOT: { id },
+        },
+      });
+
+      if (sameTittleExists) {
+        throw new AppException(
+          'Já existe uma submissão com o mesmo título para essa edição do evento.',
           400,
         );
       }

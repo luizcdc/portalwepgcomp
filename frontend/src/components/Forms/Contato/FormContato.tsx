@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
+import { useSweetAlert } from '@/hooks/useAlert';
 
 const formContatoSchema = z.object({
   name: z
@@ -46,14 +47,26 @@ export function FormContato() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [text, setText] = useState("");
+  
+  const { showAlert } = useSweetAlert();
 
   const handleFormContato = async (data: FormContatoSchema) => {
     try {
       await sendContactRequest(data);
-      alert("Mensagem enviada com sucesso!");
+      showAlert({
+        icon: "success",
+        title: "Mensagem enviada com sucesso!",
+        timer: 3000,
+        showConfirmButton: false,
+      });
     } catch (error) {
       console.error(error);
-      alert("Ocorreu um erro ao enviar o formulário. Tente novamente.");
+      showAlert({
+        icon: "error",
+        title: "Erro ao enviar mensagem",
+        text: "Ocorreu um erro ao enviar o formulário. Tente novamente.",
+        confirmButtonText: "Retornar",
+      });
     }
   };
 

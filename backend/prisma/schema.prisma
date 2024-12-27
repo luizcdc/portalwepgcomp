@@ -125,6 +125,7 @@ model EventEdition {
   rooms                             Room[]
   Guidance                          Guidance[]
   Certificate                       Certificate[]
+  presentationBlocks                PresentationBlock[]
 
   @@map("event_edition")
 }
@@ -137,8 +138,8 @@ model CommitteeMember {
   role           CommitteeRole  @map("role")
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
-  eventEdition   EventEdition   @relation(fields: [eventEditionId], references: [id])
-  user           UserAccount    @relation(fields: [userId], references: [id])
+  eventEdition   EventEdition   @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
+  user           UserAccount    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([eventEditionId, userId])
   @@map("committee_member")
@@ -168,9 +169,9 @@ model Evaluation {
   email                String?            @map("email") @db.VarChar(255)
   createdAt            DateTime           @default(now()) @map("created_at")
   updatedAt            DateTime           @updatedAt @map("updated_at")
-  user                 UserAccount?       @relation(fields: [userId], references: [id])
-  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id])
-  submission           Submission         @relation(fields: [submissionId], references: [id])
+  user                 UserAccount?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  evaluationCriteria   EvaluationCriteria @relation(fields: [evaluationCriteriaId], references: [id], onDelete: Restrict) 
+  submission           Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
   @@map("evaluation")
 }
@@ -190,9 +191,9 @@ model Submission {
   status                      SubmissionStatus @map("status")
   createdAt                   DateTime         @default(now()) @map("created_at")
   updatedAt                   DateTime         @updatedAt @map("updated_at")
-  advisor                     UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id])
-  mainAuthor                  UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id])
-  eventEdition                EventEdition     @relation(fields: [eventEditionId], references: [id])
+  advisor                     UserAccount      @relation("AdvisorRelation", fields: [advisorId], references: [id], onDelete: Restrict) 
+  mainAuthor                  UserAccount      @relation("MainAuthorRelation", fields: [mainAuthorId], references: [id], onDelete: Cascade)
+  eventEdition                EventEdition     @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
   Evaluation                  Evaluation[]
   Presentation                Presentation[]
 
@@ -206,8 +207,8 @@ model Panelist {
   status              PanelistStatus    @default(Confirmed) @map("status")
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
-  presentationBlock   PresentationBlock @relation(fields: [presentationBlockId], references: [id])
-  user                UserAccount       @relation(fields: [userId], references: [id])
+  presentationBlock   PresentationBlock @relation(fields: [presentationBlockId], references: [id], onDelete: Cascade)
+  user                UserAccount       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("panelist")
 }
@@ -217,8 +218,8 @@ model AwardedPanelist {
   userId         String       @map("user_id")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
-  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id])
-  user           UserAccount  @relation(fields: [userId], references: [id])
+  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
+  user           UserAccount  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([eventEditionId, userId])
   @@map("awarded_panelist")
@@ -231,7 +232,7 @@ model Room {
   description    String?      @map("description") @db.Text
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
-  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id])
+  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
 
   @@map("room")
 }
@@ -259,7 +260,7 @@ model PresentationBlock {
   duration       Int                   @map("duration")
   createdAt      DateTime              @default(now()) @map("created_at")
   updatedAt      DateTime              @updatedAt @map("updated_at")
-
+  eventEdition   EventEdition          @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
   presentations Presentation[]
   panelists     Panelist[]
 
@@ -277,7 +278,8 @@ model Presentation {
   publicAverageScore     Float?             @map("public_average_score")
   evaluatorsAverageScore Float?             @map("evaluators_average_score")
   submission             Submission         @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  presentationBlock      PresentationBlock  @relation(fields: [presentationBlockId], references: [id])
+  presentationBlock      PresentationBlock  @relation(fields: [presentationBlockId], references: [id], onDelete: Cascade)
+
   bookmarkedUsers        UserAccount[]
 
   @@map("presentation")
@@ -292,7 +294,7 @@ model Guidance {
   createdAt        DateTime      @default(now()) @map("created_at")
   updatedAt        DateTime      @updatedAt @map("updated_at")
   eventEditionId   String?       @map("event_edition_id")
-  eventEdition     EventEdition? @relation(fields: [eventEditionId], references: [id])
+  eventEdition     EventEdition? @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
 
   @@map("guidance")
 }
