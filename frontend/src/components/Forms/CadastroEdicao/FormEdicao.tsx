@@ -13,6 +13,7 @@ import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import "./style.scss";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
+import { useUsers } from "@/hooks/useUsers";
 
 const formEdicaoSchema = z.object({
   titulo: z.string({
@@ -114,6 +115,7 @@ export function FormEdicao() {
   type FormEdicaoSchema = z.infer<typeof formEdicaoSchema>;
   const { createEdicao, updateEdicao, Edicao } = useEdicao();
   const { user } = useContext(AuthContext);
+  const { userList } = useUsers();
   const router = useRouter();
   const {
     register,
@@ -131,10 +133,7 @@ export function FormEdicao() {
 
   const { formApresentacoesFields, confirmButton } = ModalSessaoMock;
 
-  const avaliadoresOptions = formatOptions(
-    formApresentacoesFields.avaliadores.options,
-    "name"
-  );
+  const avaliadoresOptions = formatOptions(userList, "name");
 
   const handleFormEdicao = async (data: FormEdicaoSchema) => {
     const {
@@ -172,12 +171,12 @@ export function FormEdicao() {
     } as EdicaoParams;
 
     if (Edicao?.id) {
-      await updateEdicao(Edicao?.id, body);
-      return;
+      updateEdicao(Edicao?.id, body);
+      router.push("/Edicoes");
     }
 
-    await createEdicao(body);
-    router.push("/Home");
+    createEdicao(body);
+    router.push("/Edicoes");
   };
 
   return (
@@ -293,8 +292,7 @@ export function FormEdicao() {
                 isMulti
                 options={avaliadoresOptions}
                 placeholder='Escolha o(s) usuário(s)'
-                className='basic-multi-select'
-                classNamePrefix='select'
+                isClearable
               />
             )}
           />

@@ -9,7 +9,6 @@ export const edicaoApi = {
         
 
         const { data } = await instance.get(`${baseUrl}`);
-
         return data;
     },
 
