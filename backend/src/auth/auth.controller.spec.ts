@@ -37,13 +37,28 @@ describe('AuthController', () => {
         password: 'password123',
       };
 
-      const mockToken = { token: 'mockToken' };
+      const mockToken = { token: 'mockToken', data: { id: '1', name: 'User' } };
       jest.spyOn(authService, 'signIn').mockResolvedValue(mockToken);
 
       const result = await authController.signIn(signInDto);
 
       expect(authService.signIn).toHaveBeenCalledWith(signInDto);
       expect(result).toEqual(mockToken);
+    });
+
+    it('should throw an error if AuthService.signIn fails', async () => {
+      const signInDto: SignInDto = {
+        email: 'test@example.com',
+        password: 'wrongPassword',
+      };
+
+      jest
+        .spyOn(authService, 'signIn')
+        .mockRejectedValue(new Error('Invalid credentials'));
+
+      await expect(authController.signIn(signInDto)).rejects.toThrowError(
+        'Invalid credentials',
+      );
     });
   });
 
@@ -64,6 +79,20 @@ describe('AuthController', () => {
         forgotPasswordDto.email,
       );
       expect(result).toEqual(mockResponse);
+    });
+
+    it('should throw an error if AuthService.forgotPassword fails', async () => {
+      const forgotPasswordDto: ForgotPasswordDto = {
+        email: 'test@example.com',
+      };
+
+      jest
+        .spyOn(authService, 'forgotPassword')
+        .mockRejectedValue(new Error('User not found'));
+
+      await expect(
+        authController.forgotPassword(forgotPasswordDto),
+      ).rejects.toThrowError('User not found');
     });
   });
 
@@ -87,6 +116,21 @@ describe('AuthController', () => {
         resetPasswordDto.newPassword,
       );
       expect(result).toEqual(mockResponse);
+    });
+
+    it('should throw an error if token is invalid', async () => {
+      const resetPasswordDto: ResetPasswordDto = {
+        newPassword: 'newPassword123',
+      };
+      const token = 'invalidToken';
+
+      jest
+        .spyOn(authService, 'resetPassword')
+        .mockRejectedValue(new Error('Invalid token'));
+
+      await expect(
+        authController.resetPassword(token, resetPasswordDto),
+      ).rejects.toThrowError('Invalid token');
     });
   });
 });

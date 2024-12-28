@@ -6,6 +6,7 @@ import { createContext, ReactNode, useState } from "react";
 
 import { edicaoApi } from "@/services/edicao";
 import { useSweetAlert } from "@/hooks/useAlert";
+import { setEventEditionIdStorage } from './AuthProvider/util';
 
 interface EdicaoProps {
   children: ReactNode;
@@ -84,6 +85,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       .getEdicaoByYear(year)
       .then((response) => {
         setEdicao(response);
+        setEventEditionIdStorage(response.id);
       })
       .catch((err) => {
         console.log(err);

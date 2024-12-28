@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Param,
-  Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -21,7 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 export class EvaluationController {
   constructor(private readonly evaluationService: EvaluationService) {}
 
-  @Post()
+  @Put()
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   @ApiBearerAuth()
   @ApiOperation({
