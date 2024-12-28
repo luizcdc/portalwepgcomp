@@ -1,8 +1,8 @@
 import { Presentation, PresentationBookmark, PresentationBookmarkRegister } from "@/models/presentation";
-import { axiosInstance } from "@/utils/api";
+import axiosInstance from "@/utils/api";
 
 const baseUrl = "/presentation";
-const instance = axiosInstance();
+const instance = axiosInstance;
   
 export const presentationApi = {
     getPresentations: async (eventEditionId: string): Promise<Presentation[]> => {

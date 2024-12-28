@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
-import { api, getUserLocalStorage, LoginRequest, setTokenLocalStorage, setUserLocalStorage } from "./util";
+import { getUserLocalStorage, LoginRequest, setTokenLocalStorage, setUserLocalStorage } from "./util";
+import api from "../../utils/api";
 
 export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
 
