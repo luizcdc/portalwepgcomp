@@ -15,9 +15,6 @@ export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
   const { user } = useAuth();
 
-  const eventEditionId = getEventEditionIdStorage();
-  const userId = user?.id;
-
   const {
     submissionList,
     getSubmissions,
@@ -26,25 +23,33 @@ export default function Apresentacoes() {
   } = useSubmission();
 
   const [searchValue, setSearchValue] = useState<string>("");
-  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(true);
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
+  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(true);
 
 
   useEffect(() => {
     const params = {
-      eventEditionId: eventEditionId ?? "",
+      eventEditionId: getEventEditionIdStorage() ?? "",
     };
     getSubmissions(params);
-  }, [eventEditionId, getSubmissions]);
+  }, [getSubmissions]);
 
   useEffect(() => {
-    if (userId) {
-      const hasSubmission = submissionList.some(
-        (submission) => submission.mainAuthorId === user.id && submission.eventEditionId === eventEditionId
-      );
-      setIsAddButtonDisabled(hasSubmission);
+    const filteredSessions = submissionList.filter((submission) => {
+      if (user?.level === "Superadmin") {
+        return submission.title.toLowerCase().includes(searchValue.trim().toLowerCase());
+      }
+
+      return submission.mainAuthorId === user?.id && submission.title.toLowerCase().includes(searchValue.trim().toLowerCase())
+    });
+
+    setSessionsListValues(filteredSessions);
+
+    if (user?.level !== "Superadmin") {
+      const hasOwnSubmission = filteredSessions.length > 0;
+      setIsAddButtonDisabled(hasOwnSubmission);
     }
-  }, [user, userId, submissionList, eventEditionId]);
+  }, [searchValue, submissionList, user]);
 
   useEffect(() => {
     const filteredSessions = submissionList.filter((v) =>
@@ -54,13 +59,25 @@ export default function Apresentacoes() {
   }, [searchValue, submissionList]);
 
   const handleDelete = async (submissionId: string) => {
-    await deleteSubmissionById(submissionId);
+    if (user?.level === "Superadmin") {
+      await deleteSubmissionById(submissionId);
 
-    const updatedSubmissions = submissionList.filter(
-      (submission) => submission.id !== submissionId
-    );
+      const updatedSubmissions = sessionsListValues.filter(
+        submission => submission.id !== submissionId
+      );
 
-    setSessionsListValues(updatedSubmissions);
+      setSessionsListValues(updatedSubmissions);
+    } else {
+      const submission = submissionList.find((submission) => submission.id === submissionId);
+
+      if (submission?.mainAuthorId === user?.id) {
+        await deleteSubmissionById(submissionId);
+
+        const updatedSubmissions = sessionsListValues.filter(submission => submission.id !== submissionId);
+
+        setSessionsListValues(updatedSubmissions);
+      }
+    }
   };
 
   return (
