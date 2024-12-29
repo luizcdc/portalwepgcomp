@@ -46,7 +46,7 @@ export function FormCadastroApresentacao() {
   const { user } = useContext(AuthContext);
   const { createSubmission } = useContext(SubmissionContext);
   const { getAdvisors, advisors } = useContext(UserContext);
-  const { sendFile, } = useContext(SubmissionFileContext);
+  const { sendFile } = useContext(SubmissionFileContext);
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
