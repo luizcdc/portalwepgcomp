@@ -10,6 +10,7 @@ import { QueueService } from '../queue/queue.service';
 import { createTransport, Transporter } from 'nodemailer';
 import { EventEditionService } from '../event-edition/event-edition.service';
 import { CommitteeMemberService } from '../committee-member/committee-member.service';
+import { AppException } from '../exceptions/app.exception';
 
 @Injectable()
 export class MailingService {
@@ -46,7 +47,12 @@ export class MailingService {
     try {
       await this.mailerTransport.sendMail(defaultEmailDto);
     } catch (e) {
-      return { message: await this.handleEmailError(e, defaultEmailDto) };
+      const { message, status } = await this.handleEmailError(
+        e,
+        defaultEmailDto,
+      );
+
+      throw new AppException(message, status);
     }
 
     return { message: 'Email sent successfully' };
@@ -56,7 +62,7 @@ export class MailingService {
     error: any,
     email: DefaultEmailDto,
     retries: number = 0,
-  ): Promise<string> {
+  ): Promise<{ message: string; status: number }> {
     if (retries >= 3) {
       this.queueService.sendMessageToDeadQueue({ ...email, error });
     }
@@ -68,13 +74,16 @@ export class MailingService {
           error,
           retries,
         });
-        return 'Authentication error: Username and password not accepted';
+        return {
+          message: 'Erro de autenticação: Nome de usuário e senha não aceitos',
+          status: 403,
+        };
       case 550:
         this.queueService.sendEmailServerLimitMessage({
           ...email,
           retries,
         });
-        return 'Daily email quota exceeded';
+        return { message: 'Limite diário de emails excedido', status: 429 };
     }
 
     this.queueService.sendEmailErrorMessage({
@@ -82,7 +91,7 @@ export class MailingService {
       error,
       retries,
     });
-    return `Unexpected error: ${error}`;
+    return { message: `Erro inesperado: ${error}`, status: 500 };
   }
 
   async contact(
@@ -107,7 +116,13 @@ export class MailingService {
     try {
       await this.mailerTransport.sendMail(emailContent);
     } catch (e) {
-      return { message: await this.handleEmailError(e, emailContent, retries) };
+      const { message, status } = await this.handleEmailError(
+        e,
+        emailContent,
+        retries,
+      );
+
+      throw new AppException(message, status);
     }
 
     return { message: 'Email sent successfully' };
