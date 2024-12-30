@@ -1,7 +1,7 @@
 "use client"
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
-const instance = axiosInstance();
+const instance = axiosInstance;
 const baseUrl = "/committee-member/";
 
 export const committerMembersApi = {

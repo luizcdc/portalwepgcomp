@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
 interface ContactRequest {
     name: string;
@@ -9,7 +9,7 @@ interface ContactRequest {
 const baseUrl = "/mailing";
 
 export const sendContactRequest = async (data: ContactRequest): Promise<void> => {
-    const instance = axiosInstance();
+    const instance = axiosInstance;
 
     try {
         const response = await instance.post(`${baseUrl}/contact`, data, {
