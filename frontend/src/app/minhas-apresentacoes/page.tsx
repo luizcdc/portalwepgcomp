@@ -22,7 +22,7 @@ export default function MinhasApresentacoes() {
           labelAddButton={userArea.add}
           searchPlaceholder={userArea.search}
           cardsList={cardsMock}
-          onAddButtonClick={() => router.push("/CadastroApresentacao")}
+          onAddButtonClick={() => router.push("/cadastro-apresentacao")}
           isMyPresentation
         />
       </div>

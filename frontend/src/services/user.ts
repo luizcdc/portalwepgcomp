@@ -1,9 +1,9 @@
 "use client"
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
 const baseUrl = "/users";
 const authBaseUrl = "/auth";
-const instance = axiosInstance();
+const instance = axiosInstance;
 
 export const userApi = {
     getUsers: async (params: GetUserParams) => {
