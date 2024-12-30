@@ -4,10 +4,4 @@ export const MinhasApresentacoesMock = {
     add: "Incluir Apresentação",
     search: "Pesquise pelo nome da apresentação",
   },
-  cardsMock: [
-    {
-      name: "Apresentação 1",
-      subtitle: "Maria da Silva",
-    },
-  ],
 };
