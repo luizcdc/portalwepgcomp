@@ -24,8 +24,7 @@ export default function Apresentacoes() {
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
-  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(true);
-
+  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(false);
 
   useEffect(() => {
     const params = {
@@ -36,27 +35,23 @@ export default function Apresentacoes() {
 
   useEffect(() => {
     const filteredSessions = submissionList.filter((submission) => {
+      const searchMatch = submission.title.toLowerCase().includes(searchValue.trim().toLowerCase());
+
       if (user?.level === "Superadmin") {
-        return submission.title.toLowerCase().includes(searchValue.trim().toLowerCase());
+        return searchMatch;
       }
 
-      return submission.mainAuthorId === user?.id && submission.title.toLowerCase().includes(searchValue.trim().toLowerCase())
+      return submission.mainAuthorId === user?.id && searchMatch;
     });
 
     setSessionsListValues(filteredSessions);
 
     if (user?.level !== "Superadmin") {
       const hasOwnSubmission = filteredSessions.length > 0;
+      
       setIsAddButtonDisabled(hasOwnSubmission);
     }
   }, [searchValue, submissionList, user]);
-
-  useEffect(() => {
-    const filteredSessions = submissionList.filter((v) =>
-      v.title.toLowerCase().includes(searchValue.trim().toLowerCase())
-    );
-    setSessionsListValues(filteredSessions);
-  }, [searchValue, submissionList]);
 
   const handleDelete = async (submissionId: string) => {
     if (user?.level === "Superadmin") {
