@@ -20,7 +20,6 @@ export const submissionFileApi = {
     },
 
     getFiles: async () => {
-
         const { data } = await instance.post(`${baseUrl}/list`);
 
         return data;
