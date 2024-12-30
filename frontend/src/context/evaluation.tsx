@@ -11,9 +11,11 @@ interface EvaluationProps{
 interface EvaluationProviderData{
     loadingEvaluation: boolean;
     evaluation: Evaluation | null;
+    evaluationCriteria: EvaluationCriteria | null;
     getEvaluation: (submissionId: string) => void;
     getEvaluationByUser: (userId: string) => void;
     createEvaluation: (body: EvaluationParams[]) => void;
+    getEvaluationCriteria: (eventEditionId: string) => void;
 }
 
 export const EvaluationContext = createContext<EvaluationProviderData>(
@@ -23,6 +25,7 @@ export const EvaluationContext = createContext<EvaluationProviderData>(
 export const EvaluationProvider = ({children}: EvaluationProps) => {
     const [loadingEvaluation, setLoadingEvaluation] = useState<boolean>(false);
     const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
+    const [evaluationCriteria, setEvaluationCriteria] = useState<EvaluationCriteria | null>(null);
 
     const { showAlert } = useSweetAlert();
 
@@ -85,14 +88,31 @@ export const EvaluationProvider = ({children}: EvaluationProps) => {
         })
     }
 
+    const getEvaluationCriteria = async (eventEditionId: string) => {
+        setLoadingEvaluation(true);
+        evaluationApi
+        .getEvaluationCriteria(eventEditionId)
+        .then((response) => {
+            setEvaluationCriteria(response);
+        })
+        .catch((err) => {
+            setEvaluationCriteria(null);
+        })
+        .finally(() => {
+            setLoadingEvaluation(false);
+        })
+    }
+
     return(
         <EvaluationContext.Provider 
         value={{
             loadingEvaluation,
             evaluation,
+            evaluationCriteria,
             createEvaluation,
             getEvaluationByUser,
-            getEvaluation
+            getEvaluation,
+            getEvaluationCriteria,
         }}>
             {children}
         </EvaluationContext.Provider>

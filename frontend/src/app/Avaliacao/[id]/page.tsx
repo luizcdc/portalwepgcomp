@@ -11,6 +11,7 @@ import { MockupDayOne, MockupDayThree, MockupDayTwo } from "@/mocks/Schedule";
 import "./style.scss";
 import { useEvaluation } from "@/hooks/useEvaluation";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useEdicao } from "@/hooks/useEdicao";
 
 const allPresentations = [
   ...MockupDayOne.flat(),
@@ -27,14 +28,15 @@ export default function Avaliacao({ params }) {
   // TODO: Integrar com os modelos de apresentação
   const [presentation, setPresentation] = useState<any | null>(null);
   const [saveEvaluation, setSaveEvaluation] = useState<Evaluation[]>([]);
-  const { createEvaluation, getEvaluation, getEvaluationByUser } = useEvaluation();
+  const { createEvaluation, getEvaluation, getEvaluationByUser, getEvaluationCriteria } = useEvaluation();
   const { user } = useContext(AuthContext);
+  const {Edicao} = useEdicao();
 
   const sendEvaluation = () => {
     const body: EvaluationParams[] =
       saveEvaluation?.map((criteria) => {
-        const { evaluationCriteriaId, submissionId, score, userId } = criteria;
-        return { evaluationCriteriaId, submissionId, score, userId };
+        const { evaluationCriteriaId, submissionId, score, userId, comments } = criteria;
+        return { evaluationCriteriaId, submissionId, score, userId, comments };
       }) ?? [];
 
     createEvaluation(body);
@@ -44,6 +46,7 @@ export default function Avaliacao({ params }) {
     if (pathname) {
       const id = pathname.split("/").pop();
       getEvaluationByUser(user?.id ?? "");
+      getEvaluationCriteria(Edicao?.id??"");
 
       if (id) {
         const foundPresentation = findPresentationById(id);
