@@ -58,7 +58,7 @@ export default function Listagem({
               data-bs-target={idModal ? `#${idModal}` : undefined}
               onClick={idModal ? onClear : onAddButtonClick}
               disabled={isAddButtonDisabled}
-              >
+            >
               {labelAddButton}
               <Image
                 src="/assets/images/add.svg"
