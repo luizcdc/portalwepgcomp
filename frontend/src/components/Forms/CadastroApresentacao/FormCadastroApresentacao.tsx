@@ -10,11 +10,11 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { SubmissionContext } from "@/context/submission";
 import { SubmissionFileContext } from "@/context/submissionFile";
 import { UserContext } from "@/context/user";
 import { useSweetAlert } from "@/hooks/useAlert";
-import { useEdicao } from "@/hooks/useEdicao";
 
 import "./style.scss";
 
@@ -60,8 +60,6 @@ export function FormCadastroApresentacao() {
     resolver: zodResolver(formCadastroSchema),
   });
 
-  const { Edicao } = useEdicao();
-
   useEffect(() => {
     if (!advisorsLoaded) {
       getAdvisors();
@@ -94,7 +92,7 @@ export function FormCadastroApresentacao() {
       await sendFile(file, user.id);
 
       const submissionData = {
-        eventEditionId: Edicao?.id || "",
+        eventEditionId: getEventEditionIdStorage() ?? "",
         mainAuthorId: user.id,
         title: data.titulo,
         abstractText: data.abstract,
