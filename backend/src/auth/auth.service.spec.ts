@@ -176,7 +176,7 @@ describe('AuthService', () => {
         from: `"${mockUser.name}" <${mockUser.email}>`,
         to: mockUser.email,
         subject: 'Redefinição de senha: WEPGCOMP',
-        text: `Link para redefinição de senha: ${process.env.FRONTEND_URL}/AlterarSenha/${mockToken}`,
+        text: `Link para redefinição de senha: ${process.env.FRONTEND_URL}/alterar-senha/${mockToken}`,
       });
     });
 

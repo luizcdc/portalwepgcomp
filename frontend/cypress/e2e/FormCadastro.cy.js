@@ -1,6 +1,6 @@
 describe('Componente do Formulário de Cadastro', () => {
     beforeEach(() => {
-      cy.visit('/Cadastro');
+      cy.visit('/cadastro');
       cy.fixture('usuarios').as('userData');
     });
 
