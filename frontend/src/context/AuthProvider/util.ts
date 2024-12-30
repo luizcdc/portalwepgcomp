@@ -1,6 +1,6 @@
-import { axiosInstance } from "@/utils/api";
+import axiosInstance from "@/utils/api";
 
-export const api = axiosInstance();
+export const api = axiosInstance;
  
 export function setTokenLocalStorage(token: any){
     localStorage.setItem("@Auth:token", token)

@@ -1,7 +1,7 @@
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
 const baseUrl = "/submission";
-const instance = axiosInstance();
+const instance = axiosInstance;
 
 export const submissionApi = {
     getSubmissions: async (params: GetSubmissionParams) => {
