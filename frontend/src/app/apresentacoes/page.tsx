@@ -31,7 +31,7 @@ export default function Apresentacoes() {
       eventEditionId: getEventEditionIdStorage() ?? "",
     };
     getSubmissions(params);
-  }, [getSubmissions]);
+  }, []);
 
   useEffect(() => {
     const filteredSessions = submissionList.filter((submission) => {

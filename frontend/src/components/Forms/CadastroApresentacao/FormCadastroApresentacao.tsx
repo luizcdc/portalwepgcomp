@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UUID } from "crypto";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -17,8 +17,10 @@ import { UserContext } from "@/context/user";
 import { useSweetAlert } from "@/hooks/useAlert";
 
 import "./style.scss";
+import { useSubmissionFile } from '@/hooks/useSubmissionFile';
 
 const formCadastroSchema = z.object({
+  id: z.string().optional(),
   titulo: z
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "O título é obrigatório."),
@@ -40,15 +42,21 @@ const formCadastroSchema = z.object({
 
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
-export function FormCadastroApresentacao() {
+interface FormCadastroApresentacao {
+  formEdited?: any;
+}
+export function FormCadastroApresentacao({
+  formEdited
+}: Readonly<FormCadastroApresentacao>) {
   const pathname = usePathname();
   const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
-  const { createSubmission } = useContext(SubmissionContext);
+  const { createSubmission, updateSubmissionById } = useContext(SubmissionContext);
   const { getAdvisors, advisors } = useContext(UserContext);
-  const { sendFile } = useContext(SubmissionFileContext);
+  const { sendFile } = useSubmissionFile();
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const router = useRouter();
 
   const {
     register,
@@ -59,6 +67,16 @@ export function FormCadastroApresentacao() {
   } = useForm<formCadastroSchema>({
     resolver: zodResolver(formCadastroSchema),
   });
+
+  if (formEdited) {
+    setValue("id", formEdited.id);
+    setValue("titulo", formEdited.title);
+    setValue("abstract", formEdited.abstract);
+    setValue("orientador", formEdited.advisorId);
+    setValue("coorientador", formEdited.coAdvisor);
+    setValue("data", formEdited.data);
+    setValue("celular", formEdited.phoneNumber);
+  }
 
   useEffect(() => {
     if (!advisorsLoaded) {
@@ -103,7 +121,13 @@ export function FormCadastroApresentacao() {
         phoneNumber: data.celular,
       };
 
-      await createSubmission(submissionData);
+      if (formEdited && formEdited.id) {
+        await updateSubmissionById(formEdited.id, submissionData);
+      } else {
+        await createSubmission(submissionData);
+      }
+
+      router.push("/MinhasApresentacoes")
     };
   }
 
