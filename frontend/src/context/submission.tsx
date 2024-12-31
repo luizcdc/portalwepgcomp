@@ -37,9 +37,11 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         try {
             const response = await submissionApi.getSubmissions(params);
             setSubmissionList(response);
+            setLoadingSubmissionList(false);
         } catch (err: any) {
             console.error(err);
             setSubmissionList([]);
+            setLoadingSubmissionList(false);
 
             showAlert({
                 icon: "error",
@@ -49,8 +51,6 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
                     "Ocorreu um erro durante a busca.",
                 confirmButtonText: "Retornar",
             });
-        } finally {
-            setLoadingSubmissionList(false);
         }
     }
 

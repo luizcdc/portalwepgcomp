@@ -25,6 +25,7 @@ interface ListagemProps {
   onChangeSearchValue?: (value: string) => void;
   onClickItem?: (value: string) => void;
   onDelete?: (id: string) => void;
+  onEdit?: (id: string) => void;
   onClear?: () => void;
 }
 
@@ -44,6 +45,7 @@ export default function Listagem({
   onClickItem,
   idGeneralModal,
   onDelete,
+  onEdit,
   onClear,
 }: Readonly<ListagemProps>) {
   return (
@@ -120,6 +122,7 @@ export default function Listagem({
                 }
                 idModalEdit={idModal}
                 onClickItem={() => onClickItem && onClickItem(card)}
+                onEdit={() => onEdit && onEdit(card?.id ?? "")}
                 onDelete={() => onDelete && onDelete(card?.id ?? "")}
               />
             ))}

@@ -46,3 +46,7 @@ a {
     color-scheme: dark;
   }
 }
+
+.modal {
+  --bs-modal-zindex: 20000;
+}

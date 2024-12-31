@@ -11,6 +11,7 @@ import { MinhasApresentacoesMock } from "@/mocks/MinhasApresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
 
 import "./style.scss";
+import ModalEditarCadastro from '@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro';
 
 export default function MinhasApresentacoes() {
   const { title, userArea } = MinhasApresentacoesMock;
@@ -21,6 +22,7 @@ export default function MinhasApresentacoes() {
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
+  const [formEdited, setFormEdited] = useState<any[]>([]);
   const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(false);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function MinhasApresentacoes() {
     };
 
     getSubmissions(params);
-  }, [getSubmissions]);
+  }, []);
 
   useEffect(() => {
     const filteredSessions = submissionList.filter((submission) => {
@@ -69,9 +71,15 @@ export default function MinhasApresentacoes() {
         );
 
         setSessionsListValues(updatedSubmissions);
+        setIsAddButtonDisabled(false);
       }
     }
   };
+
+  const handleEdit = async (submissionId: string) => {
+    const submission = sessionsListValues.find(s => s.id === submissionId);
+    setFormEdited(submission);
+  }
 
   return (
     <ProtectedLayout>
@@ -89,10 +97,13 @@ export default function MinhasApresentacoes() {
           }))}
           isLoading={loadingSubmissionList}
           onDelete={handleDelete}
+          onEdit={handleEdit}
           isAddButtonDisabled={isAddButtonDisabled}
+          idModal="editarApresentacaoModal"
           onAddButtonClick={() => router.push("/CadastroApresentacao")}
           isMyPresentation={true}
         />
+        <ModalEditarCadastro formEdited={formEdited} />
       </div>
     </ProtectedLayout>
   );
