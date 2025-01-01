@@ -50,7 +50,7 @@ export default function Orientacao() {
         handleEditField={handleEditOrientacao}
       />
 
-      <Link className={"orientacao-link"} href="/Orientacoes">
+      <Link className={"orientacao-link"} href="/orientacoes">
         Ver todas as orientações
       </Link>
     </div>

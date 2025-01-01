@@ -79,15 +79,17 @@ export default function Carousel() {
             Data limite para submissão:{" "}
             {formatDateUniq(Edicao?.submissionDeadline)}
           </p>
-          
-          { signed ? '' : 
+
+          {signed ? (
+            ""
+          ) : (
             <Link
               className="btn btn-outline-light mt-3 px-4 py-2 schedule-button"
-              href="/Cadastro"
+              href="/cadastro"
             >
               {slide3.labelButton}
             </Link>
-          }
+          )}
         </CarouselSlide>
       </div>
     </div>

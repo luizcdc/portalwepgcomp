@@ -11,7 +11,7 @@ export default function Edicoes() {
 
   return (
     <div
-      className='d-flex flex-column'
+      className="d-flex flex-column"
       style={{
         gap: "50px",
       }}
@@ -25,7 +25,7 @@ export default function Edicoes() {
           searchPlaceholder={userArea.search}
           cardsList={cardsMock}
           onDelete={(id: string) => deleteEdicao(id)}
-          onAddButtonClick={() => router.push("/CadastroEdicao")}
+          onAddButtonClick={() => router.push("/cadastro-edicao")}
         />
       )}
     </div>
