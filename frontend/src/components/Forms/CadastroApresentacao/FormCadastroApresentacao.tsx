@@ -55,6 +55,7 @@ export function FormCadastroApresentacao({
   const { getAdvisors, advisors } = useContext(UserContext);
   const { sendFile } = useSubmissionFile();
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
+  const [formEditedLoaded, setFormEditedLoaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const router = useRouter();
 
@@ -68,7 +69,7 @@ export function FormCadastroApresentacao({
     resolver: zodResolver(formCadastroSchema),
   });
 
-  if (formEdited) {
+  if (formEdited && Object.keys(formEdited).length && !formEditedLoaded) {
     setValue("id", formEdited.id);
     setValue("titulo", formEdited.title);
     setValue("abstract", formEdited.abstract);
@@ -76,6 +77,7 @@ export function FormCadastroApresentacao({
     setValue("coorientador", formEdited.coAdvisor);
     setValue("data", formEdited.data);
     setValue("celular", formEdited.phoneNumber);
+    setFormEditedLoaded(true);
   }
 
   useEffect(() => {
@@ -110,6 +112,7 @@ export function FormCadastroApresentacao({
       await sendFile(file, user.id);
 
       const submissionData = {
+        ...formEdited,
         eventEditionId: getEventEditionIdStorage() ?? "",
         mainAuthorId: user.id,
         title: data.titulo,
@@ -126,8 +129,11 @@ export function FormCadastroApresentacao({
       } else {
         await createSubmission(submissionData);
       }
-
-      router.push("/MinhasApresentacoes")
+      
+      setTimeout(() => {
+        router.push("/MinhasApresentacoes")
+        window.location.reload();
+      }, 3000);
     };
   }
 

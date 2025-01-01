@@ -23,7 +23,7 @@ export const submissionApi = {
     },
 
     updateSubmissionById: async (idSubmission: string, body: SubmissionParams) => {
-        const { data } = await instance.put(`${baseUrl}/${idSubmission}`, body);
+        const { data } = await instance.patch(`${baseUrl}/${idSubmission}`, body);
 
         return data;
     },

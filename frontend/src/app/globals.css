@@ -48,5 +48,9 @@ a {
 }
 
 .modal {
-  --bs-modal-zindex: 20000;
+  --bs-modal-zindex: 10000;
+}
+
+div:where(.swal2-container) {
+  z-index: 10001 !important;
 }
