@@ -12,6 +12,7 @@ import Listagem from "@/templates/Listagem/Listagem";
 
 import "./style.scss";
 import ModalEditarCadastro from '@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro';
+import { SubmissionFileProvider } from '@/context/submissionFile';
 
 export default function MinhasApresentacoes() {
   const { title, userArea } = MinhasApresentacoesMock;
@@ -82,29 +83,31 @@ export default function MinhasApresentacoes() {
   }
 
   return (
-    <ProtectedLayout>
-      <div className="d-flex flex-column before-list">
-        <Listagem
-          title={title}
-          labelAddButton={userArea.add}
-          searchValue={searchValue}
-          onChangeSearchValue={(value) => setSearchValue(value)}
-          searchPlaceholder={userArea.search}
-          cardsList={sessionsListValues.map((submission) => ({
-            id: submission.id,
-            title: submission.title,
-            subtitle: submission.abstract,
-          }))}
-          isLoading={loadingSubmissionList}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-          isAddButtonDisabled={isAddButtonDisabled}
-          idModal="editarApresentacaoModal"
-          onAddButtonClick={() => router.push("/CadastroApresentacao")}
-          isMyPresentation={true}
-        />
-        <ModalEditarCadastro formEdited={formEdited} />
-      </div>
-    </ProtectedLayout>
+    <SubmissionFileProvider>
+      <ProtectedLayout>
+        <div className="d-flex flex-column before-list">
+          <Listagem
+            title={title}
+            labelAddButton={userArea.add}
+            searchValue={searchValue}
+            onChangeSearchValue={(value) => setSearchValue(value)}
+            searchPlaceholder={userArea.search}
+            cardsList={sessionsListValues.map((submission) => ({
+              id: submission.id,
+              title: submission.title,
+              subtitle: submission.abstract,
+            }))}
+            isLoading={loadingSubmissionList}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            isAddButtonDisabled={isAddButtonDisabled}
+            idModal="editarApresentacaoModal"
+            onAddButtonClick={() => router.push("/CadastroApresentacao")}
+            isMyPresentation={true}
+          />
+          <ModalEditarCadastro formEdited={formEdited} />
+        </div>
+      </ProtectedLayout>
+    </SubmissionFileProvider>
   );
 }
