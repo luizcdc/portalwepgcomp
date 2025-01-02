@@ -23,8 +23,8 @@ export default function PerfilDoutorando() {
           </Link>
         </li> */}
         <li>
-          <Link className="dropdown-item" href="/minhas-apresentacoes">
-            Apresentação
+          <Link className="dropdown-item" href="/minha-apresentacao">
+            Minha Apresentação
           </Link>
         </li>
         <li>

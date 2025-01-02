@@ -9,6 +9,7 @@ import PerfilOuvinte from "../Perfil/PerfilOuvinte";
 import PerfilAdmin from "../Perfil/PerfilAdmin";
 import PerfilDoutorando from "../Perfil/PerfilDoutorando";
 import "./style.scss";
+import PerfilProfessor from "../Perfil/PerfilProfessor";
 
 export default function Header() {
   const { user, signed } = useContext(AuthContext);
@@ -35,11 +36,14 @@ export default function Header() {
 
   function perfil() {
     if (!user) return null;
+    if (user.level !== "Default")
+      return <PerfilAdmin profile={user?.profile} />;
+
     switch (user.profile) {
       case "Listener":
         return <PerfilOuvinte />;
       case "Professor":
-        return <PerfilAdmin />;
+        return <PerfilProfessor />;
       case "DoctoralStudent":
         return <PerfilDoutorando />;
 
