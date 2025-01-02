@@ -31,7 +31,7 @@ export default function Premiacao({
               Essa lista ainda está vazia
             </h4>
           </div>
-        ) : premiacoes.length != 0 && categoria === "avaliadores" ? (
+        ) : premiacoes.length === 0 && categoria === "avaliadores" ? (
           avaliadores.map((item, index) => (
             <div
               key={index}

@@ -163,7 +163,7 @@ export const premiacoesAvaliadoresMock = [
       photoFilePath: "photo-path-13.jpg",
       profile: {},
       level: {}
-    },
+    }
   ];
 
   export const premiacoesPublicoMock = [

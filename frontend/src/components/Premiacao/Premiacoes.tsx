@@ -32,9 +32,6 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
         }
     };
 
-    const filteredAwards = getAwards();
-    const filteredAwardsAvaliadores = premiacoesAvaliadoresMock;
-
     return (
         <div className="d-flex flex-column premiacao-list">
             <div className="input-group ms-5 mb-4">
@@ -62,8 +59,8 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
 
             <PremiacaoCategoria
                 categoria={categoria}
-                premiacoes={filteredAwards}
-                avaliadores={filteredAwardsAvaliadores}
+                premiacoes={getAwards()}
+                avaliadores={premiacoesAvaliadoresMock}
             />
         </div>
     );
