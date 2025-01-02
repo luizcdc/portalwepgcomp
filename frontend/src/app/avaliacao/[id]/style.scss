@@ -21,13 +21,14 @@
 .avalieIdentificador{
     display: flex;
     flex-direction: column;
+    padding: 0 0.5rem;
 }
 .avalieApresentador{
-    font-size: 13px;
+    font-size: 1.5rem;
     font-weight: bold;
 }
 .avaliePesquisa{
-    font-size: 13px;
+    font-size: 1.25rem;
 }
 .avaliePerguntas{
     display: flex;

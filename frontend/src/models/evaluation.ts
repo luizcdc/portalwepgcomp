@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 interface EvaluationParams{
-    userId: string;
+    userId?: string;
     submissionId: string;
     evaluationCriteriaId: string;
     score: number;
-    comments: string;
+    comments?: string;
 }
 
 interface Evaluation extends EvaluationParams{
-    id: string;
-    email: string;
-    name: string;
+    id?: string;
+    email?: string;
+    name?: string;
 }
 
 interface EvaluationCriteria{

@@ -87,11 +87,13 @@ export default function PresentationModal({ props }: { props: Presentation }) {
             Orientador(a): {props.submission.advisor.name}
           </h4>
         </div>
-        <div>
-          <button className="avaliar-button" onClick={handleEvaluateClick}>
-            Avaliar
-          </button>
-        </div>
+        {!!signed && (
+          <div>
+            <button className="avaliar-button" onClick={handleEvaluateClick}>
+              Avaliar
+            </button>
+          </div>
+        )}
       </div>
       <div className="d-flex" style={{ gap: "10px" }}>
         <em
@@ -105,13 +107,15 @@ export default function PresentationModal({ props }: { props: Presentation }) {
         >
           {presentationDate} - SALA A - {presentationTime}
         </em>
-        <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
-          {presentationBookmark && (
-            <Star
-              color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"}
-            />
-          )}
-        </div>
+        {!!signed && (
+          <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
+            {presentationBookmark && (
+              <Star
+                color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"}
+              />
+            )}
+          </div>
+        )}
         <div>
           <button
             className="fw-semibold bg-white"
