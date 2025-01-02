@@ -1,11 +1,11 @@
 "use client"
-import { axiosInstance } from "@/utils/api"
+import  axiosInstance  from "@/utils/api"
 
 const baseUrl = "/evaluations";
-const instance = axiosInstance();
+const instance = axiosInstance;
 
 export const evaluationApi = {
-    createEvaluation: async (body: EvaluationParams[]) => {
+    makeEvaluation: async (body: EvaluationParams[]) => {
         const { data } = await instance.put(`${baseUrl}`, body);
 
         return data;
