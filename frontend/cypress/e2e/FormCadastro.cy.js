@@ -70,7 +70,7 @@ describe('Componente do Formulário de Cadastro', () => {
 
       cy.contains('Cadastro realizado com sucesso!').should('be.visible');
       // Checando se foi redirecionado para a página de Login
-      cy.url().should('include', '/Login');
+      cy.url().should('include', '/login');
     });
   
     it('Deve cadastrar um usuário Professor com sucesso', function() {
@@ -85,7 +85,7 @@ describe('Componente do Formulário de Cadastro', () => {
       cy.get('button[type="submit"]').click();
 
       cy.contains('Cadastro realizado com sucesso!').should('be.visible');
-      cy.url().should('include', '/Login');
+      cy.url().should('include', '/login');
     });
   
     it('Deve cadastrar um usuário Ouvinte com sucesso', function() {
@@ -99,7 +99,7 @@ describe('Componente do Formulário de Cadastro', () => {
       cy.get('button[type="submit"]').click();
 
       cy.contains('Cadastro realizado com sucesso!').should('be.visible');
-      cy.url().should('include', '/Login');
+      cy.url().should('include', '/login');
     });
   });
   

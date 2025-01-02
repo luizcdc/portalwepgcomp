@@ -4,8 +4,13 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
 
-export default function PerfilAdmin() {
+interface PerfilAdminProps {
+  profile: ProfileType;
+}
+
+export default function PerfilAdmin({ profile }: Readonly<PerfilAdminProps>) {
   const { logout } = useContext(AuthContext);
+
   return (
     <li className="dropdown">
       <button
@@ -27,6 +32,22 @@ export default function PerfilAdmin() {
             Emitir Certificado
           </Link>
         </li> */}
+        {profile === "DoctoralStudent" && (
+          <li>
+            <Link className="dropdown-item" href="/minha-apresentacao">
+              Minha Apresentação
+            </Link>
+          </li>
+        )}
+
+        {profile === "Professor" && (
+          <li>
+            <Link className="dropdown-item" href="#">
+              Minhas bancas
+            </Link>
+          </li>
+        )}
+
         <li>
           <Link className="dropdown-item" href="/apresentacoes">
             Apresentações

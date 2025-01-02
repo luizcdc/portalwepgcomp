@@ -1,6 +1,6 @@
 describe('Componente do Formulário de Login', () => {
     beforeEach(() => {
-      cy.visit('/Login');
+      cy.visit('/login');
       cy.fixture('usuarios').as('userData');
     });
   
