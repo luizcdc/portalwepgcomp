@@ -61,7 +61,6 @@ export class S3UtilsController {
     )
     file: Express.Multer.File,
   ) {
-    console.warn('Rota de Upload chamada!');
     const key = v4() + '.pdf';
     const response = await this.s3UtilsService.uploadFile(file, key);
     if (!response) throw new AppException('Error uploading file to S3', 500);
