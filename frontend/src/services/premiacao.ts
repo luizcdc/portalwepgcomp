@@ -1,13 +1,30 @@
 "use client"
 import { axiosInstance } from '@/utils/api';
 
-const baseUrl = "/awarded-doctoral-students";
+const baseUrlAwardedDoctoralStudents = "/awarded-doctoral-students";
+const baseUrlAwardedPanelists = "/panelist-awards";
 
 export const premiacaoApi = {
-    listAvaliadoresById: async (idEdicao: string ) => {
+    listAwardedPanelistsById: async (idEdicao: string ) => {
         const instance = axiosInstance();
 
-        const { data } = await instance.get(`${baseUrl}/top-panelists/${idEdicao}`);
+        const { data } = await instance.get(`${baseUrlAwardedPanelists}/${idEdicao}/panelists`);
+
+        return data;
+    },
+
+    listTopPanelistsById: async (idEdicao: string ) => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.get(`${baseUrlAwardedDoctoralStudents}/top-panelists/${idEdicao}`);
+
+        return data;
+    },
+
+    listTopAudienceById: async (idEdicao: string ) => {
+        const instance = axiosInstance();
+
+        const { data } = await instance.get(`${baseUrlAwardedDoctoralStudents}/top-panelists/${idEdicao}`);
 
         return data;
     },

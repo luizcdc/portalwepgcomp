@@ -10,20 +10,21 @@ import { usePremiacao } from '@/hooks/usePremiacao';
 
 export default function Premiacoes({ categoria }: { categoria: "banca" | "avaliadores" | "publico" }) {
     const [searchTerm, setSearchTerm] = useState('');
-    const { Edicao } = useEdicao();
+    const { listEdicao, Edicao } = useEdicao();
 
-    const { getPremiacoes } = usePremiacao();
+    const { getPremiacoesBanca, premiacaoListBanca } = usePremiacao();
     
     useEffect(() => {
-        getPremiacoes(Edicao?.id);
-    }, []);
+        listEdicao();
+        if(Edicao) {
+            getPremiacoesBanca(Edicao.id);
+        }
+    }, [Edicao?.id]);
 
     const getAwards = () => {
         switch (categoria) {
             case "banca":
                 return premiacoesBancaMock;
-            case "avaliadores":
-                return premiacoesAvaliadoresMock;
             case "publico":
                 return premiacoesPublicoMock;
             default:
@@ -31,7 +32,8 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
         }
     };
 
-    const filteredAwards = getAwards().filter((item) => item.titulo.toLowerCase().includes(searchTerm.toLowerCase())).sort((a, b) => b.nota - a.nota);
+    const filteredAwards = getAwards();
+    const filteredAwardsAvaliadores = premiacoesAvaliadoresMock;
 
     return (
         <div className="d-flex flex-column premiacao-list">
@@ -59,14 +61,9 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
             </div>
 
             <PremiacaoCategoria
-                titulo={`Melhores Apresentações - ${categoria === 'banca' ? 'Banca' : categoria === 'avaliadores' ? 'Avaliadores' : 'Público'}`}
-                descricao={`
-                    ${categoria === 'banca' ? 'Ranking das melhores apresentações por voto da banca avaliadora'
-                        : categoria === 'avaliadores' ? 'Ranking dos melhores/maiores avaliadores da edição'
-                            : categoria === 'publico' ? 'Ranking das melhores apresentações por voto da audiência'
-                                : ''}
-                    `}
+                categoria={categoria}
                 premiacoes={filteredAwards}
+                avaliadores={filteredAwardsAvaliadores}
             />
         </div>
     );

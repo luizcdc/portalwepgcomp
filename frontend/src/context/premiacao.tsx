@@ -10,8 +10,11 @@ interface SubmissionProps {
 interface PremiacaoProviderData {
     loadingPremiacaoList: boolean,
     loadingpremiacao: boolean,
-    premiacaoList: PremiacaoCategoriaProps[];
-    getPremiacoes: (eventId: string) => void;
+    premiacaoListBanca: PremiacaoCategoriaProps[];
+    premiacaoListAudiencia: PremiacaoCategoriaProps[];
+    premiacaoListAvaliadores: PremiacaoCategoriaProps[];
+    getPremiacoesBanca: (eventId: string) => void;
+    getPremiacoesAudiencia: (eventId: string) => void;
 }
 
 export const PremiacaoContext = createContext<PremiacaoProviderData>(
@@ -21,15 +24,43 @@ export const PremiacaoContext = createContext<PremiacaoProviderData>(
 export const PremiacaoProvider = ({ children }: SubmissionProps) => {
     const [loadingPremiacaoList, setLoadingPremiacaoList] = useState<boolean>(false);
     const [loadingpremiacao, setLoadingpremiacao] = useState<boolean>(false);
-    const [premiacaoList, setPremiacaoList] = useState<PremiacaoCategoriaProps[]>([]);
+    const [premiacaoListBanca, setPremiacaoListBanca] = useState<PremiacaoCategoriaProps[]>([]);
+    const [premiacaoListAudiencia, setPremiacaoListAudiencia] = useState<PremiacaoCategoriaProps[]>([]);
+    const [premiacaoListAvaliadores, setPremiacaoListAvaliadores] = useState<PremiacaoCategoriaProps[]>([]);
+
 
     const { showAlert } = useSweetAlert();
 
-    const getPremiacoes = async (eventId: string) => {
+    const getPremiacoesBanca = async (eventId: string) => {
         setLoadingPremiacaoList(true);
 
         try {
-            const response = await premiacaoApi.listAvaliadoresById(eventId);
+            const response = await premiacaoApi.listTopPanelistsById(eventId);
+            setLoadingpremiacao(response);
+            setPremiacaoListBanca(response);
+            return response;
+        } catch (err: any) {
+            console.error(err);
+            setLoadingpremiacao(false);
+
+            showAlert({
+                icon: "error",
+                title: "Erro ao listar premiações",
+                text:
+                    err.response?.data?.message ||
+                    "Ocorreu um erro durante a busca.",
+                confirmButtonText: "Retornar",
+            });
+        } finally {
+            setLoadingPremiacaoList(false);
+        }
+    }
+
+    const getPremiacoesAudiencia = async (eventId: string) => {
+        setLoadingPremiacaoList(true);
+
+        try {
+            const response = await premiacaoApi.listTopAudienceById(eventId);
             setLoadingpremiacao(response);
             return response;
         } catch (err: any) {
@@ -55,8 +86,11 @@ export const PremiacaoProvider = ({ children }: SubmissionProps) => {
             value={{
                 loadingPremiacaoList,
                 loadingpremiacao,
-                premiacaoList,
-                getPremiacoes,
+                premiacaoListBanca,
+                premiacaoListAudiencia,
+                premiacaoListAvaliadores,
+                getPremiacoesBanca,
+                getPremiacoesAudiencia,
             }}
         >
             {children}
