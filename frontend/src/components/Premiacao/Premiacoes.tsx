@@ -12,12 +12,26 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
     const [searchTerm, setSearchTerm] = useState('');
     const { listEdicao, Edicao } = useEdicao();
 
-    const { getPremiacoesBanca, premiacaoListBanca } = usePremiacao();
+    const { 
+        premiacaoListBanca,
+        premiacaoListAudiencia,
+        premiacaoListAvaliadores,
+        getPremiacoesBanca,
+        getPremiacoesAudiencia,
+        getPremiacoesAvaliadores
+    } = usePremiacao();
     
     useEffect(() => {
         listEdicao();
         if(Edicao) {
-            getPremiacoesBanca(Edicao.id);
+            switch (categoria) {
+                case "banca":
+                    getPremiacoesBanca(Edicao.id);
+                case "publico":
+                    getPremiacoesAudiencia(Edicao.id);
+                case "avaliadores":
+                    getPremiacoesAvaliadores(Edicao.id);
+            }
         }
     }, [Edicao?.id]);
 
@@ -59,8 +73,8 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
 
             <PremiacaoCategoria
                 categoria={categoria}
-                premiacoes={getAwards()}
-                avaliadores={premiacoesAvaliadoresMock}
+                premiacoes={premiacaoListBanca}
+                avaliadores={premiacaoListAvaliadores}
             />
         </div>
     );
