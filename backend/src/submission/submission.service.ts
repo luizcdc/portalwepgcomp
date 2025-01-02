@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSubmissionDto } from './dto/create-submission.dto';
+import {
+  CreateSubmissionDto,
+  CreateSubmissionInCurrentEventDto,
+} from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { ResponseSubmissionDto } from './dto/response-submission.dto';
 import { AppException } from '../exceptions/app.exception';
@@ -69,7 +72,34 @@ export class SubmissionService {
       throw new AppException('Edição do evento não encontrada.', 404);
     }
 
+    const submissionDeadline = eventEditionExists.submissionDeadline;
+    if (new Date() > submissionDeadline) {
+      throw new AppException(
+        'O prazo para submissão de trabalhos nessa edição do evento já chegou ao fim.',
+        400,
+      );
+    } else if (new Date() < eventEditionExists.submissionStartDate) {
+      throw new AppException(
+        `O evento ainda não está aceitando submissões. Por favor, tente novamente no dia do início das submissões: ${eventEditionExists.submissionStartDate}.`,
+        400,
+      );
+    }
+
     const submissionStatus = status || SubmissionStatus.Submitted;
+
+    const sameTittleExists = await this.prismaClient.submission.findFirst({
+      where: {
+        title,
+        eventEditionId,
+      },
+    });
+
+    if (sameTittleExists) {
+      throw new AppException(
+        'Já existe uma submissão com o mesmo título para essa edição do evento.',
+        400,
+      );
+    }
 
     if (
       proposedPresentationBlockId &&
@@ -237,6 +267,23 @@ export class SubmissionService {
       }
     }
 
+    if (title) {
+      const sameTittleExists = await this.prismaClient.submission.findFirst({
+        where: {
+          title,
+          eventEditionId: existingSubmission.eventEditionId,
+          NOT: { id },
+        },
+      });
+
+      if (sameTittleExists) {
+        throw new AppException(
+          'Já existe uma submissão com o mesmo título para essa edição do evento.',
+          400,
+        );
+      }
+    }
+
     if (eventEditionId) {
       const eventEditionExists =
         await this.prismaClient.eventEdition.findUnique({
@@ -367,5 +414,24 @@ export class SubmissionService {
     );
 
     return proposedStartTime;
+  }
+
+  async createInCurrentEvent(
+    createSubmissionInCurrentEventDto: CreateSubmissionInCurrentEventDto,
+  ) {
+    const event = await this.prismaClient.eventEdition.findFirst({
+      where: {
+        isActive: true,
+      },
+    });
+
+    if (!event) {
+      throw new AppException('Não existe nenhum evento ativo no momento.', 404);
+    }
+
+    return this.create({
+      ...createSubmissionInCurrentEventDto,
+      eventEditionId: event.id,
+    });
   }
 }

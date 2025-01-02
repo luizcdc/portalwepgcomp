@@ -3,22 +3,22 @@
 interface EdicaoParams {
   name?: string;
   description?: string;
-  location?: string;
-  coordinatorId?: string[];
-  comissao?: string[];
-  apoio?: string[];
-  apoioAd?: string[];
-  comunicacao?: string[];
-  estudantes?: string[];
-  presentationDuration?: string;
-  salas?:string;
-  sessoes?: string;
-  callForPapersText?: string;
-  endDate?: string;
-  submissionDeadline?: string;
   startDate?: string;
-  partnersText?: string;
+  endDate?: string;
+  location?: string;
+  coordinatorId?: string;
+  organizingCommitteeIds?: string[];
+  itSupportIds?: string[];
+  administrativeSupportIds?: string[];
+  communicationIds?: string[];
+  presentationsPerPresentationBlock?: number;
+  presentationDuration?: number;
+  callForPapersText?: string;
+  submissionDeadline?: string;
+  partnersText?:string
+
 }
+
 
 interface Edicao extends EdicaoParams {
   id: string;

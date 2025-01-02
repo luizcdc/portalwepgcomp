@@ -13,6 +13,7 @@ interface ModalComponentProps {
   colorButtonConfirm?: string;
   disabledConfirmButton?: boolean;
   isShortModal?: boolean;
+  idCloseModal?: string;
   onConfirm?: () => void;
   onClose?: () => void;
 }
@@ -25,6 +26,7 @@ export default function ModalComponent({
   onConfirm,
   disabledConfirmButton,
   isShortModal,
+  idCloseModal,
   onClose,
   children,
 }: Readonly<ModalComponentProps>) {
@@ -45,7 +47,7 @@ export default function ModalComponent({
             <>
               <div className="modal-header header-modal-component">
                 <button
-                  id="close-modal"
+                  id={idCloseModal ?? "close-modal"}
                   type="button"
                   className="btn-close close-button"
                   data-bs-dismiss="modal"

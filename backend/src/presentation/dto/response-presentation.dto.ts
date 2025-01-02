@@ -1,4 +1,4 @@
-import { Submission, Presentation, SubmissionStatus } from '@prisma/client';
+import { Submission, Presentation, SubmissionStatus, UserAccount } from '@prisma/client';
 
 export class PresentationResponseDto {
   id: string;
@@ -8,7 +8,15 @@ export class PresentationResponseDto {
   submission: {
     id: string;
     advisorId: string;
+    advisor?: {
+      name: string;
+      email: string;
+    };
     mainAuthorId: string;
+    mainAuthor?: {
+      name: string;
+      email: string;
+    };
     eventEditionId: string;
     title: string;
     abstract: string;
@@ -23,7 +31,7 @@ export class PresentationResponseDto {
   };
 
   constructor(
-    presentation: Presentation & { submission: Submission },
+    presentation: Presentation & { submission: Submission & { mainAuthor?: UserAccount, advisor?: UserAccount } },
     presentationTime: Date,
   ) {
     this.id = presentation.id;
@@ -34,7 +42,9 @@ export class PresentationResponseDto {
     this.submission = {
       id: presentation.submission.id,
       advisorId: presentation.submission.advisorId,
+      advisor: presentation.submission.advisor,
       mainAuthorId: presentation.submission.mainAuthorId,
+      mainAuthor: presentation.submission.mainAuthor,
       eventEditionId: presentation.submission.eventEditionId,
       title: presentation.submission.title,
       abstract: presentation.submission.abstract,

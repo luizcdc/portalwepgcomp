@@ -1,11 +1,20 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { UUID } from "crypto";
+import { usePathname } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { usePathname } from "next/navigation";
+
+import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { SubmissionContext } from "@/context/submission";
+import { SubmissionFileContext } from "@/context/submissionFile";
+import { UserContext } from "@/context/user";
+import { useSweetAlert } from "@/hooks/useAlert";
+
 import "./style.scss";
 
 const formCadastroSchema = z.object({
@@ -17,37 +26,85 @@ const formCadastroSchema = z.object({
     .min(1, "O abstract é obrigatório"),
   orientador: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "O nome do orientador é obrigatório."),
+    .uuid(),
   coorientador: z.string().optional(),
   data: z.string().optional(),
   celular: z
     .string()
     .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos."),
   slide: z
-    .custom<File>((value) => value instanceof FileList && value.length > 0, {
-      message: "Arquivo obrigatório!",
-    })
-    .transform((value) => (value instanceof FileList ? value[0] : null))
-    .refine((file) => file !== null, { message: "Arquivo obrigatório!" }),
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "Arquivo é obrigatório"),
 });
 
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
 export function FormCadastroApresentacao() {
   const pathname = usePathname();
+  const { showAlert } = useSweetAlert();
+  const { user } = useContext(AuthContext);
+  const { createSubmission } = useContext(SubmissionContext);
+  const { getAdvisors, advisors } = useContext(UserContext);
+  const { sendFile, } = useContext(SubmissionFileContext);
+  const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<formCadastroSchema>({
     resolver: zodResolver(formCadastroSchema),
   });
 
-  const onSubmit = (data: formCadastroSchema) => {
-    console.log("Dados enviados:", { ...data, data });
-    alert("Cadastro realizado com sucesso!");
-  };
+  useEffect(() => {
+    if (!advisorsLoaded) {
+      getAdvisors();
+      setAdvisorsLoaded(true);
+    }
+  }, [advisorsLoaded, getAdvisors]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+
+    if (selectedFile) {
+      setFile(selectedFile);
+      setValue("slide", selectedFile.name);
+    }
+  }
+
+  const onSubmit = async (data: formCadastroSchema) => {
+    if (!user) {
+      showAlert({
+        icon: "error",
+        text:
+          "Você precisa estar logado para realizar a submissão.",
+        confirmButtonText: "Retornar",
+      });
+
+      return;
+    }
+
+    if (file) {
+      await sendFile(file, user.id);
+
+      const submissionData = {
+        eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
+        mainAuthorId: user.id,
+        title: data.titulo,
+        abstractText: data.abstract,
+        advisorId: data.orientador as UUID,
+        coAdvisor: data.coorientador || "",
+        dateSuggestion: data.data ? new Date(data.data) : undefined,
+        pdfFile: file.name,
+        phoneNumber: data.celular,
+      };
+
+      await createSubmission(submissionData);
+    };
+  }
 
   return (
     <form
@@ -83,15 +140,18 @@ export function FormCadastroApresentacao() {
         <label className='form-label form-title'>
           Nome do orientador<span className='text-danger ms-1'>*</span>
         </label>
-          <select
-            id="orientador-select"
-            className="form-control input-title"
-            {...register("orientador")}
-          >
-            <option value="">Selecione o nome do orientador</option>
-            <option value="orientador1">Fred Durão</option>
-
-          </select>
+        <select
+          id="orientador-select"
+          className="form-control input-title"
+          {...register("orientador")}
+        >
+          <option value="">Selecione o nome do orientador</option>
+          {advisors.map((advisor) => (
+            <option key={advisor.id} value={advisor.id}>
+              {advisor.name}
+            </option>
+          ))}
+        </select>
         <p className='text-danger error-message'>
           {errors.orientador?.message}
         </p>
@@ -111,7 +171,7 @@ export function FormCadastroApresentacao() {
         <label className='form-label form-title'>Sugestão de data</label>
 
         <div className="input-group listagem-template-content-input">
-        <Controller
+          <Controller
             control={control}
             name="data"
             render={({ field }) => (
@@ -137,7 +197,7 @@ export function FormCadastroApresentacao() {
           type='file'
           className='form-control input-title'
           accept='.pdf'
-          {...register("slide")}
+          onChange={handleFileChange}
         />
         <p className='text-danger error-message'>{errors.slide?.message}</p>
       </div>
@@ -146,7 +206,7 @@ export function FormCadastroApresentacao() {
         <label className="form-label form-title">
           Celular <span className="txt-min">(preferência WhatsApp)</span><span className="text-danger ms-1">*</span>
         </label>
-        <input 
+        <input
           className="form-control input-title"
           placeholder="(XX) XXXXX-XXXX"
           {...register("celular")}
@@ -159,9 +219,9 @@ export function FormCadastroApresentacao() {
 
       <div className='d-grid gap-2 col-3 mx-auto'>
         <button
-          data-bs-target='#apresentacaoModal'
+          data-bs-target='#collapse'
           type='submit'
-          data-bs-toggle='modal'
+          data-bs-toggle="collapse"
           className='btn text-white fs-5 submit-button'
         >
           {pathname.includes("Cadastro") ? "Cadastrar" : "Alterar"}

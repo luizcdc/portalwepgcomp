@@ -70,6 +70,15 @@ export class GuidanceService {
   async create(createGuidanceDto: CreateGuidanceDto) {
     const eventEditionActive = await this.eventEditionService.findActive();
 
+    const existingGuidance = await this.prismaClient.guidance.findFirst({
+      where: {
+        eventEditionId: eventEditionActive.id,
+      },
+    });
+    if (existingGuidance) {
+      return await this.update(existingGuidance.id, createGuidanceDto);
+    }
+
     const createGuidance = await this.prismaClient.guidance.create({
       data: {
         ...createGuidanceDto,

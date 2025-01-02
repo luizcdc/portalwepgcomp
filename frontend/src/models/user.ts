@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
+type RoleType = "Superadmin" | "Admin" | "Default";
+
+interface GetUserParams {
+    profile?: ProfileType;
+    role?: RoleType;
+}
 
 interface RegisterUserParams {
     name: string,
@@ -13,11 +19,11 @@ interface RegisterUserParams {
     registrationNumber?: string
 }
 
-interface User extends RegisterUserParams{
+interface User extends RegisterUserParams {
     id: string,
-    createdAt: string;
-    deletedAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    deletedAt: Date;
+    updatedAt: Date;
 }
 
 interface ResetPasswordSendEmailParams {
@@ -35,8 +41,9 @@ interface UserLogin {
 }
 
 interface UserProfile {
+    id: string;
     name: string;
-    profile: string;
-    level: string;
+    profile: ProfileType;
+    level: RoleType;
     isActive: boolean;
-  }
+}

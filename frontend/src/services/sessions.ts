@@ -1,11 +1,11 @@
 "use client"
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
 const baseUrl = "/presentation-block";
 
 export const sessionApi = {
     listSessions: async (idEdition: string) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.get(`${baseUrl}/event-edition/${idEdition}`);
 
@@ -13,7 +13,7 @@ export const sessionApi = {
     },
 
     getSessionById: async (idSession: string) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.get(`${baseUrl}/${idSession}`);
 
@@ -21,7 +21,7 @@ export const sessionApi = {
     },
 
     createSession: async (body: SessaoParams) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.post(`${baseUrl}`, body);
 
@@ -29,7 +29,7 @@ export const sessionApi = {
     },
 
     updateSessionById: async (idSession: string, body: SessaoParams) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.patch(`${baseUrl}/${idSession}`, body);
 
@@ -37,9 +37,18 @@ export const sessionApi = {
     },
 
     deleteSessionById: async (idSession: string) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.delete(`${baseUrl}/${idSession}`);
+
+        return data;
+    },
+
+    swapPresentationsOnSession: async ( idSession: string,
+        body: SwapPresentationsOnSession) => {
+        const instance = axiosInstance;
+
+        const { data } = await instance.patch(`${baseUrl}/${idSession}/presentations/swap`, body);
 
         return data;
     },

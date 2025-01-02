@@ -2,21 +2,41 @@ ul {
     gap: 0.9rem;
 }
 
+.fixed {
+    position: fixed;
+    width: 100vw;
+    background-color: white;
+    z-index: 10000;
+}
+
+.header-placeholder {
+    height: 126px;
+}
+
 .navbar-image {
-    width: 200px !important;
+    width: 350px !important;
 }
 .navbar-menu-itens {
     margin-right: 3rem;
 }
+.nav-wall{
+    height: 40px;
+}
 
-@media (max-width:480px)  {
+@media (max-width:1000px)  {    
     .navbar-menu-itens {
         margin-right: 0 !important;
+    }
+    .container-fluid {
+        justify-content: center !important;
     }
     .vr {
         display: none;
     }
-    .container-fluid {
-        justify-content: center !important;
+}
+
+@media (max-width: 445px) {
+    .header-placeholder {
+        height: 180px;
     }
 }

@@ -70,9 +70,9 @@ describe('GuidanceController', () => {
         mockUpdatedGuidance,
       );
 
-      const result = await controller.updateGuidance(updateDto);
+      const result = await controller.updateGuidance('1', updateDto);
 
-      expect(guidanceServiceMock.update).toHaveBeenCalledWith(updateDto);
+      expect(guidanceServiceMock.update).toHaveBeenCalledWith('1', updateDto);
       expect(result).toEqual(mockUpdatedGuidance);
     });
 
@@ -84,12 +84,9 @@ describe('GuidanceController', () => {
 
       (guidanceServiceMock.update as jest.Mock).mockResolvedValue({} as any);
 
-      await controller.updateGuidance(updateDto);
+      await controller.updateGuidance('1', updateDto);
 
-      expect(guidanceServiceMock.update).toHaveBeenCalledWith({
-        summary: 'Another Update',
-        authorGuidance: 'New Author Guidance',
-      });
+      expect(guidanceServiceMock.update).toHaveBeenCalledWith('1', updateDto);
     });
   });
 });

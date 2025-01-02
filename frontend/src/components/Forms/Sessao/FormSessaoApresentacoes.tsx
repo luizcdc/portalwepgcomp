@@ -14,6 +14,10 @@ import { useSession } from "@/hooks/useSession";
 
 import "./style.scss";
 import { formatOptions } from "@/utils/formatOptions";
+import { useUsers } from "@/hooks/useUsers";
+import { useEdicao } from "@/hooks/useEdicao";
+import { useEffect } from "react";
+import { useSubmission } from "@/hooks/useSubmission";
 
 const formSessaoApresentacoesSchema = z.object({
   apresentacoes: z
@@ -65,9 +69,11 @@ const formSessaoApresentacoesSchema = z.object({
 });
 
 export default function FormSessaoApresentacoes() {
-  const { formApresentacoesFields, confirmButton, eventEditionId } =
-    ModalSessaoMock;
-  const { createSession, updateSession, sessao } = useSession();
+  const { formApresentacoesFields, confirmButton } = ModalSessaoMock;
+  const { createSession, updateSession, sessao, setSessao } = useSession();
+  const { userList } = useUsers();
+  const { submissionList } = useSubmission();
+  const { Edicao } = useEdicao();
 
   type FormSessaoApresentacoesSchema = z.infer<
     typeof formSessaoApresentacoesSchema
@@ -76,7 +82,7 @@ export default function FormSessaoApresentacoes() {
   const defaultValues = sessao?.id
     ? {
         apresentacoes: [],
-        n_apresentacoes: sessao?.presentationsNumber ?? 0,
+        n_apresentacoes: sessao?.numPresentations ?? 0,
         sala: sessao?.roomId ?? "",
         inicio: sessao?.startTime ?? null,
         avaliadores: [],
@@ -90,6 +96,8 @@ export default function FormSessaoApresentacoes() {
     register,
     control,
     handleSubmit,
+    reset,
+    setValue,
     formState: { errors },
   } = useForm<FormSessaoApresentacoesSchema>({
     resolver: zodResolver(formSessaoApresentacoesSchema),
@@ -101,19 +109,18 @@ export default function FormSessaoApresentacoes() {
     "name"
   );
 
-  const apresentacoesOptions = formatOptions(
-    formApresentacoesFields.apresentacoes.options,
-    "name"
-  );
+  const apresentacoesOptions = submissionList?.map((v) => {
+    return {
+      value: v.id,
+      label: v?.title || "",
+    };
+  });
 
-  const avaliadoresOptions = formatOptions(
-    formApresentacoesFields.avaliadores.options,
-    "name"
-  );
+  const avaliadoresOptions = formatOptions(userList, "name");
 
   const filterTimes = (time: Date) => {
     const hour = time.getHours();
-    return hour < 12 && hour > 6;
+    return hour < 22 && hour > 6;
   };
 
   const handleFormSessaoApresentacoes = (
@@ -127,21 +134,64 @@ export default function FormSessaoApresentacoes() {
 
     const body = {
       type: "Presentation",
-      eventEditionId,
-      apresentacoes: apresentacoes?.map((v) => v.value) || [],
+      eventEditionId: Edicao?.id ?? "",
+      submissions: apresentacoes?.length
+        ? apresentacoes?.map((v) => v.value)
+        : undefined,
       roomId: sala,
       startTime: inicio,
-      presentationsNumber: n_apresentacoes,
-      avaliadores: avaliadores?.map((v) => v.value) || [],
+      numPresentations: n_apresentacoes,
+      panelists: avaliadores?.length
+        ? avaliadores?.map((v) => v.value)
+        : undefined,
     } as SessaoParams;
 
     if (sessao?.id) {
-      updateSession(sessao?.id, body);
+      updateSession(sessao?.id, Edicao?.id ?? "", body).then((status) => {
+        if (status) {
+          reset();
+          setSessao(null);
+        }
+      });
       return;
     }
 
-    createSession(body);
+    createSession(Edicao?.id ?? "", body).then((status) => {
+      if (status) {
+        reset();
+        setSessao(null);
+      }
+    });
   };
+
+  useEffect(() => {
+    if (sessao) {
+      setValue(
+        "apresentacoes",
+        sessao?.presentations?.map((v) => {
+          return {
+            value: v.submission?.id ?? "",
+            label: v.submission?.title ?? "",
+          };
+        })
+      );
+      setValue("n_apresentacoes", sessao?.numPresentations ?? 0);
+      setValue("sala", sessao?.roomId);
+      setValue("inicio", sessao?.startTime);
+      setValue(
+        "avaliadores",
+        sessao?.panelists?.map((v) => {
+          return { value: v.id, label: v.user?.name ?? "" };
+        })
+      );
+    } else {
+      setValue("apresentacoes", []);
+      setValue("n_apresentacoes", 0);
+      setValue("sala", "");
+      setValue("inicio", "");
+      setValue("avaliadores", []);
+    }
+  }, [sessao?.id]);
 
   return (
     <form
@@ -182,7 +232,7 @@ export default function FormSessaoApresentacoes() {
           className="form-control input-title"
           id="sg-titulo-input"
           placeholder={formApresentacoesFields.n_apresentacoes.placeholder}
-          {...register("n_apresentacoes")}
+          {...register("n_apresentacoes", { valueAsNumber: true })}
         />
         <p className="text-danger error-message">
           {errors.n_apresentacoes?.message}
@@ -199,7 +249,9 @@ export default function FormSessaoApresentacoes() {
           className="form-select"
           {...register("sala")}
         >
-          <option hidden>{formApresentacoesFields.sala.placeholder}</option>
+          <option value="" hidden>
+            {formApresentacoesFields.sala.placeholder}
+          </option>
           {salasOptions?.map((op, i) => (
             <option id={`sala-op${i}`} key={op.value} value={op.value}>
               {op.label}
@@ -233,8 +285,8 @@ export default function FormSessaoApresentacoes() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                // minDate={new Date()}
-                // maxDate={addDays(new Date(), 3)}
+                minDate={new Date(Edicao?.startDate || "")}
+                maxDate={new Date(Edicao?.endDate || "")}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formApresentacoesFields.inicio.placeholder}

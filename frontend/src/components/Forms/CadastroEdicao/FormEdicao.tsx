@@ -1,17 +1,18 @@
 "use client";
-import { useState } from "react";
-import Select, { MultiValue, SingleValue } from "react-select";
+import { useContext } from "react";
+import Select from "react-select";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { addDays } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { options } from "./../../../mocks/Forms";
 import { formatOptions } from "@/utils/formatOptions";
 import { useEdicao } from "@/hooks/useEdicao";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import "./style.scss";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useRouter } from "next/navigation";
 
 const formEdicaoSchema = z.object({
   titulo: z.string({
@@ -19,14 +20,10 @@ const formEdicaoSchema = z.object({
     invalid_type_error: "Campo inválido!",
   }),
 
-  descricao: z
-    .string({
-      required_error: "Descrição do evento é obrigatório!",
-      invalid_type_error: "Campo inválido!",
-    })
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
-      message: "O campo deve conter apenas letras.",
-    }),
+  descricao: z.string({
+    required_error: "Descrição do evento é obrigatório!",
+    invalid_type_error: "Campo inválido!",
+  }),
 
   inicio: z
     .string({
@@ -48,26 +45,10 @@ const formEdicaoSchema = z.object({
     })
     .nullable(),
 
-  local: z
-    .string({
-      required_error: "Local do Evento é obrigatório!",
-      invalid_type_error: "Campo inválido!",
-    })
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
-      message: "O campo deve conter apenas letras.",
-    }),
-
-  coordenador: z
-    .array(
-      z.object({
-        label: z.string(),
-        value: z.string({
-          invalid_type_error: "Campo inválido!",
-        }),
-      })
-    )
-    .optional(),
-
+  local: z.string({
+    required_error: "Local do Evento é obrigatório!",
+    invalid_type_error: "Campo inválido!",
+  }),
   comissao: z
     .array(
       z.object({
@@ -112,28 +93,12 @@ const formEdicaoSchema = z.object({
     )
     .optional(),
 
-  estudantes: z
-    .array(
-      z.object({
-        label: z.string(),
-        value: z.string({
-          invalid_type_error: "Campo inválido!",
-        }),
-      })
-    )
-    .optional(),
-
-  salas: z.string().optional(),
-  sessoes: z.string().optional(),
-  duracao: z.string().optional(),
-  submissao: z
-    .string({
-      required_error: "O texto para submissão é obrigatório!",
-      invalid_type_error: "Campo inválido!",
-    })
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, {
-      message: "O campo deve conter apenas letras.",
-    }),
+  sessoes: z.number().optional(),
+  duracao: z.number().optional(),
+  submissao: z.string({
+    required_error: "O texto para submissão é obrigatório!",
+    invalid_type_error: "Campo inválido!",
+  }),
   limite: z
     .string({
       required_error: "A data limite para submissão é obrigatória!",
@@ -146,18 +111,10 @@ const formEdicaoSchema = z.object({
 });
 
 export function FormEdicao() {
-  const [selectedOptions, setSelectedOptions] = useState<
-    MultiValue<OptionType>
-  >([]);
-
-  const handleChange = (
-    selected: MultiValue<OptionType> | SingleValue<OptionType>
-  ) => {
-    setSelectedOptions(selected as MultiValue<OptionType>);
-  };
-
   type FormEdicaoSchema = z.infer<typeof formEdicaoSchema>;
   const { createEdicao, updateEdicao, Edicao } = useEdicao();
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
   const {
     register,
     control,
@@ -179,72 +136,48 @@ export function FormEdicao() {
     "name"
   );
 
-  const handleFormEdicao = (data: FormEdicaoSchema) => {
+  const handleFormEdicao = async (data: FormEdicaoSchema) => {
     const {
       titulo,
       descricao,
       inicio,
       final,
       local,
-      coordenador,
       comissao,
       apoio,
       apoioAd,
       comunicacao,
-      estudantes,
-      salas,
       sessoes,
       duracao,
       submissao,
       limite,
     } = data;
 
-    /*if (
-      !titulo ||
-      !descricao ||
-      !inicio ||
-      !final ||
-      !local ||
-      !coordenador ||
-      !comissao ||
-      !apoio ||
-      !apoioAd ||
-      !comunicacao ||
-      !estudantes ||
-      !salas ||
-      !sessoes ||
-      !duracao ||
-      !submissao ||
-      !limite
-    ) {
-      throw new Error("Campos obrigatórios em branco.");
-    }*/
-
     const body = {
       name: titulo,
       description: descricao,
       location: local,
-      coordinatorId: coordenador?.map((v) => v.value) || [],
-      comissao: comissao?.map((v) => v.value) || [],
-      apoio: apoio?.map((v) => v.value) || [],
-      apoioAd: apoioAd?.map((v) => v.value) || [],
-      comunicacao: comunicacao?.map((v) => v.value) || [],
-      estudantes: estudantes?.map((v) => v.value) || [],
+      coordinatorId: user?.id,
+      organizingCommitteeIds: comissao?.map((v) => v.value) || [],
+      itSupportIds: apoio?.map((v) => v.value) || [],
+      administrativeSupportIds: apoioAd?.map((v) => v.value) || [],
+      communicationIds: comunicacao?.map((v) => v.value) || [],
       presentationDuration: duracao,
-      salas: salas,
-      sessoes: sessoes,
+      presentationsPerPresentationBlock: sessoes,
       callForPapersText: submissao,
       startDate: inicio,
       submissionDeadline: limite,
       endDate: final,
+      partnersText: "",
     } as EdicaoParams;
 
     if (Edicao?.id) {
-      updateEdicao(Edicao?.id, body);
+      await updateEdicao(Edicao?.id, body);
       return;
     }
 
-    createEdicao(body);
+    await createEdicao(body);
+    router.push("/home");
   };
 
   return (
@@ -288,9 +221,11 @@ export function FormEdicao() {
           <Controller
             name="inicio"
             control={control}
-            render={() => (
+            render={({ field }) => (
               <DatePicker
                 id="ed-inicio-data"
+                onChange={(date) => field.onChange(date?.toISOString() || null)}
+                selected={field.value ? new Date(field.value) : null}
                 showIcon
                 className="form-control datepicker"
                 dateFormat="dd/MM/yyyy"
@@ -307,9 +242,11 @@ export function FormEdicao() {
           <Controller
             name="final"
             control={control}
-            render={() => (
+            render={({ field }) => (
               <DatePicker
                 id="ed-final-data"
+                onChange={(date) => field.onChange(date?.toISOString() || null)}
+                selected={field.value ? new Date(field.value) : null}
                 showIcon
                 className="form-control datepicker"
                 dateFormat="dd/MM/yyyy"
@@ -342,31 +279,6 @@ export function FormEdicao() {
 
       <div className="d-flex flex-column justify-content-center">
         <div className="fs-4"> Comissão Organizadora </div>
-        <div className="col-12 mb-1">
-          <label className="form-label  form-title">
-            Coordenador(a) geral
-            <span className="text-danger ms-1 form-title">*</span>
-          </label>
-          <Controller
-            name="coordenador"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                id="ed-select"
-                isMulti
-                options={avaliadoresOptions}
-                placeholder="Escolha o(s) usuário(s)"
-                className="basic-multi-select"
-                classNamePrefix="select"
-              />
-            )}
-          />
-
-          <p className="text-danger error-message">
-            {errors.coordenador?.message}
-          </p>
-        </div>
         <div className="col-12 mb-1">
           <label className="form-label  form-title">
             Comissão organizadora
@@ -460,51 +372,10 @@ export function FormEdicao() {
             {errors.comunicacao?.message}
           </p>
         </div>
-
-        <div className="col-12 mb-1">
-          <label className="form-label  form-title">
-            Estudantes Voluntários
-            <span className="text-danger ms-1 form-title">*</span>
-          </label>
-          <Controller
-            name="estudantes"
-            control={control}
-            render={() => (
-              <Select
-                id="ed-select"
-                isMulti
-                options={options}
-                value={selectedOptions}
-                onChange={handleChange}
-                placeholder="Escolha o(s) usuário(s)"
-                className="basic-multi-select"
-                classNamePrefix="select"
-              />
-            )}
-          />
-
-          <p className="text-danger error-message">
-            {errors.estudantes?.message}
-          </p>
-        </div>
       </div>
 
       <div className="d-flex flex-column justify-content-start">
         <div className="fs-4"> Sessões e apresentações </div>
-        <div className="col-12 mb-1">
-          <label className="form-label form-title">
-            Número de salas
-            <span className="text-danger ms-1 form-title">*</span>
-          </label>
-          <input
-            type="text"
-            className="form-control input-title"
-            id="salas"
-            placeholder="Número de salas (sempre serão alocadas como A, B,C...)"
-            {...register("salas")}
-          />
-          <p className="text-danger error-message"> {errors.salas?.message}</p>
-        </div>
 
         <div className="d-flex flex-row justify-content-start w-50 gap-3">
           <div className="col-12 mb-1">
@@ -513,11 +384,11 @@ export function FormEdicao() {
               <span className="text-danger ms-1 form-title">*</span>
             </label>
             <input
-              type="text"
+              type="number"
               className="form-control input-title"
               id="quantidadeSessão"
               placeholder="Quantidade de sessões"
-              {...register("sessoes")}
+              {...register("sessoes", { valueAsNumber: true })}
             />
             <p className="text-danger error-message">
               {errors.sessoes?.message}
@@ -526,33 +397,19 @@ export function FormEdicao() {
 
           <div className="col-12 mb-1">
             <label className="form-label  form-title">
-              Duração da Sessão
+              Duração da Apresentação (minutos)
               <span className="text-danger ms-1 form-title">*</span>
             </label>
             <input
-              type="text"
+              type="number"
               className="form-control input-title"
               id="sessao"
               placeholder="ex.: 20 minutos"
+              {...register("duracao", { valueAsNumber: true })}
             />
             <p className="text-danger error-message"></p>
           </div>
         </div>
-      </div>
-
-      <div className="col-12 mb-1">
-        <label className="form-label form-title">
-          Duração das apresentações
-          <span className="text-danger ms-1 form-title">*</span>
-        </label>
-        <input
-          type="text"
-          className="form-control input-title"
-          id="duracaoSessao"
-          placeholder="ex: 20 minutos, ou seja, 12 minutos + 5 para perguntas + 3 para organização da próxima apresentação"
-          {...register("duracao")}
-        />
-        <p className="text-danger error-message">{errors.duracao?.message}</p>
       </div>
 
       <div className="col-12 mb-1">

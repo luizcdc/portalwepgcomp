@@ -2,13 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
+import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { CreateUserDto, SetAdminDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { Prisma, Profile, UserAccount, UserLevel } from '@prisma/client';
+import { MailingService } from '../mailing/mailing.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaClient: PrismaService) {}
+  constructor(
+    private prismaClient: PrismaService,
+    private jwtService: JwtService,
+    private mailingService: MailingService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const emailExists = await this.prismaClient.userAccount.findUnique({
@@ -59,6 +65,18 @@ export class UserService {
         level: shouldBeSuperAdmin ? UserLevel.Superadmin : UserLevel.Default,
       },
     });
+
+    if (createdUser.isVerified === false) {
+      const token = await this.generateEmailToken(createdUser.id);
+      await this.mailingService.sendEmailConfirmation(createdUser.email, token);
+      await this.prismaClient.emailVerification.create({
+        data: {
+          userId: createdUser.id,
+          emailVerificationToken: token,
+          emailVerificationSentAt: new Date(),
+        },
+      });
+    }
 
     const responseUserDto = new ResponseUserDto(createdUser);
 
@@ -231,13 +249,20 @@ export class UserService {
     profiles?: string | string[],
   ): Promise<ResponseUserDto[]> {
     const whereClause: any = {};
-
-    if (roles && Array.isArray(roles) && roles.length > 0) {
-      whereClause.level = { in: roles };
+    if (roles) {
+      if (Array.isArray(roles) && roles.length > 0) {
+        whereClause.level = { in: roles };
+      } else if (typeof roles === 'string') {
+        whereClause.level = roles;
+      }
     }
 
-    if (profiles && Array.isArray(profiles) && profiles.length > 0) {
-      whereClause.profile = { in: profiles };
+    if (profiles) {
+      if (Array.isArray(profiles) && profiles.length > 0) {
+        whereClause.profile = { in: profiles };
+      } else if (typeof profiles === 'string') {
+        whereClause.profile = profiles;
+      }
     }
 
     const users = await this.prismaClient.userAccount.findMany({
@@ -251,6 +276,7 @@ export class UserService {
         photoFilePath: true,
         profile: true,
         level: true,
+        isVerified: true,
         isActive: true,
         createdAt: true,
         updatedAt: true,
@@ -258,5 +284,56 @@ export class UserService {
     });
 
     return users.map((user) => new ResponseUserDto(user));
+  }
+
+  private async generateEmailToken(userId: string): Promise<string> {
+    const payload = { id: userId };
+    return this.jwtService.sign(payload, { expiresIn: '24h' });
+  }
+
+  private async isTokenUsed(token: string): Promise<boolean> {
+    const tokenRecord = await this.prismaClient.emailVerification.findFirst({
+      where: {
+        emailVerificationToken: token,
+        emailVerifiedAt: {
+          not: null,
+        },
+      },
+    });
+
+    return !!tokenRecord;
+  }
+
+  async confirmEmail(token: string): Promise<boolean> {
+    try {
+      const tokenUsed = await this.isTokenUsed(token);
+      if (tokenUsed) {
+        throw new AppException('Token já utilizado.', 400);
+      }
+      const { id } = this.jwtService.verify(token);
+      const user = await this.prismaClient.$transaction(async (prisma) => {
+        const updatedUser = await prisma.userAccount.update({
+          where: { id },
+          data: { isVerified: true },
+        });
+
+        await prisma.emailVerification.update({
+          where: { userId: id },
+          data: { emailVerifiedAt: new Date() },
+        });
+
+        return updatedUser;
+      });
+
+      return !!user;
+    } catch (error) {
+      if (
+        error instanceof TokenExpiredError ||
+        error instanceof JsonWebTokenError
+      ) {
+        throw new AppException('Token inválido ou expirado.', 400);
+      }
+      throw error;
+    }
   }
 }

@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
 
 import "./style.scss";
-import { SessoesMock } from "@/mocks/Sessoes";
+
 import { useOrientacao } from "@/hooks/useOrientacao";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function OrientacoesAvaliadores() {
-  const { eventEditionId } = SessoesMock;
   const { putOrientacao, orientacoes } = useOrientacao();
+  const { Edicao } = useEdicao();
 
   const [content, setContent] = useState(orientacoes?.reviewerGuidance || "");
 
@@ -18,7 +19,7 @@ export default function OrientacoesAvaliadores() {
 
     if (idOrientacao) {
       putOrientacao(idOrientacao, {
-        eventEditionId,
+        eventEditionId: Edicao?.id ?? "",
         reviewerGuidance: content,
       });
     }
