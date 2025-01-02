@@ -81,7 +81,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -113,7 +113,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -143,7 +143,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 

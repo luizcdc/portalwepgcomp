@@ -43,8 +43,7 @@ interface UserLogin {
 interface UserProfile {
     id: string;
     name: string;
-    id: string;
-    profile: string;
-    level: string;
+    profile: ProfileType;
+    level: RoleType;
     isActive: boolean;
 }
