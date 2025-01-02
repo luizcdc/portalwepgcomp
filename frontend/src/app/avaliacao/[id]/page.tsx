@@ -1,110 +1,162 @@
 "use client";
 
-import { usePathname } from "next/navigation"; // Usando usePathname para capturar o caminho
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import Image from "next/image";
 
 import Rating from "@/components/Rating/Rating";
 import Banner from "@/components/UI/Banner";
-import { MockupDayOne, MockupDayThree, MockupDayTwo } from "@/mocks/Schedule";
 
 import "./style.scss";
+import { useEvaluation } from "@/hooks/useEvaluation";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+import { usePresentation } from "@/hooks/usePresentation";
+import LoadingPage from "@/components/LoadingPage";
 
-const allPresentations = [
-  ...MockupDayOne.flat(),
-  ...MockupDayTwo.flat(),
-  ...MockupDayThree.flat(),
-];
+export default function Avaliacao({ params }) {
+  const [saveEvaluation, setSaveEvaluation] = useState<
+    { evaluation: Evaluation | null; criteria: EvaluationCriteria | null }[]
+  >([]);
+  const [presentation, setPresentation] = useState<Presentation | null>(null);
+  const {
+    makeEvaluation,
+    evaluations,
+    evaluationCriteria,
+    getEvaluationByUser,
+    getEvaluationCriteria,
+    loadingEvaluation,
+  } = useEvaluation();
+  const { getPresentationAll, presentationList } = usePresentation();
+  const { user } = useContext(AuthContext);
 
-const findPresentationById = (id: string) => {
-  return allPresentations.find((presentation) => presentation.id === id);
-};
+  const sendEvaluation = () => {
+    const body: EvaluationParams[] =
+      saveEvaluation?.map((criteria) => {
+        const { evaluationCriteriaId, submissionId, score, userId, comments } =
+          criteria.evaluation as Evaluation;
 
-export default function Avaliacao() {
-  const pathname = usePathname();
-  // TODO: Integrar com os modelos de apresentação
-  const [presentation, setPresentation] = useState<any | null>(
-    null
-  );
+        return { evaluationCriteriaId, submissionId, score, userId, comments };
+      }) ?? [];
+
+    makeEvaluation(body);
+  };
 
   useEffect(() => {
-    if (pathname) {
-      const id = pathname.split("/").pop();
+    const eventEditionId = getEventEditionIdStorage();
 
-      if (id) {
-        const foundPresentation = findPresentationById(id);
+    getPresentationAll(eventEditionId ?? "");
+    getEvaluationCriteria(eventEditionId ?? "");
+    getEvaluationByUser(user?.id ?? "");
+  }, []);
 
-        if (foundPresentation) {
-          setPresentation({
-            id,
-            titulo: foundPresentation.title,
-            doutorando: foundPresentation.author || "Não informado",
-          });
-        }
+  useEffect(() => {
+    if (params?.id) {
+      const foundPresentation = presentationList.find(
+        (presentationValue) => presentationValue?.id === params?.id
+      );
+
+      if (foundPresentation) {
+        const evaluationsFilterBySubmission = evaluations?.filter(
+          (value) => value.submissionId === foundPresentation?.submission?.id
+        );
+
+        const saveEvaluationValues = evaluationCriteria?.map((criteria) => {
+          const evaluationValue = evaluationsFilterBySubmission?.find(
+            (v) => v.evaluationCriteriaId === criteria.id
+          );
+
+          return {
+            evaluation: evaluationValue || null,
+            criteria: criteria,
+          };
+        });
+
+        setPresentation(foundPresentation as unknown as Presentation);
+        setSaveEvaluation(saveEvaluationValues);
       }
     }
-  }, [pathname]);
+  }, [presentationList.length, evaluations?.length, evaluationCriteria?.length]);
 
   return (
     <div
-      className='d-flex flex-column'
+      className="d-flex flex-column"
       style={{
         gap: "10px",
       }}
     >
-      <Banner title='Avaliação' />
-
-      <div className='avalieApresentacao'>
-
-        <div className='avalieElementos'>
-          <div className='avalieIdentificador'>
-            <div className='avalieApresentador'>{presentation?.doutorando}</div>
-            <div className='avaliePesquisa'>{presentation?.titulo}</div>
+      <Banner title="Avaliação" />
+      {(loadingEvaluation || !presentation?.submission?.title) && (
+        <LoadingPage />
+      )}
+      {!loadingEvaluation && presentation?.submission?.title && (
+        <div className="avalieApresentacao">
+          <div className="avalieElementos">
+            <div className="avalieIdentificador">
+              <div className="avalieApresentador">
+                {presentation?.submission?.mainAuthor?.name}
+              </div>
+              <div className="avaliePesquisa">
+                {presentation?.submission?.title}
+              </div>
+            </div>
           </div>
+
+          <div className="avaliePerguntas">
+            {saveEvaluation?.map((evaluationData, devIndex) => (
+              <div
+                key={evaluationData?.criteria?.id}
+                className="avalieQuestion"
+              >
+                <div className="avalieTexto">
+                  {`${devIndex + 1}. ${evaluationData?.criteria?.description}`}
+                </div>
+                <Rating
+                  value={evaluationData?.evaluation?.score ?? 0}
+                  onChange={(value) => {
+                    setSaveEvaluation((oldValues) =>
+                      oldValues?.map((item, index) =>
+                        index === devIndex
+                          ? {
+                              ...item,
+                              evaluation: {
+                                userId: user?.id ?? "",
+                                submissionId:
+                                  presentation?.submission?.id ?? "",
+                                evaluationCriteriaId: item.criteria?.id ?? "",
+                                score: value,
+                              },
+                            }
+                          : item
+                      )
+                    );
+                  }}
+                />
+              </div>
+            ))}
+            {!saveEvaluation?.length && (
+              <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+                <h4 className="empty-list mb-0">
+                  <Image
+                    src="/assets/images/empty_box.svg"
+                    alt="Lista vazia"
+                    width={90}
+                    height={90}
+                  />
+                  Essa lista ainda está vazia
+                </h4>
+              </div>
+            )}
+          </div>
+
+          <button
+            className="avalieButton"
+            onClick={sendEvaluation}
+            disabled={loadingEvaluation}
+          >
+            Enviar
+          </button>
         </div>
-
-        <div className='avaliePerguntas'>
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              1. Quão satisfeito(a) você ficou com o conteúdo da pesquisa
-              apresentada?
-            </div>
-            <Rating />
-          </div>
-
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              2. Quão satisfeito(a) você ficou com a qualidade e clareza da
-              apresentação?
-            </div>
-            <Rating />
-          </div>
-
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              3. Quão bem a pesquisa abordou e explicou o problema central?
-            </div>
-            <Rating />
-          </div>
-
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              4. Quão clara e prática você considera a solução proposta pela
-              pesquisa?
-            </div>
-            <Rating />
-          </div>
-
-          <div className='avalieQuestion'>
-            <div className='avalieTexto'>
-              5. Como você avalia a qualidade e aplicabilidade dos resultados
-              apresentados?
-            </div>
-            <Rating />
-          </div>
-        </div>
-
-        <div className='avalieButton'>Enviar</div>
-      </div>
+      )}
     </div>
   );
 }
