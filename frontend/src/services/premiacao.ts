@@ -24,7 +24,7 @@ export const premiacaoApi = {
     listTopAudienceById: async (idEdicao: string ) => {
         const instance = axiosInstance();
 
-        const { data } = await instance.get(`${baseUrlAwardedDoctoralStudents}/top-panelists/${idEdicao}`);
+        const { data } = await instance.get(`${baseUrlAwardedDoctoralStudents}/top-audience/${idEdicao}`);
 
         return data;
     },

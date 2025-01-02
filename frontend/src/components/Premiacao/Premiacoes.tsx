@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-import { premiacoesAvaliadoresMock, premiacoesBancaMock, premiacoesPublicoMock } from '@/mocks/Premiacao';
+//import { premiacoesAvaliadoresMock, premiacoesBancaMock, premiacoesPublicoMock } from '@/mocks/Premiacao';
 import PremiacaoCategoria from './PremiacaoCategoria';
 
 import "./style.scss";
@@ -38,9 +38,9 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
     const getAwards = () => {
         switch (categoria) {
             case "banca":
-                return premiacoesBancaMock;
+                return premiacaoListBanca;
             case "publico":
-                return premiacoesPublicoMock;
+                return premiacaoListAudiencia;
             default:
                 return [];
         }
@@ -73,7 +73,7 @@ export default function Premiacoes({ categoria }: { categoria: "banca" | "avalia
 
             <PremiacaoCategoria
                 categoria={categoria}
-                premiacoes={premiacaoListBanca}
+                premiacoes={getAwards()}
                 avaliadores={premiacaoListAvaliadores}
             />
         </div>
