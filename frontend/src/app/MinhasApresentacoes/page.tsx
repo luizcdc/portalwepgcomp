@@ -3,16 +3,16 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import ModalEditarCadastro from '@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro';
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+import { SubmissionFileProvider } from '@/context/submissionFile';
 import { useAuth } from "@/hooks/useAuth";
 import { useSubmission } from "@/hooks/useSubmission";
 import { MinhasApresentacoesMock } from "@/mocks/MinhasApresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
 
 import "./style.scss";
-import ModalEditarCadastro from '@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro';
-import { SubmissionFileProvider } from '@/context/submissionFile';
 
 export default function MinhasApresentacoes() {
   const { title, userArea } = MinhasApresentacoesMock;
