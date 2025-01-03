@@ -4,20 +4,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UUID } from "crypto";
 import { usePathname, useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { SubmissionContext } from "@/context/submission";
-import { SubmissionFileContext } from "@/context/submissionFile";
 import { UserContext } from "@/context/user";
 import { useSweetAlert } from "@/hooks/useAlert";
+import { useSubmissionFile } from '@/hooks/useSubmissionFile';
 
 import "./style.scss";
-import { useSubmissionFile } from '@/hooks/useSubmissionFile';
 
 const formCadastroSchema = z.object({
   id: z.string().optional(),
@@ -61,7 +59,7 @@ export function FormCadastroApresentacao({
 
   const {
     register,
-    control,
+    // control,
     handleSubmit,
     formState: { errors },
     setValue,
@@ -129,7 +127,7 @@ export function FormCadastroApresentacao({
       } else {
         await createSubmission(submissionData);
       }
-      
+
       setTimeout(() => {
         router.push("/MinhasApresentacoes")
         window.location.reload();
@@ -198,7 +196,7 @@ export function FormCadastroApresentacao({
         />
       </div>
 
-      <div className='col-12 mb-1'>
+      {/* <div className='col-12 mb-1'>
         <label className='form-label form-title'>Sugestão de data</label>
 
         <div className="input-group listagem-template-content-input">
@@ -218,7 +216,7 @@ export function FormCadastroApresentacao({
             )}
           />
         </div>
-      </div>
+      </div> */}
 
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
