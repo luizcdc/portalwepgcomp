@@ -6,7 +6,7 @@ import { createContext, ReactNode, useState } from "react";
 
 import { edicaoApi } from "@/services/edicao";
 import { useSweetAlert } from "@/hooks/useAlert";
-import { setEventEditionIdStorage } from './AuthProvider/util';
+import { setEventEditionIdStorage } from "./AuthProvider/util";
 
 interface EdicaoProps {
   children: ReactNode;
@@ -52,7 +52,10 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       showAlert({
         icon: "error",
         title: "Erro ao listar apresentações",
-        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
+        text:
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro durante a busca.",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -71,7 +74,10 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       showAlert({
         icon: "error",
         title: "Erro ao buscar edição",
-        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
+        text:
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro durante a busca.",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -116,6 +122,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         icon: "error",
         title: "Erro ao cadastrar apresentação",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -145,6 +152,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         icon: "error",
         title: "Erro ao editar apresentação",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -174,6 +182,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         icon: "error",
         title: "Erro ao editar apresentação",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -204,6 +213,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         icon: "error",
         title: "Erro ao remover apresentação",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante a remoção. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",

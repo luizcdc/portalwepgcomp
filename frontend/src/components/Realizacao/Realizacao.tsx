@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEdicao } from "@/hooks/useEdicao";
 import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
 import { useEffect, useState } from "react";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 import "./style.scss";
 
@@ -13,7 +14,11 @@ export default function Realizacao() {
   const { updateEdicao, Edicao } = useEdicao();
 
   const handleEditPartners = () => {
-    updateEdicao(Edicao?.id ?? "", { partnersText: content });
+    const eventEditionId = getEventEditionIdStorage();
+
+    if (eventEditionId) {
+      updateEdicao(eventEditionId, { partnersText: content });
+    }
   };
 
   useEffect(() => {

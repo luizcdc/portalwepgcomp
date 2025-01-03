@@ -59,7 +59,10 @@ export const UserProvider = ({ children }: UserProps) => {
       showAlert({
         icon: "error",
         title: "Erro ao listar usuários",
-        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
+        text:
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro durante a busca.",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -81,7 +84,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -89,6 +92,7 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao cadastrar usuário",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -113,7 +117,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -121,7 +125,9 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao enviar e-mail",
         text:
-          err.response?.data?.message || "Ocorreu um erro ao enviar o e-mail.",
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro ao enviar o e-mail.",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -143,7 +149,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -151,6 +157,7 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao alterar senha",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro ao tentar alterar sua senha. Tente novamente!",
         confirmButtonText: "Retornar",
@@ -176,6 +183,7 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao buscar orientadores",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro ao buscar orientadores.",
         confirmButtonText: "Retornar",

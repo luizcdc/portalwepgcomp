@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
+  Request,
 } from '@nestjs/common';
 import { PresentationBlockService } from './presentation-block.service';
 import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto';
@@ -38,10 +40,29 @@ export class PresentationBlockController {
   async findAllByEventEditionId(
     @Param('eventEditionId') eventEditionId: string,
   ): Promise<ResponsePresentationBlockDto[]> {
-    const presentationBlocks =
-      await this.presentationBlockService.findAllByEventEditionId(
-        eventEditionId,
-      );
+    const presentationBlocks = await this.presentationBlockService.findAll(
+      undefined,
+      eventEditionId,
+    );
+
+    return presentationBlocks.map(
+      (block) => new ResponsePresentationBlockDto(block),
+    );
+  }
+
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @Get()
+  async findAll(
+    @Request() req: any,
+    @Query('eventEditionId') eventEditionId: string,
+    @Query('panelistId') panelistId?: string,
+  ): Promise<ResponsePresentationBlockDto[]> {
+    console.log(req.user, eventEditionId, panelistId);
+    const presentationBlocks = await this.presentationBlockService.findAll(
+      req.user.userId,
+      eventEditionId,
+      panelistId,
+    );
 
     return presentationBlocks.map(
       (block) => new ResponsePresentationBlockDto(block),

@@ -10,7 +10,7 @@ jest.mock('nodemailer', () => ({
   createTransport: jest.fn(),
 }));
 
-describe('ContactService', () => {
+describe('MailingService', () => {
   let service: MailingService;
   let mailerTransportMock: any;
 
@@ -106,6 +106,55 @@ describe('ContactService', () => {
 
       await expect(service.sendEmailConfirmation(email, token)).rejects.toThrow(
         AppException,
+      );
+    });
+  });
+
+  describe('handleEmailError', () => {
+    it('should raise AppException with error 403 when email authentication fails', async () => {
+      const defaultEmailDto = {
+        from: 'from-test',
+        to: 'to-test',
+        subject: 'test-subject',
+        text: 'test',
+      };
+
+      jest
+        .spyOn(mailerTransportMock, 'sendMail')
+        .mockRejectedValue({ responseCode: 535 });
+
+      await expect(service.sendEmail(defaultEmailDto)).rejects.toThrow(
+        new AppException(
+          'Erro de autenticação: Nome de usuário e senha não aceitos',
+          403,
+        ),
+      );
+
+      expect(mailerTransportMock.sendMail).toHaveBeenCalledTimes(1);
+      expect(mailerTransportMock.sendMail).toHaveBeenCalledWith(
+        defaultEmailDto,
+      );
+    });
+
+    it('should raise AppException with error 429 when daily quota has been exceeded', async () => {
+      const defaultEmailDto = {
+        from: 'from-test',
+        to: 'to-test',
+        subject: 'test-subject',
+        text: 'test',
+      };
+
+      jest
+        .spyOn(mailerTransportMock, 'sendMail')
+        .mockRejectedValue({ responseCode: 550 });
+
+      await expect(service.sendEmail(defaultEmailDto)).rejects.toThrow(
+        new AppException('Limite diário de emails excedido', 429),
+      );
+
+      expect(mailerTransportMock.sendMail).toHaveBeenCalledTimes(1);
+      expect(mailerTransportMock.sendMail).toHaveBeenCalledWith(
+        defaultEmailDto,
       );
     });
   });
