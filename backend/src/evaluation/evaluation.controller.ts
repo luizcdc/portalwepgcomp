@@ -7,7 +7,6 @@ import {
   Query,
   Req,
   UseGuards,
-  Request,
 } from '@nestjs/common';
 import { EvaluationService } from './evaluation.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
@@ -74,16 +73,6 @@ export class EvaluationController {
       'Este usuário não tem permissão para acessar avaliações de outros usuários',
       403,
     );
-  }
-
-  @Get('/user')
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Find evaluations by user' })
-  async findByUser(@Request() req) {
-    const userId = req.user.userId;
-
-    return await this.evaluationService.findOne(userId);
   }
 
   @Get('submission/:submissionId/final-grade')
