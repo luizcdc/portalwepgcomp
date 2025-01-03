@@ -24,5 +24,5 @@ interface Submission extends SubmissionParams {
     createdAt: Date;
     deletedAt: Date;
     updatedAt: Date;
-    mainAuthor: UserProfile;
+    mainAuthor: AuthorOrEvaluator;
 }
