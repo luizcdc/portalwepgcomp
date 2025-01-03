@@ -65,6 +65,8 @@ export default function Header() {
       else setSelectedItem(null);
     } else if (currentPath === "/login") {
       setSelectedItem("login");
+    } else {
+      setSelectedItem(null);
     }
   }, [pathname]);
 
