@@ -50,6 +50,7 @@ export const EvaluationProvider = ({ children }: EvaluationProps) => {
           icon: "error",
           title: "Erro ao avaliar",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante a avaliação. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
