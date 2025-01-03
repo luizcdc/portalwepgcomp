@@ -15,7 +15,7 @@ export class AwardedDoctoralStudentsService {
         presentationBlock: {
           eventEditionId: eventEditionId,
         },
-        publicAverageScore: {
+        evaluatorsAverageScore: {
           not: null,
         },
       },
