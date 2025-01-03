@@ -5,6 +5,7 @@ import {
   Param,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { EvaluationService } from './evaluation.service';
@@ -15,6 +16,7 @@ import { UserLevel } from '@prisma/client';
 import { UserLevels } from '../auth/decorators/user-level.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AppException } from 'src/exceptions/app.exception';
 
 @Controller('evaluations')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
@@ -41,7 +43,6 @@ export class EvaluationController {
   }
 
   @Get()
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Find evaluations' })
   @ApiQuery({
@@ -50,11 +51,28 @@ export class EvaluationController {
     description: 'Filter evaluations by user ID',
   })
   @ApiResponse({ status: 200, description: 'Return evaluations.' })
-  async find(@Query('userId') userId?: string) {
-    if (userId) {
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  async find(@Req() request: any, @Query('userId') userId?: string) {
+    if (
+      userId &&
+      (request.user.userId === userId ||
+        request.user.level !== UserLevel.Default)
+    ) {
       return await this.evaluationService.findOne(userId);
+    } else if (userId) {
+      throw new AppException(
+        'Este usuário não tem permissão para acessar as avaliações de outro usuário',
+        403,
+      );
     }
-    return await this.evaluationService.findAll();
+
+    if (request.user.level !== UserLevel.Default) {
+      return await this.evaluationService.findAll();
+    }
+    throw new AppException(
+      'Este usuário não tem permissão para acessar avaliações de outros usuários',
+      403,
+    );
   }
 
   @Get('submission/:submissionId/final-grade')
