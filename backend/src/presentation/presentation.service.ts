@@ -701,6 +701,7 @@ export class PresentationService {
   }
 
   private calculateAverageScore(evaluations: any[]): number | null {
+    // get the average score of the all evaluations
     if (!evaluations.length) {
       return null;
     }
