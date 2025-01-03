@@ -740,12 +740,22 @@ export class PresentationService {
           },
           select: {
             id: true,
+            name: true,
+            endDate: true,
           },
         },
       );
 
       if (!activeEventEdition) {
         this.logger.warn('No active event edition found');
+        return;
+      }
+
+      const now = new Date();
+      if (activeEventEdition.endDate < now) {
+        this.logger.warn(
+          `Event ${activeEventEdition.name} has already ended on ${activeEventEdition.endDate.toISOString()}`,
+        );
         return;
       }
 
