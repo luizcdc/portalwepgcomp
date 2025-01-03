@@ -27,7 +27,7 @@ import {
 } from './dto/bookmark-presentation.dto';
 import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevel } from '@prisma/client';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiParam } from '@nestjs/swagger';
 
 @Controller('presentation')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
@@ -111,6 +111,12 @@ export class PresentationController {
 
   @Public()
   @Get()
+  @ApiQuery({
+    name: 'eventEditionId',
+    description: 'The ID of the event edition',
+    type: 'string',
+    required: false,
+  })
   findAll(
     @Query('eventEditionId') eventEditionId: string,
   ): Promise<PresentationResponseDto[]> {
@@ -188,5 +194,27 @@ export class PresentationController {
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.presentationService.remove(id);
+  }
+
+  @Post(':id/calculate-scores')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
+  async calculateScores(@Param('id') id: string) {
+    await this.presentationService.calculateAndUpdateScores(id);
+    return { message: 'Scores calculated successfully' };
+  }
+
+  @Post('calculate-all-scores/:eventEditionId')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
+  @ApiParam({
+    name: 'eventEditionId',
+    description: 'The ID of the event edition to calculate all scores for',
+    type: 'string',
+    required: true,
+  })
+  async calculateAllScores(@Param('eventEditionId') eventEditionId: string) {
+    await this.presentationService.recalculateAllScores(eventEditionId);
+    return { message: 'All scores calculated successfully' };
   }
 }
