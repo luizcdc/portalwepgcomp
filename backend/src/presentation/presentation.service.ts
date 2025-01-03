@@ -6,7 +6,7 @@ import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePresentationDto } from './dto/update-presentation.dto';
 import { UpdatePresentationWithSubmissionDto } from './dto/update-presentation-with-submission.dto';
-import { PresentationStatus } from '@prisma/client';
+import { PresentationStatus, Profile } from '@prisma/client';
 import { SubmissionStatus } from '@prisma/client';
 import { PresentationBlockType } from '@prisma/client';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
@@ -16,6 +16,7 @@ import {
   BookmarkPresentationRequestDto,
   BookmarkPresentationResponseDto,
 } from './dto/bookmark-presentation.dto';
+import { ListAdvisedPresentationsResponse } from './dto/list-advised-presentations.dto';
 
 @Injectable()
 export class PresentationService {
@@ -197,8 +198,8 @@ export class PresentationService {
         submission: {
           include: {
             mainAuthor: true,
-            advisor: true
-          }
+            advisor: true,
+          },
         },
       },
     });
@@ -226,8 +227,8 @@ export class PresentationService {
         submission: {
           include: {
             mainAuthor: true,
-            advisor: true
-          }
+            advisor: true,
+          },
         },
       },
     });
@@ -443,6 +444,27 @@ export class PresentationService {
     return presentations;
   }
 
+  async listAdvisedPresentations(
+    userId: string,
+  ): Promise<Array<ListAdvisedPresentationsResponse>> {
+    const user = await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (user.profile !== Profile.Professor) {
+      throw new AppException('Usuário não é um professor.', 403);
+    }
+
+    const submissions = await this.prismaClient.submission.findMany({
+      where: { advisorId: userId },
+      include: { Presentation: true },
+    });
+
+    return submissions.flatMap((submission) => submission.Presentation);
+  }
+
   async updatePresentationForUser(
     userId: string,
     presentationId: string,
@@ -549,16 +571,16 @@ export class PresentationService {
 
   async bookmarkedPresentation(
     userId: string,
-    presentationId: string
+    presentationId: string,
   ): Promise<BookmarkedPresentationResponseDto> {
     const user = await this.prismaClient.userAccount.findUnique({
       where: {
         id: userId,
         bookmarkedPresentations: {
           every: {
-            id: presentationId
-          }
-        }
+            id: presentationId,
+          },
+        },
       },
       include: {
         bookmarkedPresentations: true,

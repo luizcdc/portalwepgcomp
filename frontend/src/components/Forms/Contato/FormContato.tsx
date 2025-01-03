@@ -1,10 +1,10 @@
 import { sendContactRequest } from "@/services/contact";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
-import { useSweetAlert } from '@/hooks/useAlert';
+import { useSweetAlert } from "@/hooks/useAlert";
 
 const formContatoSchema = z.object({
   name: z
@@ -12,9 +12,7 @@ const formContatoSchema = z.object({
       required_error: "Nome é obrigatório!",
       invalid_type_error: "Campo inválido!",
     })
-    .regex(/^[a-zA-ZÀ-ÿ]+$/, {
-      message: "Preenchimento obrigatório",
-    }),
+    .min(1, { message: "Nome é obrigatório!" }),
 
   email: z
     .string({
@@ -23,7 +21,8 @@ const formContatoSchema = z.object({
     })
     .email({
       message: "E-mail inválido!",
-    }),
+    })
+    .min(1, { message: "E-mail é obrigatório!" }),
 
   text: z
     .string({
@@ -39,35 +38,48 @@ export function FormContato() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormContatoSchema>({
     resolver: zodResolver(formContatoSchema),
   });
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [text, setText] = useState("");
-  
   const { showAlert } = useSweetAlert();
 
   const handleFormContato = async (data: FormContatoSchema) => {
-    try {
-      await sendContactRequest(data);
-      showAlert({
-        icon: "success",
-        title: "Mensagem enviada com sucesso!",
-        timer: 3000,
-        showConfirmButton: false,
+    sendContactRequest(data)
+      .then((resp) => {
+        if (resp.status < 200 || resp.status >= 300) {
+          showAlert({
+            icon: "error",
+            title: "Erro ao enviar mensagem",
+            text:
+              resp?.response?.data?.message?.message ||
+              resp?.response?.data?.message ||
+              "Ocorreu um erro ao enviar o formulário. Tente novamente.",
+            confirmButtonText: "Retornar",
+          });
+        } else {
+          showAlert({
+            icon: "success",
+            title: "Mensagem enviada com sucesso!",
+            timer: 3000,
+            showConfirmButton: false,
+          });
+          reset();
+        }
+      })
+      .catch((err) => {
+        showAlert({
+          icon: "error",
+          title: "Erro ao enviar mensagem",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro ao enviar o formulário. Tente novamente.",
+          confirmButtonText: "Retornar",
+        });
       });
-    } catch (error) {
-      console.error(error);
-      showAlert({
-        icon: "error",
-        title: "Erro ao enviar mensagem",
-        text: "Ocorreu um erro ao enviar o formulário. Tente novamente.",
-        confirmButtonText: "Retornar",
-      });
-    }
   };
 
   return (
@@ -77,41 +89,41 @@ export function FormContato() {
     >
       <div className="row mb-3">
         <div className="col-12 col-sm-6">
-          <label className="form-label fs-5 text-white fw-semibold">Nome:</label>
+          <label className="form-label fs-5 text-white fw-semibold">
+            Nome:
+          </label>
           <input
             type="nome"
             className="form-control input-title bg-transparent border-1 text-white shadow-none"
             placeholder="Insira seu nome"
             {...register("name")}
-            onChange={(e) => setName(e.target.value)}
-            value={name}
           />
           <p className="text-warning error-message">{errors.name?.message}</p>
         </div>
 
         <div className="col-12 col-sm-6">
-          <label className="form-label fs-5 text-white fw-semibold">E-mail:</label>
+          <label className="form-label fs-5 text-white fw-semibold">
+            E-mail:
+          </label>
           <input
             type="email"
             className="form-control input-title bg-transparent border-1 text-white shadow-none"
             placeholder="Insira seu e-mail"
             {...register("email")}
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
           />
           <p className="text-warning error-message">{errors.email?.message}</p>
         </div>
       </div>
 
       <div>
-        <label className="form-label fs-5 text-white fw-semibold">Mensagem:</label>
+        <label className="form-label fs-5 text-white fw-semibold">
+          Mensagem:
+        </label>
         <textarea
           className="form-control input-title bg-transparent border-1 border-white text-white shadow-none"
           placeholder="Digite sua mensagem"
           rows={5}
           {...register("text")}
-          onChange={(e) => setText(e.target.value)}
-          value={text}
         />
         <p className="text-warning error-message">{errors.text?.message}</p>
       </div>
