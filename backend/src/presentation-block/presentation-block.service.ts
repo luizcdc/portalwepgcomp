@@ -248,14 +248,29 @@ export class PresentationBlockService {
     return eventEdition;
   }
 
-  async findAll() {
-    return await this.prismaClient.presentationBlock.findMany();
-  }
+  async findAll(
+    requestingUserId: string,
+    eventEditionId?: string,
+    panelistId?: string,
+  ) {
+    if (requestingUserId && panelistId && panelistId != requestingUserId) {
+      throw new AppException('Acesso negado', 403);
+    }
+    const preFiltering = {};
+    let eventEdition = null;
+    if (eventEditionId) {
+      preFiltering['eventEditionId'] = eventEditionId;
+      eventEdition = await this.prismaClient.eventEdition.findUnique({
+        where: { id: eventEditionId },
+      });
 
-  async findAllByEventEditionId(eventEditionId: string) {
-    const presentationBlocks =
-      await this.prismaClient.presentationBlock.findMany({
-        where: { eventEditionId },
+      if (!eventEdition) {
+        throw new AppException('Edição do evento não encontrada', 404);
+      }
+    }
+    let presentationBlocks = await this.prismaClient.presentationBlock.findMany(
+      {
+        where: preFiltering,
         include: {
           presentations: {
             include: {
@@ -268,16 +283,13 @@ export class PresentationBlockService {
             },
           },
         },
-      });
-
-    const eventEdition = await this.prismaClient.eventEdition.findUnique({
-      where: { id: eventEditionId },
-    });
-
-    if (!eventEdition) {
-      throw new AppException('Edição do evento não encontrada', 404);
-    }
-
+      },
+    );
+    presentationBlocks = panelistId
+      ? presentationBlocks.filter((block) =>
+          block.panelists.some((panelist) => panelist.userId === panelistId),
+        )
+      : presentationBlocks;
     return Promise.all(
       presentationBlocks.map((block) => this.processPresentationBlock(block)),
     );

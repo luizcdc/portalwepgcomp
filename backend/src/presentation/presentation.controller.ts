@@ -28,6 +28,7 @@ import {
 import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevel } from '@prisma/client';
 import { ApiBearerAuth, ApiQuery, ApiParam } from '@nestjs/swagger';
+import { ListAdvisedPresentationsResponse } from './dto/list-advised-presentations.dto';
 
 @Controller('presentation')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
@@ -134,6 +135,16 @@ export class PresentationController {
   listPresentations(@Request() req) {
     const userId = req.user.userId; // User ID extracted from the JWT
     return this.presentationService.listUserPresentations(userId);
+  }
+
+  @Get('advised')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
+  listAdvisedPresentations(
+    @Request() req,
+  ): Promise<Array<ListAdvisedPresentationsResponse>> {
+    const userId = req.user.userId;
+    return this.presentationService.listAdvisedPresentations(userId);
   }
 
   @Public()

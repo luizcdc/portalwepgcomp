@@ -66,7 +66,7 @@ export class AuthService {
       { expiresIn: '1h' },
     );
 
-    const text = `Link para redefinição de senha: ${process.env.FRONTEND_URL}/AlterarSenha/${resetToken}`;
+    const text = `Link para redefinição de senha: ${process.env.FRONTEND_URL}/alterar-senha/${resetToken}`;
     const forgotPasswordEmail = {
       from: `"${user.name}" <${user.email}>`,
       to: user.email,

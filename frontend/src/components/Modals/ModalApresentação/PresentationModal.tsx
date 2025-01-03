@@ -6,41 +6,45 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 import Star from "@/components/UI/Star";
 import { Presentation, PresentationBookmark } from "@/models/presentation";
-import moment from 'moment';
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { usePresentation } from "@/hooks/usePresentation";
 
-export default function PresentationModal({
-  props,
-}: {
-  props: Presentation;
-}) {
+export default function PresentationModal({ props }: { props: Presentation }) {
   const presentationBookmarkData = { presentationId: props.id };
-  const { getPresentationBookmark, postPresentationBookmark, deletePresentationBookmark } = usePresentation();
-  const [presentationBookmark, setpresentationBookmark] = useState<PresentationBookmark>();
+  const {
+    getPresentationBookmark,
+    postPresentationBookmark,
+    deletePresentationBookmark,
+  } = usePresentation();
+  const [presentationBookmark, setpresentationBookmark] =
+    useState<PresentationBookmark>();
   const { signed } = useContext(AuthContext);
   const router = useRouter();
 
   useEffect(() => {
-    getPresentationBookmark(presentationBookmarkData)
-      .then(setpresentationBookmark);
+    getPresentationBookmark(presentationBookmarkData).then(
+      setpresentationBookmark
+    );
   }, []);
 
   function handleFavorite() {
     if (!signed) {
-      router.push('/Login');
-      return
+      router.push("/login");
+      return;
     }
     if (presentationBookmark && presentationBookmark.bookmarked) {
       deletePresentationBookmark(presentationBookmarkData);
     } else {
       postPresentationBookmark(presentationBookmarkData);
     }
-    setpresentationBookmark({ bookmarked: !(presentationBookmark && presentationBookmark.bookmarked)});
+    setpresentationBookmark({
+      bookmarked: !(presentationBookmark && presentationBookmark.bookmarked),
+    });
   }
 
   const handleEvaluateClick = () => {
-    window.location.href = `/Avaliacao/${props.id}`;
+    window.location.href = `/avaliacao/${props.id}`;
   };
 
   const presentationDate = moment(props.presentationTime).format("DD/MM");
@@ -83,14 +87,13 @@ export default function PresentationModal({
             Orientador(a): {props.submission.advisor.name}
           </h4>
         </div>
-        <div>
-          <button
-            className="avaliar-button"
-            onClick={handleEvaluateClick}
-          >
-            Avaliar
-          </button>
-        </div>
+        {!!signed && (
+          <div>
+            <button className="avaliar-button" onClick={handleEvaluateClick}>
+              Avaliar
+            </button>
+          </div>
+        )}
       </div>
       <div className="d-flex" style={{ gap: "10px" }}>
         <em
@@ -104,12 +107,15 @@ export default function PresentationModal({
         >
           {presentationDate} - SALA A - {presentationTime}
         </em>
-        <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
-          {
-            (presentationBookmark) &&
-            <Star color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"} />
-          }
-        </div>
+        {!!signed && (
+          <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
+            {presentationBookmark && (
+              <Star
+                color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"}
+              />
+            )}
+          </div>
+        )}
         <div>
           <button
             className="fw-semibold bg-white"

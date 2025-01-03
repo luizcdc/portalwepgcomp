@@ -4,7 +4,7 @@ import { PresentationService } from './presentation.service';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
 import { AppException } from '../exceptions/app.exception';
-import { PresentationStatus } from '@prisma/client';
+import { PresentationStatus, Profile, UserLevel } from '@prisma/client';
 import { SubmissionStatus } from '@prisma/client';
 import { PresentationBlockType } from '@prisma/client';
 import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-with-submission.dto';
@@ -945,6 +945,238 @@ describe('PresentationService', () => {
         where: { mainAuthorId: userId },
         include: { Presentation: true },
       });
+    });
+  });
+
+  describe('listAdvisedPresentations', () => {
+    const mockUserId = 'user123';
+
+    it('should return advised presentations for a professor', async () => {
+      const mockUser = {
+        id: 'd0219835-245e-47b5-84ce-1e3369cf3c61',
+        name: 'Professor Default',
+        email: 'profdefault@example.com',
+        registrationNumber: null,
+        photoFilePath: null,
+        profile: Profile.Professor,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date('2024-12-27T15:50:13.008Z'),
+        updatedAt: new Date('2024-12-27T15:50:13.008Z'),
+        isVerified: false,
+        password: 'a',
+      };
+      const mockSubmissions = [
+        {
+          id: 'ebd08e6a-78e3-46c2-8acb-0b2f399f886a',
+          advisorId: '21b47928-172e-4014-a505-95c9d7e85350',
+          mainAuthorId: '0c7a2281-2761-492c-8522-74888c6ad039',
+          eventEditionId: 'c63b4c5e-8dec-4457-a776-9445411629f0',
+          title: 'The Impact of AI in Modern Research',
+          abstract: 'A study on how AI impacts modern research methodologies.',
+          pdfFile: 'path/to/document1.pdf',
+          phoneNumber: '123-456-7890',
+          proposedPresentationBlockId: null,
+          proposedPositionWithinBlock: null,
+          proposedStartTime: null,
+          coAdvisor: null,
+          status: SubmissionStatus.Submitted,
+          createdAt: new Date('2024-12-27T15:50:13.022Z'),
+          updatedAt: new Date('2024-12-27T15:50:13.022Z'),
+          Presentation: [{ id: 'pres1', title: 'Presentation 1' }],
+        },
+        {
+          id: '0cd25aa5-50d4-4f95-bc6a-f8cbcac3fb4c',
+          advisorId: 'b9d9666d-86fa-4fe7-98a7-df80f2f8bcc9',
+          mainAuthorId: 'ac3c4dca-c531-44f2-b7f8-3e606d37baf1',
+          eventEditionId: 'c63b4c5e-8dec-4457-a776-9445411629f0',
+          title: 'Quantum Computing Advances',
+          abstract: 'Exploring the latest advancements in quantum computing.',
+          pdfFile: 'path/to/document2.pdf',
+          phoneNumber: '123-456-7891',
+          proposedPresentationBlockId: null,
+          proposedPositionWithinBlock: null,
+          proposedStartTime: null,
+          coAdvisor: null,
+          status: SubmissionStatus.Submitted,
+          createdAt: new Date('2024-12-27T15:50:13.024Z'),
+          updatedAt: new Date('2024-12-27T15:50:13.024Z'),
+          Presentation: [{ id: 'pres2', title: 'Presentation 2' }],
+        },
+      ];
+
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(mockUser);
+      jest
+        .spyOn(prismaService.submission, 'findMany')
+        .mockResolvedValue(mockSubmissions);
+
+      const result = await service.listAdvisedPresentations(mockUserId);
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { advisorId: mockUserId },
+        include: { Presentation: true },
+      });
+      expect(result).toEqual([
+        { id: 'pres1', title: 'Presentation 1' },
+        { id: 'pres2', title: 'Presentation 2' },
+      ]);
+    });
+
+    it('should throw AppException if user is not a professor', async () => {
+      const mockUser = {
+        id: 'ac3c4dca-c531-44f2-b7f8-3e606d37baf1',
+        name: 'Doctoral Student Default',
+        email: 'docdefault@example.com',
+        registrationNumber: null,
+        photoFilePath: null,
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date('2024-12-27T15:50:13.008Z'),
+        updatedAt: new Date('2024-12-27T15:50:13.008Z'),
+        isVerified: false,
+        password: 'a',
+      };
+
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(mockUser);
+
+      await expect(
+        service.listAdvisedPresentations(mockUserId),
+      ).rejects.toThrow(new AppException('Usuário não é um professor.', 403));
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).not.toHaveBeenCalled();
+    });
+
+    it('should return an empty array if no submissions found', async () => {
+      const mockUser = {
+        id: 'd0219835-245e-47b5-84ce-1e3369cf3c61',
+        name: 'Professor Default',
+        email: 'profdefault@example.com',
+        registrationNumber: null,
+        photoFilePath: null,
+        profile: Profile.Professor,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date('2024-12-27T15:50:13.008Z'),
+        updatedAt: new Date('2024-12-27T15:50:13.008Z'),
+        isVerified: false,
+        password: 'a',
+      };
+
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(mockUser);
+      jest.spyOn(prismaService.submission, 'findMany').mockResolvedValue([]);
+
+      const result = await service.listAdvisedPresentations(mockUserId);
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { advisorId: mockUserId },
+        include: { Presentation: true },
+      });
+      expect(result).toEqual([]);
+    });
+
+    it('should handle submissions without presentations', async () => {
+      const mockUser = {
+        id: 'd0219835-245e-47b5-84ce-1e3369cf3c61',
+        name: 'Professor Default',
+        email: 'profdefault@example.com',
+        registrationNumber: null,
+        photoFilePath: null,
+        profile: Profile.Professor,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date('2024-12-27T15:50:13.008Z'),
+        updatedAt: new Date('2024-12-27T15:50:13.008Z'),
+        isVerified: false,
+        password: 'a',
+      };
+
+      const mockSubmissions = [
+        {
+          id: 'ebd08e6a-78e3-46c2-8acb-0b2f399f886a',
+          advisorId: '21b47928-172e-4014-a505-95c9d7e85350',
+          mainAuthorId: '0c7a2281-2761-492c-8522-74888c6ad039',
+          eventEditionId: 'c63b4c5e-8dec-4457-a776-9445411629f0',
+          title: 'The Impact of AI in Modern Research',
+          abstract: 'A study on how AI impacts modern research methodologies.',
+          pdfFile: 'path/to/document1.pdf',
+          phoneNumber: '123-456-7890',
+          proposedPresentationBlockId: null,
+          proposedPositionWithinBlock: null,
+          proposedStartTime: null,
+          coAdvisor: null,
+          status: SubmissionStatus.Submitted,
+          createdAt: new Date('2024-12-27T15:50:13.022Z'),
+          updatedAt: new Date('2024-12-27T15:50:13.022Z'),
+          Presentation: [],
+        },
+        {
+          id: '0cd25aa5-50d4-4f95-bc6a-f8cbcac3fb4c',
+          advisorId: 'b9d9666d-86fa-4fe7-98a7-df80f2f8bcc9',
+          mainAuthorId: 'ac3c4dca-c531-44f2-b7f8-3e606d37baf1',
+          eventEditionId: 'c63b4c5e-8dec-4457-a776-9445411629f0',
+          title: 'Quantum Computing Advances',
+          abstract: 'Exploring the latest advancements in quantum computing.',
+          pdfFile: 'path/to/document2.pdf',
+          phoneNumber: '123-456-7891',
+          proposedPresentationBlockId: null,
+          proposedPositionWithinBlock: null,
+          proposedStartTime: null,
+          coAdvisor: null,
+          status: SubmissionStatus.Submitted,
+          createdAt: new Date('2024-12-27T15:50:13.024Z'),
+          updatedAt: new Date('2024-12-27T15:50:13.024Z'),
+          Presentation: [{ id: 'pres2', title: 'Presentation 2' }],
+        },
+      ];
+
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(mockUser);
+      jest
+        .spyOn(prismaService.submission, 'findMany')
+        .mockResolvedValue(mockSubmissions);
+
+      const result = await service.listAdvisedPresentations(mockUserId);
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { advisorId: mockUserId },
+        include: { Presentation: true },
+      });
+      expect(result).toEqual([{ id: 'pres2', title: 'Presentation 2' }]);
+    });
+
+    it('should throw an error if user is not found', async () => {
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(null);
+
+      await expect(
+        service.listAdvisedPresentations(mockUserId),
+      ).rejects.toThrow();
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).not.toHaveBeenCalled();
     });
   });
 
