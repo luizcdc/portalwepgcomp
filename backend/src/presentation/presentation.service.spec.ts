@@ -4,24 +4,25 @@ import { PresentationService } from './presentation.service';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
 import { AppException } from '../exceptions/app.exception';
-import { PresentationStatus } from '@prisma/client';
+import { PresentationStatus, Profile, UserLevel } from '@prisma/client';
 import { SubmissionStatus } from '@prisma/client';
 import { PresentationBlockType } from '@prisma/client';
 import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-with-submission.dto';
 
-const baseCreatePresentationWithSubmissionDto: CreatePresentationWithSubmissionDto = {
-  advisorId: 'advisor1',
-  mainAuthorId: 'author1',
-  eventEditionId: 'event1',
-  title: 'Test Presentation',
-  abstractText: 'Abstract text',
-  pdfFile: 'path/to/pdf',
-  phoneNumber: '123456789',
-  coAdvisor: 'coAdvisor1',
-  presentationBlockId: 'block1',
-  positionWithinBlock: 1,
-  status: PresentationStatus.ToPresent,
-};
+const baseCreatePresentationWithSubmissionDto: CreatePresentationWithSubmissionDto =
+  {
+    advisorId: 'advisor1',
+    mainAuthorId: 'author1',
+    eventEditionId: 'event1',
+    title: 'Test Presentation',
+    abstractText: 'Abstract text',
+    pdfFile: 'path/to/pdf',
+    phoneNumber: '123456789',
+    coAdvisor: 'coAdvisor1',
+    presentationBlockId: 'block1',
+    positionWithinBlock: 1,
+    status: PresentationStatus.ToPresent,
+  };
 
 describe('PresentationService', () => {
   let service: PresentationService;
@@ -48,6 +49,9 @@ describe('PresentationService', () => {
         findUnique: jest.fn(),
       },
       eventEdition: {
+        findUnique: jest.fn(),
+      },
+      userAccount: {
         findUnique: jest.fn(),
       },
     } as any;
@@ -135,15 +139,17 @@ describe('PresentationService', () => {
         presentationBlockId: 'validBlockId',
         positionWithinBlock: 1,
       };
-    
+
       // Mock the submission to exist and be confirmed
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: '1',
         status: SubmissionStatus.Confirmed,
       });
-    
+
       // Mock the presentation block to exist
-      (prismaService.presentationBlock.findUnique as jest.Mock).mockResolvedValue({
+      (
+        prismaService.presentationBlock.findUnique as jest.Mock
+      ).mockResolvedValue({
         id: 'validBlockId',
         eventEditionId: 'event1',
         duration: 120,
@@ -155,7 +161,7 @@ describe('PresentationService', () => {
         speakerName: 'Speaker Name',
         startTime: new Date(),
       });
-    
+
       // Mock the event edition to exist
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event1',
@@ -174,7 +180,7 @@ describe('PresentationService', () => {
         isActive: true,
         isEvaluationRestrictToLoggedUsers: false,
       });
-    
+
       // First call simulates no duplicate presentations by submissionId
       (prismaService.presentation.findFirst as jest.Mock)
         .mockResolvedValueOnce(null) // Check for duplicates
@@ -189,13 +195,11 @@ describe('PresentationService', () => {
           publicAverageScore: 0,
           evaluatorsAverageScore: 0,
         }); // Check for overlapping in block and position
-    
+
       await expect(service.create(createPresentationDto)).rejects.toThrowError(
         new AppException('Posição de apresentação já ocupada.', 400),
       );
     });
-    
-    
 
     it('should create a presentation if all checks pass', async () => {
       const createPresentationDto: CreatePresentationDto = {
@@ -248,30 +252,36 @@ describe('PresentationService', () => {
 
   describe('createWithSubmission', () => {
     it('should create a submission and presentation when all details are provided', async () => {
-      const createPresentationWithSubmissionDto = { ...baseCreatePresentationWithSubmissionDto };
-    
+      const createPresentationWithSubmissionDto = {
+        ...baseCreatePresentationWithSubmissionDto,
+      };
+
       const mockSubmissionService = service['submissionService'] as any;
       mockSubmissionService.create = jest.fn().mockResolvedValue({
         id: 'submission1',
         ...createPresentationWithSubmissionDto,
       });
-    
+
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event1',
         name: 'Test Event',
       });
-    
+
       (prismaService.submission.findUnique as jest.Mock).mockResolvedValue({
         id: 'submission1',
         status: SubmissionStatus.Confirmed,
       });
-    
-      (prismaService.presentationBlock.findUnique as jest.Mock).mockResolvedValue({
+
+      (
+        prismaService.presentationBlock.findUnique as jest.Mock
+      ).mockResolvedValue({
         id: 'block1',
       });
-    
-      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(null);
-    
+
+      (prismaService.presentation.findFirst as jest.Mock).mockResolvedValue(
+        null,
+      );
+
       (prismaService.presentation.create as jest.Mock).mockResolvedValue({
         id: 'presentation1',
         submissionId: 'submission1',
@@ -279,9 +289,11 @@ describe('PresentationService', () => {
         positionWithinBlock: 1,
         status: PresentationStatus.ToPresent,
       });
-    
-      const result = await service.createWithSubmission(createPresentationWithSubmissionDto);
-    
+
+      const result = await service.createWithSubmission(
+        createPresentationWithSubmissionDto,
+      );
+
       expect(result).toHaveProperty('submission');
       expect(result).toHaveProperty('presentation');
       expect(result.submission.id).toBe('submission1');
@@ -292,37 +304,37 @@ describe('PresentationService', () => {
       const createPresentationWithSubmissionDto = {
         ...baseCreatePresentationWithSubmissionDto,
       };
-    
+
       delete createPresentationWithSubmissionDto.presentationBlockId;
       delete createPresentationWithSubmissionDto.positionWithinBlock;
-    
+
       const mockSubmissionService = service['submissionService'] as any;
       mockSubmissionService.create = jest.fn().mockResolvedValue({
         id: 'submission1',
         ...createPresentationWithSubmissionDto,
       });
-    
+
       mockSubmissionService.remove = jest.fn().mockResolvedValue({});
-    
+
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event1',
         name: 'Test Event',
       });
-    
+
       (prismaService.presentation.create as jest.Mock).mockResolvedValue(null);
-    
+
       const result = await service.createWithSubmission(
         createPresentationWithSubmissionDto as any,
       );
-    
+
       expect(result).toHaveProperty('submission');
       expect(result).not.toHaveProperty('presentation');
       expect(result.submission.id).toBe('submission1');
-    
+
       expect(prismaService.presentation.create).not.toHaveBeenCalled();
-    
+
       expect(mockSubmissionService.remove).not.toHaveBeenCalled();
-    });    
+    });
 
     it('should throw an error if submission creation fails', async () => {
       // Mocking the presentations returned by Prisma
@@ -356,7 +368,9 @@ describe('PresentationService', () => {
   describe('findAllByEventEditionId', () => {
     it('should return presentations for a given event edition', async () => {
       // Mock the presentation block for calculatePresentationStartTime
-      (prismaService.presentationBlock.findUnique as jest.Mock).mockResolvedValue({
+      (
+        prismaService.presentationBlock.findUnique as jest.Mock
+      ).mockResolvedValue({
         id: 'block1',
         eventEditionId: 'event1',
         duration: 120,
@@ -368,7 +382,7 @@ describe('PresentationService', () => {
         speakerName: 'Speaker Name',
         startTime: new Date(),
       });
-    
+
       // Mock the event edition
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
         id: 'event1',
@@ -387,7 +401,7 @@ describe('PresentationService', () => {
         isActive: true,
         isEvaluationRestrictToLoggedUsers: false,
       });
-    
+
       // Mock the presentations returned by Prisma
       const mockPresentations = [
         {
@@ -421,13 +435,15 @@ describe('PresentationService', () => {
           evaluatorsAverageScore: 4.0,
         },
       ];
-    
+
       // Mock the Prisma findMany method
-      (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(mockPresentations);
-    
+      (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
+        mockPresentations,
+      );
+
       // Call the method
       const result = await service.findAllByEventEditionId('event1');
-    
+
       // Assertions
       expect(result).toHaveLength(2);
       expect(result[0]).toBeInstanceOf(PresentationResponseDto);
@@ -446,15 +462,15 @@ describe('PresentationService', () => {
           },
         },
       });
-    });    
-    
+    });
+
     it('should return an empty array if no presentations exist for the event edition', async () => {
       // Mock Prisma findMany method to return an empty array
       (prismaService.presentation.findMany as jest.Mock).mockResolvedValue([]);
-    
+
       // Call the method
       const presentations = await service.findAllByEventEditionId('event1');
-    
+
       // Assertions
       expect(presentations).toHaveLength(0);
       expect(prismaService.presentation.findMany).toHaveBeenCalledWith({
@@ -472,7 +488,7 @@ describe('PresentationService', () => {
           },
         },
       });
-    });    
+    });
   });
 
   describe('findOne', () => {
@@ -490,7 +506,7 @@ describe('PresentationService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-    
+
       const mockPresentationBlock = {
         id: 'block1',
         eventEditionId: 'event1',
@@ -503,7 +519,7 @@ describe('PresentationService', () => {
         title: 'Block Title',
         speakerName: 'Speaker Name',
       };
-    
+
       const mockEventEdition = {
         id: 'event1',
         presentationDuration: 30,
@@ -521,21 +537,21 @@ describe('PresentationService', () => {
         isActive: true,
         isEvaluationRestrictToLoggedUsers: false,
       };
-    
+
       // Mock Prisma methods
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
         mockPresentation,
       );
-      (prismaService.presentationBlock.findUnique as jest.Mock).mockResolvedValue(
-        mockPresentationBlock,
-      );
+      (
+        prismaService.presentationBlock.findUnique as jest.Mock
+      ).mockResolvedValue(mockPresentationBlock);
       (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue(
         mockEventEdition,
       );
-    
+
       // Call the method
       const presentation = await service.findOne('1');
-    
+
       // Assertions
       expect(presentation).toBeInstanceOf(PresentationResponseDto);
       expect(prismaService.presentation.findUnique).toHaveBeenCalledWith({
@@ -555,7 +571,7 @@ describe('PresentationService', () => {
       expect(prismaService.eventEdition.findUnique).toHaveBeenCalledWith({
         where: { id: 'event1' },
       });
-    });    
+    });
 
     it('should throw an error if presentation not found', async () => {
       (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
@@ -928,6 +944,238 @@ describe('PresentationService', () => {
         where: { mainAuthorId: userId },
         include: { Presentation: true },
       });
+    });
+  });
+
+  describe('listAdvisedPresentations', () => {
+    const mockUserId = 'user123';
+
+    it('should return advised presentations for a professor', async () => {
+      const mockUser = {
+        id: 'd0219835-245e-47b5-84ce-1e3369cf3c61',
+        name: 'Professor Default',
+        email: 'profdefault@example.com',
+        registrationNumber: null,
+        photoFilePath: null,
+        profile: Profile.Professor,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date('2024-12-27T15:50:13.008Z'),
+        updatedAt: new Date('2024-12-27T15:50:13.008Z'),
+        isVerified: false,
+        password: 'a',
+      };
+      const mockSubmissions = [
+        {
+          id: 'ebd08e6a-78e3-46c2-8acb-0b2f399f886a',
+          advisorId: '21b47928-172e-4014-a505-95c9d7e85350',
+          mainAuthorId: '0c7a2281-2761-492c-8522-74888c6ad039',
+          eventEditionId: 'c63b4c5e-8dec-4457-a776-9445411629f0',
+          title: 'The Impact of AI in Modern Research',
+          abstract: 'A study on how AI impacts modern research methodologies.',
+          pdfFile: 'path/to/document1.pdf',
+          phoneNumber: '123-456-7890',
+          proposedPresentationBlockId: null,
+          proposedPositionWithinBlock: null,
+          proposedStartTime: null,
+          coAdvisor: null,
+          status: SubmissionStatus.Submitted,
+          createdAt: new Date('2024-12-27T15:50:13.022Z'),
+          updatedAt: new Date('2024-12-27T15:50:13.022Z'),
+          Presentation: [{ id: 'pres1', title: 'Presentation 1' }],
+        },
+        {
+          id: '0cd25aa5-50d4-4f95-bc6a-f8cbcac3fb4c',
+          advisorId: 'b9d9666d-86fa-4fe7-98a7-df80f2f8bcc9',
+          mainAuthorId: 'ac3c4dca-c531-44f2-b7f8-3e606d37baf1',
+          eventEditionId: 'c63b4c5e-8dec-4457-a776-9445411629f0',
+          title: 'Quantum Computing Advances',
+          abstract: 'Exploring the latest advancements in quantum computing.',
+          pdfFile: 'path/to/document2.pdf',
+          phoneNumber: '123-456-7891',
+          proposedPresentationBlockId: null,
+          proposedPositionWithinBlock: null,
+          proposedStartTime: null,
+          coAdvisor: null,
+          status: SubmissionStatus.Submitted,
+          createdAt: new Date('2024-12-27T15:50:13.024Z'),
+          updatedAt: new Date('2024-12-27T15:50:13.024Z'),
+          Presentation: [{ id: 'pres2', title: 'Presentation 2' }],
+        },
+      ];
+
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(mockUser);
+      jest
+        .spyOn(prismaService.submission, 'findMany')
+        .mockResolvedValue(mockSubmissions);
+
+      const result = await service.listAdvisedPresentations(mockUserId);
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { advisorId: mockUserId },
+        include: { Presentation: true },
+      });
+      expect(result).toEqual([
+        { id: 'pres1', title: 'Presentation 1' },
+        { id: 'pres2', title: 'Presentation 2' },
+      ]);
+    });
+
+    it('should throw AppException if user is not a professor', async () => {
+      const mockUser = {
+        id: 'ac3c4dca-c531-44f2-b7f8-3e606d37baf1',
+        name: 'Doctoral Student Default',
+        email: 'docdefault@example.com',
+        registrationNumber: null,
+        photoFilePath: null,
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date('2024-12-27T15:50:13.008Z'),
+        updatedAt: new Date('2024-12-27T15:50:13.008Z'),
+        isVerified: false,
+        password: 'a',
+      };
+
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(mockUser);
+
+      await expect(
+        service.listAdvisedPresentations(mockUserId),
+      ).rejects.toThrow(new AppException('Usuário não é um professor.', 403));
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).not.toHaveBeenCalled();
+    });
+
+    it('should return an empty array if no submissions found', async () => {
+      const mockUser = {
+        id: 'd0219835-245e-47b5-84ce-1e3369cf3c61',
+        name: 'Professor Default',
+        email: 'profdefault@example.com',
+        registrationNumber: null,
+        photoFilePath: null,
+        profile: Profile.Professor,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date('2024-12-27T15:50:13.008Z'),
+        updatedAt: new Date('2024-12-27T15:50:13.008Z'),
+        isVerified: false,
+        password: 'a',
+      };
+
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(mockUser);
+      jest.spyOn(prismaService.submission, 'findMany').mockResolvedValue([]);
+
+      const result = await service.listAdvisedPresentations(mockUserId);
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { advisorId: mockUserId },
+        include: { Presentation: true },
+      });
+      expect(result).toEqual([]);
+    });
+
+    it('should handle submissions without presentations', async () => {
+      const mockUser = {
+        id: 'd0219835-245e-47b5-84ce-1e3369cf3c61',
+        name: 'Professor Default',
+        email: 'profdefault@example.com',
+        registrationNumber: null,
+        photoFilePath: null,
+        profile: Profile.Professor,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date('2024-12-27T15:50:13.008Z'),
+        updatedAt: new Date('2024-12-27T15:50:13.008Z'),
+        isVerified: false,
+        password: 'a',
+      };
+
+      const mockSubmissions = [
+        {
+          id: 'ebd08e6a-78e3-46c2-8acb-0b2f399f886a',
+          advisorId: '21b47928-172e-4014-a505-95c9d7e85350',
+          mainAuthorId: '0c7a2281-2761-492c-8522-74888c6ad039',
+          eventEditionId: 'c63b4c5e-8dec-4457-a776-9445411629f0',
+          title: 'The Impact of AI in Modern Research',
+          abstract: 'A study on how AI impacts modern research methodologies.',
+          pdfFile: 'path/to/document1.pdf',
+          phoneNumber: '123-456-7890',
+          proposedPresentationBlockId: null,
+          proposedPositionWithinBlock: null,
+          proposedStartTime: null,
+          coAdvisor: null,
+          status: SubmissionStatus.Submitted,
+          createdAt: new Date('2024-12-27T15:50:13.022Z'),
+          updatedAt: new Date('2024-12-27T15:50:13.022Z'),
+          Presentation: [],
+        },
+        {
+          id: '0cd25aa5-50d4-4f95-bc6a-f8cbcac3fb4c',
+          advisorId: 'b9d9666d-86fa-4fe7-98a7-df80f2f8bcc9',
+          mainAuthorId: 'ac3c4dca-c531-44f2-b7f8-3e606d37baf1',
+          eventEditionId: 'c63b4c5e-8dec-4457-a776-9445411629f0',
+          title: 'Quantum Computing Advances',
+          abstract: 'Exploring the latest advancements in quantum computing.',
+          pdfFile: 'path/to/document2.pdf',
+          phoneNumber: '123-456-7891',
+          proposedPresentationBlockId: null,
+          proposedPositionWithinBlock: null,
+          proposedStartTime: null,
+          coAdvisor: null,
+          status: SubmissionStatus.Submitted,
+          createdAt: new Date('2024-12-27T15:50:13.024Z'),
+          updatedAt: new Date('2024-12-27T15:50:13.024Z'),
+          Presentation: [{ id: 'pres2', title: 'Presentation 2' }],
+        },
+      ];
+
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(mockUser);
+      jest
+        .spyOn(prismaService.submission, 'findMany')
+        .mockResolvedValue(mockSubmissions);
+
+      const result = await service.listAdvisedPresentations(mockUserId);
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).toHaveBeenCalledWith({
+        where: { advisorId: mockUserId },
+        include: { Presentation: true },
+      });
+      expect(result).toEqual([{ id: 'pres2', title: 'Presentation 2' }]);
+    });
+
+    it('should throw an error if user is not found', async () => {
+      jest
+        .spyOn(prismaService.userAccount, 'findUnique')
+        .mockResolvedValue(null);
+
+      await expect(
+        service.listAdvisedPresentations(mockUserId),
+      ).rejects.toThrow();
+
+      expect(prismaService.userAccount.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+      });
+      expect(prismaService.submission.findMany).not.toHaveBeenCalled();
     });
   });
 
