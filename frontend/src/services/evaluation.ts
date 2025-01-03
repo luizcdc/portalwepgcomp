@@ -12,7 +12,7 @@ export const evaluationApi = {
     },
 
     getEvaluationByUser: async (userId: string) => {
-        const { data } = await instance.get(`${baseUrl}?userId=${userId}`);
+        const { data } = await instance.get(`${baseUrl}/user`);
 
         return data;
     },
