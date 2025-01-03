@@ -4,7 +4,7 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
 
-export default function PerfilOuvinte() {
+export default function PerfilProfessor() {
   const { logout } = useContext(AuthContext);
   return (
     <li className="dropdown">
@@ -23,16 +23,19 @@ export default function PerfilOuvinte() {
           </Link>
         </li> */}
         <li>
+          <Link className="dropdown-item" href="#">
+            Minhas bancas
+          </Link>
+        </li>
+        <li>
           <Link className="dropdown-item" href="/favoritos">
             Favoritos
           </Link>
         </li>
         <li>
-          <li>
-            <Link className="dropdown-item" href="/home" onClick={logout}>
-              Sair
-            </Link>
-          </li>
+          <Link className="dropdown-item" href="/home" onClick={logout}>
+            Sair
+          </Link>
         </li>
       </ul>
     </li>

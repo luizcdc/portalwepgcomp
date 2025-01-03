@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import "./protectedLayout.scss";
 import { useRouter } from "next/navigation";
 import { useEdicao } from "@/hooks/useEdicao";
-import { getUserLocalStorage } from '@/context/AuthProvider/util';
-import { useSweetAlert } from '@/hooks/useAlert';
+import { getUserLocalStorage } from "@/context/AuthProvider/util";
+import { useSweetAlert } from "@/hooks/useAlert";
 
 export const ProtectedLayout = ({
   children,
@@ -11,7 +11,7 @@ export const ProtectedLayout = ({
   children: React.ReactNode;
 }) => {
   const router = useRouter();
-  
+
   const { showAlert } = useSweetAlert();
 
   const { getEdicaoByYear } = useEdicao();
@@ -21,13 +21,12 @@ export const ProtectedLayout = ({
     const signed = getUserLocalStorage();
     if (!signed) {
       setTimeout(() => {
-        router.push("/Login");
+        router.push("/login");
       }, 3000);
-      
+
       showAlert({
         icon: "error",
-        text:
-          "Ops! Você não possui acesso e será redirecionado para o login!",
+        text: "Ops! Você não possui acesso e será redirecionado para o login!",
         confirmButtonText: "Retornar",
       });
     }

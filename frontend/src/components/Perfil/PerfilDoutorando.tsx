@@ -23,17 +23,17 @@ export default function PerfilDoutorando() {
           </Link>
         </li> */}
         <li>
-          <Link className="dropdown-item" href="/MinhasApresentacoes">
-            Apresentação
+          <Link className="dropdown-item" href="/minha-apresentacao">
+            Minha Apresentação
           </Link>
         </li>
         <li>
-          <Link className="dropdown-item" href="/Favoritos">
+          <Link className="dropdown-item" href="/favoritos">
             Favoritos
           </Link>
         </li>
         <li>
-          <Link className="dropdown-item" href="/Home" onClick={logout}>
+          <Link className="dropdown-item" href="/home" onClick={logout}>
             Sair
           </Link>
         </li>

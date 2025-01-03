@@ -114,6 +114,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           icon: "error",
           title: "Erro ao cadastrar sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -157,6 +158,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           icon: "error",
           title: "Erro ao atualizar sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -189,6 +191,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           icon: "error",
           title: "Erro ao deletar sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante a deleção. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -236,6 +239,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           icon: "error",
           title: "Erro na troca da ordem das apresentações da sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",

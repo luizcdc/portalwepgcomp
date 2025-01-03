@@ -1,7 +1,7 @@
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
 const baseUrl = "/s3-utils";
-const instance = axiosInstance();
+const instance = axiosInstance;
 
 export const submissionFileApi = {
     sendFile: async (file: File, idUser: string) => {
