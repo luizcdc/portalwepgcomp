@@ -139,8 +139,8 @@ export default function ScheduleSection() {
           ))}
         </div>
 
-        {roomsList.map((item) => (
-          <div className="programacao-sala">
+        {roomsList.map((item, index) => (
+          <div className="programacao-sala" key={index}>
             <p
               className="fw-bold text-white m-0 text-center w-100"
               style={{
