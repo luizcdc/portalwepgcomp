@@ -25,6 +25,7 @@ export default function Apresentacoes() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
   const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(false);
+  const [formEdited, setFormEdited] = useState<any[]>([]);
 
   useEffect(() => {
     const params = {
@@ -75,6 +76,11 @@ export default function Apresentacoes() {
     }
   };
 
+  const handleEdit = async (submissionId: string) => {
+    const submission = sessionsListValues.find(s => s.id === submissionId);
+    setFormEdited(submission);
+  }
+
   return (
     <SubmissionFileProvider>
       <SubmissionProvider>
@@ -92,10 +98,11 @@ export default function Apresentacoes() {
               subtitle: submission.abstract,
             }))}
             isLoading={loadingSubmissionList}
+            onEdit={handleEdit}
             onDelete={handleDelete}
             isAddButtonDisabled={isAddButtonDisabled}
           />
-          <ModalEditarCadastro />
+          <ModalEditarCadastro formEdited={formEdited} />
         </div>
       </SubmissionProvider>
     </SubmissionFileProvider>
