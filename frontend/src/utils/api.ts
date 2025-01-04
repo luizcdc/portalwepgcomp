@@ -1,6 +1,7 @@
 "use client";
 
 
+import { logout } from '@/context/AuthProvider/util';
 import Axios from "axios";
 
 const hostname = typeof window !== "undefined" ? window.location.hostname : "";
@@ -33,5 +34,29 @@ axiosInstance.interceptors.request.use((config) => {
 }, (error) => {
   return Promise.reject(error);
 });
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Reject promise if usual error
+    if (error.response.status !== 401) {
+      return Promise.reject(error);
+    }
+
+    /*
+     * When response code is 401, try to refresh the token.
+     * Eject the interceptor so it doesn't loop in case
+     * token refresh causes the 401 response.
+     *
+     * Must be re-attached later on or the token refresh will only happen once
+     */
+    logout();
+    setTimeout(() => {
+      window.location.href = "Login";
+    }, 3000);
+    return Promise.reject(error); // Re-attach the interceptor by running the method
+  }
+);
+
 
 export default axiosInstance;
