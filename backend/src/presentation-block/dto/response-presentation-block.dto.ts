@@ -46,8 +46,13 @@ export class ResponseSubmissionDto {
   createdAt: Date;
   updatedAt: Date;
   mainAuthor: ResponseUserDto;
+  advisor: ResponseUserDto | null;
 
-  constructor(submission: any, mainAuthor: { id: string; name: string; email: string }) {
+  constructor(
+    submission: any, 
+    mainAuthor: { id: string; name: string; email: string },
+    advisor: { id: string; name: string; email: string } | null,
+  ) {
     this.id = submission.id;
     this.advisorId = submission.advisorId;
     this.mainAuthorId = submission.mainAuthorId;
@@ -63,12 +68,14 @@ export class ResponseSubmissionDto {
     this.createdAt = submission.createdAt;
     this.updatedAt = submission.updatedAt;
     this.mainAuthor = new ResponseUserDto(mainAuthor);
+    this.advisor = advisor ? new ResponseUserDto(advisor) : null;
   }
 }
 
 async function createResponsePresentationDto(presentation: any, userLoader: (id: string) => Promise<any>) {
   const mainAuthor = await userLoader(presentation.submission.mainAuthorId);
-  const submissionDto = new ResponseSubmissionDto(presentation.submission, mainAuthor);
+  const advisor = presentation.submission.advisorId ? await userLoader(presentation.submission.advisorId) : null;
+  const submissionDto = new ResponseSubmissionDto(presentation.submission, mainAuthor, advisor);
   return new ResponsePresentationDto(presentation, submissionDto);
 }
 
@@ -166,11 +173,9 @@ export class ResponsePresentationBlockDto {
 
   static async create(block: any, userLoader: (id: string) => Promise<any>): Promise<ResponsePresentationBlockDto> {
     const presentations = await Promise.all(
-      (block.presentations || []).map(async (presentation: any) => {
-        const mainAuthor = await userLoader(presentation.submission.mainAuthorId);
-        const submissionDto = new ResponseSubmissionDto(presentation.submission, mainAuthor);
-        return new ResponsePresentationDto(presentation, submissionDto);
-      })
+      (block.presentations || []).map(async (presentation: any) => 
+        createResponsePresentationDto(presentation, userLoader)
+    )
     );
 
     const panelists = (block.panelists || []).map((panelist: any) => new ResponsePanelistDto(panelist));
