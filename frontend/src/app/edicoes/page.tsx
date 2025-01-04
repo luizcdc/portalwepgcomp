@@ -1,48 +1,31 @@
 "use client";
 import { useEffect, useState } from "react";
 import Listagem from "@/templates/Listagem/Listagem";
-import { EventoMock } from "@/mocks/Evento";
 import { useRouter } from "next/navigation";
 import { useEdicao } from "@/hooks/useEdicao";
-import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+import { useEffect, useState } from "react";
+import { edicaoApi } from "@/services/edicao";
 
 export default function Edicoes() {
-  const { title, userArea } = EventoMock;
-  const { deleteEdicao, loadingEdicoesList, edicoesList, getEdicaoById } =
-    useEdicao();
-  const [searchValue, setSearchValue] = useState<string>("");
-  const [sessionsListValues, setSessionsListValues] = useState<Edicao[]>([]);
+  const { deleteEdicao, loadingEdicoesList } = useEdicao();
   const router = useRouter();
-
-  const handleDelete = async (edicaoId: string) => {
-    await deleteEdicao(edicaoId);
-    const updatedEdicao = edicoesList.filter(
-      (edicao) => edicao.id !== edicaoId
-    );
-
-    setSessionsListValues(updatedEdicao);
-  };
+  const [edicoes, setEdicoes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (edicoesList.length > 0) {
-      setSessionsListValues(edicoesList);
-      console.log(edicoesList);
-    }
-  }, [edicoesList]);
+    const fetchEdicoes = async () => {
+      try {
+        const data = await edicaoApi.listEdicao();
+        setEdicoes(data);
+      } catch (error) {
+        console.error("Erro ao carregar as edições:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    const eventEditionId = getEventEditionIdStorage() ?? "";
-
-    getEdicaoById(eventEditionId);
+    fetchEdicoes();
   }, []);
-
-  useEffect(() => {
-    const filteredSessions = edicoesList.filter((v) =>
-      v.name.toLowerCase().includes(searchValue.trim().toLowerCase())
-    );
-    setSessionsListValues(filteredSessions);
-    console.log(filteredSessions);
-  }, [searchValue, edicoesList]);
 
   return (
     <div
@@ -55,13 +38,11 @@ export default function Edicoes() {
         <p>Carregando edições...</p>
       ) : (
         <Listagem
-          title={title}
-          labelAddButton={userArea.add}
-          searchPlaceholder={userArea.search}
-          searchValue={searchValue}
-          onChangeSearchValue={(value) => setSearchValue(value)}
-          cardsList={sessionsListValues}
-          onDelete={handleDelete}
+          title={"Edições do Evento"}
+          labelAddButton={"Cadastrar Edição"}
+          searchPlaceholder={"Pesquise por edição"}
+          cardsList={edicoes}
+          onDelete={(id: string) => deleteEdicao(id)}
           onAddButtonClick={() => router.push("/cadastro-edicao")}
         />
       )}

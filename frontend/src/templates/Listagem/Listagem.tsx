@@ -103,11 +103,11 @@ export default function Listagem({
             cardsList?.map((card) => (
               <CardListagem
                 key={card.id}
-                title={card.title ?? "Sem título"}
+                title={card.name ?? "Sem título"}
                 subtitle={
                   title === "Sessões"
                     ? `${formatDate(card.startTime)}`
-                    : card.subtitle
+                    : card.description
                 }
                 generalButtonLabel={generalButtonLabel}
                 idGeneralModal={
