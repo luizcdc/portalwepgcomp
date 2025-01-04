@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-//import { premiacoesAvaliadoresMock, premiacoesBancaMock, premiacoesPublicoMock } from '@/mocks/Premiacao';
 import PremiacaoCategoria from "./PremiacaoCategoria";
 
 import "./style.scss";
