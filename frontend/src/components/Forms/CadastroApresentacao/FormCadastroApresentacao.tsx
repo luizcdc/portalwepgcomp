@@ -137,6 +137,7 @@ export function FormCadastroApresentacao({
         await updateSubmissionById(formEdited.id, submissionData);
       } else {
         await createSubmission(submissionData);
+        router.push("/minha-apresentacao");
       }
 
       setTimeout(() => {
