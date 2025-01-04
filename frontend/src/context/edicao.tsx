@@ -51,11 +51,8 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
     try {
       const response = await edicaoApi.listEdicao();
       setEdicoesList(response);
-      setEdicao(response[0]);
-      return response;
     } catch (err: any) {
       setEdicoesList([]);
-      setEdicao(null);
       showAlert({
         icon: "error",
         title: "Erro ao listar apresentações",
