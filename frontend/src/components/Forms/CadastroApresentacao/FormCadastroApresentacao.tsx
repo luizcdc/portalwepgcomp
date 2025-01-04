@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UUID } from "crypto";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useForm } from "react-hook-form";
@@ -47,7 +47,6 @@ export function FormCadastroApresentacao({
   formEdited
 }: Readonly<FormCadastroApresentacao>) {
   const router = useRouter();
-  const pathname = usePathname();
   const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
   const { createSubmission, updateSubmissionById } = useContext(SubmissionContext);
@@ -287,7 +286,7 @@ export function FormCadastroApresentacao({
           data-bs-toggle="collapse"
           className='btn text-white fs-5 submit-button'
         >
-          {pathname.includes("Cadastro") ? "Cadastrar" : "Alterar"}
+          {formEdited && formEdited.id ? "Alterar" : "Cadastrar"}
         </button>
       </div>
     </form>
