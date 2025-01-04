@@ -71,7 +71,8 @@ const formSessaoApresentacoesSchema = z.object({
 
 export default function FormSessaoApresentacoes() {
   const { formApresentacoesFields, confirmButton } = ModalSessaoMock;
-  const { createSession, updateSession, sessao, setSessao, listRooms, roomsList } = useSession();
+  const { createSession, updateSession, sessao, setSessao, roomsList } =
+    useSession();
   const { userList } = useUsers();
   const { submissionList } = useSubmission();
   const { Edicao } = useEdicao();
@@ -105,10 +106,7 @@ export default function FormSessaoApresentacoes() {
     defaultValues,
   });
 
-  const salasOptions = formatOptions(
-    roomsList,
-    "name"
-  );
+  const salasOptions = formatOptions(roomsList, "name");
 
   const apresentacoesOptions = submissionList?.map((v) => {
     return {
@@ -194,8 +192,6 @@ export default function FormSessaoApresentacoes() {
       setValue("inicio", "");
       setValue("avaliadores", []);
     }
-    if(Edicao?.id)
-      listRooms(Edicao?.id);
   }, [sessao?.id]);
 
   return (

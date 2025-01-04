@@ -65,7 +65,8 @@ const formSessaoGeralSchema = z.object({
 
 export default function FormSessaoGeral() {
   const { formGeralFields, confirmButton } = ModalSessaoMock;
-  const { createSession, updateSession, sessao, setSessao, listRooms, roomsList  } = useSession();
+  const { createSession, updateSession, sessao, setSessao, roomsList } =
+    useSession();
   const { Edicao } = useEdicao();
 
   type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
@@ -161,8 +162,6 @@ export default function FormSessaoGeral() {
       setValue("inicio", "");
       setValue("final", "");
     }
-    if(Edicao?.id)
-      listRooms(Edicao?.id);
   }, [sessao?.id]);
 
   return (
