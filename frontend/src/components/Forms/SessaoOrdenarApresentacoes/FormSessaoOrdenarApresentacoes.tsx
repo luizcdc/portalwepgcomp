@@ -10,7 +10,7 @@ import { z } from "zod";
 import "./style.scss";
 import { useSession } from "@/hooks/useSession";
 import { useEffect, useState } from "react";
-import { useEdicao } from "@/hooks/useEdicao";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 const formSessaoOrdenarApresentacoesSchema = z.object({
   apresentacao1: z
@@ -31,7 +31,6 @@ export default function FormSessaoOrdenarApresentacoes() {
   const { confirmButton } = ModalSessaoMock;
 
   const { swapPresentationsOnSession, sessao } = useSession();
-  const { Edicao } = useEdicao();
 
   type FormSessaoOrdenarApresentacoesSchema = z.infer<
     typeof formSessaoOrdenarApresentacoesSchema
@@ -58,11 +57,13 @@ export default function FormSessaoOrdenarApresentacoes() {
   const handleFormSessaoApresentacoes = (
     data: FormSessaoOrdenarApresentacoesSchema
   ) => {
+    const eventEditionId = getEventEditionIdStorage();
+
     if (!data.apresentacao1 || !data.apresentacao2) {
-      throw new Error("Uma dos campos está vazio");
+      throw new Error("Um dos campos está vazio");
     }
 
-    swapPresentationsOnSession(sessao?.id || "", Edicao?.id ?? "", {
+    swapPresentationsOnSession(sessao?.id || "", eventEditionId ?? "", {
       presentation1Id: data.apresentacao1,
       presentation2Id: data.apresentacao2,
     }).then((status) => (status ? reset() : undefined));

@@ -9,14 +9,16 @@ import { SessoesMock } from "@/mocks/Sessoes";
 import Listagem from "@/templates/Listagem/Listagem";
 import ModalSessaoOrdenarApresentacoes from "@/components/Modals/ModalSessaoOrdenarApresentacoes/ModalSessaoOrdenarApresentacoes";
 import { useUsers } from "@/hooks/useUsers";
-import { useEdicao } from "@/hooks/useEdicao";
 import { useSubmission } from "@/hooks/useSubmission";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Sessoes() {
   const { title, userArea } = SessoesMock;
   const { listSessions, sessoesList, deleteSession, setSessao } = useSession();
   const { getUsers } = useUsers();
   const { getSubmissions } = useSubmission();
+
   const { Edicao } = useEdicao();
 
   const [searchValue, setSearchValue] = useState<string>("");
@@ -32,10 +34,12 @@ export default function Sessoes() {
   };
 
   useEffect(() => {
-    listSessions(Edicao?.id ?? "");
+    const eventEditionId = getEventEditionIdStorage();
+
+    listSessions(eventEditionId ?? "");
     getUsers({ profile: "Professor" });
     getSubmissions({
-      eventEditionId: Edicao?.id ?? "",
+      eventEditionId: eventEditionId ?? "",
       withouPresentation: true,
     });
   }, []);

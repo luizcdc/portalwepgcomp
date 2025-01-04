@@ -12,6 +12,7 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { usePresentation } from "@/hooks/usePresentation";
 import LoadingPage from "@/components/LoadingPage";
+import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 
 export default function Avaliacao({ params }) {
   const [saveEvaluation, setSaveEvaluation] = useState<
@@ -75,88 +76,96 @@ export default function Avaliacao({ params }) {
         setSaveEvaluation(saveEvaluationValues);
       }
     }
-  }, [presentationList.length, evaluations?.length, evaluationCriteria?.length]);
+  }, [
+    presentationList.length,
+    evaluations?.length,
+    evaluationCriteria?.length,
+  ]);
 
   return (
-    <div
-      className="d-flex flex-column"
-      style={{
-        gap: "10px",
-      }}
-    >
-      <Banner title="Avaliação" />
-      {(loadingEvaluation || !presentation?.submission?.title) && (
-        <LoadingPage />
-      )}
-      {!loadingEvaluation && presentation?.submission?.title && (
-        <div className="avalieApresentacao">
-          <div className="avalieElementos">
-            <div className="avalieIdentificador">
-              <div className="avalieApresentador">
-                {presentation?.submission?.mainAuthor?.name}
-              </div>
-              <div className="avaliePesquisa">
-                {presentation?.submission?.title}
+    <ProtectedLayout>
+      <div
+        className="d-flex flex-column"
+        style={{
+          gap: "10px",
+        }}
+      >
+        <Banner title="Avaliação" />
+        {(loadingEvaluation || !presentation?.submission?.title) && (
+          <LoadingPage />
+        )}
+        {!loadingEvaluation && presentation?.submission?.title && (
+          <div className="avalieApresentacao">
+            <div className="avalieElementos">
+              <div className="avalieIdentificador">
+                <div className="avalieApresentador">
+                  {presentation?.submission?.mainAuthor?.name}
+                </div>
+                <div className="avaliePesquisa">
+                  {presentation?.submission?.title}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="avaliePerguntas">
-            {saveEvaluation?.map((evaluationData, devIndex) => (
-              <div
-                key={evaluationData?.criteria?.id}
-                className="avalieQuestion"
-              >
-                <div className="avalieTexto">
-                  {`${devIndex + 1}. ${evaluationData?.criteria?.description}`}
-                </div>
-                <Rating
-                  value={evaluationData?.evaluation?.score ?? 0}
-                  onChange={(value) => {
-                    setSaveEvaluation((oldValues) =>
-                      oldValues?.map((item, index) =>
-                        index === devIndex
-                          ? {
-                              ...item,
-                              evaluation: {
-                                userId: user?.id ?? "",
-                                submissionId:
-                                  presentation?.submission?.id ?? "",
-                                evaluationCriteriaId: item.criteria?.id ?? "",
-                                score: value,
-                              },
-                            }
-                          : item
-                      )
-                    );
-                  }}
-                />
-              </div>
-            ))}
-            {!saveEvaluation?.length && (
-              <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
-                <h4 className="empty-list mb-0">
-                  <Image
-                    src="/assets/images/empty_box.svg"
-                    alt="Lista vazia"
-                    width={90}
-                    height={90}
+            <div className="avaliePerguntas">
+              {saveEvaluation?.map((evaluationData, devIndex) => (
+                <div
+                  key={evaluationData?.criteria?.id}
+                  className="avalieQuestion"
+                >
+                  <div className="avalieTexto">
+                    {`${devIndex + 1}. ${
+                      evaluationData?.criteria?.description
+                    }`}
+                  </div>
+                  <Rating
+                    value={evaluationData?.evaluation?.score ?? 0}
+                    onChange={(value) => {
+                      setSaveEvaluation((oldValues) =>
+                        oldValues?.map((item, index) =>
+                          index === devIndex
+                            ? {
+                                ...item,
+                                evaluation: {
+                                  userId: user?.id ?? "",
+                                  submissionId:
+                                    presentation?.submission?.id ?? "",
+                                  evaluationCriteriaId: item.criteria?.id ?? "",
+                                  score: value,
+                                },
+                              }
+                            : item
+                        )
+                      );
+                    }}
                   />
-                  Essa lista ainda está vazia
-                </h4>
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+              {!saveEvaluation?.length && (
+                <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+                  <h4 className="empty-list mb-0">
+                    <Image
+                      src="/assets/images/empty_box.svg"
+                      alt="Lista vazia"
+                      width={90}
+                      height={90}
+                    />
+                    Essa lista ainda está vazia
+                  </h4>
+                </div>
+              )}
+            </div>
 
-          <button
-            className="avalieButton"
-            onClick={sendEvaluation}
-            disabled={loadingEvaluation}
-          >
-            Enviar
-          </button>
-        </div>
-      )}
-    </div>
+            <button
+              className="avalieButton"
+              onClick={sendEvaluation}
+              disabled={loadingEvaluation}
+            >
+              Enviar
+            </button>
+          </div>
+        )}
+      </div>
+    </ProtectedLayout>
   );
 }
