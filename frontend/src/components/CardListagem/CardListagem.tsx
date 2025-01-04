@@ -52,7 +52,11 @@ export default function CardListagem({
           <Star color={"#F17F0C"} />
         ) : (
           <button data-bs-toggle="modal" data-bs-target={`#${idModalEdit}`}
-            onClick={() => { onEdit && onEdit() }}>
+            onClick={() => {  
+              if (onEdit) {
+                onEdit();
+              }
+            }}>
             <Image 
               src="/assets/images/edit.svg"
               alt="edit button"
