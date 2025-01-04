@@ -17,7 +17,7 @@ export class ResponsePresentationDto {
   updatedAt: Date;
   submission: ResponseSubmissionDto;
 
-  constructor(presentation: any) {
+  constructor(presentation: any, submissionDto: ResponseSubmissionDto) {
     this.id = presentation.id;
     this.submissionId = presentation.submissionId;
     this.presentationBlockId = presentation.presentationBlockId;
@@ -26,7 +26,7 @@ export class ResponsePresentationDto {
     this.startTime = presentation.startTime;
     this.createdAt = presentation.createdAt;
     this.updatedAt = presentation.updatedAt;
-    this.submission = new ResponseSubmissionDto(presentation.submission);
+    this.submission = submissionDto;
   }
 }
 
@@ -45,8 +45,9 @@ export class ResponseSubmissionDto {
   status: PresentationStatus;
   createdAt: Date;
   updatedAt: Date;
+  mainAuthor: ResponseUserDto;
 
-  constructor(submission: any) {
+  constructor(submission: any, mainAuthor: { id: string; name: string; email: string }) {
     this.id = submission.id;
     this.advisorId = submission.advisorId;
     this.mainAuthorId = submission.mainAuthorId;
@@ -61,7 +62,14 @@ export class ResponseSubmissionDto {
     this.status = submission.status;
     this.createdAt = submission.createdAt;
     this.updatedAt = submission.updatedAt;
+    this.mainAuthor = new ResponseUserDto(mainAuthor);
   }
+}
+
+async function createResponsePresentationDto(presentation: any, userLoader: (id: string) => Promise<any>) {
+  const mainAuthor = await userLoader(presentation.submission.mainAuthorId);
+  const submissionDto = new ResponseSubmissionDto(presentation.submission, mainAuthor);
+  return new ResponsePresentationDto(presentation, submissionDto);
 }
 
 export class ResponsePanelistDto {
@@ -131,7 +139,7 @@ export class ResponsePresentationBlockDto {
   panelists: ResponsePanelistDto[];
   availablePositionsWithInBlock: availablePositionsWithInBlockDto[];
 
-  constructor(block: any) {
+  constructor(block: any, presentations: ResponsePresentationDto[], panelists: ResponsePanelistDto[]) {
     this.id = block.id;
     this.eventEditionId = block.eventEditionId;
     this.roomId = block.roomId;
@@ -142,19 +150,9 @@ export class ResponsePresentationBlockDto {
     this.duration = block.duration;
     this.createdAt = block.createdAt;
     this.updatedAt = block.updatedAt;
+    this.presentations = presentations;
+    this.panelists = panelists;
 
-    // Add null checks
-    this.presentations = block.presentations
-      ? block.presentations.map(
-          (presentation) => new ResponsePresentationDto(presentation),
-        )
-      : [];
-
-    this.panelists = block.panelists
-      ? block.panelists.map((panelist) => new ResponsePanelistDto(panelist))
-      : [];
-
-    // Use the correct property name from the previous logs
     this.availablePositionsWithInBlock = block.availablePositionsWithinBlock
       ? block.availablePositionsWithinBlock.map(
           (pos) =>
@@ -164,5 +162,19 @@ export class ResponsePresentationBlockDto {
             ),
         )
       : [];
+  }
+
+  static async create(block: any, userLoader: (id: string) => Promise<any>): Promise<ResponsePresentationBlockDto> {
+    const presentations = await Promise.all(
+      (block.presentations || []).map(async (presentation: any) => {
+        const mainAuthor = await userLoader(presentation.submission.mainAuthorId);
+        const submissionDto = new ResponseSubmissionDto(presentation.submission, mainAuthor);
+        return new ResponsePresentationDto(presentation, submissionDto);
+      })
+    );
+
+    const panelists = (block.panelists || []).map((panelist: any) => new ResponsePanelistDto(panelist));
+    
+    return new ResponsePresentationBlockDto(block, presentations, panelists);
   }
 }

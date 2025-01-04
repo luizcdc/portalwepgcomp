@@ -642,4 +642,12 @@ export class PresentationBlockService {
       availablePositionsWithinBlock,
     };
   }
+
+  async findUserById(userId: string) {
+    return await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+  }
 }
