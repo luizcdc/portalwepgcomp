@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import ModalEditarCadastro from '@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro';
+import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
-import { SubmissionFileProvider } from '@/context/submissionFile';
+import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubmission } from "@/hooks/useSubmission";
 import { MinhasApresentacoesMock } from "@/mocks/MinhasApresentacoes";
@@ -19,12 +19,18 @@ export default function MinhasApresentacoes() {
   const { user } = useAuth();
   const router = useRouter();
 
-  const { submissionList, getSubmissions, loadingSubmissionList, deleteSubmissionById } = useSubmission();
+  const {
+    submissionList,
+    getSubmissions,
+    loadingSubmissionList,
+    deleteSubmissionById,
+  } = useSubmission();
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
   const [formEdited, setFormEdited] = useState<any[]>([]);
-  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(false);
+  const [isAddButtonDisabled, setIsAddButtonDisabled] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const params = {
@@ -36,7 +42,9 @@ export default function MinhasApresentacoes() {
 
   useEffect(() => {
     const filteredSessions = submissionList.filter((submission) => {
-      const searchMatch = submission.title.toLowerCase().includes(searchValue.trim().toLowerCase());
+      const searchMatch = submission.title
+        .toLowerCase()
+        .includes(searchValue.trim().toLowerCase());
 
       if (user?.level === "Superadmin") return searchMatch;
 
@@ -62,7 +70,9 @@ export default function MinhasApresentacoes() {
 
       setSessionsListValues(updatedSubmissions);
     } else {
-      const submission = submissionList.find((submission) => submission.id === submissionId);
+      const submission = submissionList.find(
+        (submission) => submission.id === submissionId
+      );
 
       if (submission?.mainAuthorId === user?.id) {
         await deleteSubmissionById(submissionId);
@@ -78,9 +88,9 @@ export default function MinhasApresentacoes() {
   };
 
   const handleEdit = async (submissionId: string) => {
-    const submission = sessionsListValues.find(s => s.id === submissionId);
+    const submission = sessionsListValues.find((s) => s.id === submissionId);
     setFormEdited(submission);
-  }
+  };
 
   return (
     <SubmissionFileProvider>
@@ -102,7 +112,7 @@ export default function MinhasApresentacoes() {
             onEdit={handleEdit}
             isAddButtonDisabled={isAddButtonDisabled}
             idModal="editarApresentacaoModal"
-            onAddButtonClick={() => router.push("/CadastroApresentacao")}
+            onAddButtonClick={() => router.push("/cadastro-apresentacao")}
             isMyPresentation={true}
           />
           <ModalEditarCadastro formEdited={formEdited} />

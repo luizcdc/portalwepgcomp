@@ -184,7 +184,7 @@ export default function FormSessaoApresentacoes() {
       setValue(
         "avaliadores",
         sessao?.panelists?.map((v) => {
-          return { value: v.id, label: v.user?.name ?? "" };
+          return { value: v.userId, label: v.user?.name ?? "" };
         })
       );
     } else {
