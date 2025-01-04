@@ -25,6 +25,9 @@ const formCadastroSchema = z.object({
   abstract: z
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "O abstract é obrigatório"),
+  doutorando: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .uuid(),
   orientador: z
     .string({ invalid_type_error: "Campo Inválido" })
     .uuid(),
@@ -70,6 +73,7 @@ export function FormCadastroApresentacao({
     setValue("id", formEdited.id);
     setValue("titulo", formEdited.title);
     setValue("abstract", formEdited.abstract);
+    setValue("doutorando", formEdited.mainAuthorId);
     setValue("orientador", formEdited.advisorId);
     setValue("coorientador", formEdited.coAdvisor);
     setValue("data", formEdited.data);
@@ -119,7 +123,7 @@ export function FormCadastroApresentacao({
       const submissionData = {
         ...formEdited,
         eventEditionId: getEventEditionIdStorage() ?? "",
-        mainAuthorId: user.id,
+        mainAuthorId: data.doutorando,
         title: data.titulo,
         abstractText: data.abstract,
         advisorId: data.orientador as UUID,
@@ -136,7 +140,6 @@ export function FormCadastroApresentacao({
       }
 
       setTimeout(() => {
-        router.push("/MinhasApresentacoes")
         window.location.reload();
       }, 3000);
     };
@@ -154,7 +157,7 @@ export function FormCadastroApresentacao({
           </label>
           <select
             className="form-control input-title"
-            {...register("orientador")}
+            {...register("doutorando")}
             disabled={loadingUserList}
           >
             <option value="">Selecione um doutorando</option>
