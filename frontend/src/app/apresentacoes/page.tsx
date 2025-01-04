@@ -40,6 +40,7 @@ export default function Apresentacoes() {
     setSessionsListValues(filteredSessions);
   }, [searchValue, submissionList]);
 
+
   const handleDelete = async (submissionId: string) => {
     await deleteSubmissionById(submissionId);
 
