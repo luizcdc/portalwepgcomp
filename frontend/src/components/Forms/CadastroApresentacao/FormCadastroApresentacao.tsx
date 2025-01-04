@@ -27,7 +27,8 @@ const formCadastroSchema = z.object({
     .min(1, "O abstract é obrigatório"),
   doutorando: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .uuid(),
+    .uuid()
+    .optional(),
   orientador: z
     .string({ invalid_type_error: "Campo Inválido" })
     .uuid(),
@@ -61,7 +62,6 @@ export function FormCadastroApresentacao({
 
   const {
     register,
-    // control,
     handleSubmit,
     formState: { errors },
     setValue,
@@ -123,7 +123,7 @@ export function FormCadastroApresentacao({
       const submissionData = {
         ...formEdited,
         eventEditionId: getEventEditionIdStorage() ?? "",
-        mainAuthorId: data.doutorando,
+        mainAuthorId: data.doutorando || user.id,
         title: data.titulo,
         abstractText: data.abstract,
         advisorId: data.orientador as UUID,
@@ -135,21 +135,21 @@ export function FormCadastroApresentacao({
 
       if (formEdited && formEdited.id) {
         await updateSubmissionById(formEdited.id, submissionData);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       } else {
         await createSubmission(submissionData);
         router.push("/minha-apresentacao");
       }
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
     };
   }
+  const onInvalid = (errors) => console.error(errors)
 
   return (
     <form
       className='row cadastroApresentacao'
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
     >
       {user?.level === "Superadmin" && (
         <div className="col-12 mb-1">
@@ -232,28 +232,6 @@ export function FormCadastroApresentacao({
           {...register("coorientador")}
         />
       </div>
-
-      {/* <div className='col-12 mb-1'>
-        <label className='form-label form-title'>Sugestão de data</label>
-
-        <div className="input-group listagem-template-content-input">
-          <Controller
-            control={control}
-            name="data"
-            render={({ field }) => (
-              <DatePicker
-                id="sa-inicio-data"
-                onChange={(date) => field.onChange(date?.toISOString() || null)}
-                selected={field.value ? new Date(field.value) : null}
-                className="form-control datepicker"
-                dateFormat="dd/MM/yyyy"
-                isClearable
-                placeholderText={'Insira a sugestão de uma data para a apresentação'}
-              />
-            )}
-          />
-        </div>
-      </div> */}
 
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
