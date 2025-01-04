@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-with-submission.dto';
 import { SubmissionService } from '../submission/submission.service';
@@ -20,6 +21,8 @@ import { ListAdvisedPresentationsResponse } from './dto/list-advised-presentatio
 
 @Injectable()
 export class PresentationService {
+  private readonly logger = new Logger(PresentationService.name);
+
   constructor(
     private prismaClient: PrismaService,
     private submissionService: SubmissionService,
@@ -50,11 +53,11 @@ export class PresentationService {
       throw new AppException('Submissão não encontrada.', 404);
     }
 
-    const submissionIsConfirmed =
-      submissionExists.status === SubmissionStatus.Confirmed;
-
-    if (!submissionIsConfirmed) {
-      throw new AppException('Submissão não confirmada.', 400);
+    // turn submission status to confirmed
+    if (submissionExists.status !== SubmissionStatus.Confirmed) {
+      await this.submissionService.update(submissionId, {
+        status: SubmissionStatus.Confirmed,
+      });
     }
 
     const presentationBlockExists =
@@ -560,7 +563,11 @@ export class PresentationService {
         },
       },
       include: {
-        bookmarkedPresentations: true,
+        bookmarkedPresentations: {
+          include: {
+            submission: true,
+          },
+        },
       },
     });
 
@@ -583,7 +590,11 @@ export class PresentationService {
         },
       },
       include: {
-        bookmarkedPresentations: true,
+        bookmarkedPresentations: {
+          include: {
+            submission: true,
+          },
+        },
       },
     });
 
@@ -600,7 +611,11 @@ export class PresentationService {
         id: userId,
       },
       include: {
-        bookmarkedPresentations: true,
+        bookmarkedPresentations: {
+          include: {
+            submission: true,
+          },
+        },
       },
     });
 
@@ -647,12 +662,150 @@ export class PresentationService {
         },
       },
       include: {
-        bookmarkedPresentations: true,
+        bookmarkedPresentations: {
+          include: {
+            submission: true,
+          },
+        },
       },
     });
 
     return new BookmarkedPresentationsResponseDto(
       updatedUser.bookmarkedPresentations,
     );
+  }
+
+  async calculateAndUpdateScores(presentationId: string): Promise<void> {
+    // Fetch the presentation with its presentationBlock, panelists, and submission
+    const presentation = await this.prismaClient.presentation.findUnique({
+      where: { id: presentationId },
+      include: {
+        presentationBlock: {
+          include: {
+            panelists: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+        submission: {
+          include: {
+            Evaluation: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!presentation) {
+      throw new Error('Presentation not found');
+    }
+
+    const evaluations = presentation.submission.Evaluation;
+    const panelistUserIds = presentation.presentationBlock.panelists.map(
+      (panelist) => panelist.userId,
+    );
+
+    // Separate evaluations into public and panelist groups
+    const publicEvaluations = evaluations.filter(
+      (evaluation) =>
+        !evaluation.userId || !panelistUserIds.includes(evaluation.userId),
+    );
+
+    const panelistEvaluations = evaluations.filter(
+      (evaluation) =>
+        evaluation.userId && panelistUserIds.includes(evaluation.userId),
+    );
+
+    // Calculate public average score
+    const publicAverageScore = this.calculateAverageScore(publicEvaluations);
+
+    // Calculate panelists average score
+    const evaluatorsAverageScore =
+      this.calculateAverageScore(panelistEvaluations);
+
+    // Update the presentation with new scores
+    await this.prismaClient.presentation.update({
+      where: { id: presentationId },
+      data: {
+        publicAverageScore,
+        evaluatorsAverageScore,
+      },
+    });
+  }
+
+  private calculateAverageScore(evaluations: any[]): number | null {
+    // get the average score of the all evaluations
+    if (!evaluations.length) {
+      return null;
+    }
+
+    const totalScore = evaluations.reduce(
+      (sum, evaluation) => sum + evaluation.score,
+      0,
+    );
+    return Number((totalScore / evaluations.length).toFixed(2));
+  }
+
+  async recalculateAllScores(eventEditionId: string): Promise<void> {
+    const presentations = await this.prismaClient.presentation.findMany({
+      where: {
+        submission: {
+          eventEditionId,
+        },
+      },
+      select: { id: true },
+    });
+
+    for (const presentation of presentations) {
+      await this.calculateAndUpdateScores(presentation.id);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async calculateScoresForActiveEvent() {
+    try {
+      this.logger.log('Starting daily score calculation for active event');
+
+      // Find the active event edition
+      const activeEventEdition = await this.prismaClient.eventEdition.findFirst(
+        {
+          where: {
+            isActive: true,
+          },
+          select: {
+            id: true,
+            name: true,
+            endDate: true,
+          },
+        },
+      );
+
+      if (!activeEventEdition) {
+        this.logger.warn('No active event edition found');
+        return;
+      }
+
+      const now = new Date();
+      if (activeEventEdition.endDate < now) {
+        this.logger.warn(
+          `Event ${activeEventEdition.name} has already ended on ${activeEventEdition.endDate.toISOString()}`,
+        );
+        return;
+      }
+
+      // Calculate scores for all presentations in the active event
+      await this.recalculateAllScores(activeEventEdition.id);
+
+      this.logger.log(
+        `Successfully calculated scores for event: ${activeEventEdition.id}`,
+      );
+    } catch (error) {
+      this.logger.error('Error calculating scores:', error);
+    }
   }
 }

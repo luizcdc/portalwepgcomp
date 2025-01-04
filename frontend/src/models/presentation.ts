@@ -1,41 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-export interface Presentation {
+interface Presentation {
   id: string;
   presentationBlockId: string;
   positionWithinBlock: number;
-  presentationTime: string;
-  submission: Submission;
-}
-
-export interface PresentationBookmark {
-  bookmarked: boolean;
-}
-
-export interface PresentationBookmarkRegister {
-  presentationId: string;
-}
-
-export interface Submission {
-  id: string;
-  advisorId: string;
-  advisor: UserAccount;
-  mainAuthorId: string;
-  mainAuthor: UserAccount;
-  eventEditionId: string;
-  title: string;
-  type: string;
-  abstract: string;
-  pdfFile: string;
-  phoneNumber: string;
-  proposedPresentationBlockId: any;
-  proposedPositionWithinBlock: any;
-  coAdvisor: any;
+  presentationTime?: string;
+  submission: Submission | null;
+  submissionId: symbol;
   status: string;
+  startTime: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface UserAccount {
+interface PresentationBookmark {
+  bookmarked: boolean;
+}
+
+interface PresentationBookmarkRegister {
+  presentationId: string;
+}
+
+interface UserAccount {
   id: string
   name: string
   email: string

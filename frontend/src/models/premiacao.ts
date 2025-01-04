@@ -17,17 +17,6 @@ interface AuthorOrEvaluator {
     isActive?: boolean;
 }
   
-interface Submission {
-    id: string;
-    title: string;
-    abstract: string;
-    pdfFile: string;
-    phoneNumber: string;
-    coAdvisor: string;
-    status: Record<string, unknown>;
-    mainAuthor: AuthorOrEvaluator;
-}
-  
 interface Premiacoes {
     id: string;
     presentationBlockId: string;

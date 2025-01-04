@@ -6,6 +6,7 @@ import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
 import { useEdicao } from "@/hooks/useEdicao";
 
 import "./style.scss";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -26,7 +27,9 @@ export default function Endereco() {
   const { updateEdicao, Edicao } = useEdicao();
 
   const handleEditAdress = () => {
-    updateEdicao(Edicao?.id ?? "", { location: content });
+    const eventEditionId = getEventEditionIdStorage();
+
+    updateEdicao(eventEditionId ?? "", { location: content });
   };
 
   const latitude = -13.0;

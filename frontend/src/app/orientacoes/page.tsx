@@ -21,8 +21,10 @@ export default function Orientacoes() {
   const { getEdicaoByYear } = useEdicao();
 
   useEffect(() => {
+    const currentYear = String(new Date().getFullYear());
+
+    getEdicaoByYear(currentYear);
     getOrientacoes();
-    getEdicaoByYear("2024");
   }, []);
 
   return (

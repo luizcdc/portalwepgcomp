@@ -8,7 +8,8 @@ import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
 import Listagem from "@/templates/Listagem/Listagem";
-import { getEventEditionIdStorage } from '@/context/AuthProvider/util';
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 
 export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
@@ -50,27 +51,29 @@ export default function Apresentacoes() {
   };
 
   return (
-    <SubmissionFileProvider>
-      <SubmissionProvider>
-        <div className="d-flex flex-column before-list">
-          <Listagem
-            idModal="editarApresentacaoModal"
-            title={title}
-            labelAddButton={userArea.add}
-            searchValue={searchValue}
-            onChangeSearchValue={(value) => setSearchValue(value)}
-            searchPlaceholder={userArea.search}
-            cardsList={sessionsListValues.map((submission) => ({
-              id: submission.id,
-              title: submission.title,
-              subtitle: submission.abstract,
-            }))}
-            isLoading={loadingSubmissionList}
-            onDelete={handleDelete}
-          />
-          <ModalEditarCadastro />
-        </div>
-      </SubmissionProvider>
-    </SubmissionFileProvider>
+    <ProtectedLayout>
+      <SubmissionFileProvider>
+        <SubmissionProvider>
+          <div className="d-flex flex-column before-list">
+            <Listagem
+              idModal="editarApresentacaoModal"
+              title={title}
+              labelAddButton={userArea.add}
+              searchValue={searchValue}
+              onChangeSearchValue={(value) => setSearchValue(value)}
+              searchPlaceholder={userArea.search}
+              cardsList={sessionsListValues.map((submission) => ({
+                id: submission.id,
+                title: submission.title,
+                subtitle: submission.abstract,
+              }))}
+              isLoading={loadingSubmissionList}
+              onDelete={handleDelete}
+            />
+            <ModalEditarCadastro />
+          </div>
+        </SubmissionProvider>
+      </SubmissionFileProvider>
+    </ProtectedLayout>
   );
 }

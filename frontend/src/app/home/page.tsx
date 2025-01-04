@@ -14,7 +14,9 @@ export default function Home() {
   const { getEdicaoByYear, loadingEdicao } = useEdicao();
 
   useEffect(() => {
-    getEdicaoByYear("2024");
+    const currentYear = String(new Date().getFullYear());
+
+    getEdicaoByYear(currentYear);
   }, []);
 
   return (
