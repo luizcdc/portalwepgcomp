@@ -1,7 +1,5 @@
 "use client";
 
-
-import { logout } from '@/context/AuthProvider/util';
 import Axios from "axios";
 
 const hostname = typeof window !== "undefined" ? window.location.hostname : "";
@@ -50,9 +48,10 @@ axiosInstance.interceptors.response.use(
      *
      * Must be re-attached later on or the token refresh will only happen once
      */
-    logout();
+   
+    localStorage.clear();
     setTimeout(() => {
-      window.location.href = "Login";
+      window.location.href = "/login";
     }, 3000);
     return Promise.reject(error); // Re-attach the interceptor by running the method
   }
