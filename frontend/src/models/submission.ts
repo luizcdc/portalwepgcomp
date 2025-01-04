@@ -21,8 +21,16 @@ interface GetSubmissionParams {
 
 interface Submission extends SubmissionParams {
     id: string;
-    createdAt: Date;
-    deletedAt: Date;
-    updatedAt: Date;
-    mainAuthor: UserProfile;
+    deletedAt: string;
+    createdAt: string;
+    updatedAt: string;
+    mainAuthor: UserAccount;
+    advisor: UserAccount;
+    proposedPresentationBlockId: any;
+    proposedPositionWithinBlock: any;
+    abstract?: string;
+    type?: string;
+    status?: string;
 }
+
+

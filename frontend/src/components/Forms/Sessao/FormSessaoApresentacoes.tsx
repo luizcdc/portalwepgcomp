@@ -18,6 +18,7 @@ import { useUsers } from "@/hooks/useUsers";
 import { useEdicao } from "@/hooks/useEdicao";
 import { useEffect } from "react";
 import { useSubmission } from "@/hooks/useSubmission";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 const formSessaoApresentacoesSchema = z.object({
   apresentacoes: z
@@ -128,13 +129,15 @@ export default function FormSessaoApresentacoes() {
   ) => {
     const { apresentacoes, sala, inicio, n_apresentacoes, avaliadores } = data;
 
+    const eventEditionId = getEventEditionIdStorage();
+
     if (!sala || !inicio) {
       throw new Error("Campos obrigatórios em branco.");
     }
 
     const body = {
       type: "Presentation",
-      eventEditionId: Edicao?.id ?? "",
+      eventEditionId: eventEditionId ?? "",
       submissions: apresentacoes?.length
         ? apresentacoes?.map((v) => v.value)
         : undefined,
@@ -147,7 +150,7 @@ export default function FormSessaoApresentacoes() {
     } as SessaoParams;
 
     if (sessao?.id) {
-      updateSession(sessao?.id, Edicao?.id ?? "", body).then((status) => {
+      updateSession(sessao?.id, eventEditionId ?? "", body).then((status) => {
         if (status) {
           reset();
           setSessao(null);
@@ -156,7 +159,7 @@ export default function FormSessaoApresentacoes() {
       return;
     }
 
-    createSession(Edicao?.id ?? "", body).then((status) => {
+    createSession(eventEditionId ?? "", body).then((status) => {
       if (status) {
         reset();
         setSessao(null);

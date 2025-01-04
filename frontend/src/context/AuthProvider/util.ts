@@ -42,6 +42,10 @@ export function getEventEditionIdStorage() {
   return null;
 }
 
+export function logout() {
+  localStorage.clear();
+}
+
 export async function LoginRequest(
   email: string,
   password: string

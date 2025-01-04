@@ -3,13 +3,16 @@
 import { useEffect, useState } from "react";
 
 import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
-import { getEventEditionIdStorage } from '@/context/AuthProvider/util';
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { SubmissionProvider } from "@/context/submission";
 import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
+
 import Listagem from "@/templates/Listagem/Listagem";
+
+import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 
 export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
@@ -24,7 +27,8 @@ export default function Apresentacoes() {
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
-  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState<boolean>(false);
+  const [isAddButtonDisabled, setIsAddButtonDisabled] =
+    useState<boolean>(false);
   const [formEdited, setFormEdited] = useState<any[]>([]);
 
   useEffect(() => {
@@ -36,7 +40,9 @@ export default function Apresentacoes() {
 
   useEffect(() => {
     const filteredSessions = submissionList.filter((submission) => {
-      const searchMatch = submission.title.toLowerCase().includes(searchValue.trim().toLowerCase());
+      const searchMatch = submission.title
+        .toLowerCase()
+        .includes(searchValue.trim().toLowerCase());
 
       if (user?.level === "Superadmin") {
         return searchMatch;
@@ -49,7 +55,7 @@ export default function Apresentacoes() {
 
     if (user?.level !== "Superadmin") {
       const hasOwnSubmission = filteredSessions.length > 0;
-      
+
       setIsAddButtonDisabled(hasOwnSubmission);
     }
   }, [searchValue, submissionList, user]);
@@ -59,17 +65,21 @@ export default function Apresentacoes() {
       await deleteSubmissionById(submissionId);
 
       const updatedSubmissions = sessionsListValues.filter(
-        submission => submission.id !== submissionId
+        (submission) => submission.id !== submissionId
       );
 
       setSessionsListValues(updatedSubmissions);
     } else {
-      const submission = submissionList.find((submission) => submission.id === submissionId);
+      const submission = submissionList.find(
+        (submission) => submission.id === submissionId
+      );
 
       if (submission?.mainAuthorId === user?.id) {
         await deleteSubmissionById(submissionId);
 
-        const updatedSubmissions = sessionsListValues.filter(submission => submission.id !== submissionId);
+        const updatedSubmissions = sessionsListValues.filter(
+          (submission) => submission.id !== submissionId
+        );
 
         setSessionsListValues(updatedSubmissions);
       }
@@ -77,34 +87,36 @@ export default function Apresentacoes() {
   };
 
   const handleEdit = async (submissionId: string) => {
-    const submission = sessionsListValues.find(s => s.id === submissionId);
+    const submission = sessionsListValues.find((s) => s.id === submissionId);
     setFormEdited(submission);
-  }
+  };
 
   return (
-    <SubmissionFileProvider>
-      <SubmissionProvider>
-        <div className="d-flex flex-column before-list">
-          <Listagem
-            idModal="editarApresentacaoModal"
-            title={title}
-            labelAddButton={userArea.add}
-            searchValue={searchValue}
-            onChangeSearchValue={(value) => setSearchValue(value)}
-            searchPlaceholder={userArea.search}
-            cardsList={sessionsListValues.map((submission) => ({
-              id: submission.id,
-              title: submission.title,
-              subtitle: submission.abstract,
-            }))}
-            isLoading={loadingSubmissionList}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            isAddButtonDisabled={isAddButtonDisabled}
-          />
-          <ModalEditarCadastro formEdited={formEdited} />
-        </div>
-      </SubmissionProvider>
-    </SubmissionFileProvider>
+    <ProtectedLayout>
+      <SubmissionFileProvider>
+        <SubmissionProvider>
+          <div className="d-flex flex-column before-list">
+            <Listagem
+              idModal="editarApresentacaoModal"
+              title={title}
+              labelAddButton={userArea.add}
+              searchValue={searchValue}
+              onChangeSearchValue={(value) => setSearchValue(value)}
+              searchPlaceholder={userArea.search}
+              cardsList={sessionsListValues.map((submission) => ({
+                id: submission.id,
+                title: submission.title,
+                subtitle: submission.abstract,
+              }))}
+              isLoading={loadingSubmissionList}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              isAddButtonDisabled={isAddButtonDisabled}
+            />
+            <ModalEditarCadastro formEdited={formEdited} />
+          </div>
+        </SubmissionProvider>
+      </SubmissionFileProvider>
+    </ProtectedLayout>
   );
 }

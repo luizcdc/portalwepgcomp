@@ -1369,6 +1369,67 @@ describe('PresentationService', () => {
         );
       });
     });
+
+    describe('removePresentationBookmark', () => {
+      it('should remove a presentation bookmark', async () => {
+        const userId = 'user1';
+        const firstPresentationId = 'presentation1';
+        const secondPresentationId = 'presentation2';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({
+          id: userId,
+        });
+
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue({
+          id: firstPresentationId,
+        });
+
+        (prismaService.userAccount.update as jest.Mock).mockResolvedValue({
+          id: userId,
+          bookmarkedPresentations: [{ id: secondPresentationId }],
+        });
+
+        const result = await service.removePresentationBookmark(
+          firstPresentationId,
+          userId,
+        );
+
+        expect(result.bookmarkedPresentations).toEqual([
+          { id: secondPresentationId },
+        ]);
+      });
+
+      it('should throw error if user not found', async () => {
+        const userId = 'nonexistent';
+        const presentationId = 'presentation1';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        await expect(
+          service.removePresentationBookmark(presentationId, userId),
+        ).rejects.toThrow(new AppException('Usuário não encontrado.', 404));
+      });
+
+      it('should throw error if presentation not found', async () => {
+        const userId = 'user1';
+        const presentationId = 'nonexistent';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({
+          id: userId,
+        });
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        await expect(
+          service.removePresentationBookmark(presentationId, userId),
+        ).rejects.toThrow(
+          new AppException('Apresentação não encontrada.', 404),
+        );
+      });
+    });
   });
 
   describe('score calculation methods', () => {

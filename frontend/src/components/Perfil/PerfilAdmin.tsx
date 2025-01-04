@@ -40,13 +40,13 @@ export default function PerfilAdmin({ profile }: Readonly<PerfilAdminProps>) {
           </li>
         )}
 
-        {profile === "Professor" && (
+        {/* {profile === "Professor" && (
           <li>
             <Link className="dropdown-item" href="#">
               Minhas bancas
             </Link>
           </li>
-        )}
+        )} */}
 
         <li>
           <Link className="dropdown-item" href="/apresentacoes">

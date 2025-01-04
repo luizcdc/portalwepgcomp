@@ -6,20 +6,20 @@ import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
 import "./style.scss";
 
 import { useOrientacao } from "@/hooks/useOrientacao";
-import { useEdicao } from "@/hooks/useEdicao";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 export default function OrientacoesAvaliadores() {
   const { putOrientacao, orientacoes } = useOrientacao();
-  const { Edicao } = useEdicao();
 
   const [content, setContent] = useState(orientacoes?.reviewerGuidance || "");
 
   const handleEditOrientacao = () => {
     const idOrientacao = orientacoes?.id;
+    const eventEditionId = getEventEditionIdStorage();
 
     if (idOrientacao) {
       putOrientacao(idOrientacao, {
-        eventEditionId: Edicao?.id ?? "",
+        eventEditionId: eventEditionId ?? "",
         reviewerGuidance: content,
       });
     }

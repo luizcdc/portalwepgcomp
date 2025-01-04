@@ -563,7 +563,11 @@ export class PresentationService {
         },
       },
       include: {
-        bookmarkedPresentations: true,
+        bookmarkedPresentations: {
+          include: {
+            submission: true,
+          },
+        },
       },
     });
 
@@ -586,7 +590,11 @@ export class PresentationService {
         },
       },
       include: {
-        bookmarkedPresentations: true,
+        bookmarkedPresentations: {
+          include: {
+            submission: true,
+          },
+        },
       },
     });
 
@@ -603,7 +611,11 @@ export class PresentationService {
         id: userId,
       },
       include: {
-        bookmarkedPresentations: true,
+        bookmarkedPresentations: {
+          include: {
+            submission: true,
+          },
+        },
       },
     });
 
@@ -650,7 +662,11 @@ export class PresentationService {
         },
       },
       include: {
-        bookmarkedPresentations: true,
+        bookmarkedPresentations: {
+          include: {
+            submission: true,
+          },
+        },
       },
     });
 
