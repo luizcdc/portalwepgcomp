@@ -11,12 +11,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: [
-      'https://portal-wepgcomp-client-development.vercel.app',
-      'https://portal-wepgcomp-client.vercel.app',
-      `http://localhost:${process.env.FRONTEND_LOCAL_PORT}`,
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    origin: '*',
+    methods: '*',
   });
 
   const config = new DocumentBuilder()
