@@ -2,6 +2,7 @@
 import axiosInstance from '@/utils/api';
 
 const baseUrl = "/presentation-block";
+const baseUrlRoom = "/room";
 
 const instance = axiosInstance;
 
@@ -32,6 +33,12 @@ export const sessionApi = {
 
     deleteSessionById: async (idSession: string) => {
         const { data } = await instance.delete(`${baseUrl}/${idSession}`);
+
+        return data;
+    },
+
+    listRooms: async (idEdition: string) => {
+        const { data } = await instance.get(`${baseUrlRoom}/event-edition/${idEdition}`);
 
         return data;
     },
