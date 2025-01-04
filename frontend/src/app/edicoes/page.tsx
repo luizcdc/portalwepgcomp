@@ -3,14 +3,17 @@ import { useEffect, useState } from "react";
 import Listagem from "@/templates/Listagem/Listagem";
 import { useRouter } from "next/navigation";
 import { useEdicao } from "@/hooks/useEdicao";
-import { useEffect, useState } from "react";
 import { edicaoApi } from "@/services/edicao";
+import ModalEditarEdicao from "@/components/Modals/ModalEditarEdicao/Modal EditarEdição";
 
 export default function Edicoes() {
   const { deleteEdicao, loadingEdicoesList } = useEdicao();
   const router = useRouter();
-  const [edicoes, setEdicoes] = useState([]);
+  const [edicoes, setEdicoes] = useState<Edicao[]>([]);
   const [loading, setLoading] = useState(true);
+  const [edicaoSelecionada, setEdicaoSelecionada] = useState<Edicao | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchEdicoes = async () => {
@@ -27,6 +30,13 @@ export default function Edicoes() {
     fetchEdicoes();
   }, []);
 
+  const handleEditClick = (edicaoId: string) => {
+    const edicao = edicoes.find((e) => e.id === edicaoId);
+
+    if (edicao) {
+      setEdicaoSelecionada(edicao);
+    }
+  };
   return (
     <div
       className='d-flex flex-column'
@@ -38,13 +48,18 @@ export default function Edicoes() {
         <p>Carregando edições...</p>
       ) : (
         <Listagem
+          idModal='editarEdicaoModal'
           title={"Edições do Evento"}
           labelAddButton={"Cadastrar Edição"}
           searchPlaceholder={"Pesquise por edição"}
           cardsList={edicoes}
+          onClickItem={handleEditClick}
           onDelete={(id: string) => deleteEdicao(id)}
           onAddButtonClick={() => router.push("/cadastro-edicao")}
         />
+      )}
+      {edicaoSelecionada && (
+        <ModalEditarEdicao edicaoData={edicaoSelecionada} />
       )}
     </div>
   );

@@ -1,11 +1,12 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Select from "react-select";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { addDays } from "date-fns";
+import { startOfYear, endOfYear } from "date-fns";
 import DatePicker from "react-datepicker";
+import { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { formatOptions } from "@/utils/formatOptions";
 import { useEdicao } from "@/hooks/useEdicao";
@@ -13,7 +14,8 @@ import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import "./style.scss";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
-import { useUsers } from "@/hooks/useUsers";
+import { ptBR } from "date-fns/locale";
+import { UserContext } from "@/context/user";
 
 const formEdicaoSchema = z.object({
   titulo: z.string({
@@ -109,18 +111,25 @@ const formEdicaoSchema = z.object({
       message: "Data inválida!",
     })
     .nullable(),
+  coordinatorId: z.string().optional(),
+  partnersText: z.string().optional(),
 });
 
-export function FormEdicao() {
+export function FormEdicao({ edicaoData }) {
   type FormEdicaoSchema = z.infer<typeof formEdicaoSchema>;
   const { createEdicao, updateEdicao, Edicao } = useEdicao();
   const { user } = useContext(AuthContext);
-  const { userList } = useUsers();
+  const { getAdvisors, advisors } = useContext(UserContext);
+  const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
+  const [avaliadoresOptions, setAvaliadoresOptions] = useState<OptionType[]>(
+    []
+  );
   const router = useRouter();
   const {
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormEdicaoSchema>({
     resolver: zodResolver(formEdicaoSchema),
@@ -131,9 +140,8 @@ export function FormEdicao() {
     },
   });
 
-  const { formApresentacoesFields, confirmButton } = ModalSessaoMock;
-
-  const avaliadoresOptions = formatOptions(userList, "name");
+  const { confirmButton } = ModalSessaoMock;
+  registerLocale("pt-BR", ptBR);
 
   const handleFormEdicao = async (data: FormEdicaoSchema) => {
     const {
@@ -170,13 +178,48 @@ export function FormEdicao() {
       partnersText: "",
     } as EdicaoParams;
 
+    useEffect(() => {
+      console.log("get", getAdvisors);
+      getAdvisors();
+    }, []);
+
+    useEffect(() => {
+      if (edicaoData) {
+        setValue("titulo", edicaoData.name);
+        setValue("descricao", edicaoData.description);
+        setValue("inicio", edicaoData.startDate);
+        setValue("final", edicaoData.endDate);
+        setValue("local", edicaoData.location);
+        setValue("coordinatorId", user?.id);
+        setValue("comissao", edicaoData.organizingCommitteeIds);
+        setValue("apoio", edicaoData.itSupportIds);
+        setValue("apoioAd", edicaoData.administrativeSupportIds);
+        setValue("comunicacao", edicaoData.communicationIds);
+        setValue("duracao", edicaoData.presentationDuration);
+        setValue("sessoes", edicaoData.presentationsPerPresentationBlock);
+        setValue("submissao", edicaoData.callForPapersText);
+        setValue("limite", edicaoData.submissionDeadline);
+        setValue("partnersText", "");
+      }
+    }, [edicaoData, setValue]);
+
+    useEffect(() => {
+      if (advisors.length > 0) {
+        const users = advisors.map((v) => ({
+          value: v.id ?? "",
+          label: v.name ?? "",
+        }));
+        setAvaliadoresOptions(users);
+      }
+    }, [advisors]);
+
     if (Edicao?.id) {
       updateEdicao(Edicao?.id, body);
       router.push("/Edicoes");
     }
 
     createEdicao(body);
-    router.push("/Edicoes");
+    router.push("/home");
   };
 
   return (
@@ -228,9 +271,10 @@ export function FormEdicao() {
                 showIcon
                 className='form-control datepicker'
                 dateFormat='dd/MM/yyyy'
-                minDate={new Date()}
-                maxDate={addDays(new Date(), 3)}
-                placeholderText={formApresentacoesFields.inicio.placeholder}
+                locale='pt-BR'
+                minDate={startOfYear(new Date())}
+                maxDate={endOfYear(new Date())}
+                placeholderText='(ex.: 22/10/2024)'
                 isClearable
                 toggleCalendarOnIconClick
               />
@@ -249,9 +293,10 @@ export function FormEdicao() {
                 showIcon
                 className='form-control datepicker'
                 dateFormat='dd/MM/yyyy'
-                minDate={new Date()}
-                maxDate={addDays(new Date(), 3)}
-                placeholderText={formApresentacoesFields.inicio.placeholder}
+                locale='pt-BR'
+                minDate={startOfYear(new Date())}
+                maxDate={endOfYear(new Date())}
+                placeholderText='(ex.: 22/10/2024)'
                 isClearable
                 toggleCalendarOnIconClick
               />
@@ -286,9 +331,10 @@ export function FormEdicao() {
           <Controller
             name='comissao'
             control={control}
-            render={() => (
+            render={({ field }) => (
               <Select
-                id='ed-select'
+                {...field}
+                id='comissao-select'
                 isMulti
                 options={avaliadoresOptions}
                 placeholder='Escolha o(s) usuário(s)'
@@ -308,9 +354,10 @@ export function FormEdicao() {
           <Controller
             name='apoio'
             control={control}
-            render={() => (
+            render={({ field }) => (
               <Select
-                id='ed-select'
+                id='apoio-select'
+                {...field}
                 isMulti
                 options={avaliadoresOptions}
                 placeholder='Escolha o(s) usuário(s)'
@@ -331,9 +378,10 @@ export function FormEdicao() {
           <Controller
             name='apoioAd'
             control={control}
-            render={() => (
+            render={({ field }) => (
               <Select
-                id='ed-select'
+                {...field}
+                id='apoioAd-select'
                 isMulti
                 options={avaliadoresOptions}
                 placeholder='Escolha o(s) usuário(s)'
@@ -354,9 +402,10 @@ export function FormEdicao() {
           <Controller
             name='comunicacao'
             control={control}
-            render={() => (
+            render={({ field }) => (
               <Select
-                id='ed-select'
+                {...field}
+                id='comunicacao-select'
                 isMulti
                 options={avaliadoresOptions}
                 placeholder='Escolha o(s) usuário(s)'
@@ -443,11 +492,12 @@ export function FormEdicao() {
                     field.onChange(date?.toISOString() || null)
                   }
                   selected={field.value ? new Date(field.value) : null}
-                  placeholderText={formApresentacoesFields.inicio.placeholder}
+                  placeholderText='(ex.: 22/10/2024)'
                   className='form-control datepicker'
                   dateFormat='dd/MM/yyyy'
-                  minDate={new Date()}
-                  maxDate={addDays(new Date(), 3)}
+                  locale='pt-BR'
+                  minDate={startOfYear(new Date())}
+                  maxDate={endOfYear(new Date())}
                   isClearable
                   toggleCalendarOnIconClick
                 />

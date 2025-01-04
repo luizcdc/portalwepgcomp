@@ -64,22 +64,22 @@ export default function ScheduleSection() {
   }, [Edicao]);
 
   return (
-    <div id="Programacao">
+    <div id='Programacao'>
       <div
-        className="d-flex flex-column w-100"
+        className='d-flex flex-column w-100'
         style={{
           gap: "15px",
         }}
       >
-        <h1 className="fw-bold text-center display-4 progamacao-title">
+        <h1 className='fw-bold text-center display-4 progamacao-title'>
           Programação
         </h1>
 
-        <div className="d-flex justify-content-center programacao-dias">
+        <div className='d-flex justify-content-center programacao-dias'>
           {dates.map((date, index) => (
             <button
               key={index}
-              className="d-flex align-items-center fw-bold flex-start"
+              className='d-flex align-items-center fw-bold flex-start'
               style={{
                 fontSize: "16px",
                 lineHeight: "30px",
@@ -98,9 +98,9 @@ export default function ScheduleSection() {
           ))}
         </div>
 
-        <div className="programacao-sala">
+        <div className='programacao-sala'>
           <p
-            className="fw-bold text-white m-0 text-center w-100"
+            className='fw-bold text-white m-0 text-center w-100'
             style={{
               fontSize: "13px",
               lineHeight: "50px",
@@ -108,26 +108,26 @@ export default function ScheduleSection() {
           >
             SALA A
           </p>
-          <p className="m-0" style={{ width: "44px" }}></p>
+          <p className='m-0' style={{ width: "44px" }}></p>
         </div>
 
-        <div className="d-flex flex-column programacao-item">
+        <div className='d-flex flex-column programacao-item'>
           {!!presentationList?.length &&
             presentationList
-              // .filter(
-              //   (item) =>
-              //     moment(item.presentationTime).format("YYYY-MM-DD") ===
-              //     moment(selectedDate).format("YYYY-MM-DD")
-              // )
+              .filter(
+                (item) =>
+                  moment(item.presentationTime).format("YYYY-MM-DD") ===
+                  moment(selectedDate).format("YYYY-MM-DD")
+              )
               ?.map((item, index) => (
                 <div
                   key={index + item.submission.mainAuthor?.name}
-                  className="d-flex align-items-center w-100"
+                  className='d-flex align-items-center w-100'
                   style={{
                     gap: "40px",
                   }}
                 >
-                  <p className="m-0" style={{ width: "44px" }}>
+                  <p className='m-0' style={{ width: "44px" }}>
                     {moment(item.presentationTime).format("HH:mm")}
                   </p>
                   <ScheduleCard
@@ -136,16 +136,16 @@ export default function ScheduleSection() {
                     title={item.submission.title}
                     onClickEvent={() => openModalPresentation(item)}
                   />
-                  <div className="m-0 programacao-item-aux"></div>
+                  <div className='m-0 programacao-item-aux'></div>
                 </div>
               ))}
 
           {!presentationList?.length && (
-            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
-              <h4 className="empty-list mb-0">
+            <div className='d-flex align-items-center justify-content-center p-3 mt-4 me-5'>
+              <h4 className='empty-list mb-0'>
                 <Image
-                  src="/assets/images/empty_box.svg"
-                  alt="Lista vazia"
+                  src='/assets/images/empty_box.svg'
+                  alt='Lista vazia'
                   width={90}
                   height={90}
                 />
