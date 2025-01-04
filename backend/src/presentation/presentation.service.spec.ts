@@ -53,6 +53,7 @@ describe('PresentationService', () => {
       },
       userAccount: {
         findUnique: jest.fn(),
+        update: jest.fn(),
       },
     } as any;
 
@@ -1243,6 +1244,335 @@ describe('PresentationService', () => {
           id: presentationId,
           submission: { mainAuthorId: userId },
         },
+      });
+    });
+  });
+
+  describe('bookmark methods', () => {
+    describe('bookmarkPresentation', () => {
+      it('should bookmark a presentation for a user', async () => {
+        const userId = 'user1';
+        const presentationId = 'presentation1';
+        const bookmarkDto = { presentationId };
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({
+          id: userId,
+        });
+
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue({
+          id: presentationId,
+        });
+
+        (prismaService.userAccount.update as jest.Mock).mockResolvedValue({
+          id: userId,
+          bookmarkedPresentations: [{ id: presentationId }],
+        });
+
+        const result = await service.bookmarkPresentation(bookmarkDto, userId);
+
+        expect(result.bookmarkedPresentations).toEqual([
+          { id: presentationId },
+        ]);
+      });
+
+      it('should throw error if user not found', async () => {
+        const userId = 'nonexistent';
+        const bookmarkDto = { presentationId: 'presentation1' };
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        await expect(
+          service.bookmarkPresentation(bookmarkDto, userId),
+        ).rejects.toThrow(new AppException('Usuário não encontrado.', 404));
+      });
+
+      it('should throw error if presentation not found', async () => {
+        const userId = 'user1';
+        const bookmarkDto = { presentationId: 'nonexistent' };
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({
+          id: userId,
+        });
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        await expect(
+          service.bookmarkPresentation(bookmarkDto, userId),
+        ).rejects.toThrow(
+          new AppException('Apresentação não encontrada.', 404),
+        );
+      });
+    });
+
+    describe('bookmarkedPresentation', () => {
+      it('should return true if presentation is bookmarked', async () => {
+        const userId = 'user1';
+        const presentationId = 'presentation1';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({
+          id: userId,
+          bookmarkedPresentations: [{ id: presentationId }],
+        });
+
+        const result = await service.bookmarkedPresentation(
+          userId,
+          presentationId,
+        );
+        expect(result.bookmarked).toBe(true);
+      });
+
+      it('should return false if presentation is not bookmarked', async () => {
+        const userId = 'user1';
+        const presentationId = 'presentation1';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        const result = await service.bookmarkedPresentation(
+          userId,
+          presentationId,
+        );
+        expect(result.bookmarked).toBe(false);
+      });
+    });
+
+    describe('bookmarkedPresentations', () => {
+      it('should return all bookmarked presentations for user', async () => {
+        const userId = 'user1';
+        const mockBookmarks = [
+          { id: 'presentation1' },
+          { id: 'presentation2' },
+        ];
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({
+          id: userId,
+          bookmarkedPresentations: mockBookmarks,
+        });
+
+        const result = await service.bookmarkedPresentations(userId);
+        expect(result.bookmarkedPresentations).toEqual(mockBookmarks);
+      });
+
+      it('should throw error if user not found', async () => {
+        const userId = 'nonexistent';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        await expect(service.bookmarkedPresentations(userId)).rejects.toThrow(
+          new AppException('Usuário não encontrado.', 404),
+        );
+      });
+    });
+
+    describe('removePresentationBookmark', () => {
+      it('should remove a presentation bookmark', async () => {
+        const userId = 'user1';
+        const firstPresentationId = 'presentation1';
+        const secondPresentationId = 'presentation2';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({
+          id: userId,
+        });
+
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue({
+          id: firstPresentationId,
+        });
+
+        (prismaService.userAccount.update as jest.Mock).mockResolvedValue({
+          id: userId,
+          bookmarkedPresentations: [{ id: secondPresentationId }],
+        });
+
+        const result = await service.removePresentationBookmark(
+          firstPresentationId,
+          userId,
+        );
+
+        expect(result.bookmarkedPresentations).toEqual([
+          { id: secondPresentationId },
+        ]);
+      });
+
+      it('should throw error if user not found', async () => {
+        const userId = 'nonexistent';
+        const presentationId = 'presentation1';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        await expect(
+          service.removePresentationBookmark(presentationId, userId),
+        ).rejects.toThrow(new AppException('Usuário não encontrado.', 404));
+      });
+
+      it('should throw error if presentation not found', async () => {
+        const userId = 'user1';
+        const presentationId = 'nonexistent';
+
+        (prismaService.userAccount.findUnique as jest.Mock).mockResolvedValue({
+          id: userId,
+        });
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        await expect(
+          service.removePresentationBookmark(presentationId, userId),
+        ).rejects.toThrow(
+          new AppException('Apresentação não encontrada.', 404),
+        );
+      });
+    });
+  });
+
+  describe('score calculation methods', () => {
+    describe('calculateAndUpdateScores', () => {
+      it('should calculate and update presentation scores correctly', async () => {
+        const presentationId = 'presentation1';
+        const mockPresentation = {
+          id: presentationId,
+          presentationBlock: {
+            panelists: [{ userId: 'panelist1' }, { userId: 'panelist2' }],
+          },
+          submission: {
+            Evaluation: [
+              { userId: 'panelist1', score: 4.5 },
+              { userId: 'panelist2', score: 4.0 },
+              { userId: 'public1', score: 3.5 },
+              { userId: 'public2', score: 3.0 },
+            ],
+          },
+        };
+
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
+          mockPresentation,
+        );
+        (prismaService.presentation.update as jest.Mock).mockResolvedValue({
+          id: presentationId,
+          publicAverageScore: 3.25,
+          evaluatorsAverageScore: 4.25,
+        });
+
+        await service.calculateAndUpdateScores(presentationId);
+
+        expect(prismaService.presentation.update).toHaveBeenCalledWith({
+          where: { id: presentationId },
+          data: {
+            publicAverageScore: 3.25,
+            evaluatorsAverageScore: 4.25,
+          },
+        });
+      });
+
+      it('should handle presentation with no evaluations', async () => {
+        const presentationId = 'presentation1';
+        const mockPresentation = {
+          id: presentationId,
+          presentationBlock: {
+            panelists: [],
+          },
+          submission: {
+            Evaluation: [],
+          },
+        };
+
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
+          mockPresentation,
+        );
+        (prismaService.presentation.update as jest.Mock).mockResolvedValue({
+          id: presentationId,
+          publicAverageScore: null,
+          evaluatorsAverageScore: null,
+        });
+
+        await service.calculateAndUpdateScores(presentationId);
+
+        expect(prismaService.presentation.update).toHaveBeenCalledWith({
+          where: { id: presentationId },
+          data: {
+            publicAverageScore: null,
+            evaluatorsAverageScore: null,
+          },
+        });
+      });
+
+      it('should throw error if presentation not found', async () => {
+        const presentationId = 'nonexistent';
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
+          null,
+        );
+
+        await expect(
+          service.calculateAndUpdateScores(presentationId),
+        ).rejects.toThrow('Presentation not found');
+      });
+    });
+
+    describe('recalculateAllScores', () => {
+      it('should recalculate scores for all presentations', async () => {
+        const eventEditionId = 'mockEventEditionId';
+        const mockPresentations = [
+          { id: 'presentation1' },
+          { id: 'presentation2' },
+        ];
+
+        const mockPresentation = {
+          id: 'presentation1',
+          presentationBlock: {
+            panelists: [
+              {
+                userId: 'panelist1',
+                user: { id: 'panelist1', name: 'Panelist 1' },
+              },
+            ],
+          },
+          submission: {
+            Evaluation: [
+              {
+                userId: 'panelist1',
+                score: 8.5,
+                user: { id: 'panelist1', name: 'Panelist 1' },
+              },
+            ],
+          },
+        };
+
+        (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
+          mockPresentations,
+        );
+
+        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
+          mockPresentation,
+        );
+
+        (prismaService.presentation.update as jest.Mock).mockResolvedValue({});
+
+        await service.recalculateAllScores(eventEditionId);
+
+        expect(prismaService.presentation.findMany).toHaveBeenCalledWith({
+          where: {
+            submission: {
+              eventEditionId,
+            },
+          },
+          select: { id: true },
+        });
+
+        expect(prismaService.presentation.findUnique).toHaveBeenCalledTimes(
+          mockPresentations.length,
+        );
+        expect(prismaService.presentation.update).toHaveBeenCalledTimes(
+          mockPresentations.length,
+        );
+
+        expect(mockPresentations.length).toBe(2);
       });
     });
   });
