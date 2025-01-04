@@ -45,7 +45,7 @@ export const UserProvider = ({ children }: UserProps) => {
   const router = useRouter();
 
   const getUsers = async (params: GetUserParams) => {
-    setLoadingUserList(false);
+    setLoadingUserList(true);
 
     try {
       const response = await userApi.getUsers(params);
