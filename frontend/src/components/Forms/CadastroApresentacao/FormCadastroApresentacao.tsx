@@ -46,16 +46,16 @@ interface FormCadastroApresentacao {
 export function FormCadastroApresentacao({
   formEdited
 }: Readonly<FormCadastroApresentacao>) {
+  const router = useRouter();
   const pathname = usePathname();
   const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
   const { createSubmission, updateSubmissionById } = useContext(SubmissionContext);
-  const { getAdvisors, advisors } = useContext(UserContext);
+  const { getAdvisors, advisors, getUsers, userList, loadingUserList } = useContext(UserContext);
   const { sendFile } = useSubmissionFile();
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
   const [formEditedLoaded, setFormEditedLoaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const router = useRouter();
 
   const {
     register,
@@ -84,6 +84,14 @@ export function FormCadastroApresentacao({
       setAdvisorsLoaded(true);
     }
   }, [advisorsLoaded, getAdvisors]);
+
+  useEffect(() => {
+    if (user?.level === "Superadmin" && userList.length === 0) {
+      getUsers({ profile: "DoctoralStudent" });
+    }
+  }, [user?.level, userList.length, getUsers]);
+
+  const doctoralStudents = userList.filter((user) => user.profile === "DoctoralStudent");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -140,6 +148,32 @@ export function FormCadastroApresentacao({
       className='row cadastroApresentacao'
       onSubmit={handleSubmit(onSubmit)}
     >
+      {user?.level === "Superadmin" && (
+        <div className="col-12 mb-1">
+          <label className="form-label form-title">
+            Selecionar doutorando
+          </label>
+          <select
+            className="form-control input-title"
+            {...register("orientador")}
+            disabled={loadingUserList}
+          >
+            <option value="">Selecione um doutorando</option>
+            {doctoralStudents.length === 0 && !loadingUserList ? (
+              <option value="" disabled>
+                Nenhum doutorando encontrado
+              </option>
+            ) : (
+              doctoralStudents.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {student.name}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
+      )}
+
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
           Título da pesquisa<span className='text-danger ms-1'>*</span>
