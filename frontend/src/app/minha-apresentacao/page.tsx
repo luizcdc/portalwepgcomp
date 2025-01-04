@@ -111,7 +111,7 @@ export default function MinhasApresentacoes() {
             onDelete={handleDelete}
             onEdit={handleEdit}
             isAddButtonDisabled={isAddButtonDisabled}
-            idModal="editarApresentacaoModal"
+            idModal={isAddButtonDisabled ? "editarApresentacaoModal" : ""}
             onAddButtonClick={() => router.push("/cadastro-apresentacao")}
             isMyPresentation={true}
           />
