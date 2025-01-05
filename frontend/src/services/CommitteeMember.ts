@@ -6,8 +6,8 @@ const baseUrl = "/committee-member/";
 
 export const committerMembersApi = {
     
-    getAllMembers: async (): Promise<Committer[]> => {
-        const { data } = await instance.get(`${baseUrl}`);
+    getAllMembers: async (eventEditionId: string): Promise<Committer[]> => {
+        const { data } = await instance.get(`${baseUrl}${eventEditionId ? "?eventEditionId=" + eventEditionId : ""}`);
 
         return data;
     },

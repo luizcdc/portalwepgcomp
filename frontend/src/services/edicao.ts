@@ -9,7 +9,6 @@ export const edicaoApi = {
         
 
         const { data } = await instance.get(`${baseUrl}`);
-
         return data;
     },
 
@@ -21,7 +20,6 @@ export const edicaoApi = {
     },
 
     getEdicaoByYear: async (year: string) => {
-        const instance = axiosInstance;
 
         const { data } = await instance.get(`${baseUrl}/year/${year}`);
 

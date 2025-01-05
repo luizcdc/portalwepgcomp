@@ -18,7 +18,7 @@ import "moment/locale/pt-br";
 import "./style.scss";
 
 export default function ScheduleSection() {
-  const { listSessions, sessoesList, listRooms, roomsList  } = useSession();
+  const { listSessions, sessoesList, listRooms, roomsList } = useSession();
   const { Edicao } = useEdicao();
 
   const [dates, setDates] = useState<string[]>([]);
@@ -67,8 +67,7 @@ export default function ScheduleSection() {
       setSelectedDate(generatedDates[0]);
     }
 
-    if (Edicao?.id)
-      listRooms(Edicao?.id);
+    if (Edicao?.id) listRooms(Edicao?.id);
   }, [Edicao]);
 
   const colorsSession = [
@@ -105,22 +104,22 @@ export default function ScheduleSection() {
   ];
 
   return (
-    <div id="Programacao">
+    <div id='Programacao'>
       <div
-        className="d-flex flex-column w-100"
+        className='d-flex flex-column w-100'
         style={{
           gap: "15px",
         }}
       >
-        <h1 className="fw-bold text-center display-4 progamacao-title">
+        <h1 className='fw-bold text-center display-4 progamacao-title'>
           Programação
         </h1>
 
-        <div className="d-flex justify-content-center programacao-dias">
+        <div className='d-flex justify-content-center programacao-dias'>
           {dates.map((date, index) => (
             <button
               key={index}
-              className="d-flex align-items-center fw-bold flex-start"
+              className='d-flex align-items-center fw-bold flex-start'
               style={{
                 fontSize: "16px",
                 lineHeight: "30px",
@@ -140,9 +139,9 @@ export default function ScheduleSection() {
         </div>
 
         {roomsList.map((item, index) => (
-          <div className="programacao-sala" key={index}>
+          <div className='programacao-sala' key={index}>
             <p
-              className="fw-bold text-white m-0 text-center w-100"
+              className='fw-bold text-white m-0 text-center w-100'
               style={{
                 fontSize: "13px",
                 lineHeight: "50px",
@@ -150,12 +149,11 @@ export default function ScheduleSection() {
             >
               {item.name}
             </p>
-            <p className="m-0" style={{ width: "44px" }}></p>
+            <p className='m-0' style={{ width: "44px" }}></p>
           </div>
         ))}
-        
 
-        <div className="d-flex flex-column programacao-item">
+        <div className='d-flex flex-column programacao-item'>
           {!!sessoesList?.length &&
             sessoesList
               ?.filter(
@@ -168,21 +166,21 @@ export default function ScheduleSection() {
                   return (
                     <div
                       key={index + item.id}
-                      className="d-flex align-items-center w-100"
+                      className='d-flex align-items-center w-100'
                       style={{
                         gap: "40px",
                       }}
                     >
-                      <p className="m-0" style={{ width: "44px" }}>
+                      <p className='m-0' style={{ width: "44px" }}>
                         {moment(item.startTime).format("HH:mm")}
                       </p>
                       <ScheduleCard
-                        type="GeneralSession"
+                        type='GeneralSession'
                         author={item?.speakerName ?? ""}
                         title={item?.title ?? ""}
                         onClickEvent={() => {}}
                       />
-                      <div className="m-0 programacao-item-aux"></div>
+                      <div className='m-0 programacao-item-aux'></div>
                     </div>
                   );
                 }
@@ -191,22 +189,22 @@ export default function ScheduleSection() {
                   return (
                     <div
                       key={index + pres.id}
-                      className="d-flex align-items-center w-100"
+                      className='d-flex align-items-center w-100'
                       style={{
                         gap: "40px",
                       }}
                     >
-                      <p className="m-0" style={{ width: "44px" }}>
+                      <p className='m-0' style={{ width: "44px" }}>
                         {moment(pres.startTime).format("HH:mm")}
                       </p>
                       <ScheduleCard
-                        type="PresentationSession"
+                        type='PresentationSession'
                         author={pres?.submission?.mainAuthor?.name ?? ""}
                         title={pres?.submission?.title ?? ""}
                         onClickEvent={() => openModalPresentation(pres)}
                         cardColor={colorsSession[index]}
                       />
-                      <div className="m-0 programacao-item-aux"></div>
+                      <div className='m-0 programacao-item-aux'></div>
                     </div>
                   );
                 });
@@ -217,11 +215,11 @@ export default function ScheduleSection() {
               moment(item.startTime).format("YYYY-MM-DD") ===
               moment(selectedDate).format("YYYY-MM-DD")
           )?.length && (
-            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
-              <h4 className="empty-list mb-0">
+            <div className='d-flex align-items-center justify-content-center p-3 mt-4 me-5'>
+              <h4 className='empty-list mb-0'>
                 <Image
-                  src="/assets/images/empty_box.svg"
-                  alt="Lista vazia"
+                  src='/assets/images/empty_box.svg'
+                  alt='Lista vazia'
                   width={90}
                   height={90}
                 />
