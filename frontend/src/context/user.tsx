@@ -52,9 +52,7 @@ export const UserProvider = ({ children }: UserProps) => {
       setUserList(response);
       console.log("Listado com sucesso");
     } catch (err: any) {
-      console.error(err);
       setUserList([]);
-      console.log("Erro ao tentar listar");
 
       showAlert({
         icon: "error",
@@ -173,11 +171,9 @@ export const UserProvider = ({ children }: UserProps) => {
     try {
       const response = await userApi.getAdvisors();
       setAdvisors(response);
-      console.log("Listado com sucesso");
     } catch (err: any) {
       console.error(err);
       setAdvisors([]);
-      console.log("Erro ao buscar");
 
       showAlert({
         icon: "error",
