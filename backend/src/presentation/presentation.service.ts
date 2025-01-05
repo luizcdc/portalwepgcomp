@@ -597,34 +597,12 @@ export class PresentationService {
     const user = await this.prismaClient.userAccount.findUnique({
       where: {
         id: userId,
-        // bookmarkedPresentations: {
-        //   every: {
-        //     id: presentationId,
-        //   },
-        // },
       },
       include: {
         bookmarkedPresentations: {
           where: {
             id: presentationId,
           },
-          // include: {
-          //   submission: {
-          //     include: {
-          //       mainAuthor: {
-          //         select: {
-          //           name: true,
-          //           email: true,
-          //         },
-          //       },
-          //       advisor: {
-          //         select: {
-          //           name: true,
-          //         },
-          //       },
-          //     },
-          //   },
-          // },
         },
       },
     });
