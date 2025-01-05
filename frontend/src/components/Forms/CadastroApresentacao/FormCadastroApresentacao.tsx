@@ -59,6 +59,7 @@ export function FormCadastroApresentacao({
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
   const [formEditedLoaded, setFormEditedLoaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   const {
     register,
@@ -78,6 +79,7 @@ export function FormCadastroApresentacao({
     setValue("coorientador", formEdited.coAdvisor);
     setValue("data", formEdited.data);
     setValue("slide", formEdited.pdfFile);
+    setFileName(formEdited.pdfFile);
     setValue("celular", formEdited.phoneNumber);
     setFormEditedLoaded(true);
   }
@@ -104,6 +106,7 @@ export function FormCadastroApresentacao({
 
     if (selectedFile) {
       setFile(selectedFile);
+      setFileName(selectedFile.name);
       setValue("slide", selectedFile.name);
     }
   };
@@ -261,6 +264,10 @@ export function FormCadastroApresentacao({
           accept=".pdf"
           onChange={handleFileChange}
         />
+
+        {fileName && (
+          <p className="file-name">Arquivo selecionado: {fileName}</p>
+        )}
 
         <p className="text-danger error-message">{errors.slide?.message}</p>
       </div>
