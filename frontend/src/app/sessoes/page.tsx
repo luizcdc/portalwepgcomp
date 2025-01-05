@@ -37,7 +37,7 @@ export default function Sessoes() {
     const eventEditionId = getEventEditionIdStorage();
 
     listSessions(eventEditionId ?? "");
-    getUsers({ profile: "Professor" });
+    getUsers({ profiles: "Professor" });
     getSubmissions({
       eventEditionId: eventEditionId ?? "",
       withouPresentation: true,

@@ -13,7 +13,7 @@ import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { SubmissionContext } from "@/context/submission";
 import { UserContext } from "@/context/user";
 import { useSweetAlert } from "@/hooks/useAlert";
-import { useSubmissionFile } from '@/hooks/useSubmissionFile';
+import { useSubmissionFile } from "@/hooks/useSubmissionFile";
 
 import "./style.scss";
 
@@ -29,9 +29,7 @@ const formCadastroSchema = z.object({
     .string({ invalid_type_error: "Campo Inválido" })
     .uuid()
     .optional(),
-  orientador: z
-    .string({ invalid_type_error: "Campo Inválido" })
-    .uuid(),
+  orientador: z.string({ invalid_type_error: "Campo Inválido" }).uuid(),
   coorientador: z.string().optional(),
   data: z.string().optional(),
   celular: z
@@ -48,13 +46,15 @@ interface FormCadastroApresentacao {
   formEdited?: any;
 }
 export function FormCadastroApresentacao({
-  formEdited
+  formEdited,
 }: Readonly<FormCadastroApresentacao>) {
   const router = useRouter();
   const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
-  const { createSubmission, updateSubmissionById } = useContext(SubmissionContext);
-  const { getAdvisors, advisors, getUsers, userList, loadingUserList } = useContext(UserContext);
+  const { createSubmission, updateSubmissionById } =
+    useContext(SubmissionContext);
+  const { getAdvisors, advisors, getUsers, userList, loadingUserList } =
+    useContext(UserContext);
   const { sendFile } = useSubmissionFile();
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
   const [formEditedLoaded, setFormEditedLoaded] = useState(false);
@@ -90,11 +90,13 @@ export function FormCadastroApresentacao({
 
   useEffect(() => {
     if (user?.level === "Superadmin" && userList.length === 0) {
-      getUsers({ profile: "DoctoralStudent" });
+      getUsers({ profiles: "DoctoralStudent" });
     }
   }, [user?.level, userList.length, getUsers]);
 
-  const doctoralStudents = userList.filter((user) => user.profile === "DoctoralStudent");
+  const doctoralStudents = userList.filter(
+    (user) => user.profile === "DoctoralStudent"
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -103,14 +105,13 @@ export function FormCadastroApresentacao({
       setFile(selectedFile);
       setValue("slide", selectedFile.name);
     }
-  }
+  };
 
   const onSubmit = async (data: formCadastroSchema) => {
     if (!user) {
       showAlert({
         icon: "error",
-        text:
-          "Você precisa estar logado para realizar a submissão.",
+        text: "Você precisa estar logado para realizar a submissão.",
         confirmButtonText: "Retornar",
       });
 
@@ -142,20 +143,29 @@ export function FormCadastroApresentacao({
         await createSubmission(submissionData);
         router.push("/minha-apresentacao");
       }
-    };
-  }
-  const onInvalid = (errors) => console.error(errors)
+    }
+  };
+  const onInvalid = (errors) => console.error(errors);
+
+  const modalTitle =
+    formEdited && formEdited.id
+      ? "Editar Apresentação"
+      : "Cadastrar Apresentação";
 
   return (
     <form
-      className='row cadastroApresentacao'
+      className="row cadastroApresentacao"
       onSubmit={handleSubmit(onSubmit, onInvalid)}
     >
+      <div className="modal-title">
+        <h3 className="d-flex fw-bold text-center justify-content-center mb-4">
+          {modalTitle}
+        </h3>
+      </div>
+
       {user?.level === "Superadmin" && (
         <div className="col-12 mb-1">
-          <label className="form-label form-title">
-            Selecionar doutorando
-          </label>
+          <label className="form-label form-title">Selecionar doutorando</label>
           <select
             className="form-control input-title"
             {...register("doutorando")}
@@ -177,34 +187,34 @@ export function FormCadastroApresentacao({
         </div>
       )}
 
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>
-          Título da pesquisa<span className='text-danger ms-1'>*</span>
+      <div className="col-12 mb-1">
+        <label className="form-label form-title">
+          Título da pesquisa<span className="text-danger ms-1">*</span>
         </label>
         <input
-          type='text'
-          className='form-control input-title'
-          placeholder='Insira o título da pesquisa'
+          type="text"
+          className="form-control input-title"
+          placeholder="Insira o título da pesquisa"
           {...register("titulo")}
         />
-        <p className='text-danger error-message'>{errors.titulo?.message}</p>
+        <p className="text-danger error-message">{errors.titulo?.message}</p>
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>
-          Abstract<span className='text-danger ms-1'>*</span>
+      <div className="col-12 mb-1">
+        <label className="form-label form-title">
+          Abstract<span className="text-danger ms-1">*</span>
         </label>
         <textarea
-          className='form-control input-title'
-          placeholder='Insira o resumo da pesquisa'
+          className="form-control input-title"
+          placeholder="Insira o resumo da pesquisa"
           {...register("abstract")}
         />
-        <p className='text-danger error-message'>{errors.abstract?.message}</p>
+        <p className="text-danger error-message">{errors.abstract?.message}</p>
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>
-          Nome do orientador<span className='text-danger ms-1'>*</span>
+      <div className="col-12 mb-1">
+        <label className="form-label form-title">
+          Nome do orientador<span className="text-danger ms-1">*</span>
         </label>
         <select
           id="orientador-select"
@@ -218,37 +228,39 @@ export function FormCadastroApresentacao({
             </option>
           ))}
         </select>
-        <p className='text-danger error-message'>
+        <p className="text-danger error-message">
           {errors.orientador?.message}
         </p>
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>Nome do coorientador</label>
+      <div className="col-12 mb-1">
+        <label className="form-label form-title">Nome do coorientador</label>
         <input
-          type='text'
-          className='form-control input-title'
-          placeholder='Insira o nome do coorientador'
+          type="text"
+          className="form-control input-title"
+          placeholder="Insira o nome do coorientador"
           {...register("coorientador")}
         />
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label form-title'>
-          Slide da apresentação <span className="txt-min">(PDF)</span><span className='text-danger ms-1'>*</span>
+      <div className="col-12 mb-1">
+        <label className="form-label form-title">
+          Slide da apresentação <span className="txt-min">(PDF)</span>
+          <span className="text-danger ms-1">*</span>
         </label>
         <input
-          type='file'
-          className='form-control input-title'
-          accept='.pdf'
+          type="file"
+          className="form-control input-title"
+          accept=".pdf"
           onChange={handleFileChange}
         />
-        <p className='text-danger error-message'>{errors.slide?.message}</p>
+        <p className="text-danger error-message">{errors.slide?.message}</p>
       </div>
 
       <div className="col-12 mb-1">
         <label className="form-label form-title">
-          Celular <span className="txt-min">(preferência WhatsApp)</span><span className="text-danger ms-1">*</span>
+          Celular <span className="txt-min">(preferência WhatsApp)</span>
+          <span className="text-danger ms-1">*</span>
         </label>
         <input
           className="form-control input-title"
@@ -261,12 +273,12 @@ export function FormCadastroApresentacao({
       <br />
       <br />
 
-      <div className='d-grid gap-2 col-3 mx-auto'>
+      <div className="d-grid gap-2 col-3 mx-auto">
         <button
-          data-bs-target='#collapse'
-          type='submit'
+          data-bs-target="#collapse"
+          type="submit"
           data-bs-toggle="collapse"
-          className='btn text-white fs-5 submit-button'
+          className="btn text-white fs-5 submit-button"
         >
           {formEdited && formEdited.id ? "Alterar" : "Cadastrar"}
         </button>
