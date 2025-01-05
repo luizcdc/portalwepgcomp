@@ -10,7 +10,6 @@ export default function Edicoes() {
   const { deleteEdicao, loadingEdicoesList } = useEdicao();
   const router = useRouter();
   const [edicoes, setEdicoes] = useState<Edicao[]>([]);
-  const [loading, setLoading] = useState(true);
   const [edicaoSelecionada, setEdicaoSelecionada] = useState<Edicao | null>(
     null
   );
@@ -22,8 +21,6 @@ export default function Edicoes() {
         setEdicoes(data);
       } catch (error) {
         console.error("Erro ao carregar as edições:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
