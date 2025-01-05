@@ -76,6 +76,7 @@ export default function Favoritos() {
           cardsList={sessionsListValues.map((presentation) => ({
             id: presentation?.submission.id,
             title: presentation?.submission.title,
+            name: presentation?.submission.title,
             subtitle: presentation?.submission.abstract,
             ...presentation,
             
