@@ -16,10 +16,10 @@ export default function Realizacao() {
   const handleEditPartners = () => {
     const eventEditionId = getEventEditionIdStorage();
 
-    if (eventEditionId) {
-      updateEdicao(eventEditionId, {
+    if (Edicao) {
+      updateEdicao(eventEditionId ?? "", {
         partnersText: content,
-        name: ""
+        name: Edicao.name
       });
     }
   };

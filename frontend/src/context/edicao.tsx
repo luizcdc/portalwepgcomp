@@ -105,7 +105,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         confirmButtonText: "Retornar",
       });
     } finally {
-      setLoadingEdicoesList(false);
+      setLoadingEdicao(false);
     }
   };
 
