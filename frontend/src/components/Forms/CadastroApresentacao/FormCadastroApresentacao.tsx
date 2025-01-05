@@ -146,11 +146,17 @@ export function FormCadastroApresentacao({
   }
   const onInvalid = (errors) => console.error(errors)
 
+  const modalTitle = formEdited && formEdited.id ? "Editar Apresentação" : "Cadastrar Apresentação";
+
   return (
     <form
       className='row cadastroApresentacao'
       onSubmit={handleSubmit(onSubmit, onInvalid)}
     >
+      <div className="modal-title">
+        <h3 className="d-flex fw-bold text-center justify-content-center mb-4">{modalTitle}</h3>
+      </div>
+
       {user?.level === "Superadmin" && (
         <div className="col-12 mb-1">
           <label className="form-label form-title">
