@@ -8,7 +8,6 @@ import { startOfYear, endOfYear } from "date-fns";
 import DatePicker from "react-datepicker";
 import { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { formatOptions } from "@/utils/formatOptions";
 import { useEdicao } from "@/hooks/useEdicao";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import "./style.scss";
@@ -16,6 +15,8 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useRouter } from "next/navigation";
 import { ptBR } from "date-fns/locale";
 import { UserContext } from "@/context/user";
+import { useSweetAlert } from "@/hooks/useAlert";
+import { useCommittee } from "@/hooks/useCommittee";
 
 const formEdicaoSchema = z.object({
   titulo: z.string({
@@ -117,7 +118,9 @@ const formEdicaoSchema = z.object({
 
 export function FormEdicao({ edicaoData }) {
   type FormEdicaoSchema = z.infer<typeof formEdicaoSchema>;
-  const { createEdicao, updateEdicao, Edicao } = useEdicao();
+  const { showAlert } = useSweetAlert();
+  const { createEdicao, updateEdicao } = useEdicao();
+  const { getCommitterAll, committerList } = useCommittee();
   const { user } = useContext(AuthContext);
   const { getAdvisors, advisors } = useContext(UserContext);
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
@@ -125,6 +128,9 @@ export function FormEdicao({ edicaoData }) {
     []
   );
   const router = useRouter();
+  const { confirmButton } = ModalSessaoMock;
+  registerLocale("pt-BR", ptBR);
+
   const {
     register,
     control,
@@ -140,8 +146,60 @@ export function FormEdicao({ edicaoData }) {
     },
   });
 
-  const { confirmButton } = ModalSessaoMock;
-  registerLocale("pt-BR", ptBR);
+  useEffect(() => {
+    if (edicaoData) {
+      setValue("titulo", edicaoData.name);
+      setValue("descricao", edicaoData.description);
+      setValue("inicio", edicaoData.startDate);
+      setValue("final", edicaoData.endDate);
+      setValue("local", edicaoData.location);
+      setValue("coordinatorId", user?.id);
+      setValue(
+        "comissao",
+        committerList
+          ?.filter((value) => value.role === "OrganizingCommittee")
+          ?.map((v) => {
+            return { value: v.userId, label: v.userName };
+          })
+      );
+      setValue(
+        "apoio",
+        committerList
+          ?.filter((value) => value.role === "ITSupport")
+          ?.map((v) => {
+            return { value: v.userId, label: v.userName };
+          })
+      );
+      setValue(
+        "apoioAd",
+        committerList
+          ?.filter((value) => value.role === "AdministativeSupport")
+          ?.map((v) => {
+            return { value: v.userId, label: v.userName };
+          })
+      );
+      setValue(
+        "comunicacao",
+        committerList
+          ?.filter((value) => value.role === "Communication")
+          ?.map((v) => {
+            return { value: v.userId, label: v.userName };
+          })
+      );
+      setValue("duracao", edicaoData.presentationDuration);
+      setValue("sessoes", edicaoData.presentationsPerPresentationBlock);
+      setValue("submissao", edicaoData.callForPapersText);
+      setValue("limite", edicaoData.submissionDeadline);
+      setValue("partnersText", "");
+    }
+  }, [edicaoData, setValue]);
+
+  useEffect(() => {
+    if (!advisorsLoaded) {
+      getAdvisors();
+      setAdvisorsLoaded(true);
+    }
+  }, [advisorsLoaded, getAdvisors]);
 
   const handleFormEdicao = async (data: FormEdicaoSchema) => {
     const {
@@ -160,7 +218,17 @@ export function FormEdicao({ edicaoData }) {
       limite,
     } = data;
 
+    if (!user) {
+      showAlert({
+        icon: "error",
+        text: "Você precisa estar logado para realizar a submissão.",
+        confirmButtonText: "Retornar",
+      });
+
+      return;
+    }
     const body = {
+      ...edicaoData,
       name: titulo,
       description: descricao,
       location: local,
@@ -178,52 +246,40 @@ export function FormEdicao({ edicaoData }) {
       partnersText: "",
     } as EdicaoParams;
 
-    useEffect(() => {
-      console.log("get", getAdvisors);
-      getAdvisors();
-    }, []);
-
-    useEffect(() => {
-      if (edicaoData) {
-        setValue("titulo", edicaoData.name);
-        setValue("descricao", edicaoData.description);
-        setValue("inicio", edicaoData.startDate);
-        setValue("final", edicaoData.endDate);
-        setValue("local", edicaoData.location);
-        setValue("coordinatorId", user?.id);
-        setValue("comissao", edicaoData.organizingCommitteeIds);
-        setValue("apoio", edicaoData.itSupportIds);
-        setValue("apoioAd", edicaoData.administrativeSupportIds);
-        setValue("comunicacao", edicaoData.communicationIds);
-        setValue("duracao", edicaoData.presentationDuration);
-        setValue("sessoes", edicaoData.presentationsPerPresentationBlock);
-        setValue("submissao", edicaoData.callForPapersText);
-        setValue("limite", edicaoData.submissionDeadline);
-        setValue("partnersText", "");
-      }
-    }, [edicaoData, setValue]);
-
-    useEffect(() => {
-      if (advisors.length > 0) {
-        const users = advisors.map((v) => ({
-          value: v.id ?? "",
-          label: v.name ?? "",
-        }));
-        setAvaliadoresOptions(users);
-      }
-    }, [advisors]);
-
-    if (Edicao?.id) {
-      updateEdicao(Edicao?.id, body);
-      router.push("/Edicoes");
+    if (edicaoData?.id) {
+      updateEdicao(edicaoData?.id, body);
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } else {
+      createEdicao(body);
+      router.push("/home");
     }
-
-    createEdicao(body);
-    router.push("/home");
   };
 
+  useEffect(() => {
+    if (advisors.length > 0) {
+      const users = advisors.map((v) => ({
+        value: v.id ?? "",
+        label: v.name ?? "",
+      }));
+      setAvaliadoresOptions(users);
+    }
+  }, [advisors]);
+
+  useEffect(() => {
+    if (edicaoData?.id) {
+      getCommitterAll(edicaoData?.id);
+    }
+  }, []);
+
+  const onInvalid = (errors) => console.error(errors);
+
   return (
-    <form className='row g-3 w-75' onSubmit={handleSubmit(handleFormEdicao)}>
+    <form
+      className='row g-3 w-75'
+      onSubmit={handleSubmit(handleFormEdicao, onInvalid)}
+    >
       <div className='col-12 mb-1'>
         <label className='form-label form-title'>
           Nome do evento

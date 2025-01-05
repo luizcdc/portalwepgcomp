@@ -48,13 +48,14 @@ export default function Edicoes() {
         <p>Carregando edições...</p>
       ) : (
         <Listagem
-          idModal='editarEdicaoModal'
+          idModal={edicaoSelecionada?.id ? "editarEdicaoModal" : ""}
           title={"Edições do Evento"}
           labelAddButton={"Cadastrar Edição"}
           searchPlaceholder={"Pesquise por edição"}
           cardsList={edicoes}
-          onClickItem={handleEditClick}
+          onEdit={handleEditClick}
           onDelete={(id: string) => deleteEdicao(id)}
+          isAddButtonDisabled={!!edicaoSelecionada?.id}
           onAddButtonClick={() => router.push("/cadastro-edicao")}
         />
       )}

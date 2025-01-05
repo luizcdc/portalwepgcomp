@@ -161,7 +161,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         text:
           err.response?.data?.message?.message ||
           err.response?.data?.message ||
-          "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
+          "Ocorreu um erro durante a atualizar. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
     } finally {
