@@ -16,14 +16,15 @@ const prisma = new PrismaClient();
 async function main() {
   // TRUNCATE ALL TABLES THAT ARE FULLY INDEPENDENT FROM EACH OTHER
   // EVEN INDIRECTLY:
-  await prisma.$executeRaw`SET session_replication_role = 'replica';`;
   await prisma.$executeRawUnsafe('TRUNCATE TABLE "event_edition" CASCADE;');
   await prisma.$executeRawUnsafe('TRUNCATE TABLE "user_account" CASCADE;');
-  await prisma.$executeRaw`SET session_replication_role = 'origin';`;
+  await prisma.$executeRawUnsafe(
+    'TRUNCATE TABLE "email_verification" CASCADE;',
+  );
 
   const users_data = [
     {
-      name: 'Prof Superadmin',
+      name: 'Professor Superadmin',
       email: 'profsuperadmin@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -31,7 +32,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doctoral Student Admin',
+      name: 'Doutorando Admin',
       email: 'docadmin@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -39,7 +40,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Prof Admin',
+      name: 'Professor Admin',
       email: 'profadmin@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -47,7 +48,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Listener Admin',
+      name: 'Ouvinte Admin',
       email: 'listadmin@example.com',
       password: '1234$Ad@',
       profile: Profile.Listener,
@@ -55,7 +56,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Prof Default',
+      name: 'Professor Default',
       email: 'profdefault@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -63,7 +64,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Listener Default',
+      name: 'Ouvinte Default',
       email: 'listdefault@example.com',
       password: '1234$Ad@',
       profile: Profile.Listener,
@@ -71,7 +72,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doctoral Student Default',
+      name: 'Doutorando Default',
       email: 'docdefault@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -79,7 +80,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Prof Default 2',
+      name: 'Professor Default 2',
       email: 'profdefault2@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -87,7 +88,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Prof Default 3',
+      name: 'Professor Default 3',
       email: 'profdefault3@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -95,7 +96,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doctoral Student Default 2',
+      name: 'Doutorando Default 2',
       email: 'docdefault2@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -103,7 +104,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doctoral Student Default 3',
+      name: 'Doutorando Default 3',
       email: 'docdefault3@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -111,7 +112,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doctoral Student Default 4',
+      name: 'Doutorando Default 4',
       email: 'docdefault4@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -119,7 +120,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doctoral Student Default 5',
+      name: 'Doutorando Default 5',
       email: 'docdefault5@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -127,7 +128,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doctoral Student Default 6',
+      name: 'Doutorando Default 6',
       email: 'docdefault6@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -375,7 +376,7 @@ async function main() {
       roomId: room.id,
       type: PresentationBlockType.Presentation,
       title: 'Apresentações de Pesquisa em IA',
-      startTime: new Date('2024-05-01T09:00:00'),
+      startTime: new Date('2025-05-01T09:00:00'),
       duration:
         eventEdition.presentationDuration *
         eventEdition.presentationsPerPresentationBlock,
@@ -388,7 +389,7 @@ async function main() {
       roomId: room.id,
       type: PresentationBlockType.Presentation,
       title: 'Apresentações de Pesquisa em Computação Quântica',
-      startTime: new Date('2024-05-01T10:00:00'),
+      startTime: new Date('2025-05-01T10:00:00'),
       duration:
         eventEdition.presentationDuration *
         eventEdition.presentationsPerPresentationBlock,

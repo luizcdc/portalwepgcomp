@@ -17,7 +17,7 @@ import { UserLevel } from '@prisma/client';
 import { UserLevels } from '../auth/decorators/user-level.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { AppException } from 'src/exceptions/app.exception';
+import { AppException } from '../exceptions/app.exception';
 
 @Controller('evaluations')
 @UseGuards(JwtAuthGuard, UserLevelGuard)

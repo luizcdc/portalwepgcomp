@@ -15,6 +15,7 @@ describe('PresentationBlockService', () => {
         {
           provide: PrismaService,
           useValue: {
+            $transaction: jest.fn(),
             presentationBlock: {
               findMany: jest.fn(),
               findUnique: jest.fn(),
@@ -658,6 +659,9 @@ describe('PresentationBlockService', () => {
 
     // Success Tests
     it('should update block with new duration', async () => {
+      prismaService.$transaction = jest.fn().mockImplementation((callback) => {
+        return callback(prismaService);
+      });
       prismaService.presentationBlock.update = jest.fn().mockResolvedValue({
         ...existingBlock,
         duration: 90,
@@ -673,6 +677,9 @@ describe('PresentationBlockService', () => {
     });
 
     it('should update presentations when submissions change', async () => {
+      prismaService.$transaction = jest.fn().mockImplementation((callback) => {
+        return callback(prismaService);
+      });
       prismaService.submission.findMany = jest
         .fn()
         .mockResolvedValue([{ id: 'sub1' }, { id: 'sub2' }]);
@@ -697,6 +704,9 @@ describe('PresentationBlockService', () => {
     });
 
     it('should update panelists', async () => {
+      prismaService.$transaction = jest.fn().mockImplementation((callback) => {
+        return callback(prismaService);
+      });
       prismaService.userAccount.findMany = jest
         .fn()
         .mockResolvedValue([{ id: 'user1' }, { id: 'user2' }]);

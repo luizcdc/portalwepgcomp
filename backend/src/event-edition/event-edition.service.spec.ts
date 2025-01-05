@@ -33,6 +33,13 @@ describe('EventEditionService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
     },
+    room: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
     $transaction: jest.fn(),
   };
 
