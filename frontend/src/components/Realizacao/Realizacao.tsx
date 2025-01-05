@@ -17,7 +17,10 @@ export default function Realizacao() {
     const eventEditionId = getEventEditionIdStorage();
 
     if (eventEditionId) {
-      updateEdicao(eventEditionId, { partnersText: content });
+      updateEdicao(eventEditionId, {
+        partnersText: content,
+        name: ""
+      });
     }
   };
 

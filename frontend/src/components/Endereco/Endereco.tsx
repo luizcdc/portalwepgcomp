@@ -29,7 +29,10 @@ export default function Endereco() {
   const handleEditAdress = () => {
     const eventEditionId = getEventEditionIdStorage();
 
-    updateEdicao(eventEditionId ?? "", { location: content });
+    updateEdicao(eventEditionId ?? "", {
+      location: content,
+      name: ""
+    });
   };
 
   const latitude = -13.0;

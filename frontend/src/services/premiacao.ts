@@ -8,7 +8,7 @@ const instance = axiosInstance;
 
 export const premiacaoApi = {
     listAwardedPanelistsById: async (idEdicao: string ) => {
-        const { data } = await instance.get(`${baseUrlAwardedPanelists}/${idEdicao}/panelists`);
+        const { data } = await instance.get(`${baseUrlAwardedPanelists}/${idEdicao}`);
 
         return data;
     },
