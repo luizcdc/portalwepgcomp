@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 interface EdicaoParams {
-  name: string;
+  name?: string;
   description?: string;
   startDate?: string;
   endDate?: string;

@@ -2,13 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {
-  createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useState,
-} from "react";
+import { createContext, ReactNode, useState } from "react";
 
 import { edicaoApi } from "@/services/edicao";
 import { useSweetAlert } from "@/hooks/useAlert";
@@ -23,7 +17,6 @@ interface EdicaoProviderData {
   loadingEdicao: boolean;
   edicoesList: Edicao[];
   Edicao: Edicao | null;
-  setEdicao: Dispatch<SetStateAction<Edicao | null>>;
   listEdicao: () => void;
   getEdicaoById: (idEdicao: string) => void;
   getEdicaoByYear: (year: string) => void;
@@ -51,8 +44,11 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
     try {
       const response = await edicaoApi.listEdicao();
       setEdicoesList(response);
+      setEdicao(response[0]);
+      return response;
     } catch (err: any) {
       setEdicoesList([]);
+      setEdicao(null);
       showAlert({
         icon: "error",
         title: "Erro ao listar apresentações",
@@ -91,22 +87,19 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
   const getEdicaoByYear = async (year: string) => {
     setLoadingEdicao(true);
-
-    try {
-      const response = await edicaoApi.getEdicaoByYear(year);
-      setEdicao(response);
-      setEventEditionIdStorage(response.id);
-    } catch (err: any) {
-      setEdicao(null);
-      showAlert({
-        icon: "error",
-        title: "Erro ao buscar ano da edição",
-        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
-        confirmButtonText: "Retornar",
+    edicaoApi
+      .getEdicaoByYear(year)
+      .then((response) => {
+        setEdicao(response);
+        setEventEditionIdStorage(response.id);
+      })
+      .catch((err) => {
+        console.log(err);
+        setEdicao(null);
+      })
+      .finally(() => {
+        setLoadingEdicao(false);
       });
-    } finally {
-      setLoadingEdicoesList(false);
-    }
   };
 
   const createEdicao = async (body: EdicaoParams) => {
@@ -117,7 +110,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "success",
-        title: "Edição cadastrada com sucesso!",
+        title: "Apresentação cadastrada com sucesso!",
         timer: 3000,
         showConfirmButton: false,
       });
@@ -127,7 +120,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "error",
-        title: "Erro ao cadastrar Edição",
+        title: "Erro ao cadastrar apresentação",
         text:
           err.response?.data?.message?.message ||
           err.response?.data?.message ||
@@ -157,11 +150,11 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "error",
-        title: "Erro ao atualizar a Edição",
+        title: "Erro ao editar apresentação",
         text:
           err.response?.data?.message?.message ||
           err.response?.data?.message ||
-          "Ocorreu um erro durante a atualizar. Tente novamente mais tarde!",
+          "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -187,7 +180,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "error",
-        title: "Erro ao atualizar a Edição",
+        title: "Erro ao editar apresentação",
         text:
           err.response?.data?.message?.message ||
           err.response?.data?.message ||
@@ -218,7 +211,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "error",
-        title: "Erro ao remover a Edição",
+        title: "Erro ao remover apresentação",
         text:
           err.response?.data?.message?.message ||
           err.response?.data?.message ||
@@ -237,7 +230,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         loadingEdicoesList,
         Edicao,
         edicoesList,
-        setEdicao,
         listEdicao,
         getEdicaoById,
         getEdicaoByYear,

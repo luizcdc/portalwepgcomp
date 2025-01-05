@@ -7,7 +7,6 @@ import Banner from "@/components/UI/Banner";
 import { formatDate } from "@/utils/formatDate";
 
 import "./style.scss";
-import { usePathname } from "next/navigation";
 
 interface ListagemProps {
   title: string;
@@ -49,8 +48,6 @@ export default function Listagem({
   onEdit,
   onClear,
 }: Readonly<ListagemProps>) {
-  const pathname = usePathname();
-
   return (
     <div className="listagem-template">
       <Banner title={title} />
@@ -111,15 +108,9 @@ export default function Listagem({
             cardsList?.map((card) => (
               <CardListagem
                 key={card.id}
-                title={
-                  pathname?.includes("edicoes")
-                    ? card?.name
-                    : card?.title ?? "Sem Título"
-                }
+                title={card.title ?? "Sem título"}
                 subtitle={
-                  pathname?.includes("edicoes")
-                    ? card?.description
-                    : pathname?.includes("sessoes")
+                  title === "Sessões"
                     ? `${formatDate(card.startTime)}`
                     : card.subtitle
                 }
