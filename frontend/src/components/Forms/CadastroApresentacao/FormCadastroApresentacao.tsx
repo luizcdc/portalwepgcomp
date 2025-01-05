@@ -77,6 +77,7 @@ export function FormCadastroApresentacao({
     setValue("orientador", formEdited.advisorId);
     setValue("coorientador", formEdited.coAdvisor);
     setValue("data", formEdited.data);
+    setValue("slide", formEdited.pdfFile);
     setValue("celular", formEdited.phoneNumber);
     setFormEditedLoaded(true);
   }
@@ -119,29 +120,34 @@ export function FormCadastroApresentacao({
     }
 
     if (file) {
-      await sendFile(file, user.id);
+      const response = await sendFile(file, user.id);
 
-      const submissionData = {
-        ...formEdited,
-        eventEditionId: getEventEditionIdStorage() ?? "",
-        mainAuthorId: data.doutorando || user.id,
-        title: data.titulo,
-        abstractText: data.abstract,
-        advisorId: data.orientador as UUID,
-        coAdvisor: data.coorientador || "",
-        dateSuggestion: data.data ? new Date(data.data) : undefined,
-        pdfFile: file.name,
-        phoneNumber: data.celular,
-      };
+      if (response?.key) {
+        const submissionData = {
+          ...formEdited,
+          eventEditionId: getEventEditionIdStorage() ?? "",
+          mainAuthorId: data.doutorando || user.id,
+          title: data.titulo,
+          abstractText: data.abstract,
+          advisorId: data.orientador as UUID,
+          coAdvisor: data.coorientador || "",
+          dateSuggestion: data.data ? new Date(data.data) : undefined,
+          pdfFile: response?.key ?? file.name,
+          phoneNumber: data.celular,
+        };
 
-      if (formEdited && formEdited.id) {
-        await updateSubmissionById(formEdited.id, submissionData);
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      } else {
-        await createSubmission(submissionData);
-        router.push("/minha-apresentacao");
+        if (formEdited && formEdited.id) {
+          await updateSubmissionById(formEdited.id, submissionData);
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        } else {
+          await createSubmission(submissionData);
+
+          if (user?.profile == "DoctoralStudent") {
+            router.push("/minha-apresentacao");
+          }
+        }
       }
     }
   };
@@ -248,12 +254,14 @@ export function FormCadastroApresentacao({
           Slide da apresentação <span className="txt-min">(PDF)</span>
           <span className="text-danger ms-1">*</span>
         </label>
+
         <input
           type="file"
           className="form-control input-title"
           accept=".pdf"
           onChange={handleFileChange}
         />
+
         <p className="text-danger error-message">{errors.slide?.message}</p>
       </div>
 

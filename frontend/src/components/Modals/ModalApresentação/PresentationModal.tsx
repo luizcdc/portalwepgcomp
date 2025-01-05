@@ -22,9 +22,11 @@ export default function PresentationModal({ props }: { props: Presentation }) {
   const router = useRouter();
 
   useEffect(() => {
-    getPresentationBookmark(presentationBookmarkData).then(
-      setpresentationBookmark
-    );
+    if (signed) {
+      getPresentationBookmark(presentationBookmarkData).then(
+        setpresentationBookmark
+      );
+    }
   }, []);
 
   function handleFavorite() {
@@ -115,8 +117,8 @@ export default function PresentationModal({ props }: { props: Presentation }) {
             )}
           </div>
         )}
-        <div>
-          <button
+        <div className="d-flex align-items-center">
+          <a
             className="fw-semibold bg-white"
             style={{
               border: "none",
@@ -124,9 +126,12 @@ export default function PresentationModal({ props }: { props: Presentation }) {
               color: "#FFA90F",
               padding: "3px 20px",
             }}
+            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${props?.submission?.pdfFile}`}
+            download
+            target="_blank"
           >
             Baixar apresentação
-          </button>
+          </a>
         </div>
       </div>
       <div style={{ textAlign: "justify" }}>

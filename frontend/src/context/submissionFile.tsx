@@ -13,7 +13,10 @@ interface SubmissionFileProviderData {
   submissionFileList: SubmissionFile[];
   submissionFile: SubmissionFile | null;
   getFiles: () => Promise<void>;
-  sendFile: (file: File, idSubmission: string) => Promise<void>;
+  sendFile: (
+    file: File,
+    idSubmission: string
+  ) => Promise<SubmissionFile | null>;
 }
 
 export const SubmissionFileContext = createContext<SubmissionFileProviderData>(
@@ -63,10 +66,15 @@ export const SubmissionFileProvider = ({ children }: SubmissionFileProps) => {
 
     try {
       const response = await submissionFileApi.sendFile(file, idUser);
+
       setSubmissionFile(response);
+      setLoadingSubmissionFile(false);
+      return response;
     } catch (err: any) {
       console.error(err);
       setSubmissionFile(null);
+      setLoadingSubmissionFile(false);
+      return null;
     } finally {
       setLoadingSubmissionFile(false);
     }
