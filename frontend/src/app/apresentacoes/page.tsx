@@ -60,6 +60,7 @@ export default function Apresentacoes() {
     }
   }, [searchValue, submissionList, user]);
 
+
   const handleDelete = async (submissionId: string) => {
     if (user?.level === "Superadmin") {
       await deleteSubmissionById(submissionId);
