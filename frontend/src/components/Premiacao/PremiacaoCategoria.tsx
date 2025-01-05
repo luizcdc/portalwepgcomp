@@ -1,11 +1,11 @@
 import Premiacao from "@/templates/Premiacao/Premiacao";
 
 export default function PremiacaoCategoria({
-  titulo,
-  descricao,
+  categoria,
   premiacoes,
+  avaliadores
 }: PremiacaoCategoriaProps) {
   return (
-    <Premiacao titulo={titulo} descricao={descricao} premiacoes={premiacoes} />
+    <Premiacao categoria={categoria} premiacoes={premiacoes} avaliadores={avaliadores} />
   );
 }

@@ -12,6 +12,16 @@ import { useSession } from "@/hooks/useSession";
 import "./style.scss";
 import { getDurationInMinutes } from "@/utils/formatDate";
 import { formatOptions } from "@/utils/formatOptions";
+import { useEffect } from "react";
+import { useEdicao } from "@/hooks/useEdicao";
+import dayjs from "dayjs";
+
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const formSessaoGeralSchema = z.object({
   titulo: z
@@ -54,8 +64,10 @@ const formSessaoGeralSchema = z.object({
 });
 
 export default function FormSessaoGeral() {
-  const { formGeralFields, confirmButton, eventEditionId } = ModalSessaoMock;
-  const { createSession, updateSession, sessao } = useSession();
+  const { formGeralFields, confirmButton } = ModalSessaoMock;
+  const { createSession, updateSession, sessao, setSessao, roomsList } =
+    useSession();
+  const { Edicao } = useEdicao();
 
   type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
 
@@ -76,21 +88,25 @@ export default function FormSessaoGeral() {
     register,
     control,
     handleSubmit,
+    reset,
+    setValue,
     formState: { errors },
   } = useForm<FormSessaoGeralSchema>({
     resolver: zodResolver(formSessaoGeralSchema),
     defaultValues,
   });
 
-  const roomsOptions = formatOptions(formGeralFields.sala.options, "name");
+  const roomsOptions = formatOptions(roomsList, "name");
 
   const filterTimes = (time: Date) => {
     const hour = time.getHours();
-    return hour < 12 && hour > 6;
+    return hour < 22 && hour > 6;
   };
 
   const handleFormSessaoGeral = (data: FormSessaoGeralSchema) => {
     const { titulo, nome, sala, inicio, final } = data;
+
+    const eventEditionId = getEventEditionIdStorage();
 
     if (!titulo || !sala || !inicio || !final) {
       throw new Error("Campos obrigatórios em branco.");
@@ -100,7 +116,7 @@ export default function FormSessaoGeral() {
 
     const body = {
       type: "General",
-      eventEditionId,
+      eventEditionId: eventEditionId ?? "",
       title: titulo,
       speakerName: nome,
       roomId: sala,
@@ -109,12 +125,44 @@ export default function FormSessaoGeral() {
     } as SessaoParams;
 
     if (sessao?.id) {
-      updateSession(sessao?.id, body);
+      updateSession(sessao?.id, eventEditionId ?? "", body).then((status) => {
+        console.log(status);
+        if (status) {
+          reset();
+          setSessao(null);
+        }
+      });
       return;
     }
 
-    createSession(body);
+    createSession(eventEditionId ?? "", body).then((status) => {
+      if (status) {
+        reset();
+        setSessao(null);
+      }
+    });
   };
+
+  useEffect(() => {
+    if (sessao) {
+      setValue("titulo", sessao?.title ?? "");
+      setValue("nome", sessao?.speakerName ?? "");
+      setValue("sala", sessao?.roomId);
+      setValue("inicio", sessao?.startTime);
+      setValue(
+        "final",
+        dayjs(sessao?.startTime)
+          .add(sessao?.duration ?? 0, "minute")
+          .toISOString()
+      );
+    } else {
+      setValue("titulo", "");
+      setValue("nome", "");
+      setValue("sala", "");
+      setValue("inicio", "");
+      setValue("final", "");
+    }
+  }, [sessao?.id]);
 
   return (
     <form
@@ -159,7 +207,9 @@ export default function FormSessaoGeral() {
           className="form-select"
           {...register("sala")}
         >
-          <option hidden>{formGeralFields.sala.placeholder}</option>
+          <option value="" hidden>
+            {formGeralFields.sala.placeholder}
+          </option>
           {roomsOptions?.map((op, i) => (
             <option id={`sala-op${i}`} key={op.value} value={op.value}>
               {op.label}
@@ -193,8 +243,12 @@ export default function FormSessaoGeral() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                // minDate={new Date()}
-                // maxDate={addDays(new Date(), 3)}
+                minDate={dayjs(Edicao?.startDate || "")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
+                maxDate={dayjs(Edicao?.endDate || "")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formGeralFields.inicio.placeholder}
@@ -230,8 +284,8 @@ export default function FormSessaoGeral() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                // minDate={new Date()}
-                // maxDate={addDays(new Date(), 3)}
+                minDate={new Date(Edicao?.startDate || "")}
+                maxDate={new Date(Edicao?.endDate || "")}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formGeralFields.final.placeholder}

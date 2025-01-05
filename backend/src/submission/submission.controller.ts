@@ -7,20 +7,41 @@ import {
   Param,
   Query,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { SubmissionService } from './submission.service';
-import { CreateSubmissionDto } from './dto/create-submission.dto';
+import {
+  CreateSubmissionDto,
+  CreateSubmissionInCurrentEventDto,
+} from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { ResponseSubmissionDto } from './dto/response-submission.dto';
 import { ApiQuery } from '@nestjs/swagger';
+import { UserLevel } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserLevelGuard } from '../auth/guards/user-level.guard';
+import { UserLevels } from '../auth/decorators/user-level.decorator';
 
 @Controller('submission')
+@UseGuards(JwtAuthGuard, UserLevelGuard)
 export class SubmissionController {
   constructor(private readonly submissionService: SubmissionService) {}
 
   @Post()
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   create(@Body() createSubmissionDto: CreateSubmissionDto) {
     return this.submissionService.create(createSubmissionDto);
+  }
+
+  @Post('/create-in-current-event')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  createInCurrentEvent(
+    @Body()
+    createSubmissionInCurrentEventDto: CreateSubmissionInCurrentEventDto,
+  ) {
+    return this.submissionService.createInCurrentEvent(
+      createSubmissionInCurrentEventDto,
+    );
   }
 
   @Get()
@@ -53,6 +74,7 @@ export class SubmissionController {
   }
 
   @Patch(':id')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   update(
     @Param('id') id: string,
     @Body() updateSubmissionDto: UpdateSubmissionDto,
@@ -61,6 +83,7 @@ export class SubmissionController {
   }
 
   @Delete(':id')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   remove(@Param('id') id: string) {
     return this.submissionService.remove(id);
   }

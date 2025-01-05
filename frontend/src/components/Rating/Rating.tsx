@@ -1,12 +1,20 @@
 "use client"
 
 import "./Rating.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StarRating from "../UI/StarRating";
 
-export default function Rating(){
+interface RatingProps{
+    value: number;
+    onChange: (value: number) => void;
+}
 
-    const [rating, setRating]= useState<number>(0);
+export default function Rating({value, onChange}: RatingProps){
+
+    const [rating, setRating]= useState<number>(value || 0);
+    useEffect(() => {
+        onChange(rating);
+    },[rating]);
 
     return(
 

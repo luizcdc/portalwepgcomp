@@ -7,6 +7,7 @@ import {
 } from './dto/create-event-edition.dto';
 import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
+import { NotFoundException } from '@nestjs/common';
 
 describe('EventEditionController', () => {
   let controller: EventEditionController;
@@ -20,6 +21,7 @@ describe('EventEditionController', () => {
     update: jest.fn(),
     setActive: jest.fn(),
     delete: jest.fn(),
+    getByYear: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -79,7 +81,9 @@ describe('EventEditionController', () => {
 
       const result = await controller.createFromEventEditionForm(createDto);
       expect(result).toEqual(createdEvent);
-      expect(service.create).toHaveBeenCalledWith(createDto);
+      expect(service.createFromEventEditionForm).toHaveBeenCalledWith(
+        createDto,
+      );
     });
   });
 
@@ -107,6 +111,37 @@ describe('EventEditionController', () => {
       const result = await controller.getById('1');
       expect(result).toEqual(event);
       expect(service.getById).toHaveBeenCalledWith('1');
+    });
+  });
+
+  describe('getByYear', () => {
+    it('should return an event for the given year', async () => {
+      const year = 2022;
+      const event = new EventEditionResponseDto({
+        id: '1',
+        startDate: new Date(year, 5, 15),
+      });
+
+      jest.spyOn(service, 'getByYear').mockResolvedValue(event);
+
+      const result = await controller.getByYear(year);
+      expect(result).toEqual(event);
+      expect(service.getByYear).toHaveBeenCalledWith(year);
+    });
+
+    it('should throw a NotFoundException when no event is found for the given year', async () => {
+      const year = 2022;
+
+      jest
+        .spyOn(service, 'getByYear')
+        .mockRejectedValue(
+          new NotFoundException('Não há eventos para o ano informado'),
+        );
+
+      await expect(controller.getByYear(year)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(service.getByYear).toHaveBeenCalledWith(year);
     });
   });
 

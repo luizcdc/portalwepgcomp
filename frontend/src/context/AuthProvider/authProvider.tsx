@@ -1,9 +1,16 @@
 "use client";
 
-import { createContext, useState } from "react";
-import { api, LoginRequest, setTokenLocalStorage } from "./util";
 import { useRouter } from "next/navigation";
+import { createContext, useEffect, useState } from "react";
+
 import { useSweetAlert } from "@/hooks/useAlert";
+import {
+  getUserLocalStorage,
+  LoginRequest,
+  setTokenLocalStorage,
+  setUserLocalStorage,
+} from "./util";
+import api from "../../utils/api";
 
 export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
 
@@ -19,6 +26,13 @@ export const AuthProvider = ({ children }) => {
   const { showAlert } = useSweetAlert();
   const router = useRouter();
 
+  useEffect(() => {
+    const userSigned = getUserLocalStorage();
+    if (userSigned) {
+      setUser(JSON.parse(userSigned));
+    }
+  }, []);
+
   const singIn = async ({ email, password }) => {
     try {
       const response = await LoginRequest(email, password);
@@ -30,19 +44,14 @@ export const AuthProvider = ({ children }) => {
       setUser(payload.data);
       api.defaults.headers.common["Authorization"] = `Bearer ${payload.token}`;
       setTokenLocalStorage(payload.token);
-
-      showAlert({
-        icon: "success",
-        title: "Login realizado com sucesso!",
-        timer: 3000,
-        showConfirmButton: false,
-      });
+      setUserLocalStorage(payload.data);
     } catch (err: any) {
       setUser(null);
 
       showAlert({
         icon: "error",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",

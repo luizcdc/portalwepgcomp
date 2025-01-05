@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
 import "./style.scss";
-import { SessoesMock } from "@/mocks/Sessoes";
+
 import { useOrientacao } from "@/hooks/useOrientacao";
 
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+
 export default function Orientacao() {
-  const { eventEditionId } = SessoesMock;
   const { postOrientacao, putOrientacao, getOrientacoes, orientacoes } =
     useOrientacao();
 
@@ -17,11 +18,18 @@ export default function Orientacao() {
 
   const handleEditOrientacao = () => {
     const idOrientacao = orientacoes?.id;
+    const eventEditionId = getEventEditionIdStorage();
 
     if (idOrientacao) {
-      putOrientacao(idOrientacao, { eventEditionId, summary: content });
+      putOrientacao(idOrientacao, {
+        eventEditionId: eventEditionId ?? "",
+        summary: content,
+      });
     } else {
-      postOrientacao({ eventEditionId, summary: content });
+      postOrientacao({
+        eventEditionId: eventEditionId ?? "",
+        summary: content,
+      });
     }
   };
 
@@ -45,7 +53,7 @@ export default function Orientacao() {
         handleEditField={handleEditOrientacao}
       />
 
-      <Link className={"orientacao-link"} href="/Orientacoes">
+      <Link className={"orientacao-link"} href="/orientacoes">
         Ver todas as orientações
       </Link>
     </div>

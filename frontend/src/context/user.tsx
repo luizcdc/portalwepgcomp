@@ -14,10 +14,16 @@ interface UserProviderData {
   loadingCreateUser: boolean;
   loadingSendEmail: boolean;
   loadingResetPassword: boolean;
+  loadingUserList: boolean;
+  loadingAdvisors: boolean;
   user: User | null;
+  userList: User[];
+  advisors: User[];
+  getUsers: (params: GetUserParams) => void;
   registerUser: (body: RegisterUserParams) => Promise<void>;
   resetPasswordSendEmail: (body: ResetPasswordSendEmailParams) => Promise<void>;
   resetPassword: (body: ResetPasswordParams) => Promise<void>;
+  getAdvisors: () => Promise<void>;
 }
 
 export const UserContext = createContext<UserProviderData>(
@@ -26,13 +32,41 @@ export const UserContext = createContext<UserProviderData>(
 
 export const UserProvider = ({ children }: UserProps) => {
   const [loadingCreateUser, setLoadingCreateUser] = useState<boolean>(false);
+  const [loadingUserList, setLoadingUserList] = useState<boolean>(false);
   const [loadingSendEmail, setLoadingSendEmail] = useState<boolean>(false);
   const [loadingResetPassword, setLoadingResetPassword] =
     useState<boolean>(false);
+  const [loadingAdvisors, setLoadingAdvisors] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const [userList, setUserList] = useState<User[]>([]);
+  const [advisors, setAdvisors] = useState<User[]>([]);
 
   const { showAlert } = useSweetAlert();
   const router = useRouter();
+
+  const getUsers = async (params: GetUserParams) => {
+    setLoadingUserList(true);
+
+    try {
+      const response = await userApi.getUsers(params);
+      setUserList(response);
+      console.log("Listado com sucesso");
+    } catch (err: any) {
+      setUserList([]);
+
+      showAlert({
+        icon: "error",
+        title: "Erro ao listar usuários",
+        text:
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro durante a busca.",
+        confirmButtonText: "Retornar",
+      });
+    } finally {
+      setLoadingUserList(false);
+    }
+  };
 
   const registerUser = async (body: RegisterUserParams) => {
     setLoadingCreateUser(true);
@@ -48,7 +82,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -56,6 +90,7 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao cadastrar usuário",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -80,7 +115,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -88,7 +123,9 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao enviar e-mail",
         text:
-          err.response?.data?.message || "Ocorreu um erro ao enviar o e-mail.",
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro ao enviar o e-mail.",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -110,7 +147,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -118,6 +155,7 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao alterar senha",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro ao tentar alterar sua senha. Tente novamente!",
         confirmButtonText: "Retornar",
@@ -127,16 +165,46 @@ export const UserProvider = ({ children }: UserProps) => {
     }
   };
 
+  const getAdvisors = async () => {
+    setLoadingAdvisors(true);
+
+    try {
+      const response = await userApi.getAdvisors();
+      setAdvisors(response);
+    } catch (err: any) {
+      console.error(err);
+      setAdvisors([]);
+
+      showAlert({
+        icon: "error",
+        title: "Erro ao buscar orientadores",
+        text:
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro ao buscar orientadores.",
+        confirmButtonText: "Retornar",
+      });
+    } finally {
+      setLoadingAdvisors(false);
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
         loadingCreateUser,
         loadingSendEmail,
         loadingResetPassword,
+        loadingUserList,
+        loadingAdvisors,
         user,
+        userList,
+        advisors,
+        getUsers,
         registerUser,
         resetPasswordSendEmail,
         resetPassword,
+        getAdvisors,
       }}
     >
       {children}

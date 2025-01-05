@@ -8,29 +8,38 @@ import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import FormSessaoApresentacoes from "@/components/Forms/Sessao/FormSessaoApresentacoes";
 import FormSessaoGeral from "@/components/Forms/Sessao/FormSessaoGeral";
 import { useSession } from "@/hooks/useSession";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 export default function ModalSessao() {
   const { tipo } = ModalSessaoMock;
-  const { sessao, setSessao } = useSession();
+  const { sessao, listRooms } = useSession();
 
   const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(
-    sessao?.type === SessaoTipoEnum["Sessão geral do evento"]
-      ? SessaoTipoEnum["Sessão geral do evento"]
-      : SessaoTipoEnum["Sessão de apresentações"]
+    sessao?.type === SessaoTipoEnum["Sessão de apresentações"]
+      ? SessaoTipoEnum["Sessão de apresentações"]
+      : SessaoTipoEnum["Sessão geral do evento"]
   );
 
   useEffect(() => {
-    return setSessao(null);
+    if (sessao?.type) {
+      setTipoSessao(
+        (sessao?.type ||
+          SessaoTipoEnum["Sessão geral do evento"]) as SessaoTipoEnum
+      );
+    }
+  }, [sessao?.type]);
+
+  useEffect(() => {
+    const eventEditionId = getEventEditionIdStorage();
+
+    listRooms(eventEditionId ?? "");
   }, []);
 
   return (
     <ModalComponent
       id="sessaoModal"
+      idCloseModal="sessaoModalClose"
       loading={false}
-      onClose={() => {
-        setSessao(null);
-        setTipoSessao(SessaoTipoEnum["Sessão geral do evento"]);
-      }}
     >
       <div className="modal-sessao px-5">
         <div className="col-12 mb-1">
@@ -65,11 +74,9 @@ export default function ModalSessao() {
           <p className="text-danger error-message"></p>
         </div>
 
-        {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] && (
+        {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] ? (
           <FormSessaoGeral />
-        )}
-
-        {tipoSessao === SessaoTipoEnum["Sessão de apresentações"] && (
+        ) : (
           <FormSessaoApresentacoes />
         )}
       </div>

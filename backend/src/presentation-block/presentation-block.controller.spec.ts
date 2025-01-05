@@ -5,6 +5,8 @@ import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto'
 import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto';
 import { ResponsePresentationBlockDto } from './dto/response-presentation-block.dto';
 import { PresentationBlockType } from '@prisma/client';
+import { SwapPresentationsDto } from './dto/swap-presentations.dto';
+import { AppException } from '../exceptions/app.exception';
 
 describe('PresentationBlockController', () => {
   let controller: PresentationBlockController;
@@ -12,10 +14,11 @@ describe('PresentationBlockController', () => {
 
   const mockPresentationBlockService = {
     create: jest.fn(),
-    findAllByEventEditionId: jest.fn(),
+    findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    swapPresentations: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -73,7 +76,7 @@ describe('PresentationBlockController', () => {
         },
       ];
 
-      mockPresentationBlockService.findAllByEventEditionId.mockResolvedValue(
+      mockPresentationBlockService.findAll.mockResolvedValue(
         mockPresentationBlocks,
       );
 
@@ -82,9 +85,7 @@ describe('PresentationBlockController', () => {
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toBe(2);
       expect(result[0]).toBeInstanceOf(ResponsePresentationBlockDto);
-      expect(service.findAllByEventEditionId).toHaveBeenCalledWith(
-        eventEditionId,
-      );
+      expect(service.findAll).toHaveBeenCalledWith(undefined, eventEditionId);
     });
   });
 
@@ -111,8 +112,11 @@ describe('PresentationBlockController', () => {
 
     it('should return null when not found', async () => {
       const id = '999';
-
-      mockPresentationBlockService.findOne.mockResolvedValue(null);
+      // the service will raise an exception if the block is not found, not return null
+      // let's mock it raising an exception
+      mockPresentationBlockService.findOne.mockRejectedValue(
+        new AppException('Presentation block not found', 404),
+      );
 
       const result = await controller.findOne(id);
 
@@ -147,6 +151,207 @@ describe('PresentationBlockController', () => {
 
       expect(result).toBe(expectedResult);
       expect(service.remove).toHaveBeenCalledWith(id);
+    });
+  });
+
+  describe('swapPresentations', () => {
+    it('should call the service with the correct parameters and return the result', async () => {
+      const id = 'block1';
+      const swapPresentationsDto: SwapPresentationsDto = {
+        presentation1Id: 'presentation1',
+        presentation2Id: 'presentation2',
+      };
+
+      const serviceResponse = {
+        message: 'Apresentações trocadas com sucesso',
+      };
+
+      jest
+        .spyOn(service, 'swapPresentations')
+        .mockResolvedValueOnce(serviceResponse);
+
+      const result = await controller.swapPresentations(
+        id,
+        swapPresentationsDto,
+      );
+
+      expect(service.swapPresentations).toHaveBeenCalledWith(
+        id,
+        swapPresentationsDto,
+      );
+      expect(result).toEqual(serviceResponse);
+    });
+
+    it('should throw an error if the service throws an exception', async () => {
+      const id = 'block1';
+      const swapPresentationsDto: SwapPresentationsDto = {
+        presentation1Id: 'presentation1',
+        presentation2Id: 'presentation2',
+      };
+
+      jest
+        .spyOn(service, 'swapPresentations')
+        .mockRejectedValueOnce(new Error('Internal Server Error'));
+
+      await expect(
+        controller.swapPresentations(id, swapPresentationsDto),
+      ).rejects.toThrow('Internal Server Error');
+      expect(service.swapPresentations).toHaveBeenCalledWith(
+        id,
+        swapPresentationsDto,
+      );
+    });
+  });
+
+  describe('findAll', () => {
+    const mockRequest = {
+      user: {
+        userId: 'user123',
+      },
+    };
+
+    it('should filter by eventEditionId when provided', async () => {
+      const eventEditionId = 'event123';
+      const mockPresentationBlocks = [
+        {
+          id: '1',
+          eventEditionId,
+          type: PresentationBlockType.Presentation,
+          presentations: [],
+          panelists: [],
+        },
+      ];
+
+      mockPresentationBlockService.findAll.mockResolvedValue(
+        mockPresentationBlocks,
+      );
+
+      const result = await controller.findAll(mockRequest, eventEditionId);
+
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBe(1);
+      expect(result[0]).toBeInstanceOf(ResponsePresentationBlockDto);
+      expect(service.findAll).toHaveBeenCalledWith(
+        mockRequest.user.userId,
+        eventEditionId,
+        undefined,
+      );
+    });
+
+    it('should filter by panelistId when provided', async () => {
+      const panelistId = 'panelist123';
+      const mockPresentationBlocks = [
+        {
+          id: '1',
+          type: PresentationBlockType.Presentation,
+          eventEditionId: 'event123',
+          presentations: [],
+          panelists: [
+            {
+              userId: panelistId,
+              user: {
+                id: panelistId,
+                name: 'Test User',
+                email: 'test@example.com',
+                profile: 'STUDENT',
+                level: 'UNDERGRADUATE',
+              },
+            },
+          ],
+        },
+      ];
+
+      mockPresentationBlockService.findAll.mockResolvedValue(
+        mockPresentationBlocks,
+      );
+
+      const result = await controller.findAll(
+        mockRequest,
+        'event123',
+        panelistId,
+      );
+
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBe(1);
+      expect(result[0]).toBeInstanceOf(ResponsePresentationBlockDto);
+      expect(service.findAll).toHaveBeenCalledWith(
+        mockRequest.user.userId,
+        'event123',
+        panelistId,
+      );
+    });
+
+    it('should filter by both eventEditionId and panelistId when provided', async () => {
+      const eventEditionId = 'event123';
+      const panelistId = 'panelist123';
+      const mockPresentationBlocks = [
+        {
+          id: '1',
+          eventEditionId,
+          type: PresentationBlockType.Presentation,
+          presentations: [],
+          panelists: [
+            {
+              userId: panelistId,
+              user: {
+                id: panelistId,
+                name: 'Test User',
+                email: 'test@example.com',
+                profile: 'STUDENT',
+                level: 'UNDERGRADUATE',
+              },
+            },
+          ],
+        },
+      ];
+
+      mockPresentationBlockService.findAll.mockResolvedValue(
+        mockPresentationBlocks,
+      );
+
+      const result = await controller.findAll(
+        mockRequest,
+        eventEditionId,
+        panelistId,
+      );
+
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBe(1);
+      expect(result[0]).toBeInstanceOf(ResponsePresentationBlockDto);
+      expect(service.findAll).toHaveBeenCalledWith(
+        mockRequest.user.userId,
+        eventEditionId,
+        panelistId,
+      );
+    });
+
+    it('should handle empty results', async () => {
+      mockPresentationBlockService.findAll.mockResolvedValue([]);
+
+      const result = await controller.findAll(mockRequest, 'event123');
+
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBe(0);
+      expect(service.findAll).toHaveBeenCalledWith(
+        mockRequest.user.userId,
+        'event123',
+        undefined,
+      );
+    });
+
+    it('should handle service errors', async () => {
+      mockPresentationBlockService.findAll.mockRejectedValue(
+        new AppException('Error finding presentation blocks', 500),
+      );
+
+      await expect(controller.findAll(mockRequest, 'event123')).rejects.toThrow(
+        AppException,
+      );
+      expect(service.findAll).toHaveBeenCalledWith(
+        mockRequest.user.userId,
+        'event123',
+        undefined,
+      );
     });
   });
 });

@@ -1,21 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-// Component
 type PremiacaoCategoriaProps = {
-    titulo: string;
-    descricao: string;
-    premiacoes: { titulo: string; subtitulo: string; nota: number }[];
+    categoria: string;
+    premiacoes: Premiacoes[];
+    avaliadores: AuthorOrEvaluator[];
 };
 
-// Template
-interface PremiacaoItem {
-    titulo: string;
-    subtitulo: string;
-    nota: number;
+interface AuthorOrEvaluator {
+    id: string;
+    name: string;
+    email: string;
+    registrationNumber: string;
+    photoFilePath: string;
+    profile: Record<string, unknown>;
+    level: Record<string, unknown>;
+    isActive?: boolean;
 }
-
-interface PremiacaoListProps {
-    titulo: string;
-    descricao: string;
-    premiacoes: PremiacaoItem[];
+  
+interface Premiacoes {
+    id: string;
+    presentationBlockId: string;
+    positionWithinBlock: number;
+    status: Record<string, unknown>;
+    publicAverageScore: number;
+    evaluatorsAverageScore: number;
+    submission: Submission;
 }
+  

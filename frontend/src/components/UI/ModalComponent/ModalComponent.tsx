@@ -1,7 +1,7 @@
 "use client";
 
-import { ReactNode } from "react";
 import LoadingPage from "@/components/LoadingPage";
+import { ReactNode } from "react";
 
 import "./style.scss";
 
@@ -13,6 +13,7 @@ interface ModalComponentProps {
   colorButtonConfirm?: string;
   disabledConfirmButton?: boolean;
   isShortModal?: boolean;
+  idCloseModal?: string;
   onConfirm?: () => void;
   onClose?: () => void;
 }
@@ -25,6 +26,7 @@ export default function ModalComponent({
   onConfirm,
   disabledConfirmButton,
   isShortModal,
+  idCloseModal,
   onClose,
   children,
 }: Readonly<ModalComponentProps>) {
@@ -35,7 +37,6 @@ export default function ModalComponent({
       } modal-component`}
       id={id}
       tabIndex={-1}
-      aria-hidden="true"
       onBlur={onClose}
     >
       <div className="modal-dialog">
@@ -45,7 +46,7 @@ export default function ModalComponent({
             <>
               <div className="modal-header header-modal-component">
                 <button
-                  id="close-modal"
+                  id={idCloseModal ?? "close-modal"}
                   type="button"
                   className="btn-close close-button"
                   data-bs-dismiss="modal"

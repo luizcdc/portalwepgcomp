@@ -1,11 +1,11 @@
 "use client"
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
 const baseUrl = "/guidance";
 
 export const orientacoesApi = {
     getOrientacoes: async () => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.get(`${baseUrl}`);
 
@@ -13,7 +13,7 @@ export const orientacoesApi = {
     },
 
     getOrientacaoById: async (idOrientacao: string) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.get(`${baseUrl}/${idOrientacao}`);
 
@@ -21,7 +21,7 @@ export const orientacoesApi = {
     },
 
     postOrientacao: async (body: OrientacaoParams) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.post(`${baseUrl}`, body);
 
@@ -29,7 +29,7 @@ export const orientacoesApi = {
     },
 
     putOrientacao: async (idOrientacao: string, body: OrientacaoParams) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.put(`${baseUrl}/${idOrientacao}`, body);
 
@@ -37,7 +37,7 @@ export const orientacoesApi = {
     },
     
     putOrientacaoActive: async (body: OrientacaoParams) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.put(`${baseUrl}/active`, body);
 
@@ -45,7 +45,7 @@ export const orientacoesApi = {
     },
 
     deleteOrientacaoById: async (idOrientacao: string) => {
-        const instance = axiosInstance();
+        const instance = axiosInstance;
 
         const { data } = await instance.delete(`${baseUrl}/${idOrientacao}`);
 

@@ -4,21 +4,22 @@ import { useEffect, useState } from "react";
 import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
 
 import "./style.scss";
-import { SessoesMock } from "@/mocks/Sessoes";
+
 import { useOrientacao } from "@/hooks/useOrientacao";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 export default function OrientacoesAvaliadores() {
-  const { eventEditionId } = SessoesMock;
   const { putOrientacao, orientacoes } = useOrientacao();
 
   const [content, setContent] = useState(orientacoes?.reviewerGuidance || "");
 
   const handleEditOrientacao = () => {
     const idOrientacao = orientacoes?.id;
+    const eventEditionId = getEventEditionIdStorage();
 
     if (idOrientacao) {
       putOrientacao(idOrientacao, {
-        eventEditionId,
+        eventEditionId: eventEditionId ?? "",
         reviewerGuidance: content,
       });
     }

@@ -17,6 +17,9 @@ import { EvaluationModule } from './evaluation/evaluation.module';
 import { S3UtilsModule } from './s3-utils/s3-utils.module';
 import { RoomModule } from './room/room.module';
 import { GuidanceModule } from './guidance/guidance.module';
+import { AwardedPanelistsModule } from './awarded-panelists/awarded-panelists.module';
+import { AwardedDoctoralStudentsModule } from './awarded-doctoral-students/awarded-doctoral-students.module';
+import { EvaluationCriteriaModule } from './evaluation-criteria/evaluation-criteria.module';
 
 @Module({
   imports: [
@@ -36,6 +39,9 @@ import { GuidanceModule } from './guidance/guidance.module';
     S3UtilsModule,
     RoomModule,
     GuidanceModule,
+    AwardedPanelistsModule,
+    AwardedDoctoralStudentsModule,
+    EvaluationCriteriaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

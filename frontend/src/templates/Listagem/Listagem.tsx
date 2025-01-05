@@ -1,25 +1,32 @@
 "use client";
 
-import CardListagem from "@/components/CardListagem/CardListagem";
-import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
-import "./style.scss";
+
+import CardListagem from "@/components/CardListagem/CardListagem";
 import Banner from "@/components/UI/Banner";
+import { formatDate } from "@/utils/formatDate";
+
+import "./style.scss";
+import { usePathname } from "next/navigation";
 
 interface ListagemProps {
   title: string;
   labelAddButton?: string;
+  isAddButtonDisabled?: boolean;
   searchPlaceholder: string;
   cardsList: any[];
   searchValue?: string;
-  labelListCardsButton?: string;
   isMyPresentation?: boolean;
   isFavorites?: boolean;
+  isLoading?: boolean;
   idModal?: string;
+  idGeneralModal?: string;
+  generalButtonLabel?: string;
   onAddButtonClick?: () => void;
   onChangeSearchValue?: (value: string) => void;
   onClickItem?: (value: string) => void;
   onDelete?: (id: string) => void;
+  onEdit?: (id: string) => void;
   onClear?: () => void;
 }
 
@@ -27,7 +34,7 @@ export default function Listagem({
   idModal,
   title,
   labelAddButton,
-  labelListCardsButton,
+  isAddButtonDisabled,
   searchPlaceholder,
   searchValue,
   isMyPresentation,
@@ -35,10 +42,15 @@ export default function Listagem({
   cardsList,
   onAddButtonClick,
   onChangeSearchValue,
+  generalButtonLabel,
   onClickItem,
+  idGeneralModal,
   onDelete,
+  onEdit,
   onClear,
 }: Readonly<ListagemProps>) {
+  const pathname = usePathname();
+
   return (
     <div className="listagem-template">
       <Banner title={title} />
@@ -50,6 +62,7 @@ export default function Listagem({
               data-bs-toggle={idModal ? "modal" : undefined}
               data-bs-target={idModal ? `#${idModal}` : undefined}
               onClick={idModal ? onClear : onAddButtonClick}
+              disabled={isAddButtonDisabled}
             >
               {labelAddButton}
               <Image
@@ -97,15 +110,28 @@ export default function Listagem({
             !isFavorites &&
             cardsList?.map((card) => (
               <CardListagem
-                key={card.title}
-                title={card.title}
+                key={card.id}
+                title={
+                  pathname?.includes("edicoes")
+                    ? card?.name
+                    : card?.title ?? "Sem Título"
+                }
                 subtitle={
-                  title === "Sessões"
+                  pathname?.includes("edicoes")
+                    ? card?.description
+                    : pathname?.includes("sessoes")
                     ? `${formatDate(card.startTime)}`
                     : card.subtitle
                 }
+                generalButtonLabel={generalButtonLabel}
+                idGeneralModal={
+                  card?.type == "Presentation" && !!card?.presentations.length
+                    ? idGeneralModal
+                    : ""
+                }
                 idModalEdit={idModal}
                 onClickItem={() => onClickItem && onClickItem(card)}
+                onEdit={() => onEdit && onEdit(card?.id ?? "")}
                 onDelete={() => onDelete && onDelete(card?.id ?? "")}
               />
             ))}
@@ -138,23 +164,6 @@ export default function Listagem({
             </div>
           )}
         </div>
-        <button
-          className="listagem-template-mais-cards"
-          style={{
-            visibility:
-              isMyPresentation || cardsList.length <= 4 ? "hidden" : "visible",
-          }}
-        >
-          {labelListCardsButton}
-
-          <Image
-            className="listagem-template-mais-cards-icon"
-            src="/assets/images/seta.svg"
-            alt=""
-            width={24}
-            height={24}
-          />
-        </button>
       </div>
     </div>
   );

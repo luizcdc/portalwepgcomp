@@ -20,12 +20,27 @@ interface SessionProviderData {
   loadingSessao: boolean;
   sessoesList: Sessao[];
   sessao: Sessao | null;
+  roomsList: Room[];
+  loadingRoomsList: boolean;
   setSessao: Dispatch<SetStateAction<Sessao | null>>;
   listSessions: (eventEditionId: string) => void;
+  listRooms: (eventEditionId: string) => void;
   getSessionById: (idSession: string) => void;
-  createSession: (body: SessaoParams) => void;
-  updateSession: (idSession: string, body: SessaoParams) => void;
-  deleteSession: (idSession: string) => void;
+  createSession: (
+    eventEditionId: string,
+    body: SessaoParams
+  ) => Promise<boolean>;
+  updateSession: (
+    idSession: string,
+    eventEditionId: string,
+    body: SessaoParams
+  ) => Promise<boolean>;
+  deleteSession: (idSession: string, eventEditionId: string) => void;
+  swapPresentationsOnSession: (
+    idSession: string,
+    eventEditionId: string,
+    body: SwapPresentationsOnSession
+  ) => Promise<boolean>;
 }
 
 export const SessionContext = createContext<SessionProviderData>(
@@ -37,6 +52,8 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const [loadingSessao, setLoadingSessao] = useState<boolean>(false);
   const [sessoesList, setSessoesList] = useState<Sessao[]>([]);
   const [sessao, setSessao] = useState<Sessao | null>(null);
+  const [loadingRoomsList, setLoadingRoomsList] = useState<boolean>(false);
+  const [roomsList, setRoomsList] = useState<Room[]>([]);
 
   const { showAlert } = useSweetAlert();
 
@@ -56,84 +73,129 @@ export const SessionProvider = ({ children }: SessionProps) => {
       });
   };
 
+  const listRooms = async (eventEditionId: string) => {
+    setLoadingRoomsList(true);
+    sessionApi
+      .listRooms(eventEditionId)
+      .then((response) => {
+        setRoomsList(response);
+      })
+      .catch((err) => {
+        console.log(err);
+        setRoomsList([]);
+      })
+      .finally(() => {
+        setLoadingRoomsList(false);
+      });
+  };
+
   const getSessionById = async (idSession: string) => {
     setLoadingSessao(true);
     sessionApi
       .getSessionById(idSession)
       .then((response) => {
         setSessao(response);
-        console.log("encontrado com sucesso");
       })
       .catch((err) => {
         console.log(err);
         setSessao(null);
-        console.log("erro ao buscar");
-        alert("Erro ao tentar buscar!");
       })
       .finally(() => {
         setLoadingSessao(false);
       });
   };
 
-  const createSession = async (body: SessaoParams) => {
+  const createSession = async (eventEditionId: string, body: SessaoParams) => {
     setLoadingSessao(true);
 
-    sessionApi
+    return sessionApi
       .createSession(body)
       .then((response) => {
         setSessao(response);
-        console.log("criado com sucesso");
         showAlert({
           icon: "success",
-          title: "Cadastro realizado com sucesso!",
+          title: "Cadastro de sessão realizado com sucesso!",
           timer: 3000,
           showConfirmButton: false,
         });
+
+        const modalElementButton = document.getElementById(
+          "sessaoModalClose"
+        ) as HTMLButtonElement;
+
+        if (modalElementButton) {
+          modalElementButton.click();
+        }
+
+        listSessions(eventEditionId);
+        return true;
       })
       .catch((err) => {
-        console.log(err.response.data.message);
-        setSessao(null);
-        console.log("erro ao criar");
         showAlert({
           icon: "error",
           title: "Erro ao cadastrar sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
         });
+        return false;
       })
       .finally(() => {
         setLoadingSessao(false);
       });
   };
 
-  const updateSession = async (idSession: string, body: SessaoParams) => {
+  const updateSession = async (
+    idSession: string,
+    eventEditionId: string,
+    body: SessaoParams
+  ) => {
     setLoadingSessao(true);
-    sessionApi
+    return sessionApi
       .updateSessionById(idSession, body)
       .then((response) => {
         setSessao(response);
-        console.log("atualizado com sucesso");
+        showAlert({
+          icon: "success",
+          title: "Atualização de sessão realizada com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+
+        const modalElementButton = document.getElementById(
+          "sessaoModalClose"
+        ) as HTMLButtonElement;
+
+        if (modalElementButton) {
+          modalElementButton.click();
+        }
+        listSessions(eventEditionId);
+        return true;
       })
       .catch((err) => {
-        console.log(err);
-        setSessao(null);
-        console.log("erro ao atualizar");
-        alert("Erro ao tentar atualizar!");
+        showAlert({
+          icon: "error",
+          title: "Erro ao atualizar sessão",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
+        return false;
       })
       .finally(() => {
         setLoadingSessao(false);
       });
   };
 
-  const deleteSession = async (idSession: string) => {
+  const deleteSession = async (idSession: string, eventEditionId: string) => {
     setLoadingSessao(true);
     sessionApi
       .deleteSessionById(idSession)
-      .then((response) => {
-        console.log(response);
-
+      .then(() => {
         showAlert({
           icon: "success",
           title: "Sessão deletada com sucesso!",
@@ -141,20 +203,72 @@ export const SessionProvider = ({ children }: SessionProps) => {
           showConfirmButton: false,
         });
 
-        listSessions("e691f604-ea01-4ffa-9f77-3df417490ca2");
+        listSessions(eventEditionId);
+
+        return true;
       })
       .catch((err) => {
         showAlert({
           icon: "error",
           title: "Erro ao deletar sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante a deleção. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
         });
+        return false;
       })
       .finally(() => {
         setSessao(null);
+        setLoadingSessao(false);
+      });
+  };
+
+  const swapPresentationsOnSession = async (
+    idSession: string,
+    eventEditionId: string,
+    body: SwapPresentationsOnSession
+  ) => {
+    setLoadingSessao(true);
+    return sessionApi
+      .swapPresentationsOnSession(idSession, body)
+      .then((response) => {
+        setSessao(response);
+        showAlert({
+          icon: "success",
+          title:
+            "Troca na ordem das apresentações da sessão realizada com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+        listSessions(eventEditionId);
+
+        const modalElementButton = document.getElementById(
+          "trocarOrdemApresentacaoClose"
+        ) as HTMLButtonElement;
+
+        if (modalElementButton) {
+          modalElementButton.click();
+        }
+
+        return true;
+      })
+      .catch((err) => {
+        setSessao(null);
+        showAlert({
+          icon: "error",
+          title: "Erro na troca da ordem das apresentações da sessão",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
+
+        return false;
+      })
+      .finally(() => {
         setLoadingSessao(false);
       });
   };
@@ -168,10 +282,14 @@ export const SessionProvider = ({ children }: SessionProps) => {
         setSessao,
         sessoesList,
         listSessions,
+        listRooms,
+        roomsList,
+        loadingRoomsList,
         getSessionById,
         createSession,
         updateSession,
         deleteSession,
+        swapPresentationsOnSession,
       }}
     >
       {children}

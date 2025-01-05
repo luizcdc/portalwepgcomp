@@ -15,11 +15,7 @@
   background-color: white;
   border-radius: 10px;
   border: 3px solid #F17F0C;
-  position: fixed;
   z-index: 100;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
 }
 .modal-btn-close {
   position: relative;
@@ -34,6 +30,9 @@
 @media (max-width:480px) {
   .modal-content {
     width: 100vw;
+  }
+  .modal-dialog {
+    margin: 0 !important;
   }
   .modal-btn-close {
     left: 88%;

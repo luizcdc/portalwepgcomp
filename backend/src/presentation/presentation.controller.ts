@@ -17,15 +17,18 @@ import { UpdatePresentationDto } from './dto/update-presentation.dto';
 import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-with-submission.dto';
 import { UpdatePresentationWithSubmissionDto } from './dto/update-presentation-with-submission.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { UserLevelGuard } from 'src/auth/guards/user-level.guard';
+import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
 import {
+  BookmarkedPresentationResponseDto,
   BookmarkedPresentationsResponseDto,
   BookmarkPresentationRequestDto,
   BookmarkPresentationResponseDto,
 } from './dto/bookmark-presentation.dto';
-import { Public, UserLevels } from 'src/auth/decorators/user-level.decorator';
+import { Public, UserLevels } from '../auth/decorators/user-level.decorator';
 import { UserLevel } from '@prisma/client';
+import { ApiBearerAuth, ApiQuery, ApiParam } from '@nestjs/swagger';
+import { ListAdvisedPresentationsResponse } from './dto/list-advised-presentations.dto';
 
 @Controller('presentation')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
@@ -33,6 +36,8 @@ export class PresentationController {
   constructor(private readonly presentationService: PresentationService) {}
 
   @Get('bookmarks')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   bookmarkedPresentations(
     @Request() req,
   ): Promise<BookmarkedPresentationsResponseDto> {
@@ -41,7 +46,24 @@ export class PresentationController {
     return this.presentationService.bookmarkedPresentations(userId);
   }
 
+  @Get('bookmark')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
+  bookmarkedPresentation(
+    @Request() req,
+    @Query('presentationId') presentationId: string,
+  ): Promise<BookmarkedPresentationResponseDto> {
+    const userId = req.user.userId;
+
+    return this.presentationService.bookmarkedPresentation(
+      userId,
+      presentationId,
+    );
+  }
+
   @Post('bookmark')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   bookmarkPresentation(
     @Request() req,
     @Body() bookmarkPresentationRequestDto: BookmarkPresentationRequestDto,
@@ -56,6 +78,7 @@ export class PresentationController {
 
   @Delete('bookmark')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   removePresentationBookmark(
     @Request() req,
     @Query('presentationId') presentationId: string,
@@ -69,11 +92,15 @@ export class PresentationController {
   }
 
   @Post()
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   create(@Body() createPresentationDto: CreatePresentationDto) {
     return this.presentationService.create(createPresentationDto);
   }
 
   @Post('with-submission')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   createWithSubmission(
     @Body()
     createPresentationWithSubmissionDto: CreatePresentationWithSubmissionDto,
@@ -85,8 +112,14 @@ export class PresentationController {
 
   @Public()
   @Get()
+  @ApiQuery({
+    name: 'eventEditionId',
+    description: 'The ID of the event edition',
+    type: 'string',
+    required: false,
+  })
   findAll(
-    @Param('eventEditionId') eventEditionId: string,
+    @Query('eventEditionId') eventEditionId: string,
   ): Promise<PresentationResponseDto[]> {
     return this.presentationService.findAllByEventEditionId(eventEditionId);
   }
@@ -97,9 +130,21 @@ export class PresentationController {
    * @returns List of presentations for the logged-in user.
    */
   @Get('my')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   listPresentations(@Request() req) {
     const userId = req.user.userId; // User ID extracted from the JWT
     return this.presentationService.listUserPresentations(userId);
+  }
+
+  @Get('advised')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
+  listAdvisedPresentations(
+    @Request() req,
+  ): Promise<Array<ListAdvisedPresentationsResponse>> {
+    const userId = req.user.userId;
+    return this.presentationService.listAdvisedPresentations(userId);
   }
 
   @Public()
@@ -116,6 +161,8 @@ export class PresentationController {
    * @returns Updated presentation.
    */
   @Put(':id/my')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
   updatePresentationForUser(
     @Request() req,
     @Param('id') id: string,
@@ -130,6 +177,8 @@ export class PresentationController {
   }
 
   @Patch(':id')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   update(
     @Param('id') id: string,
     @Body() updatePresentationDto: UpdatePresentationDto,
@@ -138,6 +187,8 @@ export class PresentationController {
   }
 
   @Patch('with-submission/:id')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   updateWithSubmission(
     @Param('id') id: string,
     @Body()
@@ -150,7 +201,31 @@ export class PresentationController {
   }
 
   @Delete(':id')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.presentationService.remove(id);
+  }
+
+  @Post(':id/calculate-scores')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
+  async calculateScores(@Param('id') id: string) {
+    await this.presentationService.calculateAndUpdateScores(id);
+    return { message: 'Scores calculated successfully' };
+  }
+
+  @Post('calculate-all-scores/:eventEditionId')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
+  @ApiParam({
+    name: 'eventEditionId',
+    description: 'The ID of the event edition to calculate all scores for',
+    type: 'string',
+    required: true,
+  })
+  async calculateAllScores(@Param('eventEditionId') eventEditionId: string) {
+    await this.presentationService.recalculateAllScores(eventEditionId);
+    return { message: 'All scores calculated successfully' };
   }
 }
