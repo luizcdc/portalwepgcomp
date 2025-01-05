@@ -597,36 +597,39 @@ export class PresentationService {
     const user = await this.prismaClient.userAccount.findUnique({
       where: {
         id: userId,
-        bookmarkedPresentations: {
-          every: {
-            id: presentationId,
-          },
-        },
+        // bookmarkedPresentations: {
+        //   every: {
+        //     id: presentationId,
+        //   },
+        // },
       },
       include: {
         bookmarkedPresentations: {
-          include: {
-            submission: {
-              include: {
-                mainAuthor: {
-                  select: {
-                    name: true,
-                    email: true,
-                  },
-                },
-                advisor: {
-                  select: {
-                    name: true,
-                  },
-                },
-              },
-            },
+          where: {
+            id: presentationId,
           },
+          // include: {
+          //   submission: {
+          //     include: {
+          //       mainAuthor: {
+          //         select: {
+          //           name: true,
+          //           email: true,
+          //         },
+          //       },
+          //       advisor: {
+          //         select: {
+          //           name: true,
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
         },
       },
     });
 
-    const bookmarked = !!(user && user.bookmarkedPresentations.length);
+    const bookmarked = !!(user && user.bookmarkedPresentations.length > 0);
 
     return new BookmarkedPresentationResponseDto(bookmarked);
   }
