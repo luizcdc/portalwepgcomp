@@ -597,36 +597,17 @@ export class PresentationService {
     const user = await this.prismaClient.userAccount.findUnique({
       where: {
         id: userId,
-        bookmarkedPresentations: {
-          every: {
-            id: presentationId,
-          },
-        },
       },
       include: {
         bookmarkedPresentations: {
-          include: {
-            submission: {
-              include: {
-                mainAuthor: {
-                  select: {
-                    name: true,
-                    email: true,
-                  },
-                },
-                advisor: {
-                  select: {
-                    name: true,
-                  },
-                },
-              },
-            },
+          where: {
+            id: presentationId,
           },
         },
       },
     });
 
-    const bookmarked = !!(user && user.bookmarkedPresentations.length);
+    const bookmarked = !!(user && user.bookmarkedPresentations.length > 0);
 
     return new BookmarkedPresentationResponseDto(bookmarked);
   }
