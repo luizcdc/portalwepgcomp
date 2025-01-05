@@ -32,8 +32,14 @@ export class EventEditionService {
         },
       });
       let evaluationCriteria = [];
+      let rooms = [];
       if (activeEvent != null) {
         evaluationCriteria = await prisma.evaluationCriteria.findMany({
+          where: {
+            eventEditionId: activeEvent?.id,
+          },
+        });
+        rooms = await prisma.room.findMany({
           where: {
             eventEditionId: activeEvent?.id,
           },
@@ -74,6 +80,21 @@ export class EventEditionService {
                 title: criteria.title,
                 description: criteria.description,
                 weightRadio: criteria.weightRadio,
+              },
+            }),
+          ),
+        );
+      }
+
+      // Copy rooms if they exist
+      if (rooms != null && rooms.length > 0) {
+        await Promise.all(
+          rooms.map((room) =>
+            prisma.room.create({
+              data: {
+                eventEditionId: createdEventEdition.id,
+                name: room.name,
+                description: room.description,
               },
             }),
           ),

@@ -46,9 +46,9 @@ export class PresentationBlockController {
     );
 
     return Promise.all(
-      presentationBlocks.map((block) => 
-        ResponsePresentationBlockDto.create(block, (id) => this.userLoader(id))
-      )
+      presentationBlocks.map((block) =>
+        ResponsePresentationBlockDto.create(block, (id) => this.userLoader(id)),
+      ),
     );
   }
 
@@ -59,7 +59,6 @@ export class PresentationBlockController {
     @Query('eventEditionId') eventEditionId: string,
     @Query('panelistId') panelistId?: string,
   ): Promise<ResponsePresentationBlockDto[]> {
-    console.log(req.user, eventEditionId, panelistId);
     const presentationBlocks = await this.presentationBlockService.findAll(
       req.user.userId,
       eventEditionId,
@@ -67,9 +66,9 @@ export class PresentationBlockController {
     );
 
     return Promise.all(
-      presentationBlocks.map(
-      (block) => ResponsePresentationBlockDto.create(block, (id) => this.userLoader(id)),
-      )
+      presentationBlocks.map((block) =>
+        ResponsePresentationBlockDto.create(block, (id) => this.userLoader(id)),
+      ),
     );
   }
 
@@ -90,7 +89,9 @@ export class PresentationBlockController {
       return null;
     }
 
-    return ResponsePresentationBlockDto.create(presentationBlock, (id) => this.userLoader(id));
+    return ResponsePresentationBlockDto.create(presentationBlock, (id) =>
+      this.userLoader(id),
+    );
   }
 
   @Patch(':id')
@@ -120,9 +121,10 @@ export class PresentationBlockController {
     );
   }
 
-  async userLoader(userId: string): Promise<{ id: string; name: string; email: string; }> {
-   const user = await this.presentationBlockService.findUserById(userId);
+  async userLoader(
+    userId: string,
+  ): Promise<{ id: string; name: string; email: string }> {
+    const user = await this.presentationBlockService.findUserById(userId);
     return user ? { id: user.id, name: user.name, email: user.email } : null;
   }
-  
 }

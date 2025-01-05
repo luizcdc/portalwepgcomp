@@ -65,7 +65,8 @@ const formSessaoGeralSchema = z.object({
 
 export default function FormSessaoGeral() {
   const { formGeralFields, confirmButton } = ModalSessaoMock;
-  const { createSession, updateSession, sessao, setSessao } = useSession();
+  const { createSession, updateSession, sessao, setSessao, roomsList } =
+    useSession();
   const { Edicao } = useEdicao();
 
   type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
@@ -95,7 +96,7 @@ export default function FormSessaoGeral() {
     defaultValues,
   });
 
-  const roomsOptions = formatOptions(formGeralFields.sala.options, "name");
+  const roomsOptions = formatOptions(roomsList, "name");
 
   const filterTimes = (time: Date) => {
     const hour = time.getHours();

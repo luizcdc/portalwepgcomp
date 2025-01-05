@@ -18,7 +18,7 @@ import "moment/locale/pt-br";
 import "./style.scss";
 
 export default function ScheduleSection() {
-  const { listSessions, sessoesList } = useSession();
+  const { listSessions, sessoesList, listRooms, roomsList  } = useSession();
   const { Edicao } = useEdicao();
 
   const [dates, setDates] = useState<string[]>([]);
@@ -66,6 +66,9 @@ export default function ScheduleSection() {
       setDates(generatedDates);
       setSelectedDate(generatedDates[0]);
     }
+
+    if (Edicao?.id)
+      listRooms(Edicao?.id);
   }, [Edicao]);
 
   const colorsSession = [
@@ -136,18 +139,21 @@ export default function ScheduleSection() {
           ))}
         </div>
 
-        <div className="programacao-sala">
-          <p
-            className="fw-bold text-white m-0 text-center w-100"
-            style={{
-              fontSize: "13px",
-              lineHeight: "50px",
-            }}
-          >
-            SALA A
-          </p>
-          <p className="m-0" style={{ width: "44px" }}></p>
-        </div>
+        {roomsList.map((item, index) => (
+          <div className="programacao-sala" key={index}>
+            <p
+              className="fw-bold text-white m-0 text-center w-100"
+              style={{
+                fontSize: "13px",
+                lineHeight: "50px",
+              }}
+            >
+              {item.name}
+            </p>
+            <p className="m-0" style={{ width: "44px" }}></p>
+          </div>
+        ))}
+        
 
         <div className="d-flex flex-column programacao-item">
           {!!sessoesList?.length &&
