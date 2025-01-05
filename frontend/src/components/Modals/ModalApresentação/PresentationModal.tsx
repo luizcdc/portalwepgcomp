@@ -18,6 +18,7 @@ export default function PresentationModal({ props }: { props: any }) {
   } = usePresentation();
   const [presentationBookmark, setpresentationBookmark] =
     useState<PresentationBookmark>();
+
   const { signed } = useContext(AuthContext);
   const router = useRouter();
 
@@ -26,7 +27,7 @@ export default function PresentationModal({ props }: { props: any }) {
       setpresentationBookmark
     );
   }, []);
-
+  
   function handleFavorite() {
     if (!signed) {
       router.push("/login");
@@ -41,11 +42,11 @@ export default function PresentationModal({ props }: { props: any }) {
       bookmarked: !(presentationBookmark && presentationBookmark.bookmarked),
     });
   }
-
+  
   const handleEvaluateClick = () => {
     window.location.href = `/avaliacao/${props.id}`;
   };
-
+  
   const presentationDate = moment(props.presentationTime).format("DD/MM");
   const presentationTime = moment(props.presentationTime).format("HH:MM");
   return (

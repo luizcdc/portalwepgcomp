@@ -22,25 +22,15 @@ export default function Favoritos() {
 
   useEffect(() => {
     if (!presentationBookmarks?.bookmarkedPresentations?.length) {
-      console.error("Nenhuma apresentação marcada encontrada");
       return;
-    }
-  
+    }  
     const newSessionsList = presentationBookmarks.bookmarkedPresentations
       .filter((item) =>
         item.submission?.title?.toLowerCase().includes(searchValue.trim().toLowerCase()));
-  
-    console.log("Filtered Submissions:", newSessionsList);
-  
+
     setSessionsListValues(newSessionsList); 
   }, [presentationBookmarks, searchValue]);
 
-  useEffect(() => {
-    const filteredSessions = sessionsListValues.filter((v) =>
-      v.title.toLowerCase().includes(searchValue.trim().toLowerCase())
-    );
-    setSessionsListValues(filteredSessions);
-  }, [searchValue]);
 
 
   const [modalContent, setModalContent] =
@@ -58,10 +48,8 @@ export default function Favoritos() {
     const updatedSubmissions = sessionsListValues.filter(
       (submission) => submission.id !== submissionId
     );
-
     setSessionsListValues(updatedSubmissions);
   };
-
 
   return (
     <ProtectedLayout>
@@ -79,7 +67,6 @@ export default function Favoritos() {
             name: presentation?.submission.title,
             subtitle: presentation?.submission.abstract,
             ...presentation,
-            
 
           }))}
           isFavorites
