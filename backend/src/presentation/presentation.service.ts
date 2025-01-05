@@ -565,7 +565,21 @@ export class PresentationService {
       include: {
         bookmarkedPresentations: {
           include: {
-            submission: true,
+            submission: {
+              include: {
+                mainAuthor: {
+                  select: {
+                    name: true,
+                    email: true,
+                  },
+                },
+                advisor: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -592,7 +606,21 @@ export class PresentationService {
       include: {
         bookmarkedPresentations: {
           include: {
-            submission: true,
+            submission: {
+              include: {
+                mainAuthor: {
+                  select: {
+                    name: true,
+                    email: true,
+                  },
+                },
+                advisor: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -613,7 +641,21 @@ export class PresentationService {
       include: {
         bookmarkedPresentations: {
           include: {
-            submission: true,
+            submission: {
+              include: {
+                mainAuthor: {
+                  select: {
+                    name: true,
+                    email: true,
+                  },
+                },
+                advisor: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -664,7 +706,21 @@ export class PresentationService {
       include: {
         bookmarkedPresentations: {
           include: {
-            submission: true,
+            submission: {
+              include: {
+                mainAuthor: {
+                  select: {
+                    name: true,
+                    email: true,
+                  },
+                },
+                advisor: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

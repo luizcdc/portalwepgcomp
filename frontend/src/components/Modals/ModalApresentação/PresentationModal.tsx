@@ -5,7 +5,6 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 import Star from "@/components/UI/Star";
-import { Presentation, PresentationBookmark } from "@/models/presentation";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { usePresentation } from "@/hooks/usePresentation";
@@ -67,7 +66,7 @@ export default function PresentationModal({ props }: { props: Presentation }) {
           className="fw-semibold text-start"
           style={{ fontSize: "18px", lineHeight: "27px" }}
         >
-          {props.submission.title}
+          {props?.submission?.title}
         </h3>
       </div>
       <div className="d-flex justify-content-between w-100">
@@ -79,12 +78,12 @@ export default function PresentationModal({ props }: { props: Presentation }) {
             className="d-flex flex-row align-items-start"
             style={{ gap: "10px" }}
           >
-            <strong>{props.submission.mainAuthor.name}</strong>
+            <strong>{props?.submission?.mainAuthor?.name}</strong>
             <div> | </div>
-            <div>{props.submission.mainAuthor.email}</div>
+            <div>{props?.submission?.mainAuthor?.email}</div>
           </div>
           <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
-            Orientador(a): {props.submission.advisor.name}
+            Orientador(a): {props.submission?.advisor?.name}
           </h4>
         </div>
         {!!signed && (
@@ -132,7 +131,7 @@ export default function PresentationModal({ props }: { props: Presentation }) {
       </div>
       <div style={{ textAlign: "justify" }}>
         <strong>Abstract: </strong>
-        {props.submission.abstract}
+        {props.submission?.abstract}
       </div>
     </div>
   );

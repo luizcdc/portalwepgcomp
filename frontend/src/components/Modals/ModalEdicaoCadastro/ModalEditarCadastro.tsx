@@ -4,8 +4,12 @@ import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import { FormCadastroApresentacao } from "@/components/Forms/CadastroApresentacao/FormCadastroApresentacao";
 
 import "./style.scss";
-
-export default function ModalEditarCadastro() {
+interface ModalEditarCadastro {
+  formEdited?: any;
+}
+export default function ModalEditarCadastro({
+  formEdited
+}: Readonly<ModalEditarCadastro>) {
   return (
     <ModalComponent
       id="editarApresentacaoModal"
@@ -13,7 +17,7 @@ export default function ModalEditarCadastro() {
       labelConfirmButton="Alterar"
     >
       <div className=" d-flex justify-content-center mb-5 modal-editar-cadastro">
-        <FormCadastroApresentacao />
+        <FormCadastroApresentacao formEdited={formEdited} />
       </div>
     </ModalComponent>
   );

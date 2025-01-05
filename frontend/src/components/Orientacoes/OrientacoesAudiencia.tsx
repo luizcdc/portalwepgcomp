@@ -6,20 +6,20 @@ import { useEffect, useState } from "react";
 import "./style.scss";
 import { useOrientacao } from "@/hooks/useOrientacao";
 
-import { useEdicao } from "@/hooks/useEdicao";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 export default function OrientacoesAudiencia() {
   const { putOrientacao, orientacoes } = useOrientacao();
-  const { Edicao } = useEdicao();
 
   const [content, setContent] = useState(orientacoes?.audienceGuidance || "");
 
   const handleEditOrientacao = () => {
     const idOrientacao = orientacoes?.id;
+    const eventEditionId = getEventEditionIdStorage();
 
     if (idOrientacao) {
       putOrientacao(idOrientacao, {
-        eventEditionId: Edicao?.id ?? "",
+        eventEditionId: eventEditionId ?? "",
         audienceGuidance: content,
       });
     }

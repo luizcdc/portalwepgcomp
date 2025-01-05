@@ -12,7 +12,7 @@ export default function PerfilAdmin({ profile }: Readonly<PerfilAdminProps>) {
   const { logout } = useContext(AuthContext);
 
   return (
-    <li className="dropdown">
+    <div className="dropdown">
       <button
         className="btn dropdown-toggle border-0"
         type="button"
@@ -40,13 +40,13 @@ export default function PerfilAdmin({ profile }: Readonly<PerfilAdminProps>) {
           </li>
         )}
 
-        {profile === "Professor" && (
+        {/* {profile === "Professor" && (
           <li>
             <Link className="dropdown-item" href="#">
               Minhas bancas
             </Link>
           </li>
-        )}
+        )} */}
 
         <li>
           <Link className="dropdown-item" href="/apresentacoes">
@@ -74,6 +74,6 @@ export default function PerfilAdmin({ profile }: Readonly<PerfilAdminProps>) {
           </Link>
         </li>
       </ul>
-    </li>
+    </div>
   );
 }

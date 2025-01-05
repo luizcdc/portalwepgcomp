@@ -1,4 +1,4 @@
-import { Presentation, PresentationBookmark, PresentationBookmarkRegister } from "@/models/presentation";
+
 import axiosInstance from "@/utils/api";
 
 const baseUrl = "/presentation";

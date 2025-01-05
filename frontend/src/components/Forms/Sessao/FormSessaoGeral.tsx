@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -64,7 +65,8 @@ const formSessaoGeralSchema = z.object({
 
 export default function FormSessaoGeral() {
   const { formGeralFields, confirmButton } = ModalSessaoMock;
-  const { createSession, updateSession, sessao, setSessao } = useSession();
+  const { createSession, updateSession, sessao, setSessao, roomsList } =
+    useSession();
   const { Edicao } = useEdicao();
 
   type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
@@ -94,7 +96,7 @@ export default function FormSessaoGeral() {
     defaultValues,
   });
 
-  const roomsOptions = formatOptions(formGeralFields.sala.options, "name");
+  const roomsOptions = formatOptions(roomsList, "name");
 
   const filterTimes = (time: Date) => {
     const hour = time.getHours();
@@ -104,6 +106,8 @@ export default function FormSessaoGeral() {
   const handleFormSessaoGeral = (data: FormSessaoGeralSchema) => {
     const { titulo, nome, sala, inicio, final } = data;
 
+    const eventEditionId = getEventEditionIdStorage();
+
     if (!titulo || !sala || !inicio || !final) {
       throw new Error("Campos obrigatórios em branco.");
     }
@@ -112,7 +116,7 @@ export default function FormSessaoGeral() {
 
     const body = {
       type: "General",
-      eventEditionId: Edicao?.id ?? "",
+      eventEditionId: eventEditionId ?? "",
       title: titulo,
       speakerName: nome,
       roomId: sala,
@@ -121,7 +125,7 @@ export default function FormSessaoGeral() {
     } as SessaoParams;
 
     if (sessao?.id) {
-      updateSession(sessao?.id, Edicao?.id ?? "", body).then((status) => {
+      updateSession(sessao?.id, eventEditionId ?? "", body).then((status) => {
         console.log(status);
         if (status) {
           reset();
@@ -131,7 +135,7 @@ export default function FormSessaoGeral() {
       return;
     }
 
-    createSession(Edicao?.id ?? "", body).then((status) => {
+    createSession(eventEditionId ?? "", body).then((status) => {
       if (status) {
         reset();
         setSessao(null);

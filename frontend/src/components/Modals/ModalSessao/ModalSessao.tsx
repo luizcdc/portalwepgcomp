@@ -8,10 +8,11 @@ import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import FormSessaoApresentacoes from "@/components/Forms/Sessao/FormSessaoApresentacoes";
 import FormSessaoGeral from "@/components/Forms/Sessao/FormSessaoGeral";
 import { useSession } from "@/hooks/useSession";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 export default function ModalSessao() {
   const { tipo } = ModalSessaoMock;
-  const { sessao } = useSession();
+  const { sessao, listRooms } = useSession();
 
   const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(
     sessao?.type === SessaoTipoEnum["Sessão de apresentações"]
@@ -27,6 +28,12 @@ export default function ModalSessao() {
       );
     }
   }, [sessao?.type]);
+
+  useEffect(() => {
+    const eventEditionId = getEventEditionIdStorage();
+
+    listRooms(eventEditionId ?? "");
+  }, []);
 
   return (
     <ModalComponent

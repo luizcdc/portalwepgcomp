@@ -1,64 +1,89 @@
-import Image from 'next/image';
-import { useState } from 'react';
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
-import { premiacoesAvaliadoresMock, premiacoesBancaMock, premiacoesPublicoMock } from '@/mocks/Premiacao';
-import PremiacaoCategoria from './PremiacaoCategoria';
+import PremiacaoCategoria from "./PremiacaoCategoria";
 
 import "./style.scss";
+import { usePremiacao } from "@/hooks/usePremiacao";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
-export default function Premiacoes({ categoria }: { categoria: "banca" | "avaliadores" | "publico" }) {
-    const [searchTerm, setSearchTerm] = useState('');
+export default function Premiacoes({
+  categoria,
+}: Readonly<{
+  categoria: "banca" | "avaliadores" | "publico";
+}>) {
+  const [searchTerm, setSearchTerm] = useState("");
 
-    const getAwards = () => {
-        switch (categoria) {
-            case "banca":
-                return premiacoesBancaMock;
-            case "avaliadores":
-                return premiacoesAvaliadoresMock;
-            case "publico":
-                return premiacoesPublicoMock;
-            default:
-                return [];
-        }
-    };
+  const {
+    premiacaoListBanca,
+    premiacaoListAudiencia,
+    premiacaoListAvaliadores,
+    getPremiacoesBanca,
+    getPremiacoesAudiencia,
+    getPremiacoesAvaliadores,
+  } = usePremiacao();
 
-    const filteredAwards = getAwards().filter((item) => item.titulo.toLowerCase().includes(searchTerm.toLowerCase())).sort((a, b) => b.nota - a.nota);
+  useEffect(() => {
+    const eventEditionId = getEventEditionIdStorage();
 
-    return (
-        <div className="d-flex flex-column premiacao-list">
-            <div className="input-group ms-5 mb-4">
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Pesquise pelo nome da apresentação"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+    if (eventEditionId) {
+      switch (categoria) {
+        case "banca":
+          getPremiacoesBanca(eventEditionId);
+          break;
+        case "publico":
+          getPremiacoesAudiencia(eventEditionId);
+          break;
+        case "avaliadores":
+          getPremiacoesAvaliadores(eventEditionId);
+          break;
+        default:
+          break;
+      }
+    }
+  }, [categoria]);
 
-                <button
-                    className="btn btn-outline-secondary border border-0 search-button d-flex justify-content-center align-items-center"
-                    type="button"
-                    id="button-addon2"
-                >
-                    <Image
-                        src="/assets/images/search.svg"
-                        alt="Search icon"
-                        width={24}
-                        height={24}
-                    />
-                </button>
-            </div>
+  const getAwards = () => {
+    switch (categoria) {
+      case "banca":
+        return premiacaoListBanca;
+      case "publico":
+        return premiacaoListAudiencia;
+      default:
+        return [];
+    }
+  };
 
-            <PremiacaoCategoria
-                titulo={`Melhores Apresentações - ${categoria === 'banca' ? 'Banca' : categoria === 'avaliadores' ? 'Avaliadores' : 'Público'}`}
-                descricao={`
-                    ${categoria === 'banca' ? 'Ranking das melhores apresentações por voto da banca avaliadora'
-                        : categoria === 'avaliadores' ? 'Ranking dos melhores/maiores avaliadores da edição'
-                            : categoria === 'publico' ? 'Ranking das melhores apresentações por voto da audiência'
-                                : ''}
-                    `}
-                premiacoes={filteredAwards}
-            />
-        </div>
-    );
+  return (
+    <div className="d-flex flex-column premiacao-list">
+      <div className="input-group ms-5 mb-4">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Pesquise pelo nome da apresentação"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <button
+          className="btn btn-outline-secondary border border-0 search-button d-flex justify-content-center align-items-center"
+          type="button"
+          id="button-addon2"
+        >
+          <Image
+            src="/assets/images/search.svg"
+            alt="Search icon"
+            width={24}
+            height={24}
+          />
+        </button>
+      </div>
+
+      <PremiacaoCategoria
+        categoria={categoria}
+        premiacoes={getAwards()}
+        avaliadores={premiacaoListAvaliadores}
+      />
+    </div>
+  );
 }
