@@ -115,9 +115,13 @@ const formEdicaoSchema = z.object({
   coordinatorId: z.string().optional(),
   partnersText: z.string().optional(),
 });
+type FormEdicaoSchema = z.infer<typeof formEdicaoSchema>;
 
-export function FormEdicao({ edicaoData }) {
-  type FormEdicaoSchema = z.infer<typeof formEdicaoSchema>;
+interface FormEdicao {
+  edicaoData?: any;
+}
+
+export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
   const { showAlert } = useSweetAlert();
   const { createEdicao, updateEdicao } = useEdicao();
   const { getCommitterAll, committerList } = useCommittee();
@@ -147,7 +151,7 @@ export function FormEdicao({ edicaoData }) {
   });
 
   useEffect(() => {
-    if (edicaoData) {
+    if (edicaoData && Object.keys(edicaoData).length) {
       setValue("titulo", edicaoData.name);
       setValue("descricao", edicaoData.description);
       setValue("inicio", edicaoData.startDate);
