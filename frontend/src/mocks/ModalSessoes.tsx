@@ -2,6 +2,10 @@ export const ModalSessaoMock = {
   confirmButton: {
     label: "Salvar",
   },
+  titulo: {
+    cadastro: "Cadastrar sessão",
+    edicao: "Editar sessão",
+  },
   tipo: {
     label: "Tipo de sessão",
     options: [
