@@ -145,7 +145,7 @@ export default function Header() {
                     className="nav-link text-black tamanho-texto-programacao-evento"
                     href="home#Programacao"
                   >
-                    Programação do Evento
+                    Programação do evento
                   </Link>
                 </div>
                 <div className="vr text-black"></div>
