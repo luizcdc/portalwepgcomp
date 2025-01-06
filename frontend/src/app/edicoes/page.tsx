@@ -46,7 +46,6 @@ export default function Edicoes() {
         <p>Carregando edições...</p>
       ) : (
         <Listagem
-          idModal={"editarEdicaoModal"}
           title={"Edições do Evento"}
           labelAddButton={"Cadastrar Edição"}
           searchPlaceholder={"Pesquise por edição"}
