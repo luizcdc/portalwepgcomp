@@ -10,14 +10,14 @@ interface ModalEditarEdicaoProps {
 
 export default function ModalEditarEdicao({
   edicaoData,
-}: ModalEditarEdicaoProps) {
+}: Readonly<ModalEditarEdicaoProps>) {
   return (
     <ModalComponent
-      id='editarEdicaoModal'
+      id="editarEdicaoModal"
       loading={false}
-      labelConfirmButton='Alterar'
+      labelConfirmButton="Alterar"
     >
-      <div className=' d-flex justify-content-center mb-5 modal-editar-edicao'>
+      <div className=" d-flex justify-content-center mb-5 modal-editar-edicao">
         <FormEdicao edicaoData={edicaoData} />
       </div>
     </ModalComponent>

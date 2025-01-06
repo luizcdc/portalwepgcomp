@@ -3,9 +3,10 @@ import Premiacao from "@/templates/Premiacao/Premiacao";
 export default function PremiacaoCategoria({
   categoria,
   premiacoes,
-  avaliadores
+  avaliadores,
+  searchValue
 }: PremiacaoCategoriaProps) {
   return (
-    <Premiacao categoria={categoria} premiacoes={premiacoes} avaliadores={avaliadores} />
+    <Premiacao categoria={categoria} premiacoes={premiacoes} avaliadores={avaliadores} searchValue={searchValue} />
   );
 }

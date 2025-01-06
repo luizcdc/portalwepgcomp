@@ -6,9 +6,13 @@ import "./style.scss";
 
 interface PerfilAdminProps {
   profile: ProfileType;
+  role: RoleType;
 }
 
-export default function PerfilAdmin({ profile }: Readonly<PerfilAdminProps>) {
+export default function PerfilAdmin({
+  profile,
+  role,
+}: Readonly<PerfilAdminProps>) {
   const { logout } = useContext(AuthContext);
 
   return (
@@ -22,11 +26,13 @@ export default function PerfilAdmin({ profile }: Readonly<PerfilAdminProps>) {
         <i className="bi bi-list fs-3"></i>
       </button>
       <ul className="dropdown-menu dropdown-menu-end border-3 border-light">
-        <li>
-          <Link className="dropdown-item" href="/edicoes">
-            Edições do Evento
-          </Link>
-        </li>
+        {role === "Superadmin" && (
+          <li>
+            <Link className="dropdown-item" href="/edicoes">
+              Edições do Evento
+            </Link>
+          </li>
+        )}
         {/* <li>
           <Link className="dropdown-item" href="#">
             Emitir Certificado

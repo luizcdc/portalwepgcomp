@@ -2,6 +2,7 @@
 
 type PremiacaoCategoriaProps = {
     categoria: string;
+    searchValue: string;
     premiacoes: Premiacoes[];
     avaliadores: AuthorOrEvaluator[];
 };

@@ -37,7 +37,7 @@ export default function Header() {
   function perfil() {
     if (!user) return null;
     if (user.level !== "Default")
-      return <PerfilAdmin profile={user?.profile} />;
+      return <PerfilAdmin profile={user?.profile} role={user?.level} />;
 
     switch (user.profile) {
       case "Listener":
@@ -141,8 +141,11 @@ export default function Header() {
                   }`}
                   onClick={() => handleItemClick("programação do evento")}
                 >
-                  <Link className="nav-link text-black tamanho-texto-programacao-evento" href="home#Programacao">
-                    Programação do Evento
+                  <Link
+                    className="nav-link text-black tamanho-texto-programacao-evento"
+                    href="home#Programacao"
+                  >
+                    Programação do evento
                   </Link>
                 </div>
                 <div className="vr text-black"></div>

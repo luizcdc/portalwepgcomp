@@ -244,6 +244,7 @@ export default function FormSessaoGeral() {
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
                 minDate={dayjs(Edicao?.startDate || "")
+                  .add(1, "day")
                   .tz("America/Sao_Paulo", true)
                   .toDate()}
                 maxDate={dayjs(Edicao?.endDate || "")
@@ -284,8 +285,13 @@ export default function FormSessaoGeral() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                minDate={new Date(Edicao?.startDate || "")}
-                maxDate={new Date(Edicao?.endDate || "")}
+                minDate={dayjs(Edicao?.startDate || "")
+                  .add(1, "day")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
+                maxDate={dayjs(Edicao?.endDate || "")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formGeralFields.final.placeholder}

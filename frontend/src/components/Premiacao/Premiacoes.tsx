@@ -82,6 +82,7 @@ export default function Premiacoes({
       <PremiacaoCategoria
         categoria={categoria}
         premiacoes={getAwards()}
+        searchValue={searchTerm}
         avaliadores={premiacaoListAvaliadores}
       />
     </div>

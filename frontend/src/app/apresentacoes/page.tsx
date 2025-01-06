@@ -44,7 +44,7 @@ export default function Apresentacoes() {
         .toLowerCase()
         .includes(searchValue.trim().toLowerCase());
 
-      if (user?.level === "Superadmin") {
+      if (user?.level !== "Default") {
         return searchMatch;
       }
 
@@ -53,7 +53,7 @@ export default function Apresentacoes() {
 
     setSessionsListValues(filteredSessions);
 
-    if (user?.level !== "Superadmin") {
+    if (user?.level === "Default") {
       const hasOwnSubmission = filteredSessions.length > 0;
 
       setIsAddButtonDisabled(hasOwnSubmission);
@@ -61,7 +61,7 @@ export default function Apresentacoes() {
   }, [searchValue, submissionList, user]);
 
   const handleDelete = async (submissionId: string) => {
-    if (user?.level === "Superadmin") {
+    if (user?.level !== "Default") {
       await deleteSubmissionById(submissionId);
 
       const updatedSubmissions = sessionsListValues.filter(

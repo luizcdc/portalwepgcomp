@@ -29,7 +29,7 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
   const [loadingSubmission, setLoadingSubmission] = useState<boolean>(false);
   const [submissionList, setSubmissionList] = useState<Submission[]>([]);
   const [submission, setSubmission] = useState<Submission | null>(null);
-
+  
   const { showAlert } = useSweetAlert();
 
   const getSubmissions = async (params: GetSubmissionParams) => {

@@ -53,15 +53,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       setEdicoesList(response);
     } catch (err: any) {
       setEdicoesList([]);
-      showAlert({
-        icon: "error",
-        title: "Erro ao listar apresentações",
-        text:
-          err.response?.data?.message?.message ||
-          err.response?.data?.message ||
-          "Ocorreu um erro durante a busca.",
-        confirmButtonText: "Retornar",
-      });
     } finally {
       setLoadingEdicoesList(false);
     }
@@ -75,15 +66,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       setEdicao(response);
     } catch (err: any) {
       setEdicao(null);
-      showAlert({
-        icon: "error",
-        title: "Erro ao buscar edição",
-        text:
-          err.response?.data?.message?.message ||
-          err.response?.data?.message ||
-          "Ocorreu um erro durante a busca.",
-        confirmButtonText: "Retornar",
-      });
     } finally {
       setLoadingEdicoesList(false);
     }
@@ -98,12 +80,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       setEventEditionIdStorage(response.id);
     } catch (err: any) {
       setEdicao(null);
-      showAlert({
-        icon: "error",
-        title: "Erro ao buscar ano da edição",
-        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
-        confirmButtonText: "Retornar",
-      });
     } finally {
       setLoadingEdicao(false);
     }
@@ -152,7 +128,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         showConfirmButton: false,
       });
     } catch (err: any) {
-      console.error(err);
       setEdicao(null);
 
       showAlert({
