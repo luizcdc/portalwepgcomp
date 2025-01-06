@@ -161,6 +161,11 @@ export default function ScheduleSection() {
                   moment(item.startTime).format("YYYY-MM-DD") ===
                   moment(selectedDate).format("YYYY-MM-DD")
               )
+              ?.toSorted(
+                (a, b) =>
+                  new Date(a.startTime).getTime() -
+                  new Date(b.startTime).getTime()
+              )
               ?.map((item, index) => {
                 if (item.type === "General") {
                   return (
@@ -185,29 +190,33 @@ export default function ScheduleSection() {
                   );
                 }
 
-                return item.presentations?.map((pres) => {
-                  return (
-                    <div
-                      key={index + pres.id}
-                      className="d-flex align-items-center w-100"
-                      style={{
-                        gap: "40px",
-                      }}
-                    >
-                      <p className="m-0" style={{ width: "44px" }}>
-                        {moment(pres.startTime).format("HH:mm")}
-                      </p>
-                      <ScheduleCard
-                        type="PresentationSession"
-                        author={pres?.submission?.mainAuthor?.name ?? ""}
-                        title={pres?.submission?.title ?? ""}
-                        onClickEvent={() => openModalPresentation(pres)}
-                        cardColor={colorsSession[index]}
-                      />
-                      <div className="m-0 programacao-item-aux"></div>
-                    </div>
-                  );
-                });
+                return item.presentations
+                  ?.toSorted(
+                    (a, b) => a.positionWithinBlock - b.positionWithinBlock
+                  )
+                  .map((pres) => {
+                    return (
+                      <div
+                        key={index + pres.id}
+                        className="d-flex align-items-center w-100"
+                        style={{
+                          gap: "40px",
+                        }}
+                      >
+                        <p className="m-0" style={{ width: "44px" }}>
+                          {moment(pres.startTime).format("HH:mm")}
+                        </p>
+                        <ScheduleCard
+                          type="PresentationSession"
+                          author={pres?.submission?.mainAuthor?.name ?? ""}
+                          title={pres?.submission?.title ?? ""}
+                          onClickEvent={() => openModalPresentation(pres)}
+                          cardColor={colorsSession[index]}
+                        />
+                        <div className="m-0 programacao-item-aux"></div>
+                      </div>
+                    );
+                  });
               })}
 
           {!sessoesList?.filter(
