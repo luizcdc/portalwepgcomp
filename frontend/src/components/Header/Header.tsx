@@ -141,7 +141,10 @@ export default function Header() {
                   }`}
                   onClick={() => handleItemClick("programação do evento")}
                 >
-                  <Link className="nav-link text-black tamanho-texto-programacao-evento" href="home#Programacao">
+                  <Link
+                    className="nav-link text-black tamanho-texto-programacao-evento"
+                    href="home#Programacao"
+                  >
                     Programação do Evento
                   </Link>
                 </div>
