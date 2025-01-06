@@ -35,9 +35,7 @@ const formCadastroSchema = z.object({
   celular: z
     .string()
     .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos."),
-  slide: z
-    .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "Arquivo é obrigatório"),
+  slide: z.string({ invalid_type_error: "Campo Inválido" }).optional(), //temporário para a entrega,
 });
 
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
@@ -59,28 +57,48 @@ export function FormCadastroApresentacao({
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
   const [formEditedLoaded, setFormEditedLoaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
   } = useForm<formCadastroSchema>({
     resolver: zodResolver(formCadastroSchema),
   });
 
-  if (formEdited && Object.keys(formEdited).length && !formEditedLoaded) {
-    setValue("id", formEdited.id);
-    setValue("titulo", formEdited.title);
-    setValue("abstract", formEdited.abstract);
-    setValue("doutorando", formEdited.mainAuthorId);
-    setValue("orientador", formEdited.advisorId);
-    setValue("coorientador", formEdited.coAdvisor);
-    setValue("data", formEdited.data);
-    setValue("slide", formEdited.pdfFile);
-    setValue("celular", formEdited.phoneNumber);
-    setFormEditedLoaded(true);
-  }
+  useEffect(() => {
+    if (formEdited && Object.keys(formEdited).length && !formEditedLoaded) {
+      setValue("id", formEdited.id);
+      setValue("titulo", formEdited.title);
+      setValue("abstract", formEdited.abstract);
+      setValue("doutorando", formEdited.mainAuthorId);
+      setValue("orientador", formEdited.advisorId);
+      setValue("coorientador", formEdited.coAdvisor);
+      setValue("data", formEdited.data);
+      setValue("slide", formEdited.pdfFile);
+      setFileName(formEdited.pdfFile);
+      setValue("celular", formEdited.phoneNumber);
+
+      setFormEditedLoaded(true);
+    } else {
+      setValue("id", "");
+      setValue("titulo", "");
+      setValue("abstract", "");
+      setValue("doutorando", "");
+      setValue("orientador", "");
+      setValue("coorientador", "");
+      setValue("data", "");
+      setValue("slide", "");
+      setValue("celular", "");
+
+      setFile(null);
+      setFileName(null);
+      setFormEditedLoaded(false);
+    }
+  }, [formEdited, setValue]);
 
   useEffect(() => {
     if (!advisorsLoaded) {
@@ -90,7 +108,7 @@ export function FormCadastroApresentacao({
   }, [advisorsLoaded, getAdvisors]);
 
   useEffect(() => {
-    if (user?.level === "Superadmin" && userList.length === 0) {
+    if (user?.level !== "Default" && userList.length === 0) {
       getUsers({ profiles: "DoctoralStudent" });
     }
   }, [user?.level, userList.length, getUsers]);
@@ -104,6 +122,7 @@ export function FormCadastroApresentacao({
 
     if (selectedFile) {
       setFile(selectedFile);
+      setFileName(selectedFile.name);
       setValue("slide", selectedFile.name);
     }
   };
@@ -142,12 +161,36 @@ export function FormCadastroApresentacao({
             window.location.reload();
           }, 3000);
         } else {
-          await createSubmission(submissionData);
+          const status = await createSubmission(submissionData);
+
+          if (status) {
+            reset();
+          }
 
           if (user?.profile == "DoctoralStudent") {
             router.push("/minha-apresentacao");
           }
         }
+      }
+    } else {
+      const submissionData = {
+        ...formEdited,
+        eventEditionId: getEventEditionIdStorage() ?? "",
+        mainAuthorId: data.doutorando || user.id,
+        title: data.titulo,
+        abstractText: data.abstract,
+        advisorId: data.orientador as UUID,
+        coAdvisor: data.coorientador || "",
+        dateSuggestion: data.data ? new Date(data.data) : undefined,
+        pdfFile: data.slide,
+        phoneNumber: data.celular,
+      };
+
+      if (formEdited && formEdited.id) {
+        await updateSubmissionById(formEdited.id, submissionData);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       }
     }
   };
@@ -169,7 +212,7 @@ export function FormCadastroApresentacao({
         </h3>
       </div>
 
-      {user?.level === "Superadmin" && (
+      {user?.level !== "Default" && (
         <div className="col-12 mb-1">
           <label className="form-label form-title">Selecionar doutorando</label>
           <select
@@ -261,6 +304,10 @@ export function FormCadastroApresentacao({
           accept=".pdf"
           onChange={handleFileChange}
         />
+
+        {fileName && (
+          <p className="file-name">Arquivo selecionado: {fileName}</p>
+        )}
 
         <p className="text-danger error-message">{errors.slide?.message}</p>
       </div>

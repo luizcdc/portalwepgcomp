@@ -29,7 +29,7 @@ export default function Apresentacoes() {
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
   const [isAddButtonDisabled, setIsAddButtonDisabled] =
     useState<boolean>(false);
-  const [formEdited, setFormEdited] = useState<any[]>([]);
+  const [formEdited, setFormEdited] = useState<any>(null);
 
   useEffect(() => {
     const params = {

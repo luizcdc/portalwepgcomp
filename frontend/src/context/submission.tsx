@@ -14,7 +14,7 @@ interface SubmissionProviderData {
   submission: Submission | null;
   getSubmissions: (params: GetSubmissionParams) => void;
   getSubmissionById: (idSubmission: string) => void;
-  createSubmission: (body: SubmissionParams) => void;
+  createSubmission: (body: SubmissionParams) => Promise<boolean>;
   updateSubmissionById: (idSubmission: string, body: SubmissionParams) => void;
   deleteSubmissionById: (idSubmission: string) => void;
 }
@@ -29,7 +29,7 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
   const [loadingSubmission, setLoadingSubmission] = useState<boolean>(false);
   const [submissionList, setSubmissionList] = useState<Submission[]>([]);
   const [submission, setSubmission] = useState<Submission | null>(null);
-  
+
   const { showAlert } = useSweetAlert();
 
   const getSubmissions = async (params: GetSubmissionParams) => {
@@ -93,6 +93,8 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         timer: 3000,
         showConfirmButton: false,
       });
+
+      return true;
     } catch (err: any) {
       console.error(err);
       setSubmission(null);
@@ -106,6 +108,8 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
           "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
+
+      return true;
     } finally {
       setLoadingSubmission(false);
     }
