@@ -29,7 +29,7 @@ export default function Apresentacoes() {
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
   const [isAddButtonDisabled, setIsAddButtonDisabled] =
     useState<boolean>(false);
-  const [formEdited, setFormEdited] = useState<any[]>([]);
+  const [formEdited, setFormEdited] = useState<any>(null);
 
   useEffect(() => {
     const params = {
@@ -86,6 +86,10 @@ export default function Apresentacoes() {
     }
   };
 
+  const handleCloseModal = () => {
+    setFormEdited(null);
+  };
+
   const handleEdit = async (submissionId: string) => {
     const submission = sessionsListValues.find((s) => s.id === submissionId);
     setFormEdited(submission);
@@ -113,7 +117,7 @@ export default function Apresentacoes() {
               onDelete={handleDelete}
               isAddButtonDisabled={isAddButtonDisabled}
             />
-            <ModalEditarCadastro formEdited={formEdited} />
+            <ModalEditarCadastro formEdited={formEdited} onClose={handleCloseModal} />
           </div>
         </SubmissionProvider>
       </SubmissionFileProvider>

@@ -70,19 +70,36 @@ export function FormCadastroApresentacao({
     resolver: zodResolver(formCadastroSchema),
   });
 
-  if (formEdited && Object.keys(formEdited).length && !formEditedLoaded) {
-    setValue("id", formEdited.id);
-    setValue("titulo", formEdited.title);
-    setValue("abstract", formEdited.abstract);
-    setValue("doutorando", formEdited.mainAuthorId);
-    setValue("orientador", formEdited.advisorId);
-    setValue("coorientador", formEdited.coAdvisor);
-    setValue("data", formEdited.data);
-    setValue("slide", formEdited.pdfFile);
-    setFileName(formEdited.pdfFile);
-    setValue("celular", formEdited.phoneNumber);
-    setFormEditedLoaded(true);
-  }
+  useEffect(() => {
+    if (formEdited && Object.keys(formEdited).length && !formEditedLoaded) {
+      setValue("id", formEdited.id);
+      setValue("titulo", formEdited.title);
+      setValue("abstract", formEdited.abstract);
+      setValue("doutorando", formEdited.mainAuthorId);
+      setValue("orientador", formEdited.advisorId);
+      setValue("coorientador", formEdited.coAdvisor);
+      setValue("data", formEdited.data);
+      setValue("slide", formEdited.pdfFile);
+      setFileName(formEdited.pdfFile);
+      setValue("celular", formEdited.phoneNumber);
+
+      setFormEditedLoaded(true);
+    } else {
+      setValue("id", "");
+      setValue("titulo", "");
+      setValue("abstract", "");
+      setValue("doutorando", "");
+      setValue("orientador", "");
+      setValue("coorientador", "");
+      setValue("data", "");
+      setValue("slide", "");
+      setValue("celular", "");
+
+      setFile(null);
+      setFileName(null);
+      setFormEditedLoaded(false);
+    }
+  }, [formEdited, setValue])
 
   useEffect(() => {
     if (!advisorsLoaded) {
