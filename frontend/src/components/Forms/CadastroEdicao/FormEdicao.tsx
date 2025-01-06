@@ -17,6 +17,13 @@ import { ptBR } from "date-fns/locale";
 import { UserContext } from "@/context/user";
 import { useSweetAlert } from "@/hooks/useAlert";
 import { useCommittee } from "@/hooks/useCommittee";
+import dayjs from "dayjs";
+
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const formEdicaoSchema = z.object({
   titulo: z.string({
@@ -154,8 +161,8 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
     if (edicaoData && Object.keys(edicaoData).length) {
       setValue("titulo", edicaoData.name);
       setValue("descricao", edicaoData.description);
-      setValue("inicio", edicaoData.startDate);
-      setValue("final", edicaoData.endDate);
+      setValue("inicio", dayjs(edicaoData.startDate).toDate().toString());
+      setValue("final", dayjs(edicaoData.endDate).toDate().toString());
       setValue("local", edicaoData.location);
       setValue("coordinatorId", user?.id);
       setValue(
@@ -250,6 +257,8 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       partnersText: "",
     } as EdicaoParams;
 
+    console.log(body);
+
     if (edicaoData?.id) {
       updateEdicao(edicaoData?.id, body);
       setTimeout(() => {
@@ -328,8 +337,14 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
             render={({ field }) => (
               <DatePicker
                 id="ed-inicio-data"
-                onChange={(date) => field.onChange(date?.toISOString() || null)}
-                selected={field.value ? new Date(field.value) : null}
+                onChange={(date) =>
+                  field.onChange(
+                    dayjs(date).subtract(1, "day").toISOString() || null
+                  )
+                }
+                selected={
+                  field.value ? dayjs(field.value).add(1, "day").toDate() : null
+                }
                 showIcon
                 className="form-control datepicker"
                 dateFormat="dd/MM/yyyy"
@@ -350,8 +365,15 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
             render={({ field }) => (
               <DatePicker
                 id="ed-final-data"
-                onChange={(date) => field.onChange(date?.toISOString() || null)}
-                selected={field.value ? new Date(field.value) : null}
+                onChange={(date) =>
+                  field.onChange(
+                    dayjs(date)
+                      .set("hour", 23)
+                      .set("minute", 59)
+                      .toISOString() || null
+                  )
+                }
+                selected={field.value ? dayjs(field.value).toDate() : null}
                 showIcon
                 className="form-control datepicker"
                 dateFormat="dd/MM/yyyy"

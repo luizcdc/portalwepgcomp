@@ -37,7 +37,7 @@ export default function Header() {
   function perfil() {
     if (!user) return null;
     if (user.level !== "Default")
-      return <PerfilAdmin profile={user?.profile} />;
+      return <PerfilAdmin profile={user?.profile} role={user?.level} />;
 
     switch (user.profile) {
       case "Listener":

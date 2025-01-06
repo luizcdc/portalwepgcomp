@@ -164,75 +164,75 @@ export function FormCadastro() {
   const [eye2, setEye2] = useState(false);
 
   return (
-    <form className='row' onSubmit={handleSubmit(handleFormCadastro)}>
-      <div className='col-12 mb-1'>
-        <label className='form-label fs-5 fw-bold'>
+    <form className="row" onSubmit={handleSubmit(handleFormCadastro)}>
+      <div className="col-12 mb-1">
+        <label className="form-label fs-5 fw-bold">
           Nome completo
-          <span className='text-danger ms-1 fs-5'>*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
-          type='text'
-          className='form-control input-title'
-          id='nome'
-          placeholder='Insira seu nome'
+          type="text"
+          className="form-control input-title"
+          id="nome"
+          placeholder="Insira seu nome"
           {...register("nome")}
         />
-        <p className='text-danger error-message'>{errors.nome?.message}</p>
+        <p className="text-danger error-message">{errors.nome?.message}</p>
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label fw-bold fs-5'>
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold fs-5">
           Perfil
-          <span className='text-danger ms-1 fs-5'>*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
-        <div className='d-flex'>
-          <div className='form-check me-3'>
+        <div className="d-flex">
+          <div className="form-check me-3">
             <input
-              type='radio'
-              className='form-check-input'
-              id='radio1'
+              type="radio"
+              className="form-check-input"
+              id="radio1"
               {...register("perfil")}
-              value='doutorando'
+              value="doutorando"
             />
             <label
-              className='form-check-label fw-bold input-title'
-              htmlFor='radio1'
+              className="form-check-label fw-bold input-title"
+              htmlFor="radio1"
             >
               Doutorando
             </label>
           </div>
-          <div className='form-check me-3'>
+          <div className="form-check me-3">
             <input
-              type='radio'
-              className='form-check-input'
-              id='radio2'
+              type="radio"
+              className="form-check-input"
+              id="radio2"
               {...register("perfil")}
-              value='professor'
+              value="professor"
             />
             <label
-              className='form-check-label fw-bold input-title'
-              htmlFor='radio2'
+              className="form-check-label fw-bold input-title"
+              htmlFor="radio2"
             >
               Professor
             </label>
           </div>
-          <div className='form-check'>
+          <div className="form-check">
             <input
-              type='radio'
-              className='form-check-input'
-              id='radio3'
+              type="radio"
+              className="form-check-input"
+              id="radio3"
               {...register("perfil")}
-              value='ouvinte'
+              value="ouvinte"
             />
             <label
-              className='form-check-label fw-bold input-title'
-              htmlFor='radio3'
+              className="form-check-label fw-bold input-title"
+              htmlFor="radio3"
             >
               Ouvinte
             </label>
           </div>
         </div>
-        <p className='text-danger error-message'>{errors.perfil?.message}</p>
+        <p className="text-danger error-message">{errors.perfil?.message}</p>
       </div>
 
       <div className="col-12 mb-1">
@@ -247,38 +247,39 @@ export function FormCadastro() {
           className="form-control input-title"
           id="matricula"
           placeholder={
-            perfil === "professor" ? "Insira sua matrícula SIAPE" : "Insira sua matrícula"
+            perfil === "professor"
+              ? "Insira sua matrícula SIAPE"
+              : "Insira sua matrícula"
           }
           {...register("matricula")}
         />
         <p className="text-danger error-message">{errors.matricula?.message}</p>
       </div>
 
-
-      <div className='col-12 mb-1'>
-        <label className='form-label fw-bold fs-5'>
-        E-mail {perfil !== "ouvinte" && "UFBA"}
-          <span className='text-danger ms-1 fs-5'>*</span>
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold fs-5">
+          E-mail {perfil !== "ouvinte" && "UFBA"}
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <input
-          type='email'
-          className='form-control input-title'
-          id='email'
-          placeholder='Insira seu e-mail'
+          type="email"
+          className="form-control input-title"
+          id="email"
+          placeholder="Insira seu e-mail"
           {...register("email")}
         />
-        <p className='text-danger error-message'>{errors.email?.message}</p>
+        <p className="text-danger error-message">{errors.email?.message}</p>
       </div>
 
-      <div className='col-12 mb-1'>
-        <label className='form-label fw-bold fs-5'>
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold fs-5">
           Senha
-          <span className='text-danger ms-1 fs-5'>*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <div className="password-input">
           <input
-            type={eye1? "text": "password"}
-            className="form-control input-title"
+            type={eye1 ? "text" : "password"}
+            className="form-control input-title password"
             id="senha"
             placeholder="Insira sua senha"
             {...register("senha")}
@@ -286,24 +287,24 @@ export function FormCadastro() {
             onChange={handleChangeSenha}
           />
           <div className="eye" onClick={() => setEye1(!eye1)}>
-            <PasswordEye color={eye1==false?"black":"blue"}/>
+            <PasswordEye color={eye1 == false ? "black" : "blue"} />
           </div>
         </div>
-        <p className='text-danger error-message'>{errors.senha?.message}</p>
-        <div className='mt-3'>
-          <p className='mb-1 fw-semibold paragraph-title'>
+        <p className="text-danger error-message">{errors.senha?.message}</p>
+        <div className="mt-3">
+          <p className="mb-1 fw-semibold paragraph-title">
             A senha deve possuir pelo menos:
           </p>
-          <ul className='mb-0'>
+          <ul className="mb-0">
             <li
               className={`fw-semibold list-title ${
                 requisitos.minLength ? "text-success" : "text-danger"
               }`}
             >
               {requisitos.minLength ? (
-                <i className='bi bi-shield-fill-check' />
+                <i className="bi bi-shield-fill-check" />
               ) : (
-                <i className='bi bi-shield-fill-x' />
+                <i className="bi bi-shield-fill-x" />
               )}{" "}
               8 dígitos
             </li>
@@ -313,9 +314,9 @@ export function FormCadastro() {
               }`}
             >
               {requisitos.upperCase ? (
-                <i className='bi bi-shield-fill-check' />
+                <i className="bi bi-shield-fill-check" />
               ) : (
-                <i className='bi bi-shield-fill-x' />
+                <i className="bi bi-shield-fill-x" />
               )}{" "}
               1 letra maiúscula
             </li>
@@ -325,9 +326,9 @@ export function FormCadastro() {
               }`}
             >
               {requisitos.lowerCase ? (
-                <i className='bi bi-shield-fill-check' />
+                <i className="bi bi-shield-fill-check" />
               ) : (
-                <i className='bi bi-shield-fill-x' />
+                <i className="bi bi-shield-fill-x" />
               )}{" "}
               1 letra minúscula
             </li>
@@ -337,9 +338,9 @@ export function FormCadastro() {
               }`}
             >
               {requisitos.number ? (
-                <i className='bi bi-shield-fill-check' />
+                <i className="bi bi-shield-fill-check" />
               ) : (
-                <i className='bi bi-shield-fill-x' />
+                <i className="bi bi-shield-fill-x" />
               )}{" "}
               4 números
             </li>
@@ -349,9 +350,9 @@ export function FormCadastro() {
               }`}
             >
               {requisitos.specialChar ? (
-                <i className='bi bi-shield-fill-check' />
+                <i className="bi bi-shield-fill-check" />
               ) : (
-                <i className='bi bi-shield-fill-x' />
+                <i className="bi bi-shield-fill-x" />
               )}{" "}
               1 caracter especial
             </li>
@@ -359,32 +360,32 @@ export function FormCadastro() {
         </div>
       </div>
 
-      <div className='col-12 mb-4'>
-        <label className='form-label fw-bold fs-5'>
+      <div className="col-12 mb-4">
+        <label className="form-label fw-bold fs-5">
           Confirmação de senha
-          <span className='text-danger ms-1 fs-5'>*</span>
+          <span className="text-danger ms-1 fs-5">*</span>
         </label>
         <div className="password-input">
           <input
-            type={eye2? "text": "password"}
-            className="form-control input-title"
+            type={eye2 ? "text" : "password"}
+            className="form-control input-title password"
             id="confirmaSenha"
             placeholder="Insira sua senha novamente"
             {...register("confirmaSenha")}
           />
           <div className="eye" onClick={() => setEye2(!eye2)}>
-            <PasswordEye color={eye2==false?"black":"blue"}/>
+            <PasswordEye color={eye2 == false ? "black" : "blue"} />
           </div>
         </div>
-        <p className='text-danger error-message'>
+        <p className="text-danger error-message">
           {errors.confirmaSenha?.message}
         </p>
       </div>
 
-      <div className='d-grid gap-2 col-3 mx-auto'>
+      <div className="d-grid gap-2 col-3 mx-auto">
         <button
-          type='submit'
-          className='btn fw-bold fs-5 text-white submit-button'
+          type="submit"
+          className="btn fw-bold fs-5 text-white submit-button"
         >
           Cadastrar
         </button>
