@@ -35,9 +35,7 @@ const formCadastroSchema = z.object({
   celular: z
     .string()
     .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos."),
-  slide: z
-    .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "Arquivo é obrigatório"),
+  slide: z.string({ invalid_type_error: "Campo Inválido" }).optional(), //temporário para a entrega,
 });
 
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
@@ -66,6 +64,7 @@ export function FormCadastroApresentacao({
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
   } = useForm<formCadastroSchema>({
     resolver: zodResolver(formCadastroSchema),
   });
@@ -99,7 +98,7 @@ export function FormCadastroApresentacao({
       setFileName(null);
       setFormEditedLoaded(false);
     }
-  }, [formEdited, setValue])
+  }, [formEdited, setValue]);
 
   useEffect(() => {
     if (!advisorsLoaded) {
@@ -109,7 +108,7 @@ export function FormCadastroApresentacao({
   }, [advisorsLoaded, getAdvisors]);
 
   useEffect(() => {
-    if (user?.level === "Superadmin" && userList.length === 0) {
+    if (user?.level !== "Default" && userList.length === 0) {
       getUsers({ profiles: "DoctoralStudent" });
     }
   }, [user?.level, userList.length, getUsers]);
@@ -162,12 +161,36 @@ export function FormCadastroApresentacao({
             window.location.reload();
           }, 3000);
         } else {
-          await createSubmission(submissionData);
+          const status = await createSubmission(submissionData);
+
+          if (status) {
+            reset();
+          }
 
           if (user?.profile == "DoctoralStudent") {
             router.push("/minha-apresentacao");
           }
         }
+      }
+    } else {
+      const submissionData = {
+        ...formEdited,
+        eventEditionId: getEventEditionIdStorage() ?? "",
+        mainAuthorId: data.doutorando || user.id,
+        title: data.titulo,
+        abstractText: data.abstract,
+        advisorId: data.orientador as UUID,
+        coAdvisor: data.coorientador || "",
+        dateSuggestion: data.data ? new Date(data.data) : undefined,
+        pdfFile: data.slide,
+        phoneNumber: data.celular,
+      };
+
+      if (formEdited && formEdited.id) {
+        await updateSubmissionById(formEdited.id, submissionData);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       }
     }
   };
@@ -189,7 +212,7 @@ export function FormCadastroApresentacao({
         </h3>
       </div>
 
-      {user?.level === "Superadmin" && (
+      {user?.level !== "Default" && (
         <div className="col-12 mb-1">
           <label className="form-label form-title">Selecionar doutorando</label>
           <select

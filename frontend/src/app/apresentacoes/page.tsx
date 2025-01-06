@@ -86,10 +86,6 @@ export default function Apresentacoes() {
     }
   };
 
-  const handleCloseModal = () => {
-    setFormEdited(null);
-  };
-
   const handleEdit = async (submissionId: string) => {
     const submission = sessionsListValues.find((s) => s.id === submissionId);
     setFormEdited(submission);
@@ -117,7 +113,7 @@ export default function Apresentacoes() {
               onDelete={handleDelete}
               isAddButtonDisabled={isAddButtonDisabled}
             />
-            <ModalEditarCadastro formEdited={formEdited} onClose={handleCloseModal} />
+            <ModalEditarCadastro formEdited={formEdited} />
           </div>
         </SubmissionProvider>
       </SubmissionFileProvider>
