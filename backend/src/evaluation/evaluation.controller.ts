@@ -3,9 +3,11 @@ import {
   Controller,
   Get,
   Param,
-  Post,
+  Put,
   Query,
+  Req,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { EvaluationService } from './evaluation.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
@@ -15,13 +17,14 @@ import { UserLevel } from '@prisma/client';
 import { UserLevels } from '../auth/decorators/user-level.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AppException } from '../exceptions/app.exception';
 
 @Controller('evaluations')
 @UseGuards(JwtAuthGuard, UserLevelGuard)
 export class EvaluationController {
   constructor(private readonly evaluationService: EvaluationService) {}
 
-  @Post()
+  @Put()
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   @ApiBearerAuth()
   @ApiOperation({
@@ -41,7 +44,6 @@ export class EvaluationController {
   }
 
   @Get()
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Find evaluations' })
   @ApiQuery({
@@ -50,11 +52,38 @@ export class EvaluationController {
     description: 'Filter evaluations by user ID',
   })
   @ApiResponse({ status: 200, description: 'Return evaluations.' })
-  async find(@Query('userId') userId?: string) {
-    if (userId) {
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  async find(@Req() request: any, @Query('userId') userId?: string) {
+    if (
+      userId &&
+      (request.user.userId === userId ||
+        request.user.level !== UserLevel.Default)
+    ) {
       return await this.evaluationService.findOne(userId);
+    } else if (userId) {
+      throw new AppException(
+        'Este usuário não tem permissão para acessar as avaliações de outro usuário',
+        403,
+      );
     }
-    return await this.evaluationService.findAll();
+
+    if (request.user.level !== UserLevel.Default) {
+      return await this.evaluationService.findAll();
+    }
+    throw new AppException(
+      'Este usuário não tem permissão para acessar avaliações de outros usuários',
+      403,
+    );
+  }
+
+  @Get('/user')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Find evaluations by user' })
+  async findByUser(@Request() req) {
+    const userId = req.user.userId;
+
+    return await this.evaluationService.findOne(userId);
   }
 
   @Get('submission/:submissionId/final-grade')

@@ -18,6 +18,8 @@ import { useUsers } from "@/hooks/useUsers";
 import { useEdicao } from "@/hooks/useEdicao";
 import { useEffect } from "react";
 import { useSubmission } from "@/hooks/useSubmission";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+import dayjs from "dayjs";
 
 const formSessaoApresentacoesSchema = z.object({
   apresentacoes: z
@@ -70,7 +72,8 @@ const formSessaoApresentacoesSchema = z.object({
 
 export default function FormSessaoApresentacoes() {
   const { formApresentacoesFields, confirmButton } = ModalSessaoMock;
-  const { createSession, updateSession, sessao, setSessao } = useSession();
+  const { createSession, updateSession, sessao, setSessao, roomsList } =
+    useSession();
   const { userList } = useUsers();
   const { submissionList } = useSubmission();
   const { Edicao } = useEdicao();
@@ -104,10 +107,7 @@ export default function FormSessaoApresentacoes() {
     defaultValues,
   });
 
-  const salasOptions = formatOptions(
-    formApresentacoesFields.sala.options,
-    "name"
-  );
+  const salasOptions = formatOptions(roomsList, "name");
 
   const apresentacoesOptions = submissionList?.map((v) => {
     return {
@@ -128,13 +128,15 @@ export default function FormSessaoApresentacoes() {
   ) => {
     const { apresentacoes, sala, inicio, n_apresentacoes, avaliadores } = data;
 
+    const eventEditionId = getEventEditionIdStorage();
+
     if (!sala || !inicio) {
       throw new Error("Campos obrigatórios em branco.");
     }
 
     const body = {
       type: "Presentation",
-      eventEditionId: Edicao?.id ?? "",
+      eventEditionId: eventEditionId ?? "",
       submissions: apresentacoes?.length
         ? apresentacoes?.map((v) => v.value)
         : undefined,
@@ -147,7 +149,7 @@ export default function FormSessaoApresentacoes() {
     } as SessaoParams;
 
     if (sessao?.id) {
-      updateSession(sessao?.id, Edicao?.id ?? "", body).then((status) => {
+      updateSession(sessao?.id, eventEditionId ?? "", body).then((status) => {
         if (status) {
           reset();
           setSessao(null);
@@ -156,7 +158,7 @@ export default function FormSessaoApresentacoes() {
       return;
     }
 
-    createSession(Edicao?.id ?? "", body).then((status) => {
+    createSession(eventEditionId ?? "", body).then((status) => {
       if (status) {
         reset();
         setSessao(null);
@@ -175,13 +177,13 @@ export default function FormSessaoApresentacoes() {
           };
         })
       );
-      setValue("n_apresentacoes", sessao?.numPresentations ?? 0);
+      setValue("n_apresentacoes", sessao?.numPresentations ?? 3);
       setValue("sala", sessao?.roomId);
       setValue("inicio", sessao?.startTime);
       setValue(
         "avaliadores",
         sessao?.panelists?.map((v) => {
-          return { value: v.id, label: v.user?.name ?? "" };
+          return { value: v.userId, label: v.user?.name ?? "" };
         })
       );
     } else {
@@ -285,8 +287,13 @@ export default function FormSessaoApresentacoes() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                minDate={new Date(Edicao?.startDate || "")}
-                maxDate={new Date(Edicao?.endDate || "")}
+                minDate={dayjs(Edicao?.startDate || "")
+                  .add(1, "day")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
+                maxDate={dayjs(Edicao?.endDate || "")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formApresentacoesFields.inicio.placeholder}

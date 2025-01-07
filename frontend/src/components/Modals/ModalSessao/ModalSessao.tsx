@@ -8,10 +8,11 @@ import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import FormSessaoApresentacoes from "@/components/Forms/Sessao/FormSessaoApresentacoes";
 import FormSessaoGeral from "@/components/Forms/Sessao/FormSessaoGeral";
 import { useSession } from "@/hooks/useSession";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 export default function ModalSessao() {
-  const { tipo } = ModalSessaoMock;
-  const { sessao } = useSession();
+  const { tipo, titulo } = ModalSessaoMock;
+  const { sessao, listRooms } = useSession();
 
   const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(
     sessao?.type === SessaoTipoEnum["Sessão de apresentações"]
@@ -28,6 +29,12 @@ export default function ModalSessao() {
     }
   }, [sessao?.type]);
 
+  useEffect(() => {
+    const eventEditionId = getEventEditionIdStorage();
+
+    listRooms(eventEditionId ?? "");
+  }, []);
+
   return (
     <ModalComponent
       id="sessaoModal"
@@ -35,6 +42,10 @@ export default function ModalSessao() {
       loading={false}
     >
       <div className="modal-sessao px-5">
+        <h3 className="mb-4 fw-bold">
+          {sessao?.id ? titulo.edicao : titulo.cadastro}
+        </h3>
+
         <div className="col-12 mb-1">
           <label className="form-label fw-bold form-title tipo-sessao">
             {tipo.label}

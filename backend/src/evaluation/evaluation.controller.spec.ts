@@ -77,14 +77,26 @@ describe('EvaluationController', () => {
 
   describe('find', () => {
     it('should return evaluations for a specific user', async () => {
+      const mockedRequest = {
+        user: {
+          userId: 'user1',
+          level: 'Default',
+        },
+      };
       const userId = 'user1';
-      const result = await evaluationController.find(userId);
+      const result = await evaluationController.find(mockedRequest, userId);
       expect(result).toEqual(mockEvaluations);
       expect(mockEvaluationService.findOne).toHaveBeenCalledWith(userId);
     });
 
     it('should return all evaluations when no userId is provided', async () => {
-      const result = await evaluationController.find();
+      const mockedRequest = {
+        user: {
+          userId: 'user1',
+          level: 'Admin',
+        },
+      };
+      const result = await evaluationController.find(mockedRequest);
       expect(result).toEqual(mockEvaluations);
       expect(mockEvaluationService.findAll).toHaveBeenCalledWith();
     });

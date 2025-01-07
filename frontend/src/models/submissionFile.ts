@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 interface SubmissionFileParams {
-    idUser: string;
-    pdfFile: File;
+  idUser: string;
+  pdfFile: File;
 }
 
 interface SubmissionFile extends SubmissionFileParams {
-    id: string;
-    createdAt: Date;
-    deletedAt: Date;
-    updatedAt: Date;
+  id: string;
+  createdAt: Date;
+  deletedAt: Date;
+  updatedAt: Date;
+  key?: string;
+  message?: string;
 }

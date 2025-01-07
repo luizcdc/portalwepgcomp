@@ -63,6 +63,7 @@ describe('UserController', () => {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        isVerified: false,
       };
 
       jest.spyOn(userService, 'create').mockResolvedValue(userResponse);
@@ -91,6 +92,7 @@ describe('UserController', () => {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        isVerified: false,
       };
 
       jest.spyOn(userService, 'setAdmin').mockResolvedValue(setAdminResponse);
@@ -119,6 +121,7 @@ describe('UserController', () => {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        isVerified: false,
       };
 
       jest
@@ -165,6 +168,7 @@ describe('UserController', () => {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        isVerified: false,
       };
 
       jest
@@ -193,6 +197,7 @@ describe('UserController', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
+          isVerified: false,
         },
         {
           id: '2',
@@ -206,6 +211,7 @@ describe('UserController', () => {
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          isVerified: false,
         },
       ];
 
@@ -235,6 +241,7 @@ describe('UserController', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
+          isVerified: false,
         },
       ];
 
@@ -264,6 +271,7 @@ describe('UserController', () => {
           isActive: false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          isVerified: false,
         },
       ];
 
@@ -293,6 +301,7 @@ describe('UserController', () => {
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
+          isVerified: false,
         },
       ];
 

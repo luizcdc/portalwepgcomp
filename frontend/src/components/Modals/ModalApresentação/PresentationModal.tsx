@@ -5,47 +5,52 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 import Star from "@/components/UI/Star";
-import { Presentation, PresentationBookmark } from "@/models/presentation";
-import moment from 'moment';
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { usePresentation } from "@/hooks/usePresentation";
 
-export default function PresentationModal({
-  props,
-}: {
-  props: Presentation;
-}) {
+export default function PresentationModal({ props }: { props: any }) {
   const presentationBookmarkData = { presentationId: props.id };
-  const { getPresentationBookmark, postPresentationBookmark, deletePresentationBookmark } = usePresentation();
-  const [presentationBookmark, setpresentationBookmark] = useState<PresentationBookmark>();
+  const {
+    getPresentationBookmark,
+    postPresentationBookmark,
+    deletePresentationBookmark,
+  } = usePresentation();
+  const [presentationBookmark, setpresentationBookmark] =
+    useState<PresentationBookmark>();
+
   const { signed } = useContext(AuthContext);
   const router = useRouter();
 
   useEffect(() => {
-    getPresentationBookmark(presentationBookmarkData)
-      .then(setpresentationBookmark);
+    if (signed) {
+      getPresentationBookmark(presentationBookmarkData).then(
+        setpresentationBookmark
+      );
+    }
   }, []);
-
+  
   function handleFavorite() {
     if (!signed) {
-      router.push('/Login');
-      return
+      router.push("/login");
+      return;
     }
     if (presentationBookmark && presentationBookmark.bookmarked) {
       deletePresentationBookmark(presentationBookmarkData);
     } else {
       postPresentationBookmark(presentationBookmarkData);
     }
-    setpresentationBookmark({ bookmarked: !(presentationBookmark && presentationBookmark.bookmarked)});
+    setpresentationBookmark({
+      bookmarked: !(presentationBookmark && presentationBookmark.bookmarked),
+    });
   }
-
+  
   const handleEvaluateClick = () => {
-    window.location.href = `/Avaliacao/${props.id}`;
+    window.location.href = `/avaliacao/${props.id}`;
   };
-
+  
   const presentationDate = moment(props.presentationTime).format("DD/MM");
   const presentationTime = moment(props.presentationTime).format("HH:MM");
-
   return (
     <div
       className="d-flex align-items-start flex-column text-black"
@@ -63,7 +68,7 @@ export default function PresentationModal({
           className="fw-semibold text-start"
           style={{ fontSize: "18px", lineHeight: "27px" }}
         >
-          {props.submission.title}
+          {props?.submission?.title}
         </h3>
       </div>
       <div className="d-flex justify-content-between w-100">
@@ -75,22 +80,21 @@ export default function PresentationModal({
             className="d-flex flex-row align-items-start"
             style={{ gap: "10px" }}
           >
-            <strong>{props.submission.mainAuthor.name}</strong>
+            <strong>{props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}</strong>
             <div> | </div>
-            <div>{props.submission.mainAuthor.email}</div>
+            <div>{props?.submission?.mainAuthor?.email}</div>
           </div>
           <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
-            Orientador(a): {props.submission.advisor.name}
+            Orientador(a): {props.submission?.advisor?.name}
           </h4>
         </div>
-        <div>
-          <button
-            className="avaliar-button"
-            onClick={handleEvaluateClick}
-          >
-            Avaliar
-          </button>
-        </div>
+        {!!signed && (
+          <div>
+            <button className="avaliar-button" onClick={handleEvaluateClick}>
+              Avaliar
+            </button>
+          </div>
+        )}
       </div>
       <div className="d-flex" style={{ gap: "10px" }}>
         <em
@@ -104,14 +108,17 @@ export default function PresentationModal({
         >
           {presentationDate} - SALA A - {presentationTime}
         </em>
-        <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
-          {
-            (presentationBookmark) &&
-            <Star color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"} />
-          }
-        </div>
-        <div>
-          <button
+        {!!signed && (
+          <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
+            {presentationBookmark && (
+              <Star
+                color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"}
+              />
+            )}
+          </div>
+        )}
+        <div className="d-flex align-items-center">
+          <a
             className="fw-semibold bg-white"
             style={{
               border: "none",
@@ -119,14 +126,17 @@ export default function PresentationModal({
               color: "#FFA90F",
               padding: "3px 20px",
             }}
+            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${props?.submission?.pdfFile}`}
+            download
+            target="_blank"
           >
             Baixar apresentação
-          </button>
+          </a>
         </div>
       </div>
       <div style={{ textAlign: "justify" }}>
         <strong>Abstract: </strong>
-        {props.submission.abstract}
+        {props.submission?.abstract}
       </div>
     </div>
   );

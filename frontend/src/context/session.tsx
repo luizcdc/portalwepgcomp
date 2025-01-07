@@ -20,8 +20,11 @@ interface SessionProviderData {
   loadingSessao: boolean;
   sessoesList: Sessao[];
   sessao: Sessao | null;
+  roomsList: Room[];
+  loadingRoomsList: boolean;
   setSessao: Dispatch<SetStateAction<Sessao | null>>;
   listSessions: (eventEditionId: string) => void;
+  listRooms: (eventEditionId: string) => void;
   getSessionById: (idSession: string) => void;
   createSession: (
     eventEditionId: string,
@@ -49,6 +52,8 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const [loadingSessao, setLoadingSessao] = useState<boolean>(false);
   const [sessoesList, setSessoesList] = useState<Sessao[]>([]);
   const [sessao, setSessao] = useState<Sessao | null>(null);
+  const [loadingRoomsList, setLoadingRoomsList] = useState<boolean>(false);
+  const [roomsList, setRoomsList] = useState<Room[]>([]);
 
   const { showAlert } = useSweetAlert();
 
@@ -65,6 +70,22 @@ export const SessionProvider = ({ children }: SessionProps) => {
       })
       .finally(() => {
         setLoadingSessoesList(false);
+      });
+  };
+
+  const listRooms = async (eventEditionId: string) => {
+    setLoadingRoomsList(true);
+    sessionApi
+      .listRooms(eventEditionId)
+      .then((response) => {
+        setRoomsList(response);
+      })
+      .catch((err) => {
+        console.log(err);
+        setRoomsList([]);
+      })
+      .finally(() => {
+        setLoadingRoomsList(false);
       });
   };
 
@@ -114,6 +135,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           icon: "error",
           title: "Erro ao cadastrar sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -157,6 +179,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           icon: "error",
           title: "Erro ao atualizar sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -189,6 +212,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           icon: "error",
           title: "Erro ao deletar sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante a deleção. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -236,6 +260,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
           icon: "error",
           title: "Erro na troca da ordem das apresentações da sessão",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -257,6 +282,9 @@ export const SessionProvider = ({ children }: SessionProps) => {
         setSessao,
         sessoesList,
         listSessions,
+        listRooms,
+        roomsList,
+        loadingRoomsList,
         getSessionById,
         createSession,
         updateSession,

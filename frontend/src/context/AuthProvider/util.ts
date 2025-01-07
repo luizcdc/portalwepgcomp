@@ -1,6 +1,6 @@
-import { axiosInstance } from "@/utils/api";
+import axiosInstance from "@/utils/api";
 
-export const api = axiosInstance();
+export const api = axiosInstance;
  
 export function setTokenLocalStorage(token: any){
     localStorage.setItem("@Auth:token", token)
@@ -9,6 +9,10 @@ export function setTokenLocalStorage(token: any){
 export function setUserLocalStorage(user: UserProfile) {
   const userString = JSON.stringify(user);
   localStorage.setItem("@Auth:user", userString);
+}
+
+export function setEventEditionIdStorage(eventEditionId: string) {
+  localStorage.setItem("@Session:eventEditionId", eventEditionId);
 }
 
 export function getTokenLocalStorage() {
@@ -27,6 +31,19 @@ export function getUserLocalStorage() {
     return storageUser;
   }
   return null;
+}
+
+export function getEventEditionIdStorage() {
+  const eventEditionId = localStorage.getItem("@Session:eventEditionId");
+
+  if (eventEditionId) {
+    return eventEditionId;
+  }
+  return null;
+}
+
+export function logout() {
+  localStorage.clear();
 }
 
 export async function LoginRequest(

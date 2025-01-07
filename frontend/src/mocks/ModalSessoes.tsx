@@ -2,6 +2,10 @@ export const ModalSessaoMock = {
   confirmButton: {
     label: "Salvar",
   },
+  titulo: {
+    cadastro: "Cadastrar sessão",
+    edicao: "Editar sessão",
+  },
   tipo: {
     label: "Tipo de sessão",
     options: [
@@ -23,8 +27,8 @@ export const ModalSessaoMock = {
       placeholder: "Selecione a sala do evento",
       options: [
         {
-          id: "ca296d9a-f62b-4d0a-9c99-2f517172a903",
-          eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
+          id: "2df1e06d-cd7f-4fc8-9ec1-47f2548d0333",
+          eventEditionId: "c6204b5c-6a5b-45d0-878d-c88319825199",
           name: "Sala A",
           description: "The main hall for presentations.",
           createdAt: "2024-11-21T01:43:06.611Z",
@@ -102,8 +106,8 @@ export const ModalSessaoMock = {
       placeholder: "Selecione a sala do evento",
       options: [
         {
-          id: "ca296d9a-f62b-4d0a-9c99-2f517172a903",
-          eventEditionId: "d91250a6-790a-43ce-9688-004d88e33d5a",
+          id: "2df1e06d-cd7f-4fc8-9ec1-47f2548d0333",
+          eventEditionId: "c6204b5c-6a5b-45d0-878d-c88319825199",
           name: "Sala A",
           description: "The main hall for presentations.",
           createdAt: "2024-11-21T01:43:06.611Z",

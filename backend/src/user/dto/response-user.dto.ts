@@ -11,6 +11,7 @@ export class ResponseUserDto {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  isVerified: boolean;
 
   constructor(user: UserAccount) {
     this.id = user.id;
@@ -23,5 +24,6 @@ export class ResponseUserDto {
     this.isActive = user.isActive;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
+    this.isVerified = user.isVerified;
   }
 }

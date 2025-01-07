@@ -19,6 +19,7 @@ import { RoomModule } from './room/room.module';
 import { GuidanceModule } from './guidance/guidance.module';
 import { AwardedPanelistsModule } from './awarded-panelists/awarded-panelists.module';
 import { AwardedDoctoralStudentsModule } from './awarded-doctoral-students/awarded-doctoral-students.module';
+import { EvaluationCriteriaModule } from './evaluation-criteria/evaluation-criteria.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AwardedDoctoralStudentsModule } from './awarded-doctoral-students/award
     GuidanceModule,
     AwardedPanelistsModule,
     AwardedDoctoralStudentsModule,
+    EvaluationCriteriaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,26 +7,29 @@ import HtmlEditorComponent from "../HtmlEditorComponent/HtmlEditorComponent";
 import "./style.scss";
 
 import { useOrientacao } from "@/hooks/useOrientacao";
-import { useEdicao } from "@/hooks/useEdicao";
+
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 export default function Orientacao() {
   const { postOrientacao, putOrientacao, getOrientacoes, orientacoes } =
     useOrientacao();
 
-  const { Edicao } = useEdicao();
-
   const [content, setContent] = useState(orientacoes?.summary || "");
 
   const handleEditOrientacao = () => {
     const idOrientacao = orientacoes?.id;
+    const eventEditionId = getEventEditionIdStorage();
 
     if (idOrientacao) {
       putOrientacao(idOrientacao, {
-        eventEditionId: Edicao?.id ?? "",
+        eventEditionId: eventEditionId ?? "",
         summary: content,
       });
     } else {
-      postOrientacao({ eventEditionId: Edicao?.id ?? "", summary: content });
+      postOrientacao({
+        eventEditionId: eventEditionId ?? "",
+        summary: content,
+      });
     }
   };
 
@@ -50,7 +53,7 @@ export default function Orientacao() {
         handleEditField={handleEditOrientacao}
       />
 
-      <Link className={"orientacao-link"} href="/Orientacoes">
+      <Link className={"orientacao-link"} href="/orientacoes">
         Ver todas as orientações
       </Link>
     </div>

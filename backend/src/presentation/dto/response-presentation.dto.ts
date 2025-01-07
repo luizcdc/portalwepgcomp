@@ -1,10 +1,17 @@
-import { Submission, Presentation, SubmissionStatus, UserAccount } from '@prisma/client';
+import {
+  Submission,
+  Presentation,
+  SubmissionStatus,
+  UserAccount,
+} from '@prisma/client';
 
 export class PresentationResponseDto {
   id: string;
   presentationBlockId: string;
   positionWithinBlock: number;
   presentationTime: Date;
+  publicAverageScore?: number;
+  evaluatorsAverageScore?: number;
   submission: {
     id: string;
     advisorId: string;
@@ -31,13 +38,20 @@ export class PresentationResponseDto {
   };
 
   constructor(
-    presentation: Presentation & { submission: Submission & { mainAuthor?: UserAccount, advisor?: UserAccount } },
+    presentation: Presentation & {
+      submission: Submission & {
+        mainAuthor?: UserAccount;
+        advisor?: UserAccount;
+      };
+    },
     presentationTime: Date,
   ) {
     this.id = presentation.id;
     this.presentationBlockId = presentation.presentationBlockId;
     this.positionWithinBlock = presentation.positionWithinBlock;
     this.presentationTime = presentationTime;
+    this.publicAverageScore = presentation.publicAverageScore;
+    this.evaluatorsAverageScore = presentation.evaluatorsAverageScore;
 
     this.submission = {
       id: presentation.submission.id,

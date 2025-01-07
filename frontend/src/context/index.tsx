@@ -2,6 +2,7 @@
 import { ComposeProviders } from "@/components/ComposeProviders";
 import { UserProvider } from "./user";
 import { SessionProvider } from "./session";
+import { EvaluationProvider } from "./evaluation";
 import { OrientacaoProvider } from "./orientacoes";
 import { CommitterProvider } from "./commiteeMember";
 import { EdicaoProvider } from "./edicao";
@@ -18,6 +19,7 @@ const Providers = ({ children }: ProvidersProps) => {
       with={[
         UserProvider,
         SessionProvider,
+        EvaluationProvider,
         EdicaoProvider,
         PresentationProvider,
         CommitterProvider,

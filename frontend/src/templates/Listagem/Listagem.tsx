@@ -7,10 +7,12 @@ import Banner from "@/components/UI/Banner";
 import { formatDate } from "@/utils/formatDate";
 
 import "./style.scss";
+import { usePathname } from "next/navigation";
 
 interface ListagemProps {
   title: string;
   labelAddButton?: string;
+  isAddButtonDisabled?: boolean;
   searchPlaceholder: string;
   cardsList: any[];
   searchValue?: string;
@@ -24,6 +26,7 @@ interface ListagemProps {
   onChangeSearchValue?: (value: string) => void;
   onClickItem?: (value: string) => void;
   onDelete?: (id: string) => void;
+  onEdit?: (id: string) => void;
   onClear?: () => void;
 }
 
@@ -31,6 +34,7 @@ export default function Listagem({
   idModal,
   title,
   labelAddButton,
+  isAddButtonDisabled,
   searchPlaceholder,
   searchValue,
   isMyPresentation,
@@ -42,8 +46,11 @@ export default function Listagem({
   onClickItem,
   idGeneralModal,
   onDelete,
+  onEdit,
   onClear,
 }: Readonly<ListagemProps>) {
+  const pathname = usePathname();
+
   return (
     <div className="listagem-template">
       <Banner title={title} />
@@ -55,6 +62,7 @@ export default function Listagem({
               data-bs-toggle={idModal ? "modal" : undefined}
               data-bs-target={idModal ? `#${idModal}` : undefined}
               onClick={idModal ? onClear : onAddButtonClick}
+              disabled={isAddButtonDisabled}
             >
               {labelAddButton}
               <Image
@@ -103,9 +111,15 @@ export default function Listagem({
             cardsList?.map((card) => (
               <CardListagem
                 key={card.id}
-                title={card.title ?? "Sem título"}
+                title={
+                  pathname?.includes("edicoes")
+                    ? card?.name
+                    : card?.title ?? "Sem Título"
+                }
                 subtitle={
-                  title === "Sessões"
+                  pathname?.includes("edicoes")
+                    ? card?.description
+                    : pathname?.includes("sessoes")
                     ? `${formatDate(card.startTime)}`
                     : card.subtitle
                 }
@@ -115,8 +129,11 @@ export default function Listagem({
                     ? idGeneralModal
                     : ""
                 }
-                idModalEdit={idModal}
+                idModalEdit={
+                  pathname?.includes("edicoes") ? "editarEdicaoModal" : idModal
+                }
                 onClickItem={() => onClickItem && onClickItem(card)}
+                onEdit={() => onEdit && onEdit(card?.id ?? "")}
                 onDelete={() => onDelete && onDelete(card?.id ?? "")}
               />
             ))}

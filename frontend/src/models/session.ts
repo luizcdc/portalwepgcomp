@@ -29,18 +29,6 @@ interface Panelist {
   userId: string;
 }
 
-interface Presentation {
-  id: string;
-  submissionId: symbol;
-  presentationBlockId: string;
-  positionWithinBlock: number;
-  status: string;
-  startTime: string;
-  createdAt: string;
-  updatedAt: string;
-  submission: Submission | null;
-}
-
 interface Sessao extends SessaoParams {
   id: string;
   availablePositionsWithInBlock: AvailablePositionsWithInBlock[];
@@ -54,4 +42,13 @@ interface Sessao extends SessaoParams {
 interface SwapPresentationsOnSession {
   presentation1Id: string;
   presentation2Id: string;
+}
+
+interface Room {
+  id: string;
+  eventEditionId: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
 }

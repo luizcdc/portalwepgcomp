@@ -14,7 +14,10 @@ import {
   CreateEventEditionDto,
   CreateFromEventEditionFormDto,
 } from './dto/create-event-edition.dto';
-import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
+import {
+  UpdateEventEditionDto,
+  UpdateFromEventEditionFormDto,
+} from './dto/update-event-edition.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserLevelGuard } from '../auth/guards/user-level.guard';
 import { UserLevel } from '@prisma/client';
@@ -47,14 +50,15 @@ export class EventEditionController {
   }
 
   @Put('/update-from-event-edition-form/:id')
+  @UserLevels(UserLevel.Superadmin)
   async updateFromEventEditionForm(
     @Param('id') id: string,
     @Body()
-    createFromEventEditionFormDto: CreateFromEventEditionFormDto,
+    updateFromEventEditionFormDto: UpdateFromEventEditionFormDto,
   ): Promise<EventEditionResponseDto> {
     return await this.eventEditionService.updateFromEventEditionForm(
       id,
-      createFromEventEditionFormDto,
+      updateFromEventEditionFormDto,
     );
   }
 
@@ -99,5 +103,10 @@ export class EventEditionController {
   @ApiBearerAuth()
   async delete(@Param('id') id: string) {
     return await this.eventEditionService.delete(id);
+  }
+
+  @Post('/remove-admins-from-ended-events')
+  async removeAdminsFromEvent () {
+    return await this.eventEditionService.removeAdminsFromEndedEvents();
   }
 }

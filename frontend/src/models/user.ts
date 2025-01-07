@@ -4,8 +4,8 @@ type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
 type RoleType = "Superadmin" | "Admin" | "Default";
 
 interface GetUserParams {
-    profile?: ProfileType;
-    role?: RoleType;
+    profiles?: ProfileType;
+    roles?: RoleType;
 }
 
 interface RegisterUserParams {
@@ -43,7 +43,7 @@ interface UserLogin {
 interface UserProfile {
     id: string;
     name: string;
-    profile: string;
-    level: string;
+    profile: ProfileType;
+    level: RoleType;
     isActive: boolean;
 }
