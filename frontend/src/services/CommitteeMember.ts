@@ -1,13 +1,13 @@
 "use client"
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
-const instance = axiosInstance();
+const instance = axiosInstance;
 const baseUrl = "/committee-member/";
 
 export const committerMembersApi = {
     
-    getAllMembers: async (): Promise<Committer[]> => {
-        const { data } = await instance.get(`${baseUrl}`);
+    getAllMembers: async (eventEditionId: string): Promise<Committer[]> => {
+        const { data } = await instance.get(`${baseUrl}${eventEditionId ? "?eventEditionId=" + eventEditionId : ""}`);
 
         return data;
     },

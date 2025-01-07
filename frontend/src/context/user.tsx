@@ -45,21 +45,22 @@ export const UserProvider = ({ children }: UserProps) => {
   const router = useRouter();
 
   const getUsers = async (params: GetUserParams) => {
-    setLoadingUserList(false);
+    setLoadingUserList(true);
 
     try {
       const response = await userApi.getUsers(params);
       setUserList(response);
       console.log("Listado com sucesso");
     } catch (err: any) {
-      console.error(err);
       setUserList([]);
-      console.log("Erro ao tentar listar");
 
       showAlert({
         icon: "error",
         title: "Erro ao listar usuários",
-        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
+        text:
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro durante a busca.",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -81,7 +82,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -89,6 +90,7 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao cadastrar usuário",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -113,7 +115,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -121,7 +123,9 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao enviar e-mail",
         text:
-          err.response?.data?.message || "Ocorreu um erro ao enviar o e-mail.",
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro ao enviar o e-mail.",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -143,7 +147,7 @@ export const UserProvider = ({ children }: UserProps) => {
         showConfirmButton: false,
       });
 
-      router.push("/Login");
+      router.push("/login");
     } catch (err: any) {
       setUser(null);
 
@@ -151,6 +155,7 @@ export const UserProvider = ({ children }: UserProps) => {
         icon: "error",
         title: "Erro ao alterar senha",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro ao tentar alterar sua senha. Tente novamente!",
         confirmButtonText: "Retornar",
@@ -166,16 +171,15 @@ export const UserProvider = ({ children }: UserProps) => {
     try {
       const response = await userApi.getAdvisors();
       setAdvisors(response);
-      console.log("Listado com sucesso");
     } catch (err: any) {
       console.error(err);
       setAdvisors([]);
-      console.log("Erro ao buscar");
 
       showAlert({
         icon: "error",
         title: "Erro ao buscar orientadores",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro ao buscar orientadores.",
         confirmButtonText: "Retornar",

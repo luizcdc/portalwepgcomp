@@ -12,6 +12,7 @@ export default async () => {
         ["./queue/queue.dto"]: await import("./queue/queue.dto"),
         ["./presentation/dto/bookmark-presentation.dto"]: await import("./presentation/dto/bookmark-presentation.dto"),
         ["./presentation/dto/response-presentation.dto"]: await import("./presentation/dto/response-presentation.dto"),
+        ["./presentation/dto/list-advised-presentations.dto"]: await import("./presentation/dto/list-advised-presentations.dto"),
         ["./submission/dto/response-submission.dto"]: await import("./submission/dto/response-submission.dto"),
         ["./guidance/dto/response-guidance.dto"]: await import("./guidance/dto/response-guidance.dto"),
         ["./awarded-panelists/dto/create-awarded-panelists-response.dto"]: await import("./awarded-panelists/dto/create-awarded-panelists-response.dto"),

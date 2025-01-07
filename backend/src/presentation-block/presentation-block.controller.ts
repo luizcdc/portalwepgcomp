@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
+  Request,
 } from '@nestjs/common';
 import { PresentationBlockService } from './presentation-block.service';
 import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto';
@@ -38,13 +40,35 @@ export class PresentationBlockController {
   async findAllByEventEditionId(
     @Param('eventEditionId') eventEditionId: string,
   ): Promise<ResponsePresentationBlockDto[]> {
-    const presentationBlocks =
-      await this.presentationBlockService.findAllByEventEditionId(
-        eventEditionId,
-      );
+    const presentationBlocks = await this.presentationBlockService.findAll(
+      undefined,
+      eventEditionId,
+    );
 
-    return presentationBlocks.map(
-      (block) => new ResponsePresentationBlockDto(block),
+    return Promise.all(
+      presentationBlocks.map((block) =>
+        ResponsePresentationBlockDto.create(block, (id) => this.userLoader(id)),
+      ),
+    );
+  }
+
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
+  @Get()
+  async findAll(
+    @Request() req: any,
+    @Query('eventEditionId') eventEditionId: string,
+    @Query('panelistId') panelistId?: string,
+  ): Promise<ResponsePresentationBlockDto[]> {
+    const presentationBlocks = await this.presentationBlockService.findAll(
+      req.user.userId,
+      eventEditionId,
+      panelistId,
+    );
+
+    return Promise.all(
+      presentationBlocks.map((block) =>
+        ResponsePresentationBlockDto.create(block, (id) => this.userLoader(id)),
+      ),
     );
   }
 
@@ -65,7 +89,9 @@ export class PresentationBlockController {
       return null;
     }
 
-    return new ResponsePresentationBlockDto(presentationBlock);
+    return ResponsePresentationBlockDto.create(presentationBlock, (id) =>
+      this.userLoader(id),
+    );
   }
 
   @Patch(':id')
@@ -93,5 +119,12 @@ export class PresentationBlockController {
       id,
       swapPresentationsDto,
     );
+  }
+
+  async userLoader(
+    userId: string,
+  ): Promise<{ id: string; name: string; email: string }> {
+    const user = await this.presentationBlockService.findUserById(userId);
+    return user ? { id: user.id, name: user.name, email: user.email } : null;
   }
 }

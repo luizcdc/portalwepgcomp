@@ -9,118 +9,140 @@ import {
   PresentationBlockType,
   PresentationStatus,
 } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
   // TRUNCATE ALL TABLES THAT ARE FULLY INDEPENDENT FROM EACH OTHER
   // EVEN INDIRECTLY:
-  await prisma.$executeRaw`SET session_replication_role = 'replica';`;
   await prisma.$executeRawUnsafe('TRUNCATE TABLE "event_edition" CASCADE;');
   await prisma.$executeRawUnsafe('TRUNCATE TABLE "user_account" CASCADE;');
-  await prisma.$executeRaw`SET session_replication_role = 'origin';`;
+  await prisma.$executeRawUnsafe(
+    'TRUNCATE TABLE "email_verification" CASCADE;',
+  );
+
+  const users_data = [
+    {
+      name: 'Professor Superadmin',
+      email: 'profsuperadmin@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Superadmin,
+      isVerified: true,
+    },
+    {
+      name: 'Doutorando Admin',
+      email: 'docadmin@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Admin,
+      isVerified: true,
+    },
+    {
+      name: 'Professor Admin',
+      email: 'profadmin@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Admin,
+      isVerified: true,
+    },
+    {
+      name: 'Ouvinte Admin',
+      email: 'listadmin@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Listener,
+      level: UserLevel.Admin,
+      isVerified: true,
+    },
+    {
+      name: 'Professor Default',
+      email: 'profdefault@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Ouvinte Default',
+      email: 'listdefault@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Listener,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doutorando Default',
+      email: 'docdefault@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Professor Default 2',
+      email: 'profdefault2@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Professor Default 3',
+      email: 'profdefault3@example.com',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doutorando Default 2',
+      email: 'docdefault2@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doutorando Default 3',
+      email: 'docdefault3@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doutorando Default 4',
+      email: 'docdefault4@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doutorando Default 5',
+      email: 'docdefault5@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Doutorando Default 6',
+      email: 'docdefault6@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+  ];
+
+  for (const user of users_data) {
+    user.password = await bcrypt.hash(user.password, 10);
+  }
 
   await prisma.userAccount.createMany({
-    data: [
-      {
-        name: 'Prof Superadmin',
-        email: 'profsuperadmin@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Superadmin,
-      },
-      {
-        name: 'Doctoral Student Admin',
-        email: 'docadmin@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Admin,
-      },
-      {
-        name: 'Prof Admin',
-        email: 'profadmin@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Admin,
-      },
-      {
-        name: 'Listener Admin',
-        email: 'listadmin@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Listener,
-        level: UserLevel.Admin,
-      },
-      {
-        name: 'Prof Default',
-        email: 'profdefault@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Listener Default',
-        email: 'listdefault@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Listener,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Doctoral Student Default',
-        email: 'docdefault@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Prof Default 2',
-        email: 'profdefault2@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Prof Default 3',
-        email: 'profdefault3@example.com',
-        password: '1234$Ad@',
-        profile: Profile.Professor,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Doctoral Student Default 2',
-        email: 'docdefault2@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Doctoral Student Default 3',
-        email: 'docdefault3@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Doctoral Student Default 4',
-        email: 'docdefault4@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Doctoral Student Default 5',
-        email: 'docdefault5@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-      },
-      {
-        name: 'Doctoral Student Default 6',
-        email: 'docdefault6@example.com',
-        password: '1234$Ad@',
-        profile: Profile.DoctoralStudent,
-        level: UserLevel.Default,
-      },
-    ],
+    data: users_data,
   });
 
   const users = await prisma.userAccount.findMany();
@@ -208,28 +230,33 @@ async function main() {
     data: [
       {
         eventEditionId: eventEdition.id,
-        title: 'Originalidade',
-        description: 'Avaliar a originalidade da pesquisa.',
+        title: 'Conteúdo',
+        description:
+          'Quão satisfeito(a) você ficou com o conteúdo da pesquisa apresentada?',
       },
       {
         eventEditionId: eventEdition.id,
-        title: 'Relevância',
-        description: 'Avaliar a relevância da pesquisa para a área.',
+        title: 'Qualidade e Clareza',
+        description:
+          'Quão satisfeito(a) você ficou com a qualidade e clareza da apresentação?',
       },
       {
         eventEditionId: eventEdition.id,
-        title: 'Metodologia',
-        description: 'Avaliar a solidez da metodologia de pesquisa.',
+        title: 'Relevância ao Tema',
+        description:
+          'Quão bem a pesquisa abordou e explicou o problema central?',
       },
       {
         eventEditionId: eventEdition.id,
-        title: 'Clareza',
-        description: 'Avaliar a clareza da apresentação e escrita.',
+        title: 'Solução proposta',
+        description:
+          'Quão clara e prática você considera a solução proposta pela pesquisa?',
       },
       {
         eventEditionId: eventEdition.id,
-        title: 'Impacto',
-        description: 'Avaliar o potencial impacto dos resultados da pesquisa.',
+        title: 'Resultados',
+        description:
+          'Como você avalia a qualidade e aplicabilidade dos resultados apresentados?',
       },
     ],
   });
@@ -349,7 +376,7 @@ async function main() {
       roomId: room.id,
       type: PresentationBlockType.Presentation,
       title: 'Apresentações de Pesquisa em IA',
-      startTime: new Date('2024-05-01T09:00:00'),
+      startTime: new Date('2025-05-01T09:00:00'),
       duration:
         eventEdition.presentationDuration *
         eventEdition.presentationsPerPresentationBlock,
@@ -362,7 +389,7 @@ async function main() {
       roomId: room.id,
       type: PresentationBlockType.Presentation,
       title: 'Apresentações de Pesquisa em Computação Quântica',
-      startTime: new Date('2024-05-01T10:00:00'),
+      startTime: new Date('2025-05-01T10:00:00'),
       duration:
         eventEdition.presentationDuration *
         eventEdition.presentationsPerPresentationBlock,

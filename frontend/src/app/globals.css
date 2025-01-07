@@ -46,3 +46,11 @@ a {
     color-scheme: dark;
   }
 }
+
+.modal {
+  --bs-modal-zindex: 10000;
+}
+
+div:where(.swal2-container) {
+  z-index: 10001 !important;
+}

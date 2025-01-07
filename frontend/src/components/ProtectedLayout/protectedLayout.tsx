@@ -1,35 +1,37 @@
 import React, { useEffect } from "react";
 import "./protectedLayout.scss";
 import { useRouter } from "next/navigation";
+import { getUserLocalStorage } from "@/context/AuthProvider/util";
+import { useSweetAlert } from "@/hooks/useAlert";
 import { useEdicao } from "@/hooks/useEdicao";
-import { getUserLocalStorage } from '@/context/AuthProvider/util';
-import { useSweetAlert } from '@/hooks/useAlert';
 
 export const ProtectedLayout = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const router = useRouter();
-  
-  const { showAlert } = useSweetAlert();
-
   const { getEdicaoByYear } = useEdicao();
 
+  const router = useRouter();
+
+  const { showAlert } = useSweetAlert();
+
   useEffect(() => {
-    getEdicaoByYear("2024");
     const signed = getUserLocalStorage();
     if (!signed) {
       setTimeout(() => {
-        router.push("/Login");
+        router.push("/login");
       }, 3000);
-      
+
       showAlert({
         icon: "error",
-        text:
-          "Ops! Você não possui acesso e será redirecionado para o login!",
+        text: "Ops! Você não possui acesso e será redirecionado para o login!",
         confirmButtonText: "Retornar",
       });
+    } else {
+      const currentYear = String(new Date().getFullYear());
+
+      getEdicaoByYear(currentYear);
     }
   }, []);
 

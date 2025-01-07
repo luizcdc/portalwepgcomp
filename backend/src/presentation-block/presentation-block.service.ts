@@ -248,14 +248,29 @@ export class PresentationBlockService {
     return eventEdition;
   }
 
-  async findAll() {
-    return await this.prismaClient.presentationBlock.findMany();
-  }
+  async findAll(
+    requestingUserId: string,
+    eventEditionId?: string,
+    panelistId?: string,
+  ) {
+    if (requestingUserId && panelistId && panelistId != requestingUserId) {
+      throw new AppException('Acesso negado', 403);
+    }
+    const preFiltering = {};
+    let eventEdition = null;
+    if (eventEditionId) {
+      preFiltering['eventEditionId'] = eventEditionId;
+      eventEdition = await this.prismaClient.eventEdition.findUnique({
+        where: { id: eventEditionId },
+      });
 
-  async findAllByEventEditionId(eventEditionId: string) {
-    const presentationBlocks =
-      await this.prismaClient.presentationBlock.findMany({
-        where: { eventEditionId },
+      if (!eventEdition) {
+        throw new AppException('Edição do evento não encontrada', 404);
+      }
+    }
+    let presentationBlocks = await this.prismaClient.presentationBlock.findMany(
+      {
+        where: preFiltering,
         include: {
           presentations: {
             include: {
@@ -268,16 +283,13 @@ export class PresentationBlockService {
             },
           },
         },
-      });
-
-    const eventEdition = await this.prismaClient.eventEdition.findUnique({
-      where: { id: eventEditionId },
-    });
-
-    if (!eventEdition) {
-      throw new AppException('Edição do evento não encontrada', 404);
-    }
-
+      },
+    );
+    presentationBlocks = panelistId
+      ? presentationBlocks.filter((block) =>
+          block.panelists.some((panelist) => panelist.userId === panelistId),
+        )
+      : presentationBlocks;
     return Promise.all(
       presentationBlocks.map((block) => this.processPresentationBlock(block)),
     );
@@ -340,109 +352,115 @@ export class PresentationBlockService {
       panelists,
       ...without_num_presentations
     } = updatePresentationBlockDto;
-    // For each submission, do like in this.create() (if it exists, reassign to this presentationBlock, if it doesn't, create the presentation), and update the positionWithinBlock
-    // if the lenght == 0, delete all presentations
-    if (submissions && submissions.length > 0) {
-      // Find existing submissions
-      const submissionsExist = await this.prismaClient.submission.findMany({
-        where: {
-          id: { in: submissions },
-        },
-      });
 
-      if (submissionsExist.length !== submissions.length) {
-        throw new AppException('Um dos trabalhos informados não existe', 404);
-      }
+    return await this.prismaClient.$transaction(async (tx) => {
+      // For each submission, do like in this.create() (if it exists, reassign to this presentationBlock, if it doesn't, create the presentation), and update the positionWithinBlock
+      // if the lenght == 0, delete all presentations
+      if (submissions && submissions.length > 0) {
+        // Find existing submissions
+        const submissionsExist = await tx.submission.findMany({
+          where: {
+            id: { in: submissions },
+          },
+        });
 
-      // Sort submissions to maintain order
-      const submissionsExistIds = submissionsExist.map((sub) => sub.id);
-      submissionsExistIds.sort(
-        (a, b) => submissions.indexOf(a) - submissions.indexOf(b),
-      );
+        if (submissionsExist.length !== submissions.length) {
+          throw new AppException('Um dos trabalhos informados não existe', 404);
+        }
 
-      // Find existing presentations
-      const existingPresentations =
-        await this.prismaClient.presentation.findMany({
+        // Sort submissions to maintain order
+        const submissionsExistIds = submissionsExist.map((sub) => sub.id);
+        submissionsExistIds.sort(
+          (a, b) => submissions.indexOf(a) - submissions.indexOf(b),
+        );
+
+        // Find existing presentations
+        const existingPresentations = await tx.presentation.findMany({
           where: {
             submissionId: { in: submissionsExistIds },
           },
         });
 
-      // Update existing presentations
-      for (const presentation of existingPresentations) {
-        await this.prismaClient.presentation.update({
-          where: { id: presentation.id },
-          data: {
-            positionWithinBlock: submissionsExistIds.indexOf(
-              presentation.submissionId,
-            ),
+        // Update existing presentations
+        for (const presentation of existingPresentations) {
+          await tx.presentation.update({
+            where: { id: presentation.id },
+            data: {
+              positionWithinBlock: submissionsExistIds.indexOf(
+                presentation.submissionId,
+              ),
+              presentationBlockId: id,
+            },
+          });
+        }
+
+        // Create new presentations for submissions without one
+        const submissionsWithoutPresentation = submissionsExistIds.filter(
+          (subId) =>
+            !existingPresentations.some((pres) => pres.submissionId === subId),
+        );
+
+        if (submissionsWithoutPresentation.length > 0) {
+          await tx.presentation.createMany({
+            data: submissionsWithoutPresentation.map((submissionId) => ({
+              submissionId,
+              presentationBlockId: id,
+              positionWithinBlock: submissionsExistIds.indexOf(submissionId),
+              status: PresentationStatus.ToPresent,
+            })),
+          });
+        }
+      } else {
+        await tx.presentation.deleteMany({
+          where: {
             presentationBlockId: id,
           },
         });
       }
 
-      // Create new presentations for submissions without one
-      const submissionsWithoutPresentation = submissionsExistIds.filter(
-        (subId) =>
-          !existingPresentations.some((pres) => pres.submissionId === subId),
-      );
-
-      if (submissionsWithoutPresentation.length > 0) {
-        await this.prismaClient.presentation.createMany({
-          data: submissionsWithoutPresentation.map((submissionId) => ({
-            submissionId,
+      // For each panelist (it's an userAccountId), do the same as the submissions: delete all panelists and create new ones
+      if (panelists && panelists.length > 0) {
+        // delete all panelists currently assigned to this block
+        await tx.panelist.deleteMany({
+          where: {
             presentationBlockId: id,
-            positionWithinBlock: submissionsExistIds.indexOf(submissionId),
-            status: PresentationStatus.ToPresent,
+          },
+        });
+        // create a panelist for each valid userAccountId
+        // validate userIDs
+        const panelistsExist = await tx.userAccount.findMany({
+          where: {
+            id: {
+              in: panelists,
+            },
+          },
+        });
+        if (panelistsExist.length !== panelists.length) {
+          throw new AppException(
+            'Um dos avaliadores informados não existe',
+            404,
+          );
+        }
+        await tx.panelist.createMany({
+          data: panelists.map((userId) => ({
+            userId,
+            presentationBlockId: id,
           })),
         });
-      }
-    } else {
-      await this.prismaClient.presentation.deleteMany({
-        where: {
-          presentationBlockId: id,
-        },
-      });
-    }
-    // For each panelist (it's an userAccountId), do the same as the submissions: delete all panelists and create new ones
-    if (panelists && panelists.length > 0) {
-      // delete all panelists currently assigned to this block
-      await this.prismaClient.panelist.deleteMany({
-        where: {
-          presentationBlockId: id,
-        },
-      });
-      // create a panelist for each valid userAccountId
-      // validate userIDs
-      const panelistsExist = await this.prismaClient.userAccount.findMany({
-        where: {
-          id: {
-            in: panelists,
+      } else {
+        await tx.panelist.deleteMany({
+          where: {
+            presentationBlockId: id,
           },
-        },
-      });
-      if (panelistsExist.length !== panelists.length) {
-        throw new AppException('Um dos avaliadores informados não existe', 404);
+        });
       }
-      await this.prismaClient.panelist.createMany({
-        data: panelists.map((userId) => ({
-          userId,
-          presentationBlockId: id,
-        })),
-      });
-    } else {
-      await this.prismaClient.panelist.deleteMany({
-        where: {
-          presentationBlockId: id,
-        },
-      });
-    }
 
-    return await this.prismaClient.presentationBlock.update({
-      where: {
-        id,
-      },
-      data: without_num_presentations,
+      return await tx.presentationBlock.update({
+        where: {
+          id,
+        },
+        data: without_num_presentations,
+      });
     });
   }
 
@@ -629,5 +647,13 @@ export class PresentationBlockService {
       presentations: presentationsWithStartTime,
       availablePositionsWithinBlock,
     };
+  }
+
+  async findUserById(userId: string) {
+    return await this.prismaClient.userAccount.findUnique({
+      where: {
+        id: userId,
+      },
+    });
   }
 }

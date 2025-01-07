@@ -317,7 +317,7 @@ model Guidance {
   createdAt        DateTime     @default(now()) @map("created_at")
   updatedAt        DateTime     @updatedAt @map("updated_at")
   eventEditionId   String       @unique @map("event_edition_id")
-  eventEdition     EventEdition @relation(fields: [eventEditionId], references: [id])
+  eventEdition     EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
 
   @@map("guidance")
 }

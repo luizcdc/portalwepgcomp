@@ -31,21 +31,13 @@ export default function Modal({
         style={{ display: "none" }}
       ></button>
       {isOpen ? (
-        <>
-          <div
-            className="modal-area-close"
-            onClick={() => closeModal()}
-          ></div>
-          <div
-            className="modal-content"
-          >
-            <div
-              onClick={() => closeModal()}
-              className="modal-btn-close"
-            >
+        <div className="modal-ui-general">
+          <div className="modal-area-close" onClick={() => closeModal()}></div>
+          <div className="modal-content">
+            <div onClick={() => closeModal()} className="modal-btn-close">
               <Image
                 src={"/assets/images/close.svg"}
-                alt='ícone de fechar'
+                alt="ícone de fechar"
                 width={24}
                 height={24}
                 priority={true}
@@ -53,7 +45,7 @@ export default function Modal({
             </div>
             {content}
           </div>
-        </>
+        </div>
       ) : (
         ""
       )}

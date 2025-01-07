@@ -85,6 +85,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
           icon: "error",
           title: "Erro ao cadastrar orientação",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -117,6 +118,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
           icon: "error",
           title: "Erro ao atualizar orientação",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante a atualização. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
@@ -146,6 +148,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
           icon: "error",
           title: "Erro ao deletar orientação",
           text:
+            err.response?.data?.message?.message ||
             err.response?.data?.message ||
             "Ocorreu um erro durante a deleção. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",

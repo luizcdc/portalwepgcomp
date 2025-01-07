@@ -1,15 +1,14 @@
 "use client"
-import { axiosInstance } from '@/utils/api';
+import axiosInstance from '@/utils/api';
 
 const baseUrl = "/event";
-const instance = axiosInstance();
+const instance = axiosInstance;
 
 export const edicaoApi = {
     listEdicao: async () => {
         
 
         const { data } = await instance.get(`${baseUrl}`);
-
         return data;
     },
 
@@ -21,7 +20,6 @@ export const edicaoApi = {
     },
 
     getEdicaoByYear: async (year: string) => {
-        const instance = axiosInstance();
 
         const { data } = await instance.get(`${baseUrl}/year/${year}`);
 

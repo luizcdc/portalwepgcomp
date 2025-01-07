@@ -14,6 +14,7 @@ export class UserDto {
   profile: Profile;
   level: UserLevel;
   isActive: boolean;
+  isVerified: boolean;
 
   constructor(user: {
     id: string;
@@ -24,6 +25,7 @@ export class UserDto {
     profile: Profile;
     level: UserLevel;
     isActive: boolean;
+    isVerified: boolean;
   }) {
     this.id = user.id;
     this.name = user.name;
@@ -33,6 +35,7 @@ export class UserDto {
     this.profile = user.profile;
     this.level = user.level;
     this.isActive = user.isActive;
+    this.isVerified = user.isVerified;
   }
 }
 

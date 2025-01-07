@@ -37,7 +37,7 @@ export const formatDateEvent = (dateStart: string | undefined, dateEnd: string |
     "dezembro"
   ];
 
-  const d_Start = dayjs(dateStart);
+  const d_Start = dayjs(dateStart).add(1, "day");
   const d_end = dayjs(dateEnd);
 
   const startDate = d_Start.format('DD');

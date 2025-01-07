@@ -9,6 +9,7 @@ import PerfilOuvinte from "../Perfil/PerfilOuvinte";
 import PerfilAdmin from "../Perfil/PerfilAdmin";
 import PerfilDoutorando from "../Perfil/PerfilDoutorando";
 import "./style.scss";
+import PerfilProfessor from "../Perfil/PerfilProfessor";
 
 export default function Header() {
   const { user, signed } = useContext(AuthContext);
@@ -25,7 +26,7 @@ export default function Header() {
 
   const handleItemClick = (item: MenuItem) => {
     setSelectedItem(item);
-    if (pathname === "/Home") {
+    if (pathname === "/home") {
       const section = document.getElementById(item);
       if (section) {
         section.scrollIntoView({ behavior: "smooth" });
@@ -35,11 +36,14 @@ export default function Header() {
 
   function perfil() {
     if (!user) return null;
+    if (user.level !== "Default")
+      return <PerfilAdmin profile={user?.profile} role={user?.level} />;
+
     switch (user.profile) {
       case "Listener":
         return <PerfilOuvinte />;
       case "Professor":
-        return <PerfilAdmin />;
+        return <PerfilProfessor />;
       case "DoctoralStudent":
         return <PerfilDoutorando />;
 
@@ -52,21 +56,25 @@ export default function Header() {
     const currentPath = pathname;
     const currentHash = window.location.hash;
 
-    if (currentPath === "/Home") {
+    if (currentPath === "/home") {
       if (currentHash === "#inicio") setSelectedItem("inicio");
       else if (currentHash === "#Programacao")
         setSelectedItem("programação do evento");
       else if (currentHash === "#Orientacao") setSelectedItem("orientações");
       else if (currentHash === "#Contato") setSelectedItem("contato");
       else setSelectedItem(null);
-    } else if (currentPath === "/Login") {
+    } else if (currentPath === "/login") {
       setSelectedItem("login");
+    } else {
+      setSelectedItem(null);
     }
   }, [pathname]);
 
   return (
     <>
-      <div className="header-placeholder"><span /></div>
+      <div className="header-placeholder">
+        <span />
+      </div>
       <nav className="navbar navbar-expand-lg fixed">
         <div className="container-fluid">
           <Link className="navbar-brand" href="/">
@@ -79,7 +87,7 @@ export default function Header() {
               priority
             />
           </Link>
-          
+
           <nav className="navbar">
             <button
               className="navbar-toggler"
@@ -95,7 +103,10 @@ export default function Header() {
           </nav>
 
           <div className="d-flex justify-content-end navbar-menu-itens">
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <div
+              className="collapse navbar-collapse"
+              id="navbarSupportedContent"
+            >
               <ul className="navbar-nav align-items-center me-auto mb-2 mb-lg-0 fw-normal">
                 <div
                   className={`nav-item ${
@@ -103,24 +114,26 @@ export default function Header() {
                   }`}
                   onClick={() => handleItemClick("inicio")}
                 >
-                  <Link className="nav-link text-black" href="/Home">
+                  <Link className="nav-link text-black" href="/home">
                     Início
                   </Link>
                 </div>
-                {!signed && <li className="nav-wall">
-                  <div className="nav-wall vr text-black"></div>
-                </li>
-                }
-                {!signed && <li className="nav-item">
-                  <Link
+                {!signed && (
+                  <li className="nav-wall">
+                    <div className="nav-wall vr text-black"></div>
+                  </li>
+                )}
+                {!signed && (
+                  <li className="nav-item">
+                    <Link
                       className="nav-link active text-black"
                       aria-current="page"
-                      href="/Cadastro"
+                      href="/cadastro"
                     >
                       Inscrição
                     </Link>
-                </li>
-                }
+                  </li>
+                )}
                 <div className="vr text-black"></div>
                 <div
                   className={`nav-item ${
@@ -128,8 +141,11 @@ export default function Header() {
                   }`}
                   onClick={() => handleItemClick("programação do evento")}
                 >
-                  <Link className="nav-link text-black" href="Home#Programacao">
-                    Programação do Evento
+                  <Link
+                    className="nav-link text-black tamanho-texto-programacao-evento"
+                    href="home#Programacao"
+                  >
+                    Programação do evento
                   </Link>
                 </div>
                 <div className="vr text-black"></div>
@@ -139,7 +155,7 @@ export default function Header() {
                   }`}
                   onClick={() => handleItemClick("orientações")}
                 >
-                  <Link className="nav-link text-black" href="Home#Orientacao">
+                  <Link className="nav-link text-black" href="home#Orientacao">
                     Orientações
                   </Link>
                 </div>
@@ -150,7 +166,7 @@ export default function Header() {
                   }`}
                   onClick={() => handleItemClick("contato")}
                 >
-                  <Link className="nav-link text-black" href="Home#Contato">
+                  <Link className="nav-link text-black" href="home#Contato">
                     Contato
                   </Link>
                 </div>
@@ -162,7 +178,7 @@ export default function Header() {
                     <Link
                       className="nav-link active text-black"
                       aria-current="page"
-                      href="/Login"
+                      href="/login"
                     >
                       Login
                     </Link>

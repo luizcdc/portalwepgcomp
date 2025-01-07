@@ -1,7 +1,7 @@
 "use client";
 
-import { ReactNode } from "react";
 import LoadingPage from "@/components/LoadingPage";
+import { ReactNode } from "react";
 
 import "./style.scss";
 
@@ -37,7 +37,6 @@ export default function ModalComponent({
       } modal-component`}
       id={id}
       tabIndex={-1}
-      aria-hidden="true"
       onBlur={onClose}
     >
       <div className="modal-dialog">

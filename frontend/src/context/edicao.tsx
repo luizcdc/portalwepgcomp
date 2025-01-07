@@ -2,11 +2,17 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { createContext, ReactNode, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 
 import { edicaoApi } from "@/services/edicao";
 import { useSweetAlert } from "@/hooks/useAlert";
-import { setEventEditionIdStorage } from './AuthProvider/util';
+import { setEventEditionIdStorage } from "./AuthProvider/util";
 
 interface EdicaoProps {
   children: ReactNode;
@@ -17,6 +23,7 @@ interface EdicaoProviderData {
   loadingEdicao: boolean;
   edicoesList: Edicao[];
   Edicao: Edicao | null;
+  setEdicao: Dispatch<SetStateAction<Edicao | null>>;
   listEdicao: () => void;
   getEdicaoById: (idEdicao: string) => void;
   getEdicaoByYear: (year: string) => void;
@@ -44,17 +51,8 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
     try {
       const response = await edicaoApi.listEdicao();
       setEdicoesList(response);
-      setEdicao(response[0]);
-      return response;
     } catch (err: any) {
       setEdicoesList([]);
-      setEdicao(null);
-      showAlert({
-        icon: "error",
-        title: "Erro ao listar apresentações",
-        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
-        confirmButtonText: "Retornar",
-      });
     } finally {
       setLoadingEdicoesList(false);
     }
@@ -68,12 +66,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       setEdicao(response);
     } catch (err: any) {
       setEdicao(null);
-      showAlert({
-        icon: "error",
-        title: "Erro ao buscar edição",
-        text: err.response?.data?.message || "Ocorreu um erro durante a busca.",
-        confirmButtonText: "Retornar",
-      });
     } finally {
       setLoadingEdicoesList(false);
     }
@@ -81,19 +73,16 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
   const getEdicaoByYear = async (year: string) => {
     setLoadingEdicao(true);
-    edicaoApi
-      .getEdicaoByYear(year)
-      .then((response) => {
-        setEdicao(response);
-        setEventEditionIdStorage(response.id);
-      })
-      .catch((err) => {
-        console.log(err);
-        setEdicao(null);
-      })
-      .finally(() => {
-        setLoadingEdicao(false);
-      });
+
+    try {
+      const response = await edicaoApi.getEdicaoByYear(year);
+      setEdicao(response);
+      setEventEditionIdStorage(response.id);
+    } catch (err: any) {
+      setEdicao(null);
+    } finally {
+      setLoadingEdicao(false);
+    }
   };
 
   const createEdicao = async (body: EdicaoParams) => {
@@ -104,7 +93,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "success",
-        title: "Apresentação cadastrada com sucesso!",
+        title: "Edição cadastrada com sucesso!",
         timer: 3000,
         showConfirmButton: false,
       });
@@ -114,8 +103,9 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "error",
-        title: "Erro ao cadastrar apresentação",
+        title: "Erro ao cadastrar Edição",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -138,15 +128,15 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         showConfirmButton: false,
       });
     } catch (err: any) {
-      console.error(err);
       setEdicao(null);
 
       showAlert({
         icon: "error",
-        title: "Erro ao editar apresentação",
+        title: "Erro ao atualizar a Edição",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
-          "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
+          "Ocorreu um erro durante a atualizar. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
     } finally {
@@ -172,8 +162,9 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "error",
-        title: "Erro ao editar apresentação",
+        title: "Erro ao atualizar a Edição",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -202,8 +193,9 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
 
       showAlert({
         icon: "error",
-        title: "Erro ao remover apresentação",
+        title: "Erro ao remover a Edição",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro durante a remoção. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
@@ -220,6 +212,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         loadingEdicoesList,
         Edicao,
         edicoesList,
+        setEdicao,
         listEdicao,
         getEdicaoById,
         getEdicaoByYear,

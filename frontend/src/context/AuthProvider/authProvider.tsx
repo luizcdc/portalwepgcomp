@@ -4,7 +4,13 @@ import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
-import { api, getUserLocalStorage, LoginRequest, setTokenLocalStorage, setUserLocalStorage } from "./util";
+import {
+  getUserLocalStorage,
+  LoginRequest,
+  setTokenLocalStorage,
+  setUserLocalStorage,
+} from "./util";
+import api from "../../utils/api";
 
 export const AuthContext = createContext<IContextLogin>({} as IContextLogin);
 
@@ -26,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(userSigned));
     }
   }, []);
-  
+
   const singIn = async ({ email, password }) => {
     try {
       const response = await LoginRequest(email, password);
@@ -45,6 +51,7 @@ export const AuthProvider = ({ children }) => {
       showAlert({
         icon: "error",
         text:
+          err.response?.data?.message?.message ||
           err.response?.data?.message ||
           "Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
