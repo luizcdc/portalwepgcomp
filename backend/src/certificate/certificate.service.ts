@@ -17,6 +17,10 @@ export class CertificateService {
       doc.on('data', (chunk) => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));
 
+      doc.image('./src/certificate/assets/pgcomp_ufba_logo.png', 0, 200, {
+        fit: [250, 250],
+      });
+
       doc.text('Hello World');
       doc.end();
     });
