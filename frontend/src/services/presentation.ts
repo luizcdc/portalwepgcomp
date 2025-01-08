@@ -27,6 +27,16 @@ export const presentationApi = {
         return data;
     },
 
+    getPresentationBookmarks: async (): Promise<any> => {
+        const { data } = await instance.get(`${baseUrl}/bookmarks`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        return data;
+    },
+
     postPresentationBookmark: async (body: PresentationBookmarkRegister) => {
         const { data } = await instance.post(`${baseUrl}/bookmark`, body);
 

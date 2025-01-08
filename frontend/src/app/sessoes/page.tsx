@@ -47,9 +47,13 @@ export default function Sessoes() {
   useEffect(() => {
     if (sessoesList.length) {
       const newSessionsList =
-        sessoesList?.filter(
-          (v) => !v.title || v.title?.includes(searchValue.trim())
-        ) ?? [];
+        sessoesList?.filter((v) => {
+          const searchMatch = v?.title
+            ?.toLowerCase()
+            .includes(searchValue.trim().toLowerCase());
+
+          return !v?.title || searchMatch;
+        }) ?? [];
       setSessionsListValues(newSessionsList);
     }
   }, [sessoesList, searchValue]);
