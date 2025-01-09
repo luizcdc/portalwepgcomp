@@ -3,24 +3,24 @@
 import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import "./style.scss";
 
-export default function ModalAceitacaoAlteracaoUsuario() {
+export default function ModalAlteracaoUsuario() {
   return (
     <ModalComponent
-      id="apresentacaoModal"
+      id="alteracaoModal"
       loading={false}
       disabledConfirmButton={false}
       onConfirm={() => console.log("Confirmado!")}
       labelConfirmButton="Confirmar"
       colorButtonConfirm="#0065A3"
     >
-      <div className="modal-aceitacao-alteracao">
-        <h1 className="title-aceitacao-alteracao">
+      <div className="modal-alteracao-usuario">
+        <h1 className="title-alteracao-usuario">
           ATENÇÃO
         </h1>
 
         <hr className="linha" />
 
-        <div className="content-aceitacao-alteracao">
+        <div className="content-alteracao-usuario">
           <p>
           Ao clicar em "Confirmar", você declara estar ciente 
           de que está prestes a alterar as permissões e/ou o status de um usuário no sistema. 

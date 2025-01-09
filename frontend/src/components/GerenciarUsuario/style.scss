@@ -210,10 +210,15 @@
 }
 
 .drop-button1{
+  display: flex;
+  align-items: center;
   font-size: 15px;
-  width: 123px;
   height: 32px;
+  padding-left: 5px;
   cursor: pointer;
+  &:hover {
+    background-color: #e9e7e6;
+  }
 }
 
 .drop-permit {
@@ -225,6 +230,7 @@
   border-width: 2px;
   border-radius: 12px;
   color: #45414A;
+  background-color: white;
   font-size: 15px;
   font-weight: bold;
   width: 198px;
@@ -233,10 +239,16 @@
 }
 
 .drop-button2{
+  display: flex;
+  align-items: center;
   font-size: 15px;
   width: 198px;
   height: 32px;
+  padding-left: 5px;
   cursor: pointer;
+  &:hover {
+    background-color: #e9e7e6;
+  }
 }
 
 .save{

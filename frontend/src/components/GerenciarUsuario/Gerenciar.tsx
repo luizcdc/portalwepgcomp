@@ -106,19 +106,21 @@ export default function Gerenciar() {
         <div className="drop-boxes">
           <div className="drop-section">
             <div className="drop-text">Status:</div>
-            <div className="dropdown">
+            <div className="dropdown-center">
               <button
                 className={
                   userStatus == 0
-                    ? "button-ativo-true btn dropdown-toggle border-0"
+                    ? "button-ativo-true dropdown-toggle border-0"
                     : userStatus == 1
-                    ? "button-pendente-true btn dropdown-toggle border-0"
-                    : "button-inativo-true btn dropdown-toggle border-0"
+                    ? "button-pendente-true dropdown-toggle border-0"
+                    : "button-inativo-true dropdown-toggle border-0"
                 }
                 type="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
-              >{getStatus()}</button>
+              >
+                {getStatus()}
+              </button>
               <ul className="dropdown-menu border-3 border-light">
                 <div className="drop-button1" onClick={() => setUserStatus(0)}>
                   ATIVO
@@ -137,7 +139,7 @@ export default function Gerenciar() {
             <div className="drop-text">Permissão:</div>
             <div className="dropdown">
               <button
-                className="drop-permit btn dropdown-toggle"
+                className="drop-permit dropdown-toggle"
                 type="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
@@ -145,13 +147,22 @@ export default function Gerenciar() {
                 {getPermission()}
               </button>
               <ul className="dropdown-menu border-3 border-light">
-                <div className="drop-button2" onClick={() => setUserPermission(2)}>
+                <div
+                  className="drop-button2"
+                  onClick={() => setUserPermission(2)}
+                >
                   SUP ADMINISTRADOR
                 </div>
-                <div className="drop-button2" onClick={() => setUserPermission(1)}>
+                <div
+                  className="drop-button2"
+                  onClick={() => setUserPermission(1)}
+                >
                   ADMINISTRADOR
                 </div>
-                <div className="drop-button2" onClick={() => setUserPermission(0)}>
+                <div
+                  className="drop-button2"
+                  onClick={() => setUserPermission(0)}
+                >
                   NORMAL
                 </div>
               </ul>
