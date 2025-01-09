@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-with-submission.dto';
 import { SubmissionService } from '../submission/submission.service';
+import { ScoringService } from '../scoring/scoring.service';
 import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePresentationDto } from './dto/update-presentation.dto';
@@ -18,6 +19,7 @@ import {
   BookmarkPresentationResponseDto,
 } from './dto/bookmark-presentation.dto';
 import { ListAdvisedPresentationsResponse } from './dto/list-advised-presentations.dto';
+import { EvaluationStats } from '../scoring/interfaces/evaluation-stats.interface';
 
 @Injectable()
 export class PresentationService {
@@ -713,19 +715,9 @@ export class PresentationService {
   }
 
   async calculateAndUpdateScores(presentationId: string): Promise<void> {
-    // Fetch the presentation with its presentationBlock, panelists, and submission
     const presentation = await this.prismaClient.presentation.findUnique({
       where: { id: presentationId },
       include: {
-        presentationBlock: {
-          include: {
-            panelists: {
-              include: {
-                user: true,
-              },
-            },
-          },
-        },
         submission: {
           include: {
             Evaluation: {
@@ -735,60 +727,68 @@ export class PresentationService {
             },
           },
         },
+        presentationBlock: {
+          include: {
+            panelists: true,
+          },
+        },
       },
     });
 
-    if (!presentation) {
-      throw new Error('Presentation not found');
-    }
-
-    const evaluations = presentation.submission.Evaluation;
+    // Separate evaluations into public and panelist groups
     const panelistUserIds = presentation.presentationBlock.panelists.map(
       (panelist) => panelist.userId,
     );
 
-    // Separate evaluations into public and panelist groups
-    const publicEvaluations = evaluations.filter(
-      (evaluation) =>
-        !evaluation.userId || !panelistUserIds.includes(evaluation.userId),
-    );
+    const publicStats: EvaluationStats = {
+      totalScore: 0,
+      numberOfRatings: 0,
+      scores: {},
+    };
 
-    const panelistEvaluations = evaluations.filter(
-      (evaluation) =>
-        evaluation.userId && panelistUserIds.includes(evaluation.userId),
-    );
+    const panelistStats: EvaluationStats = {
+      totalScore: 0,
+      numberOfRatings: 0,
+      scores: {},
+    };
 
-    // Calculate public average score
-    const publicAverageScore = this.calculateAverageScore(publicEvaluations);
+    // Calculate statistics for each group
+    presentation.submission.Evaluation.forEach((evaluation) => {
+      const stats = panelistUserIds.includes(evaluation.userId)
+        ? panelistStats
+        : publicStats;
 
-    // Calculate panelists average score
-    const evaluatorsAverageScore =
-      this.calculateAverageScore(panelistEvaluations);
+      stats.totalScore += evaluation.score;
+      stats.numberOfRatings++;
+      stats.scores[evaluation.score] =
+        (stats.scores[evaluation.score] || 0) + 1;
+    });
 
-    // Update the presentation with new scores
+    const scoringService = new ScoringService();
+
+    // Calculate Wilson Scores for both groups
+    const publicScore = scoringService.calculateWilsonScore(publicStats);
+    const panelistScore = scoringService.calculateWilsonScore(panelistStats);
+
+    // Update the presentation
     await this.prismaClient.presentation.update({
       where: { id: presentationId },
       data: {
-        publicAverageScore,
-        evaluatorsAverageScore,
+        publicAverageScore: publicScore,
+        evaluatorsAverageScore: panelistScore,
       },
     });
   }
 
-  private calculateAverageScore(evaluations: any[]): number | null {
-    // get the average score of the all evaluations
-    if (!evaluations.length) {
-      return null;
+  async recalculateAllScores(eventEditionId: string): Promise<void> {
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: { id: eventEditionId },
+    });
+
+    if (!eventEdition) {
+      throw new AppException('Evento não encontrado.', 404);
     }
 
-    const totalScore = evaluations.reduce(
-      (sum, evaluation) => sum + evaluation.score,
-      0,
-    );
-    return Number((totalScore / evaluations.length).toFixed(2));
-  }
-
-  async recalculateAllScores(eventEditionId: string): Promise<void> {
     const presentations = await this.prismaClient.presentation.findMany({
       where: {
         submission: {
@@ -801,9 +801,11 @@ export class PresentationService {
     for (const presentation of presentations) {
       await this.calculateAndUpdateScores(presentation.id);
     }
+
+    //TODO: SHOULD I RETURN A SUCCESS MESSAGE?
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_HOUR)
   async calculateScoresForActiveEvent() {
     try {
       this.logger.log('Starting daily score calculation for active event');

@@ -225,7 +225,6 @@ export class PresentationController {
     required: true,
   })
   async calculateAllScores(@Param('eventEditionId') eventEditionId: string) {
-    await this.presentationService.recalculateAllScores(eventEditionId);
-    return { message: 'All scores calculated successfully' };
+    return await this.presentationService.recalculateAllScores(eventEditionId);
   }
 }
