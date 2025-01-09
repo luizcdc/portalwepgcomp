@@ -1,0 +1,23 @@
+.modal-aceitacao-alteracao{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+       
+    .linha {
+      width: 100%;
+    }
+    
+    .content-aceitacao-alteracao {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    p {
+      text-align: justify;
+    }
+
+    .title-aceitacao-alteracao {
+      font-weight: 700;
+    }
+}

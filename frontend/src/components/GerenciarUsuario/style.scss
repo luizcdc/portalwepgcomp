@@ -1,15 +1,17 @@
 .gerenciador {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
+  align-items: flex-start;
   justify-content: center;
-  align-items: center;
+  padding-bottom: 400px;
 }
 
 .filtros {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 50px;
+  margin-left: 20px;
 }
 
 .pesquisar {
@@ -69,7 +71,7 @@
   color: #adb5bd;
 }
 
-.button-ativo {
+.button-ativo-false {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,7 +86,24 @@
   cursor: pointer;
 }
 
-.button-pendente {
+.button-ativo-true {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid;
+  border-color: #019a34;
+  border-width: 2px;
+  border-radius: 12px;
+  color: white;
+  background-color: #019a34;
+  font-size: 15px;
+  font-weight: bold;
+  width: 123px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.button-pendente-false {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,7 +118,24 @@
   cursor: pointer;
 }
 
-.button-inativo {
+.button-pendente-true {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid;
+  border-color: #e8b301;
+  border-width: 2px;
+  border-radius: 12px;
+  color: white;
+  background-color: #e8b301;
+  font-size: 15px;
+  font-weight: bold;
+  width: 123px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.button-inativo-false {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,4 +148,115 @@
   width: 123px;
   height: 22px;
   cursor: pointer;
+}
+
+.button-inativo-true {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid;
+  border-color: #45414a;
+  border-width: 2px;
+  border-radius: 12px;
+  color: white;
+  background-color: #45414a;
+  font-size: 15px;
+  font-weight: bold;
+  width: 123px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.description{
+  font-size: 20px;
+  margin-left: 20px;
+}
+
+.users{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+  border: solid;
+  border-color: #F17F0C;
+  border-width: 2px;
+  border-radius: 10px;
+  width: 1236px;
+  height: 90px;
+  padding-left: 15px;
+  margin-left: 20px;
+}
+
+.name{
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.drop-boxes{
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+}
+
+.drop-section{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.drop-text{
+  font-size: 16px;
+}
+
+.drop-button1{
+  font-size: 15px;
+  width: 123px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.drop-permit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid;
+  border-color: #F17F0C;
+  border-width: 2px;
+  border-radius: 12px;
+  color: #45414A;
+  font-size: 15px;
+  font-weight: bold;
+  width: 198px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.drop-button2{
+  font-size: 15px;
+  width: 198px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.save{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  border: solid;
+  border-width: 2px;
+  border-radius: 5px;
+  border-color: #ffa90f;
+  color: white;
+  width: 207px;
+  height: 38px;
+  background-color: #ffa90f;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    border-color: #E68A00;
+    background-color: #E68A00;
+  }
 }
