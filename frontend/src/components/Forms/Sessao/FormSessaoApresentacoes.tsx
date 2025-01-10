@@ -19,6 +19,7 @@ import { useEdicao } from "@/hooks/useEdicao";
 import { useEffect } from "react";
 import { useSubmission } from "@/hooks/useSubmission";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+import dayjs from "dayjs";
 
 const formSessaoApresentacoesSchema = z.object({
   apresentacoes: z
@@ -176,7 +177,7 @@ export default function FormSessaoApresentacoes() {
           };
         })
       );
-      setValue("n_apresentacoes", sessao?.numPresentations ?? 0);
+      setValue("n_apresentacoes", sessao?.numPresentations ?? 3);
       setValue("sala", sessao?.roomId);
       setValue("inicio", sessao?.startTime);
       setValue(
@@ -286,8 +287,13 @@ export default function FormSessaoApresentacoes() {
                 timeFormat="HH:mm"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy HH:mm"
-                minDate={new Date(Edicao?.startDate || "")}
-                maxDate={new Date(Edicao?.endDate || "")}
+                minDate={dayjs(Edicao?.startDate || "")
+                  .add(1, "day")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
+                maxDate={dayjs(Edicao?.endDate || "")
+                  .tz("America/Sao_Paulo", true)
+                  .toDate()}
                 isClearable
                 filterTime={filterTimes}
                 placeholderText={formApresentacoesFields.inicio.placeholder}

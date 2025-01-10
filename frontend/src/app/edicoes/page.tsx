@@ -10,7 +10,6 @@ export default function Edicoes() {
   const { deleteEdicao, loadingEdicoesList } = useEdicao();
   const router = useRouter();
   const [edicoes, setEdicoes] = useState<Edicao[]>([]);
-  const [loading, setLoading] = useState(true);
   const [edicaoSelecionada, setEdicaoSelecionada] = useState<Edicao | null>(
     null
   );
@@ -22,8 +21,6 @@ export default function Edicoes() {
         setEdicoes(data);
       } catch (error) {
         console.error("Erro ao carregar as edições:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -31,15 +28,16 @@ export default function Edicoes() {
   }, []);
 
   const handleEditClick = (edicaoId: string) => {
-    const edicao = edicoes.find((e) => e.id === edicaoId);
+    const edicao = edicoes?.find((e) => e.id === edicaoId);
 
     if (edicao) {
       setEdicaoSelecionada(edicao);
     }
   };
+
   return (
     <div
-      className='d-flex flex-column'
+      className="d-flex flex-column"
       style={{
         gap: "50px",
       }}
@@ -48,20 +46,17 @@ export default function Edicoes() {
         <p>Carregando edições...</p>
       ) : (
         <Listagem
-          idModal={edicaoSelecionada?.id ? "editarEdicaoModal" : ""}
           title={"Edições do Evento"}
           labelAddButton={"Cadastrar Edição"}
           searchPlaceholder={"Pesquise por edição"}
           cardsList={edicoes}
           onEdit={handleEditClick}
           onDelete={(id: string) => deleteEdicao(id)}
-          isAddButtonDisabled={!!edicaoSelecionada?.id}
           onAddButtonClick={() => router.push("/cadastro-edicao")}
         />
       )}
-      {edicaoSelecionada && (
-        <ModalEditarEdicao edicaoData={edicaoSelecionada} />
-      )}
+
+      <ModalEditarEdicao edicaoData={edicaoSelecionada} />
     </div>
   );
 }

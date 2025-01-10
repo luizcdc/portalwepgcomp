@@ -9,7 +9,7 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 import { usePresentation } from "@/hooks/usePresentation";
 
-export default function PresentationModal({ props }: { props: Presentation }) {
+export default function PresentationModal({ props }: { props: any }) {
   const presentationBookmarkData = { presentationId: props.id };
   const {
     getPresentationBookmark,
@@ -18,15 +18,18 @@ export default function PresentationModal({ props }: { props: Presentation }) {
   } = usePresentation();
   const [presentationBookmark, setpresentationBookmark] =
     useState<PresentationBookmark>();
+
   const { signed } = useContext(AuthContext);
   const router = useRouter();
 
   useEffect(() => {
-    getPresentationBookmark(presentationBookmarkData).then(
-      setpresentationBookmark
-    );
+    if (signed) {
+      getPresentationBookmark(presentationBookmarkData).then(
+        setpresentationBookmark
+      );
+    }
   }, []);
-
+  
   function handleFavorite() {
     if (!signed) {
       router.push("/login");
@@ -41,14 +44,13 @@ export default function PresentationModal({ props }: { props: Presentation }) {
       bookmarked: !(presentationBookmark && presentationBookmark.bookmarked),
     });
   }
-
+  
   const handleEvaluateClick = () => {
     window.location.href = `/avaliacao/${props.id}`;
   };
-
+  
   const presentationDate = moment(props.presentationTime).format("DD/MM");
   const presentationTime = moment(props.presentationTime).format("HH:MM");
-
   return (
     <div
       className="d-flex align-items-start flex-column text-black"
@@ -78,7 +80,7 @@ export default function PresentationModal({ props }: { props: Presentation }) {
             className="d-flex flex-row align-items-start"
             style={{ gap: "10px" }}
           >
-            <strong>{props?.submission?.mainAuthor?.name}</strong>
+            <strong>{props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}</strong>
             <div> | </div>
             <div>{props?.submission?.mainAuthor?.email}</div>
           </div>
@@ -115,8 +117,8 @@ export default function PresentationModal({ props }: { props: Presentation }) {
             )}
           </div>
         )}
-        <div>
-          <button
+        <div className="d-flex align-items-center">
+          <a
             className="fw-semibold bg-white"
             style={{
               border: "none",
@@ -124,9 +126,12 @@ export default function PresentationModal({ props }: { props: Presentation }) {
               color: "#FFA90F",
               padding: "3px 20px",
             }}
+            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${props?.submission?.pdfFile}`}
+            download
+            target="_blank"
           >
             Baixar apresentação
-          </button>
+          </a>
         </div>
       </div>
       <div style={{ textAlign: "justify" }}>

@@ -80,14 +80,14 @@ export function FormLogin() {
           </label>
           <div className="password-input">
             <input
-              type={eye? "text": "password"}
-              className="form-control input-title"
+              type={eye ? "text" : "password"}
+              className="form-control input-title password"
               id="password"
               placeholder="digite sua senha"
               {...register("password")}
             />
             <div className="eye" onClick={() => setEye(!eye)}>
-              <PasswordEye color={eye==false?"black":"blue"}/>
+              <PasswordEye color={eye == false ? "black" : "blue"} />
             </div>
           </div>
           <p className="text-danger error-message">

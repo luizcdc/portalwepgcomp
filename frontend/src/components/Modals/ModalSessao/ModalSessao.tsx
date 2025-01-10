@@ -11,7 +11,7 @@ import { useSession } from "@/hooks/useSession";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 export default function ModalSessao() {
-  const { tipo } = ModalSessaoMock;
+  const { tipo, titulo } = ModalSessaoMock;
   const { sessao, listRooms } = useSession();
 
   const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(
@@ -42,6 +42,10 @@ export default function ModalSessao() {
       loading={false}
     >
       <div className="modal-sessao px-5">
+        <h3 className="mb-4 fw-bold">
+          {sessao?.id ? titulo.edicao : titulo.cadastro}
+        </h3>
+
         <div className="col-12 mb-1">
           <label className="form-label fw-bold form-title tipo-sessao">
             {tipo.label}
