@@ -12,8 +12,6 @@ export class CertificateService {
     userId: string,
     eventEditionId: string,
   ): Promise<Buffer> {
-    // Info to get: nome, current event's presentation title, current event's title, current event's start and end date.
-    // Whether they were awarded or not. (just get the 3 max score submissions and see if theirs is one of them)
     // TODO: Use Certificate database row to return existing file, if it exists.
     const user = await this.prismaClient.userAccount.findUnique({
       where: { id: userId },
@@ -35,20 +33,26 @@ export class CertificateService {
             eventEditionId,
           },
         },
+        certificates: {
+          where: { eventEditionId },
+        },
       },
     });
     const eventEdition = await this.prismaClient.eventEdition.findUnique({
       where: { id: eventEditionId },
-      include: {
-        certificates: true,
-        // TODO: when prisma is fixed, use this instead of the above line
-        // certificates: {
-        //   where: { userId },
-        // }
+    });
+    const presentations = await this.prismaClient.presentation.findMany({
+      where: {
+        presentationBlock: {
+          eventEditionId,
+        },
       },
     });
+    const userSubmission = user.mainAuthored?.[0];
 
     this.validateUserEligibility(user, eventEdition);
+    const { userPublicAwardStandings, userEvaluatorsAwardStandings } =
+      this.calculateAwardStandings(presentations, userSubmission);
 
     return new Promise((resolve) => {
       const doc = new PDFDocument({
@@ -69,6 +73,54 @@ export class CertificateService {
     });
   }
 
+  /**
+   * Calculates the award results for a user's presentation based on public and evaluator scores
+   * @param presentations - Array of presentations containing scoring information
+   * @param userSubmission - The specific user's submission to find standings for
+   * @returns An object containing:
+   *  - userPublicAwardStandings: The user's standing based on public average scores (1-based index)
+   *  - userEvaluatorsAwardStandings: The user's standing based on evaluators average scores (1-based index)
+   */
+  private calculateAwardStandings(presentations, userSubmission) {
+    presentations.sort((a, b) => {
+      const scoreA = a.publicAverageScore ?? 0;
+      const scoreB = b.publicAverageScore ?? 0;
+      return scoreB - scoreA;
+    });
+    const userPublicAwardStandings =
+      presentations.findIndex(
+        (presentation) => presentation.submissionId === userSubmission?.id,
+      ) + 1;
+    presentations.sort((a, b) => {
+      const scoreA = a.evaluatorsAverageScore ?? 0;
+      const scoreB = b.evaluatorsAverageScore ?? 0;
+      return scoreB - scoreA;
+    });
+    const userEvaluatorsAwardStandings =
+      presentations.findIndex(
+        (presentation) => presentation.submissionId === userSubmission?.id,
+      ) + 1;
+    return {
+      userPublicAwardStandings,
+      userEvaluatorsAwardStandings,
+    };
+  }
+
+  /**
+   * Validates if a user is eligible to receive a certificate based on their profile and participation.
+   *
+   * @param user - The user object containing profile and participation information
+   * @param eventEdition - The event edition object to validate against
+   *
+   * @throws {AppException}
+   * - When user is not found (404)
+   * - When event edition is not found (404)
+   * - When user is a Listener profile (400)
+   * - When user is a Doctoral Student without submissions (400)
+   * - When user is a Professor without panel participations (400)
+   *
+   * @private
+   */
   private validateUserEligibility(user, eventEdition) {
     if (!user) {
       throw new AppException('Usuário não encontrado', 404);
