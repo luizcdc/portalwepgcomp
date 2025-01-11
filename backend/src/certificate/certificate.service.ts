@@ -47,36 +47,9 @@ export class CertificateService {
         // }
       },
     });
-    console.log(user);
-    console.log(eventEdition);
-    if (!user) {
-      throw new AppException('Usuário não encontrado', 404);
-    } else if (!eventEdition) {
-      throw new AppException('Edição do evento não encontrada', 404);
-    }
-    if (user.profile === Profile.Listener) {
-      throw new AppException(
-        'Usuário não participou como apresentador ou avaliador, portanto não pode receber certificado',
-        400,
-      );
-    } else if (
-      user.profile === Profile.DoctoralStudent &&
-      !user.mainAuthored?.length
-      // TODO: check presentation status
-    ) {
-      throw new AppException(
-        'Doutorando não tem submissões, portanto não pode receber certificado',
-        400,
-      );
-    } else if (
-      user.profile === Profile.Professor &&
-      !user.panelistParticipations?.length
-    ) {
-      throw new AppException(
-        'Professor não foi premiado, portanto não pode receber certificado',
-        400,
-      );
-    }
+
+    this.validateUserEligibility(user, eventEdition);
+
     return new Promise((resolve) => {
       const doc = new PDFDocument({
         layout: 'landscape',
@@ -94,5 +67,38 @@ export class CertificateService {
       doc.text('Hello World');
       doc.end();
     });
+  }
+
+  private validateUserEligibility(user, eventEdition) {
+    if (!user) {
+      throw new AppException('Usuário não encontrado', 404);
+    } else if (!eventEdition) {
+      throw new AppException('Edição do evento não encontrada', 404);
+    }
+    if (user.profile === Profile.Listener) {
+      throw new AppException(
+        'Usuário não participou como apresentador ou avaliador, portanto não pode receber certificado',
+        400,
+      );
+    } else if (
+      user.profile === Profile.DoctoralStudent &&
+      !user.mainAuthored?.length
+      // TODO: check presentation status when we're certain that it's being updated
+    ) {
+      throw new AppException(
+        'Doutorando não tem submissões, portanto não pode receber certificado',
+        400,
+      );
+    } else if (
+      user.profile === Profile.Professor &&
+      !user.panelistParticipations?.length
+    ) {
+      throw new AppException(
+        // TODO: certificado para comissão se não participar de mesas avaliadoras? Tirar dúvida com
+        // Fred
+        'Professor não participou de mesas avaliadoras, portanto não pode receber certificado',
+        400,
+      );
+    }
   }
 }

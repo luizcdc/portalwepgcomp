@@ -108,7 +108,7 @@ model UserAccount {
   panelistParticipations  Panelist[]
   bookmarkedPresentations Presentation[]
   EmailVerification       EmailVerification?
-  certificate             Certificate[]
+  certificates            Certificate[]
 
   @@map("user_account")
 }
@@ -266,7 +266,7 @@ model Certificate {
   eventEditionId String       @map("event_edition_id")
   userId         String       @map("user_id")
   filePath       String       @map("file_path")
-  isEmailSent    Boolean      @map("is_email_sent") @default(false)
+  isEmailSent    Boolean      @default(false) @map("is_email_sent")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   user           UserAccount  @relation(fields: [userId], references: [id])

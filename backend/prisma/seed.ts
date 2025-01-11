@@ -461,8 +461,17 @@ async function main() {
   await prisma.certificate.create({
     data: {
       eventEditionId: eventEdition.id,
-      name: 'Participation Certificate',
-      email: 'johndoe@example.com',
+      userId: professors[0].id,
+      filePath: 'path/to/certificate1.pdf',
+      isEmailSent: false,
+    },
+  });
+  await prisma.certificate.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      userId: doctoralStudents[0].id,
+      filePath: 'path/to/certificate2.pdf',
+      isEmailSent: true,
     },
   });
 
