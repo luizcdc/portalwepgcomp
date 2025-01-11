@@ -107,4 +107,10 @@ export class AuthService {
 
     return { message: 'Senha redefinida com sucesso.' };
   }
+
+  async generateToken(userId: string) {
+    const payload = { userId };
+    const token = this.jwtService.sign(payload, { expiresIn: '1h' });
+    return { token };
+  }
 }
