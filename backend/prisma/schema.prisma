@@ -108,6 +108,7 @@ model UserAccount {
   panelistParticipations  Panelist[]
   bookmarkedPresentations Presentation[]
   EmailVerification       EmailVerification?
+  certificate             Certificate[]
 
   @@map("user_account")
 }
@@ -263,10 +264,12 @@ model Room {
 model Certificate {
   id             String       @id @default(uuid()) @map("id")
   eventEditionId String       @map("event_edition_id")
-  name           String       @map("name") @db.VarChar(255)
-  email          String       @map("email") @db.VarChar(255)
+  userId         String       @map("user_id")
+  filePath       String       @map("file_path")
+  isEmailSent    Boolean      @map("is_email_sent") @default(false)
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
+  user           UserAccount  @relation(fields: [userId], references: [id])
   eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
 
   @@map("certificate")
