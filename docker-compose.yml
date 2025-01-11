@@ -1,0 +1,58 @@
+# docker-compose.yml
+services:
+  frontend:
+    image: node:latest
+    container_name: frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3001:3001"
+    command: bash -c "npm install && npx next dev --port 3001"
+    depends_on:
+      - backend
+      - rabbitmq
+      - postgres
+    env_file:
+      - frontend/.env
+
+  backend:
+    image: node:latest
+    container_name: backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    ports:
+      - "3000:3000"
+    command: bash -c "npm install && npx prisma migrate dev && npm run start:dev"
+    depends_on:
+      - postgres
+      - rabbitmq
+    env_file:
+      - backend/.env
+    networks:
+      - wepgcomp_backend_network
+
+  postgres:
+    image: docker.io/postgres:latest 
+    container_name: postgres
+    env_file:
+      - backend/.env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - wepgcomp_backend_network
+
+  rabbitmq:
+    image: docker.io/rabbitmq:latest
+    container_name: rabbitmq
+    networks:
+      - wepgcomp_backend_network
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  wepgcomp_backend_network:
+    driver: bridge
