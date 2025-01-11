@@ -19,10 +19,10 @@ const formContatoSchema = z.object({
       required_error: "E-mail é obrigatório!",
       invalid_type_error: "Campo inválido!",
     })
+    .min(1, { message: "E-mail é obrigatório!" })
     .email({
       message: "E-mail inválido!",
-    })
-    .min(1, { message: "E-mail é obrigatório!" }),
+    }),
 
   text: z
     .string({
