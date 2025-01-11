@@ -88,6 +88,16 @@ export class AuthService {
       throw new BadRequestException('Token inválido ou expirado.');
     }
 
+    // Exigência de senha
+    // Pelo menos 8 caracteres, pelo menos uma letra, e um número
+
+    if (!newPassword.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
+      throw new AppException(
+        'A senha deve ter pelo menos 8 caracteres, uma letra e um número.',
+        400,
+      );
+    }
+
     // Atualizar a senha do usuário
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await this.prismaClient.userAccount.update({
