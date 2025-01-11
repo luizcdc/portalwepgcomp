@@ -271,7 +271,7 @@ async function main() {
         abstract: 'A study on how AI impacts modern research methodologies.',
         pdfFile: 'path/to/document1.pdf',
         phoneNumber: '123-456-7890',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -283,7 +283,7 @@ async function main() {
         abstract: 'Exploring the latest advancements in quantum computing.',
         pdfFile: 'path/to/document2.pdf',
         phoneNumber: '123-456-7891',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -296,7 +296,7 @@ async function main() {
           'An analysis of blockchain technology applications in finance.',
         pdfFile: 'path/to/document3.pdf',
         phoneNumber: '123-456-7892',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -308,7 +308,7 @@ async function main() {
         abstract: 'Investigating ML applications in healthcare diagnosis.',
         pdfFile: 'path/to/document4.pdf',
         phoneNumber: '123-456-7893',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -320,7 +320,7 @@ async function main() {
         abstract: 'Analysis of security challenges in cloud computing.',
         pdfFile: 'path/to/document5.pdf',
         phoneNumber: '123-456-7894',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -332,7 +332,7 @@ async function main() {
         abstract: 'Study of IoT network architectures and protocols.',
         pdfFile: 'path/to/document6.pdf',
         phoneNumber: '123-456-7895',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
