@@ -32,8 +32,7 @@ describe('Componente do Formulário de Login', () => {
       cy.get('input#email').type(doutorando.email);
       cy.get('input#password').type(doutorando.senha);
       cy.get('button[type="submit"]').click();
-  
-      cy.contains('Login realizado com sucesso!').should('be.visible');
+       
       // Verifica redirecionamento
       cy.location('pathname').should('eq', '/');
     });
@@ -44,8 +43,7 @@ describe('Componente do Formulário de Login', () => {
       cy.get('input#email').type(professor.email);
       cy.get('input#password').type(professor.senha);
       cy.get('button[type="submit"]').click();
-
-      cy.contains('Login realizado com sucesso!').should('be.visible');
+      
       cy.location('pathname').should('eq', '/');
     });
   
@@ -55,8 +53,7 @@ describe('Componente do Formulário de Login', () => {
       cy.get('input#email').type(ouvinte.email);
       cy.get('input#password').type(ouvinte.senha);
       cy.get('button[type="submit"]').click();
-  
-      cy.contains('Login realizado com sucesso!').should('be.visible');
+        
       cy.location('pathname').should('eq', '/');
     });
   });

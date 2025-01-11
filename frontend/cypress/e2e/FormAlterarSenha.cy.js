@@ -5,11 +5,11 @@ describe('Componente do Formulário de Alterar Senha', () => {
 
   it('Deve clicar no Link "Esqueceu sua senha?"', () => {
 
-    cy.visit('http://localhost:3000/Login');
+    cy.visit('/login');
     cy.get('.button-password').click();
-    cy.get('.modal-alterar-senha').click();
-    cy.get('#senha').clear().type('NovaSenha123!');
-    cy.get('#confirmaSenha').clear().type('NovaSenha123!');
+    cy.get('#modal-alterar-senha').should('be.visible');
+    cy.get('.modal-alterar-senha').click({force:true});    
+    cy.get('#email-alterar-senha').type('joao.silva@ufba.br');
     cy.get('.submit-button').click();
 
 

@@ -4,7 +4,7 @@ describe('Componente do Formulário de Contato', () => {
       
     });
     it('Deve clicar no Botão Contato' , () => {
-      cy.get('a[href*="Home#Contato"]').click()
+      cy.get('a[href*="home#Contato"]').click()
     });
 
     function validateEmail(email) {
@@ -27,7 +27,7 @@ describe('Componente do Formulário de Contato', () => {
       });
     
       it('Deve validar o campo de e-mail no formulário', () => {
-        cy.visit('/Home#Contato');
+        cy.visit('/home#Contato');
     
         const emailInput = 'input[name="email"]';
         const invalidEmail = 'usuario@sem-dominio';
@@ -49,7 +49,7 @@ describe('Componente do Formulário de Contato', () => {
       describe('Formulário de Contato - Validação de Campo de Mensagem', () => {
         it('Não deve permitir o envio do formulário se o campo de mensagem estiver vazio', () => {
           // Visita a página onde o formulário está renderizado
-          cy.visit('http://localhost:3000/Home#Contato');
+          cy.visit('http://localhost:3000/home#Contato');
       
           // Seletores dos elementos do formulário
           const nameInput = 'input[placeholder="Insira seu nome"]';
@@ -72,7 +72,7 @@ describe('Componente do Formulário de Contato', () => {
       
         it('Deve permitir o envio do formulário quando o campo de mensagem for preenchido', () => {
           // Visita a página onde o formulário está renderizado
-          cy.visit('/Home#Contato');
+          cy.visit('/home#Contato');
       
           // Seletores dos elementos do formulário
           const nameInput = 'input[placeholder="Insira seu nome"]';
