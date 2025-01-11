@@ -50,6 +50,17 @@ export class UserService {
       }
     }
 
+    // Exigência de senha
+    // Pelo menos 8 caracteres, pelo menos uma letra, e um número
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(createUserDto.password)) {
+      throw new AppException(
+        'A senha deve conter pelo menos 8 caracteres, pelo menos uma letra e um número.',
+        400,
+      );
+    }
+
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     let shouldBeSuperAdmin = false;
