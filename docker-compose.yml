@@ -7,8 +7,8 @@ services:
     volumes:
       - ./frontend:/app
     ports:
-      - "3001:3001"
-    command: bash -c "npm install && npx next dev --port 3001"
+      - "3000:3000"
+    command: bash -c "npm install && npm run dev"
     depends_on:
       - backend
       - rabbitmq
@@ -23,7 +23,7 @@ services:
     volumes:
       - ./backend:/app
     ports:
-      - "3000:3000"
+      - "3001:3000"
     command: bash -c "npm install && npx prisma migrate dev --name init && npm run start:dev"
     depends_on:
       - postgres
