@@ -88,12 +88,9 @@ export class AuthService {
       throw new BadRequestException('Token inválido ou expirado.');
     }
 
-    // Exigência de senha
-    // Pelo menos 8 caracteres, pelo menos uma letra, e um número
-
-    if (!newPassword.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
+    if (!newPassword.match(/^(?=.*[A-Za-z])(?=.*\d).{8,}$/)) {
       throw new AppException(
-        'A senha deve ter pelo menos 8 caracteres, uma letra e um número.',
+        'A senha deve ter pelo menos 8 caracteres, incluindo pelo menos uma letra, um número e pode conter qualquer caractere, incluindo espaços.',
         400,
       );
     }
