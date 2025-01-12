@@ -215,20 +215,31 @@ export class EventEditionService {
   ) {
     await Promise.all(
       ids.map(async (id) => {
-        const committeeMember = await this.prismaClient.committeeMember.create({
-          data: {
-            eventEditionId: eventEditionId,
-            userId: id,
-            level: CommitteeLevel.Committee,
-            role,
-          },
-        });
-
-        if (committeeMember) {
-          await this.updateUserLevel(id, committeeMember.level);
-        }
+          const existingMember = await this.prismaClient.committeeMember.findUnique({
+              where: {
+                  eventEditionId_userId: {
+                      eventEditionId: eventEditionId,
+                      userId: id,
+                  },
+              },
+          });
+  
+          if (!existingMember) {
+              const committeeMember = await this.prismaClient.committeeMember.create({
+                  data: {
+                      eventEditionId: eventEditionId,
+                      userId: id,
+                      level: CommitteeLevel.Committee,
+                      role,
+                  },
+              });
+  
+              if (committeeMember) {
+                  await this.updateUserLevel(id, committeeMember.level);
+              }
+          }
       }),
-    );
+  );  
   }
 
   private async updateUserLevel(
