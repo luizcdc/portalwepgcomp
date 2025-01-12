@@ -62,9 +62,8 @@ export class EventEditionController {
     );
   }
 
+  @Public()
   @Get()
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
-  @ApiBearerAuth()
   async getAll() {
     return await this.eventEditionService.getAll();
   }
@@ -106,7 +105,7 @@ export class EventEditionController {
   }
 
   @Post('/remove-admins-from-ended-events')
-  async removeAdminsFromEvent () {
+  async removeAdminsFromEvent() {
     return await this.eventEditionService.removeAdminsFromEndedEvents();
   }
 }
