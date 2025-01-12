@@ -109,10 +109,8 @@ export function FormCadastro() {
   const [senha, setSenha] = useState("");
   const [requisitos, setRequisitos] = useState({
     minLength: false,
-    upperCase: false,
-    lowerCase: false,
+    hasLetter: false,
     number: false,
-    specialChar: false,
   });
 
   const handleFormCadastro = (data: FormCadastroSchema) => {
@@ -151,10 +149,8 @@ export function FormCadastro() {
 
     setRequisitos({
       minLength: value.length >= 8,
-      upperCase: /[A-Z]/.test(value),
-      lowerCase: /[a-z]/.test(value),
-      number: /\d.*\d.*\d.*\d/.test(value),
-      specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+      hasLetter: /[a-zA-Z]/.test(value),
+      number: /\d/.test(value)
     });
   };
 
@@ -310,27 +306,15 @@ export function FormCadastro() {
             </li>
             <li
               className={`fw-semibold list-title ${
-                requisitos.upperCase ? "text-success" : "text-danger"
+                requisitos.hasLetter ? "text-success" : "text-danger"
               }`}
             >
-              {requisitos.upperCase ? (
+              {requisitos.hasLetter ? (
                 <i className="bi bi-shield-fill-check" />
               ) : (
                 <i className="bi bi-shield-fill-x" />
               )}{" "}
-              1 letra maiúscula
-            </li>
-            <li
-              className={`fw-semibold list-title ${
-                requisitos.lowerCase ? "text-success" : "text-danger"
-              }`}
-            >
-              {requisitos.lowerCase ? (
-                <i className="bi bi-shield-fill-check" />
-              ) : (
-                <i className="bi bi-shield-fill-x" />
-              )}{" "}
-              1 letra minúscula
+              1 letra
             </li>
             <li
               className={`fw-semibold list-title ${
@@ -342,19 +326,7 @@ export function FormCadastro() {
               ) : (
                 <i className="bi bi-shield-fill-x" />
               )}{" "}
-              4 números
-            </li>
-            <li
-              className={`fw-semibold list-title ${
-                requisitos.specialChar ? "text-success" : "text-danger"
-              }`}
-            >
-              {requisitos.specialChar ? (
-                <i className="bi bi-shield-fill-check" />
-              ) : (
-                <i className="bi bi-shield-fill-x" />
-              )}{" "}
-              1 caracter especial
+              1 número
             </li>
           </ul>
         </div>
