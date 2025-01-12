@@ -48,6 +48,9 @@ jobs:
           envkey_S3_AWS_ACCESS_KEY_ID: ${{ vars.S3_AWS_ACCESS_KEY_ID }}
           envkey_S3_AWS_SECRET_ACCESS_KEY: ${{ vars.S3_AWS_SECRET_ACCESS_KEY }}
           envkey_S3_AWS_BUCKET_NAME: ${{ vars.S3_AWS_BUCKET_NAME }}
+          envkey_UPLOAD_RATE_LIMIT_TTL: 10
+          envkey_UPLOAD_RATE_LIMIT_LIMIT: 10
+          envkey_UPLOAD_RATE_LIMIT_BLOCKDURATION: 10
           file_name: .env
           some_other_variable: foobar
           directory: backend
