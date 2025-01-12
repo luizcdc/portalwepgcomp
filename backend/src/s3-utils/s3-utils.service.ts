@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import {
   S3Client,
   PutObjectCommand,
   ListObjectsCommand,
   CreateBucketCommand,
   HeadBucketCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class S3UtilsService {
   private readonly s3Client: S3Client;
   private readonly bucketName = process.env.S3_AWS_BUCKET_NAME;
+  private readonly logger = new Logger(S3UtilsService.name);
 
-  constructor() {
+  constructor(private readonly prismaClient: PrismaService) {
     this.s3Client = new S3Client({
       region: process.env.S3_AWS_REGION,
       credentials: {
@@ -102,5 +106,53 @@ export class S3UtilsService {
         `Failed to list files in bucket "${bucket}": ${err.message}`,
       );
     }
+  }
+
+  async deleteFile(
+    key: string,
+    bucket: string = this.bucketName,
+  ): Promise<boolean> {
+    try {
+      await this.s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: bucket,
+          Key: key,
+        }),
+      );
+      console.log(`File ${key} removed from bucket ${bucket}`);
+      return true;
+    } catch (err) {
+      console.error(
+        `Error on removing file ${key} from bucket ${bucket}:`,
+        err,
+      );
+      return false;
+    }
+  }
+
+  async deleteUnlinkedPdfFiles(): Promise<string[]> {
+    const linkedFiles = await this.prismaClient.submission.findMany({
+      select: { pdfFile: true },
+    });
+    const linkedFileSet = new Set(linkedFiles.map((file) => file.pdfFile));
+
+    const allFiles = await this.listFiles();
+
+    const filesToDelete = allFiles.filter((file) => !linkedFileSet.has(file));
+
+    for (const file of filesToDelete) {
+      await this.deleteFile(file);
+    }
+
+    return filesToDelete; // Return the removed files
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT) // Executes everyday at midnight
+  async cleanupJob() {
+    this.logger.warn('Starting cleanup of PDF files without submission...');
+    const deletedFiles = await this.deleteUnlinkedPdfFiles();
+    this.logger.warn(
+      `Cleaning completed. Total files removed: ${deletedFiles.length}`,
+    );
   }
 }
