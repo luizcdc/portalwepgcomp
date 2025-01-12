@@ -1,4 +1,4 @@
-# Sistema para divulgação, organização e gerenciamento do WEPGCOMP, evento anual de workshops dos alunos do PGCOMP-UFBA.
+# Sistema para divulgação, organização e gerenciamento do WEPGCOMP, evento anual de workshops dos alunos do PGCOMP-UFBA
 
 ## Descrição
 
@@ -6,10 +6,12 @@ Este projeto é desenvolvido como parte da disciplina **IC045/MATE85 - Tópicos 
 
 ## Tecnologias Utilizadas
 
-- **Back-end**: NodeJS com Express
-- **Front-end**: React/Next
-- **Banco de Dados**: PostgreSQL
-- **Cloud**: Vercel
+- **Back-end**: NodeJS com NestJS:^10.0.0
+- **Front-end**: React:^18 e Next:14.2.15
+- **Banco de Dados**: PostgreSQL:17.2
+- **Mensageria**: RabbitMQ:4.0
+- **IaC**: Docker
+- **Cloud**: Vercel/AWS
 
 ## Metodologia de Desenvolvimento
 
@@ -25,7 +27,7 @@ Os requisitos completos do sistema estão documentados no link abaixo:
 
 ## Arquitetura
 
-- Diagrama de classe: <a href="https://cdn.discordapp.com/attachments/1293365993137115136/1296668731837120514/DER-WEPGCOMP.drawio.png?ex=6717bd9c&is=67166c1c&hm=9f53e124314a9a84b6f20d8cc89607a0221fe3bfc9968fb3381e2910bb5d6ca5&" target="_blank">Banco</a>
+- Diagrama de classe: <a href="https://drive.google.com/file/d/1yvpeU6gOZpoEaSvrlkwTapG1A-reHNgG/view" target="_blank">Banco</a>
 - Arquitetura do sistema: <a href="https://drive.google.com/file/d/10DCdoz47Gm00mArdla0npXITgNYR1KtJ/view" target="_blank">Arquitetura</a>
 
 ## Protótipo
@@ -34,69 +36,74 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 
 - Link para o Figma: <a href="https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0" target="_blank">Figma Design</a>
 
-## Configuração do Projeto
+## Requisitos do Software
 
-1. **Clonar o Repositório**:
-   ```bash
-   git clone https://github.com/usuario/projeto-wepgcomp.git
-   cd projeto-wepgcomp
-   ```
-2. **Instalar Dependências**:
+De modo a facilitar o desenvolvimento e implantação do software, o projeto acompanha o arquivo docker-compose.yml para instalação da aplicação em ambiente de desenvolvimento e de produção. Com o Docker não é necessário a instalação on-demand das tecnologias em #Tecnologias Utilizadas.
 
-   ### Back-end
+Para executar os arquivos docker-compose.yml é necessário a instalação do docker como dependência em <https://docs.docker.com/get-started/>.
 
-   Para rodar o projeto localmente, é necessário possuir instâncias de banco de dados (PostgreSQL) e fila RabbitMQ. De modo a facilitar o desenvolvimento local, o projeto acompanha um arquivo docker-compose.yml, mas que tem o Docker como dependência. Após instalar a ferramenta (ou caso já a possua), construa os _containers_ executando o seguinte comando na pasta do back-end:
+## Como Executar o Projeto
+
+1. **Clone o Repositório**:
 
    ```bash
-   docker-compose up -d
+   git clone https://github.com/luizcdc/portalwepgcomp
+   cd portalwepgcomp
    ```
 
-   As imagens serão baixadas e instaladas nas portas predefinidas. Na sequência, instale as bibliotecas utilizadas e crie uma cópia do arquivo de variáveis de ambiente através do ".env.example".
+2. **Configure as variáveis de ambiente**:
 
-   ```bash
-   cd backend
-   npm install
-   cp .env.example .env
-   ```
+   1. ```cp backend/.env.example backend/.env```
+   2. ```cp frontend/.env.example frontend/.env```
+   3. Ajuste as configurações da sua conta da AWS.
 
    Obs.: As variáveis com dados sensíveis estarão sem valor atribuído, e deverão ser consultadas na documentação via Notion.
 
-   ### Front-end
+3. **Execute os Containers**:
 
-   ```
-   cd frontend
-   npm install
-   ```
+   ```docker compose up```
 
-3. O projeto será hospedado na **Vercel** para deploy contínuo e fácil acesso.
+4. **Popule o banco de dados**:
 
-## Execução
+   Sempre que estiver subindo o banco de dados pela primeira vez, popule o banco com o seguinte script abaixo. PS: é preciso que os contêineres do docker estejam em execução.
 
-### Back-end
+   ```docker compose exec backend npm run seed```
 
-```bash
-cd backend
-npm run start
-```
+## Testes Locais
 
-### **Front-end**:
+Para verificar se o sistema foi configurado corretamente, execute os seguintes comandos:
 
-```bash
-npm run start-frontend
+- **Backend**:
+  - ```docker compose exec backend npm run test```
+- **Frontend**:
+  - ```docker compose exec frontend npm run test```
 
-```
+## Solução de Problemas
+
+1. **Matar os containers e buildar a aplicação novamente**:
+   1. ```docker compose down –volumes```
+   2. ```docker compose up –build```
+2. **Resetar os Migrations**:
+   1. ```sudo rm -rf backend/prisma/migrations/*```
+   2. Então mate os containers e build a aplicação novamente
+3. **Erro ao conectar ao banco de dados**:
+   1. Verifique se o PostgreSQL está em execução e se as credenciais no arquivo .env estão corretas.
+4. **Erro ao iniciar o servidor**:
+   1. Verifique as mensagens de erro no console e garanta que todas as variáveis de ambiente estão configuradas corretamente.
+5. **Problemas com migrações do Prisma**:
+   1. Execute ```docker compose exec backend npx prisma migrate reset``` para resetar o estado do banco de dados e aplicar as migrações novamente (atenção: isso apaga os dados do banco).
 
 ## Ambientes
 
 - **Frontend**
-- Produção: https://portal-wepgcomp-client.vercel.app
-- Desenvolvimento: https://portal-wepgcomp-client-development.vercel.app
+- Produção: <https://portal-wepgcomp-client.vercel.app>
+- Desenvolvimento: <https://portal-wepgcomp-client-development.vercel.app>
 
 - **Backend**
-- Produção: https://portal-wepgcomp-api.vercel.app
-- Swagger produção: https://portal-wepgcomp-api.vercel.app/docs
-- Desenvolvimento: https://portal-wepgcomp-api-development.vercel.app
-- Swagger desenvolvimento: https://portal-wepgcomp-api-development.vercel.app/docs
+- Produção: <https://portal-wepgcomp-api.vercel.app>
+- Swagger produção: <https://portal-wepgcomp-api.vercel.app/docs>
+- Desenvolvimento: <https://portal-wepgcomp-api-development.vercel.app>
+- Swagger desenvolvimento: <https://portal-wepgcomp-api-development.vercel.app/docs>
 
 ## Colaboradores
 

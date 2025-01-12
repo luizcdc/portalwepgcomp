@@ -24,7 +24,7 @@ services:
       - ./backend:/app
     ports:
       - "3000:3000"
-    command: bash -c "npm install && npx prisma migrate dev && npm run start:dev"
+    command: bash -c "npm install && npx prisma migrate dev --name init && npm run start:dev"
     depends_on:
       - postgres
       - rabbitmq
@@ -42,6 +42,8 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - wepgcomp_backend_network
+    ports:
+      - 5432:5432
 
   rabbitmq:
     image: docker.io/rabbitmq:latest
