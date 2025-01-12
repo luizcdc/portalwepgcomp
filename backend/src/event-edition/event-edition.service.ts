@@ -16,6 +16,7 @@ import {
 } from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
 import { Cron } from '@nestjs/schedule';
+import { AppException } from 'src/exceptions/app.exception';
 
 @Injectable()
 export class EventEditionService {
@@ -166,9 +167,39 @@ export class EventEditionService {
     }
   }
 
+  async validateUniqueCommitteeMembers(createFromEventEditionFormDto: CreateFromEventEditionFormDto): Promise<void> {
+    const {
+        organizingCommitteeIds,
+        itSupportIds,
+        administrativeSupportIds,
+        communicationIds,
+    } = createFromEventEditionFormDto;
+
+    // Agrupa todos os IDs em um único array
+    const allIds = [
+        ...organizingCommitteeIds,
+        ...itSupportIds,
+        ...administrativeSupportIds,
+        ...communicationIds,
+    ];
+
+    // Verifica se há duplicações
+    const duplicates = allIds.filter((id, index) => allIds.indexOf(id) !== index);
+
+    if (duplicates.length > 0) {
+        throw new BadRequestException(
+            //`Os seguintes IDs de usuários estão atribuídos a mais de um cargo: ${[...new Set(duplicates)].join(', ')}.`,
+            `Um usuário só pode assumir um cargo na comissão organizadora.`,
+        );
+    }
+  }
+
   async createFromEventEditionForm(
     createFromEventEditionFormDto: CreateFromEventEditionFormDto,
   ): Promise<EventEditionResponseDto> {
+    // Valida os IDs antes de criar o evento
+    await this.validateUniqueCommitteeMembers(createFromEventEditionFormDto);
+    
     const eventEdition = await this.create(createFromEventEditionFormDto);
 
     const { id: eventEditionId } = eventEdition;
@@ -223,23 +254,27 @@ export class EventEditionService {
                   },
               },
           });
-  
-          if (!existingMember) {
-              const committeeMember = await this.prismaClient.committeeMember.create({
-                  data: {
-                      eventEditionId: eventEditionId,
-                      userId: id,
-                      level: CommitteeLevel.Committee,
-                      role,
-                  },
-              });
-  
-              if (committeeMember) {
-                  await this.updateUserLevel(id, committeeMember.level);
-              }
+
+          if (existingMember) {
+            throw new BadRequestException(
+              'Um usuário só pode assumir um cargo na comissão organizadora.',
+            );
+          }
+    
+          const committeeMember = await this.prismaClient.committeeMember.create({
+            data: {
+                eventEditionId: eventEditionId,
+                userId: id,
+                level: CommitteeLevel.Committee,
+                role,
+            },
+          });
+
+          if (committeeMember) {
+            await this.updateUserLevel(id, committeeMember.level);
           }
       }),
-  );  
+    );  
   }
 
   private async updateUserLevel(
