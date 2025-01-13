@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import BootstrapClient from "@/components/BootstrapClient";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import "./globals.css";
+import Footer from "@/components/Footer/Footer";
+import Header from "@/components/Header/Header";
 import Providers from "@/context";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import type { Metadata } from "next";
+import "./globals.css";
+import { AuthProvider } from "@/context/AuthProvider/authProvider";
 
 export const metadata: Metadata = {
   title: "WEPGCOMP 2025",
@@ -17,15 +18,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-br">
       <body>
-        <Providers>
-          <div style={{display: "flex", flexDirection: "column", height: '100vh'}}>
-            <Header />
-            {children}
-            <Footer />
-          </div>
-        </Providers>
+        <AuthProvider>
+          <Providers>
+            <div className="d-flex flex-column vh-100">
+              <Header />
+              {children}
+              <Footer />
+            </div>
+          </Providers>
+        </AuthProvider>
       </body>
       <BootstrapClient />
     </html>

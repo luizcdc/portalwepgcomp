@@ -1,0 +1,64 @@
+name: Vercel Preview Backend Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.BACKEND_DSV_VERCEL_PROJECT_ID }}
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - backend/**
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Clean modules
+        run: npm run clean
+      - name: Create .env
+        run: touch .env
+      - name: Fill envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_POSTGRES_PASSWORD: ${{ secrets.BACKEND_DSV_POSTGRES_PASSWORD }}
+          envkey_DATABASE_URL: ${{ secrets.BACKEND_DSV_DATABASE_URL }}
+          envkey_JWT_SECRET: ${{ secrets.BACKEND_DSV_JWT_SECRET }}
+          envkey_MAIL_USER: ${{ secrets.BACKEND_DSV_MAIL_USER }}
+          envkey_MAIL_PASS: ${{ secrets.BACKEND_DSV_MAIL_PASS }}
+          envkey_QUEUE_URL: ${{ secrets.BACKEND_DSV_QUEUE_URL }}
+          envkey_POSTGRES_DB: "wepgcomp"
+          envkey_POSTGRES_USER: "root"
+          envkey_POSTGRES_PORT: "5432"
+          envkey_MAIL_HOST: "smtp.gmail.com"
+          envkey_MAIL_PORT: "587"
+          envkey_S3_AWS_REGION: ${{ vars.S3_AWS_REGION }}
+          envkey_S3_AWS_ACCESS_KEY_ID: ${{ vars.S3_AWS_ACCESS_KEY_ID }}
+          envkey_S3_AWS_SECRET_ACCESS_KEY: ${{ vars.S3_AWS_SECRET_ACCESS_KEY }}
+          envkey_S3_AWS_BUCKET_NAME: ${{ vars.S3_AWS_BUCKET_NAME }}
+          envkey_UPLOAD_RATE_LIMIT_TTL: 10
+          envkey_UPLOAD_RATE_LIMIT_LIMIT: 10
+          envkey_UPLOAD_RATE_LIMIT_BLOCKDURATION: 10
+          file_name: .env
+          some_other_variable: foobar
+          directory: backend
+          fail_on_empty: false
+          sort_keys: false
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Execute migrations
+        run: npm run prisma:migrate
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }}

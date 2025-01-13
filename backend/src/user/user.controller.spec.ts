@@ -2,12 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import {
-  RegisterStudentRequestDto,
-  RegisterStudentResponseDto,
-  RegisterProfessorRequestDto,
-  RegisterProfessorResponseDto,
-} from './user.dto';
-import { UserStatus } from '@prisma/client';
+  CreateUserDto,
+  Profile,
+  SetAdminDto,
+  UserLevel,
+} from './dto/create-user.dto';
+import { ResponseUserDto } from './dto/response-user.dto';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -20,8 +20,12 @@ describe('UserController', () => {
         {
           provide: UserService,
           useValue: {
-            registerStudent: jest.fn(),
-            registerProfessor: jest.fn(),
+            create: jest.fn(),
+            setAdmin: jest.fn(),
+            setSuperAdmin: jest.fn(),
+            remove: jest.fn(),
+            activateProfessor: jest.fn(),
+            findAll: jest.fn(),
           },
         },
       ],
@@ -35,79 +39,285 @@ describe('UserController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('registerStudent', () => {
-    it('should register a student and return a RegisterStudentResponseDto', async () => {
-      const registerStudentDto: RegisterStudentRequestDto = {
-        name: 'John',
-        surname: 'Doe',
-        registration: '2021001',
-        email: 'student@example.com',
-        advisor: 'Dr. Smith',
-        photo: 'student-photo-url',
-        program: 'mestrado',
+  describe('create', () => {
+    it('should create a new user and return the result', async () => {
+      const createUserDto: CreateUserDto = {
+        name: 'John Doe',
+        email: 'johndoe@example.com',
         password: 'Password@1234',
+        registrationNumber: '2021001',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+        isActive: true,
       };
 
-      const studentResponse: RegisterStudentResponseDto = {
+      const userResponse = {
         id: '1',
-        name: 'John',
-        surname: 'Doe',
-        registration: '2021001',
-        email: 'student@example.com',
-        advisor: 'Dr. Smith',
-        photo: 'student-photo-url',
-        program: 'mestrado',
-        status: UserStatus.ATIVO,
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        registrationNumber: '2021001',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.DoctoralStudent,
+        level: UserLevel.Default,
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        isVerified: false,
       };
 
-      jest
-        .spyOn(userService, 'registerStudent')
-        .mockResolvedValue(studentResponse);
+      jest.spyOn(userService, 'create').mockResolvedValue(userResponse);
 
-      const result = await controller.registerStudent(registerStudentDto);
+      const result = await controller.create(createUserDto);
 
-      expect(userService.registerStudent).toHaveBeenCalledWith(
-        registerStudentDto,
-      );
-      expect(result).toEqual(studentResponse);
+      expect(userService.create).toHaveBeenCalledWith(createUserDto);
+      expect(result).toEqual(userResponse);
     });
   });
 
-  describe('registerProfessor', () => {
-    it('should register a professor and return a RegisterProfessorResponseDto', async () => {
-      const registerProfessorDto: RegisterProfessorRequestDto = {
-        name: 'Jane',
-        surname: 'Smith',
-        registration: 'T2021001',
-        email: 'professor@example.com',
-        photo: 'professor-photo-url',
-        password: 'Password@1234',
+  describe('set-admin', () => {
+    it('should set an user as admin and return the result', async () => {
+      const setAdminDto: SetAdminDto = {
+        requestUserId: 'c73c2c5a-b6ee-4d8e-a47a-5c159728f2ea',
+        targetUserId: '6047cb57-db11-4dc4-a305-33b86723dd09',
       };
 
-      const professorResponse: RegisterProfessorResponseDto = {
-        id: '2',
-        name: 'Jane',
-        surname: 'Smith',
-        registration: 'T2021001',
-        email: 'professor@example.com',
-        photo: 'professor-photo-url',
-        status: UserStatus.PENDENTE,
+      const setAdminResponse = {
+        id: '1',
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.Professor,
+        level: UserLevel.Admin,
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        isVerified: false,
+      };
+
+      jest.spyOn(userService, 'setAdmin').mockResolvedValue(setAdminResponse);
+
+      const result = await controller.setAdmin(setAdminDto);
+
+      expect(userService.setAdmin).toHaveBeenCalledWith(setAdminDto);
+      expect(result).toEqual(setAdminResponse);
+    });
+  });
+
+  describe('set-super-admin', () => {
+    it('should set an user as super admin and return the result', async () => {
+      const setAdminDto: SetAdminDto = {
+        requestUserId: 'c73c2c5a-b6ee-4d8e-a47a-5c159728f2ea',
+        targetUserId: '6047cb57-db11-4dc4-a305-33b86723dd09',
+      };
+
+      const setSuperAdminResponse = {
+        id: '1',
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.Professor,
+        level: UserLevel.Admin,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isVerified: false,
       };
 
       jest
-        .spyOn(userService, 'registerProfessor')
-        .mockResolvedValue(professorResponse);
+        .spyOn(userService, 'setSuperAdmin')
+        .mockResolvedValue(setSuperAdminResponse);
 
-      const result = await controller.registerProfessor(registerProfessorDto);
+      const result = await controller.setSuperAdmin(setAdminDto);
 
-      expect(userService.registerProfessor).toHaveBeenCalledWith(
-        registerProfessorDto,
+      expect(userService.setSuperAdmin).toHaveBeenCalledWith(setAdminDto);
+      expect(result).toEqual(setSuperAdminResponse);
+    });
+  });
+
+  describe('remove', () => {
+    it('should remove a user by ID', async () => {
+      const userId = '1234';
+
+      const removeResponse = {
+        success: true,
+        message: 'Cadastro de Usuário removido com sucesso.',
+      };
+
+      jest.spyOn(userService, 'remove').mockResolvedValue(removeResponse);
+      const result = await controller.remove(userId);
+
+      expect(userService.remove).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(removeResponse);
+    });
+  });
+
+  describe('activateUser', () => {
+    it('should activate a user and return the result', async () => {
+      // Arrange
+      const userId = '1234';
+      const expectedResponse = {
+        id: '1234',
+        name: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        password: 'password123',
+        registrationNumber: 'REG12345',
+        photoFilePath: 'photo/url/path',
+        profile: Profile.Professor,
+        level: UserLevel.Admin,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isVerified: false,
+      };
+
+      jest
+        .spyOn(userService, 'activateProfessor')
+        .mockResolvedValue(expectedResponse);
+
+      const result = await controller.activateUser(userId);
+
+      expect(userService.activateProfessor).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(expectedResponse);
+    });
+  });
+
+  describe('getUsers', () => {
+    it('should return all users when no filters are applied', async () => {
+      const usersMock = [
+        {
+          id: '1',
+          name: 'John',
+          email: 'john@example.com',
+          password: 'hashedPassword123',
+          registrationNumber: '2023001',
+          photoFilePath: 'path/to/photo1.jpg',
+          level: UserLevel.Admin,
+          profile: Profile.Professor,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isVerified: false,
+        },
+        {
+          id: '2',
+          name: 'Jane',
+          email: 'jane@example.com',
+          password: 'hashedPassword456',
+          registrationNumber: '2023002',
+          photoFilePath: 'path/to/photo2.jpg',
+          level: UserLevel.Default,
+          profile: Profile.Listener,
+          isActive: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isVerified: false,
+        },
+      ];
+
+      jest
+        .spyOn(userService, 'findAll')
+        .mockResolvedValue(usersMock.map((user) => new ResponseUserDto(user)));
+
+      const result = await controller.getUsers();
+
+      expect(userService.findAll).toHaveBeenCalledWith(undefined, undefined);
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
       );
-      expect(result).toEqual(professorResponse);
+    });
+
+    it('should return users filtered by role', async () => {
+      const usersMock = [
+        {
+          id: '1',
+          name: 'John',
+          email: 'john@example.com',
+          password: 'hashedPassword123',
+          registrationNumber: '2023001',
+          photoFilePath: 'path/to/photo1.jpg',
+          level: UserLevel.Admin,
+          profile: Profile.Professor,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isVerified: false,
+        },
+      ];
+
+      jest
+        .spyOn(userService, 'findAll')
+        .mockResolvedValue(usersMock.map((user) => new ResponseUserDto(user)));
+
+      const result = await controller.getUsers('Admin');
+
+      expect(userService.findAll).toHaveBeenCalledWith(['Admin'], undefined);
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
+    });
+
+    it('should return users filtered by profile', async () => {
+      const usersMock = [
+        {
+          id: '2',
+          name: 'Jane',
+          email: 'jane@example.com',
+          password: 'hashedPassword456',
+          registrationNumber: '2023002',
+          photoFilePath: 'path/to/photo2.jpg',
+          level: UserLevel.Default,
+          profile: Profile.Listener,
+          isActive: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isVerified: false,
+        },
+      ];
+
+      jest
+        .spyOn(userService, 'findAll')
+        .mockResolvedValue(usersMock.map((user) => new ResponseUserDto(user)));
+
+      const result = await controller.getUsers(undefined, 'Listener');
+
+      expect(userService.findAll).toHaveBeenCalledWith(undefined, ['Listener']);
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
+    });
+
+    it('should return users filtered by both role and profile', async () => {
+      const usersMock = [
+        {
+          id: '1',
+          name: 'John',
+          email: 'john@example.com',
+          password: 'hashedPassword123',
+          registrationNumber: '2023001',
+          photoFilePath: 'path/to/photo1.jpg',
+          level: UserLevel.Admin,
+          profile: Profile.Professor,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isVerified: false,
+        },
+      ];
+
+      jest
+        .spyOn(userService, 'findAll')
+        .mockResolvedValue(usersMock.map((user) => new ResponseUserDto(user)));
+
+      const result = await controller.getUsers('Admin', 'Professor');
+
+      expect(userService.findAll).toHaveBeenCalledWith(
+        ['Admin'],
+        ['Professor'],
+      );
+      expect(result).toEqual(
+        usersMock.map((user) => new ResponseUserDto(user)),
+      );
     });
   });
 });

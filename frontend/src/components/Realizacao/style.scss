@@ -1,0 +1,70 @@
+.realizacao {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 240px;
+  gap: 20%;
+   width: 90%;
+  margin: 0 auto;
+  padding: 30px 0;
+
+  .realizacao-lista {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 30px;
+  }
+  .realizacao-titulo {
+    color: black;
+    font-weight: 700;
+    font-size: 24px;
+  }
+  .realizacao-parceiros{
+    display: flex;
+    gap: 1rem;
+  }
+  .realizacao-apoio-lista {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .realizacao-apoio-titulo {
+    color: black;
+    font-weight: 700;
+    font-size: 24px;
+  }
+  .realizacao-apoio-lista-itens {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 50px;
+  }
+  
+
+}
+
+@media (max-width:480px) {
+  .realizacao {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    gap: 20px;  
+  }
+  .realizacao-lista {
+    gap: 10px;
+  }
+  .realizacao-apoio-lista-itens {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .realizacao-parceiros{
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: start;
+  }
+}

@@ -23,7 +23,7 @@ body {
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap');
 
 body {
-  color: var(--foreground);
+  color: black;
   background: #ffffff;
   font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -45,4 +45,12 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+.modal {
+  --bs-modal-zindex: 10000;
+}
+
+div:where(.swal2-container) {
+  z-index: 10001 !important;
 }

@@ -1,0 +1,64 @@
+.login{
+
+    .form-title {
+        font-size: 1.05rem;
+        color: #343A40;
+    }
+    
+    .input-title {
+        font-size: 0.875rem;
+    }
+    
+    input::placeholder {
+        color: #ADB5BD !important;
+    }
+    
+    .link {
+        font-size: 0.875rem;
+        color: #090DF0;
+    }
+    
+    .button-password{
+        margin-top: 0.25rem;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+    
+    
+    .button-primary {
+        background-color: #0065A3 !important;
+        width: 7.938rem;
+        height: 2.375rem;
+    
+        &:hover {
+            background-color: #0065A3 !important;
+        }
+    }
+    
+    hr {
+        border-width: 0.120rem;
+        border-color: #FFA90F;
+        border-style: solid;
+    }
+
+    .password-input{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid #e4e4e4;
+        padding: 0 0.25rem;
+        border-radius: 6px;
+
+        .password{
+            border: none;
+        }
+    }
+
+    .eye {
+        cursor: pointer;
+    }
+
+
+}

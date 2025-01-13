@@ -1,0 +1,31 @@
+.organizacao-container {
+  width: 90%;
+  margin: 0 auto;
+  color: black;
+  padding: 30px 0;
+}
+.organizacao-titulo {
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 80px;
+  text-align: center;
+  color: #054B75;
+}
+.organizacao-conteudo {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  text-align: left;
+}
+@media (max-width:480px) {
+  .organizacao-titulo {
+    font-size: calc(1.475rem + 2.7vw);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .organizacao-conteudo {
+    font-size: 13px;
+    line-height: 20px;
+  }
+}

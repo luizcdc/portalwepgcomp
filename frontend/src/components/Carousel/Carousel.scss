@@ -1,0 +1,137 @@
+#carousel-wepgcomp {
+    top: 126px;
+}
+
+.carousel-component{
+    .lead {
+        width: 100%;
+    }
+    p{
+        text-align: center;
+        font-size: 22px;
+    }
+
+    .title{
+        font-weight: 800;
+        text-align: center;
+        font-size: 70px;
+    }
+
+    .indicators-content{
+        z-index: 3;
+        position: relative;
+
+        .indicators-buttons{
+            border-radius: 50%;
+            width: 15px; 
+            height: 15px;
+        }
+    }
+
+ 
+
+    .schedule-button {
+        border-radius: 20px;
+        border: 2px solid white;
+        font-weight: 600;
+    }
+
+    .slide-2-content{
+        display: flex;
+        max-width: 70%; 
+
+        .concept-content{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -75px;
+
+            .concept-subtitle{
+                margin-bottom: 2.5rem;
+            }
+    
+            .five-subtitle{
+                font-size: 8rem;
+                font-weight: 900;
+                line-height: 3rem;
+            }
+    
+            .capes-subtitle{
+                margin-top: 0.5rem;
+            }
+        }
+
+        .info-subtitles{
+            display: flex;
+            flex-direction: column;
+            margin-left: 3rem;
+            p {
+                text-align: justify;
+            }
+        }
+    }
+    
+}
+
+
+.carousel-slide{
+    margin-bottom: 40px;
+
+    .carousel-slide-content{
+        width: 100vw;
+        height: 80vh;
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        position: relative;
+        padding: 1rem 2rem 4rem;
+
+        .image-background{
+            z-index: -1;
+        }
+    }
+}
+
+.carousel-indicators {
+    margin-top: 1rem;
+}
+
+@media (max-width:480px)  {
+    .carousel-slide .carousel-slide-content {
+        justify-content: flex-start !important;
+    }
+
+    .carousel-indicators {
+        margin-top: .5rem;
+    }
+
+    .carousel-component p {
+        text-align: left;
+        
+        font-size: 1rem;
+    }
+
+    .slide-2-content {
+        max-width: 100% !important; 
+
+        .concept-content {
+            margin-top: 0px !important;
+        }
+
+        .info-subtitles{
+            p {
+                text-align: left !important;
+            }
+        }
+    }
+}
+
+@media (max-width: 445px) {
+    #carousel-wepgcomp {
+        top: 180px;
+    }
+}
+

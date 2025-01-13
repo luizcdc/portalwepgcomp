@@ -1,0 +1,48 @@
+.card-listagem{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 3px solid #F17F0C;
+    border-radius: 10px;
+
+    .card-listagem-text{
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        padding: 1rem;
+        
+        p:first-of-type{
+            font-weight: 600;
+        }
+
+        p{
+            margin-bottom: 0;
+        }
+    }
+
+
+
+    .buttons-area{
+        display: flex;
+        margin: 1rem;
+        gap: 0.25rem;
+
+        .button-general{
+            min-width: max-content;
+            padding: 0.25rem 1rem;
+            color: white;
+            background-color: #F17F0C;
+            border-radius: 0.625rem;
+            font-weight: 800;
+            height: 2.25rem;
+            margin-right: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        button{
+            width: min-content;
+            border: none;
+            background: none;
+        }
+    }
+}
