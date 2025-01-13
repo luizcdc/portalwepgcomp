@@ -64,8 +64,11 @@ export default function Favoritos() {
           cardsList={sessionsListValues.map((presentation) => ({
             id: presentation?.submission.id,
             title: presentation?.submission.title,
-            name: presentation?.submission.title,
+            name: presentation?.submission.mainAuthor.name,
+            email: presentation?.submission.mainAuthor.email,
             subtitle: presentation?.submission.abstract,
+            pdfFile: presentation?.submission.pdfFile,
+            advisorName: presentation?.submission?.advisor?.name,
             ...presentation,
 
           }))}
@@ -76,13 +79,9 @@ export default function Favoritos() {
           searchPlaceholder={userArea.search}
           onClickItem={(item) => openModalPresentation(item)}
           onDelete={handleDelete}
+          fullInfo={true}
         />
       </div>
-
-      <Modal
-        content={<PresentationModal props={modalContent} />}
-        reference={openModal}
-      />
     </ProtectedLayout>
   );
 }

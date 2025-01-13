@@ -28,6 +28,7 @@ interface ListagemProps {
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
   onClear?: () => void;
+  fullInfo: boolean;
 }
 
 export default function Listagem({
@@ -48,6 +49,7 @@ export default function Listagem({
   onDelete,
   onEdit,
   onClear,
+  fullInfo,
 }: Readonly<ListagemProps>) {
   const pathname = usePathname();
 
@@ -110,12 +112,16 @@ export default function Listagem({
             !isFavorites &&
             cardsList?.map((card) => (
               <CardListagem
-                key={card.id}
+                key={card.name}
+                id={card.id}
                 title={
                   pathname?.includes("edicoes")
-                    ? card?.name
-                    : card?.title ?? "Sem Título"
+                    ? card?.title : "Sem Título"
                 }
+                name={card?.name}
+                pdfFile={card?.pdfFile}
+                email={card?.email}
+                advisorName={card?.advisorName}
                 subtitle={
                   pathname?.includes("edicoes")
                     ? card?.description
@@ -133,6 +139,7 @@ export default function Listagem({
                 onClickItem={() => onClickItem && onClickItem(card)}
                 onEdit={() => onEdit && onEdit(card?.id ?? "")}
                 onDelete={() => onDelete && onDelete(card?.id ?? "")}
+                fullInfo={fullInfo}
               />
             ))}
           {!!cardsList.length &&
@@ -140,7 +147,12 @@ export default function Listagem({
             cardsList?.map((card) => (
               <CardListagem
                 key={card.name}
-                title={card.name}
+                id={card.id}
+                title={card.title}
+                name={card?.name}
+                pdfFile={card?.pdfFile}
+                email={card?.email}
+                advisorName={card?.advisorName}
                 subtitle={
                   title === "Sessões"
                     ? `${formatDate(card.startAt)}`
@@ -148,6 +160,7 @@ export default function Listagem({
                 }
                 showFavorite
                 onClickItem={() => onClickItem && onClickItem(card)}
+                fullInfo={fullInfo}
               />
             ))}
           {!cardsList.length && (
