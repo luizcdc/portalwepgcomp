@@ -19,7 +19,6 @@ import {
   BookmarkPresentationResponseDto,
 } from './dto/bookmark-presentation.dto';
 import { ListAdvisedPresentationsResponse } from './dto/list-advised-presentations.dto';
-import { EvaluationStats } from '../scoring/interfaces/evaluation-stats.interface';
 
 @Injectable()
 export class PresentationService {
@@ -28,6 +27,7 @@ export class PresentationService {
   constructor(
     private prismaClient: PrismaService,
     private submissionService: SubmissionService,
+    private scoringService: ScoringService,
   ) {}
 
   async create(createPresentationDto: CreatePresentationDto) {
@@ -714,95 +714,12 @@ export class PresentationService {
     );
   }
 
-  async calculateAndUpdateScores(presentationId: string): Promise<void> {
-    const presentation = await this.prismaClient.presentation.findUnique({
-      where: { id: presentationId },
-      include: {
-        submission: {
-          include: {
-            Evaluation: {
-              include: {
-                user: true,
-              },
-            },
-          },
-        },
-        presentationBlock: {
-          include: {
-            panelists: true,
-          },
-        },
-      },
-    });
-
-    // Separate evaluations into public and panelist groups
-    const panelistUserIds = presentation.presentationBlock.panelists.map(
-      (panelist) => panelist.userId,
-    );
-
-    const publicStats: EvaluationStats = {
-      totalScore: 0,
-      numberOfRatings: 0,
-      scores: {},
-    };
-
-    const panelistStats: EvaluationStats = {
-      totalScore: 0,
-      numberOfRatings: 0,
-      scores: {},
-    };
-
-    // Calculate statistics for each group
-    presentation.submission.Evaluation.forEach((evaluation) => {
-      const stats = panelistUserIds.includes(evaluation.userId)
-        ? panelistStats
-        : publicStats;
-
-      stats.totalScore += evaluation.score;
-      stats.numberOfRatings++;
-      stats.scores[evaluation.score] =
-        (stats.scores[evaluation.score] || 0) + 1;
-    });
-
-    const scoringService = new ScoringService();
-
-    // Calculate Wilson Scores for both groups
-    const publicScore = scoringService.calculateWilsonScore(publicStats);
-    const panelistScore = scoringService.calculateWilsonScore(panelistStats);
-
-    // Update the presentation
-    await this.prismaClient.presentation.update({
-      where: { id: presentationId },
-      data: {
-        publicAverageScore: publicScore,
-        evaluatorsAverageScore: panelistScore,
-      },
-    });
+  async updateScores(presentationId: string) {
+    await this.scoringService.updatePresentationScores(presentationId);
   }
 
   async recalculateAllScores(eventEditionId: string): Promise<void> {
-    const eventEdition = await this.prismaClient.eventEdition.findUnique({
-      where: { id: eventEditionId },
-    });
-
-    if (!eventEdition) {
-      throw new AppException('Evento não encontrado.', 404);
-    }
-
-    const presentations = await this.prismaClient.presentation.findMany({
-      where: {
-        submission: {
-          eventEditionId,
-        },
-      },
-      select: { id: true },
-    });
-
-    for (const presentation of presentations) {
-      await this.calculateAndUpdateScores(presentation.id);
-    }
-
-    //TODO: SHOULD I RETURN A SUCCESS MESSAGE?
+    await this.scoringService.recalculateAllScores(eventEditionId);
   }
 
   @Cron(CronExpression.EVERY_HOUR)
