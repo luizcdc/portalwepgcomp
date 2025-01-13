@@ -10,16 +10,11 @@ import "./style.scss";
 const formAlterarSenhaSchema = z
   .object({
     senha: z
-      .string({
-        required_error: "Senha é obrigatória!",
-        invalid_type_error: "Campo inválido",
-      })
-      .min(8, { message: "A senha deve ter, pelo menos, 8 caracteres." }),
+      .string()
+      .nonempty("Senha é obrigatória!")
+      .min(8, "A senha deve ter no mínimo 8 caracteres."),
 
-    confirmaSenha: z.string({
-      required_error: "Confirmação de senha é obrigatória!",
-      invalid_type_error: "Campo inválido",
-    }),
+    confirmaSenha: z.string().nonempty("Confirmação de senha é obrigatória!"),
   })
   .refine((data) => data.senha === data.confirmaSenha, {
     message: "As senhas não conferem!",
@@ -39,7 +34,6 @@ export function FormAlterarSenha({ params }) {
 
   type FormAlterarSenhaSchema = z.infer<typeof formAlterarSenhaSchema>;
 
-  const [senha, setSenha] = useState("");
   const [requisitos, setRequisitos] = useState({
     minLength: false,
     hasLetter: false,
@@ -47,11 +41,7 @@ export function FormAlterarSenha({ params }) {
   });
 
   const handleFormCadastro = (data: FormAlterarSenhaSchema) => {
-    const { senha, confirmaSenha } = data;
-
-    if (!senha || !confirmaSenha) {
-      throw new Error("Campos obrigatórios em branco.");
-    }
+    const { senha } = data;
 
     const body = {
       token: params.token,
@@ -61,14 +51,13 @@ export function FormAlterarSenha({ params }) {
     resetPassword(body);
   };
 
-  const handleChangeSenha = (e) => {
+  const handleChangeSenha = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setSenha(value);
 
     setRequisitos({
       minLength: value.length >= 8,
       hasLetter: /[a-zA-Z]/.test(value),
-      number: /\d/.test(value)
+      number: /\d/.test(value),
     });
   };
 
@@ -85,7 +74,6 @@ export function FormAlterarSenha({ params }) {
           id='senha'
           placeholder='Insira sua senha'
           {...register("senha")}
-          value={senha}
           onChange={handleChangeSenha}
         />
         <p className='text-danger error-message'>{errors.senha?.message}</p>
