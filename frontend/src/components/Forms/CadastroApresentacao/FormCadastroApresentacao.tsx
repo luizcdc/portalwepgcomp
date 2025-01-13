@@ -205,6 +205,11 @@ export function FormCadastroApresentacao({
       ? "Editar Apresentação"
       : "Cadastrar Apresentação";
 
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    e.target.style.height = "auto";
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
   return (
     <form
       className="row cadastroApresentacao"
@@ -260,9 +265,10 @@ export function FormCadastroApresentacao({
           Abstract<span className="text-danger ms-1">*</span>
         </label>
         <textarea
-          className="form-control input-title"
+          className="form-control input-title overflow-y-hidden"
           placeholder="Insira o resumo da pesquisa"
           {...register("abstract")}
+          onInput={handleTextareaChange}
         />
         <p className="text-danger error-message">{errors.abstract?.message}</p>
       </div>
