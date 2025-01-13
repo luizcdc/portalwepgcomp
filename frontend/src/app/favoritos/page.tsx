@@ -1,10 +1,8 @@
 "use client";
 
-import PresentationModal from "@/components/Modals/ModalApresentação/PresentationModal";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { FavoritosMock } from "@/mocks/Favoritos";
 import Listagem from "@/templates/Listagem/Listagem";
-import Modal from "../../components/UI/Modal/Modal";
 import { useEffect, useRef, useState } from "react";
 import { usePresentation } from "@/hooks/usePresentation";
 
