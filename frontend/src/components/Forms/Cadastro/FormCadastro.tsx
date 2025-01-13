@@ -194,7 +194,7 @@ export function FormCadastro() {
               className="form-check-label fw-bold input-title"
               htmlFor="radio1"
             >
-              Doutorando
+              Doutorando (PGCOMP)
             </label>
           </div>
           <div className="form-check me-3">
@@ -209,7 +209,7 @@ export function FormCadastro() {
               className="form-check-label fw-bold input-title"
               htmlFor="radio2"
             >
-              Professor
+              Professor (PGCOMP)
             </label>
           </div>
           <div className="form-check">
