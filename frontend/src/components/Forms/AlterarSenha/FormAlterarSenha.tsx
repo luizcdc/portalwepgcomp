@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
+import PasswordEye from "@/components/UI/PasswordEye";
 
 const formAlterarSenhaSchema = z
   .object({
@@ -23,6 +24,7 @@ const formAlterarSenhaSchema = z
 
 export function FormAlterarSenha({ params }) {
   const { resetPassword } = useUsers();
+  const [eye, setEye] = useState(false);
 
   const {
     register,
@@ -68,14 +70,19 @@ export function FormAlterarSenha({ params }) {
           Senha
           <span className='text-danger ms-1 form-title'>*</span>
         </label>
-        <input
-          type='password'
-          className='form-control input-title'
-          id='senha'
-          placeholder='Insira sua senha'
-          {...register("senha")}
-          onChange={handleChangeSenha}
-        />
+        <div className='password-input'>
+          <input
+            type='password'
+            className='form-control input-title'
+            id='senha'
+            placeholder='Insira sua senha'
+            {...register("senha")}
+            onChange={handleChangeSenha}
+          />
+          <div className='eye' onClick={() => setEye(!eye)}>
+            <PasswordEye color={eye == false ? "black" : "blue"} />
+          </div>
+        </div>
         <p className='text-danger error-message'>{errors.senha?.message}</p>
         <div className='mt-3'>
           <p className='mb-1 fw-semibold paragraph-title'>
@@ -127,13 +134,18 @@ export function FormAlterarSenha({ params }) {
           Confirmação de senha
           <span className='text-danger ms-1 form-title'>*</span>
         </label>
-        <input
-          type='password'
-          className='form-control input-title'
-          id='confirmaSenha'
-          placeholder='Insira sua senha novamente'
-          {...register("confirmaSenha")}
-        />
+        <div className='password-input'>
+          <input
+            type='password'
+            className='form-control input-title'
+            id='confirmaSenha'
+            placeholder='Insira sua senha novamente'
+            {...register("confirmaSenha")}
+          />
+          <div className='eye' onClick={() => setEye(!eye)}>
+            <PasswordEye color={eye == false ? "black" : "blue"} />
+          </div>
+        </div>
         <p className='text-danger error-message'>
           {errors.confirmaSenha?.message}
         </p>
