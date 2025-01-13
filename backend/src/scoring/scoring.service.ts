@@ -1,21 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-
-// TODO: BASIC VALUES IF THE EVENT HAS FEW EVALUATIONS
-// TODO: KEEP FIXED THE PRIOR WEIGHT AND THE CONFIDENCE FACTOR OR MAKE THEM BASED ON THE EVENT STATS?
-
-interface EventStats {
-  totalPresentations: number;
-  totalEvaluations: number;
-  scoreDistribution: { [key: number]: number };
-  meanScore: number;
-  standardDeviation: number;
-}
+import { EventStats, ScoringConfig } from './scoring.types';
 
 @Injectable()
 export class ScoringService {
-  // Confidence factor for prior weight
-  private readonly PRIOR_WEIGHT = 3;
+  private config: ScoringConfig = {
+    defaultPublicConfidence: 5,
+    defaultPanelistConfidence: 3,
+    minEvaluationsForReliableStats: 5,
+    defaultNeutralScore: 3.0,
+    minScore: 0,
+    maxScore: 5,
+    percentileForConfidence: 0.4,
+    defaultWeight: 1,
+  };
 
   constructor(private prisma: PrismaService) {}
 
@@ -34,107 +32,6 @@ export class ScoringService {
             Evaluation: {
               include: {
                 evaluationCriteria: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    let totalScore = 0;
-    let totalEvaluations = 0;
-    const scores: number[] = [];
-    const scoreDistribution: { [key: number]: number } = {};
-
-    for (const presentation of presentations) {
-      for (const evaluation of presentation.submission.Evaluation) {
-        const weightedScore =
-          evaluation.score * (evaluation.evaluationCriteria.weightRadio || 1);
-        const weight = evaluation.evaluationCriteria.weightRadio || 1;
-
-        const normalizedScore = weightedScore / weight;
-        scores.push(normalizedScore);
-
-        const roundedScore = Math.round(normalizedScore * 2) / 2;
-        scoreDistribution[roundedScore] =
-          (scoreDistribution[roundedScore] || 0) + 1;
-        totalScore += normalizedScore;
-        totalEvaluations++;
-      }
-    }
-
-    if (totalEvaluations === 0) {
-      return {
-        totalPresentations: presentations.length,
-        totalEvaluations: 0,
-        scoreDistribution: {},
-        meanScore: 0,
-        standardDeviation: 0,
-      };
-    }
-
-    const meanScore = totalScore / totalEvaluations;
-    const standardDeviation = Math.sqrt(
-      scores.reduce((sum, score) => sum + Math.pow(score - meanScore, 2), 0) /
-        totalEvaluations,
-    );
-
-    return {
-      totalPresentations: presentations.length,
-      totalEvaluations,
-      scoreDistribution,
-      meanScore,
-      standardDeviation,
-    };
-  }
-
-  // Calculate Bayesian average using event statistics as prior
-  private calculateBayesianMean(
-    evaluations: { score: number; weightRadio: number }[],
-    eventStats: EventStats,
-    //isPanelist: boolean,
-  ): number | null {
-    if (evaluations.length === 0) {
-      return null;
-    }
-
-    // Calculate weighted sample mean
-    let totalWeightedScore = 0;
-    let totalWeight = 0;
-
-    for (const e of evaluations) {
-      const weight = e.weightRadio || 1;
-      totalWeightedScore += e.score * weight;
-      totalWeight += weight;
-    }
-
-    const sampleMean = totalWeightedScore / totalWeight;
-
-    // Use event mean as prior
-    const priorMean = eventStats.meanScore;
-
-    // Adjust prior weight based on whether it's a panelist score
-    const priorWeight = this.PRIOR_WEIGHT;
-
-    // Calculate Bayesian mean
-    // (prior_weight * prior_mean + total_weight * sample_mean) / (prior_weight + total_weight)
-    const bayesianMean =
-      (priorWeight * priorMean + totalWeight * sampleMean) /
-      (priorWeight + totalWeight);
-
-    return Math.max(0, Math.min(5, bayesianMean));
-  }
-
-  async updatePresentationScores(presentationId: string): Promise<void> {
-    const presentation = await this.prisma.presentation.findUnique({
-      where: { id: presentationId },
-      include: {
-        submission: {
-          include: {
-            eventEdition: true,
-            Evaluation: {
-              include: {
-                evaluationCriteria: true,
                 user: true,
               },
             },
@@ -148,50 +45,161 @@ export class ScoringService {
       },
     });
 
-    if (!presentation) return;
+    const publicEvaluationCounts: number[] = [];
+    const panelistEvaluationCounts: number[] = [];
+    let totalPublicScore = 0;
+    let totalPanelistScore = 0;
+    let totalPublicEvaluations = 0;
+    let totalPanelistEvaluations = 0;
 
-    const eventStats = await this.calculateEventStats(
-      presentation.submission.eventEdition.id,
-    );
+    for (const presentation of presentations) {
+      const panelistIds = presentation.presentationBlock.panelists.map(
+        (p) => p.userId,
+      );
 
-    const panelistIds = presentation.presentationBlock.panelists.map(
-      (p) => p.userId,
-    );
+      let publicCount = 0;
+      let panelistCount = 0;
+      let publicScoreSum = 0;
+      let panelistScoreSum = 0;
 
-    const publicEvaluations: { score: number; weightRadio: number }[] = [];
-    const panelistEvaluations: { score: number; weightRadio: number }[] = [];
+      for (const evaluation of presentation.submission.Evaluation) {
+        const weightedScore =
+          evaluation.score *
+          (evaluation.evaluationCriteria.weightRadio ||
+            this.config.defaultWeight);
 
-    for (const evaluation of presentation.submission.Evaluation) {
-      const evaluationData = {
-        score: evaluation.score,
-        weightRadio: evaluation.evaluationCriteria.weightRadio || 1,
-      };
+        const weight =
+          evaluation.evaluationCriteria.weightRadio ||
+          this.config.defaultWeight;
 
-      if (evaluation.userId && panelistIds.includes(evaluation.userId)) {
-        panelistEvaluations.push(evaluationData);
-      } else {
-        publicEvaluations.push(evaluationData);
+        const normalizedScore = weightedScore / weight;
+        if (evaluation.userId && panelistIds.includes(evaluation.userId)) {
+          panelistCount++;
+          panelistScoreSum += normalizedScore;
+        } else {
+          publicCount++;
+          publicScoreSum += normalizedScore;
+        }
+      }
+
+      if (publicCount > 0) {
+        publicEvaluationCounts.push(publicCount);
+        totalPublicScore += publicScoreSum;
+        totalPublicEvaluations += publicCount;
+      }
+      if (panelistCount > 0) {
+        panelistEvaluationCounts.push(panelistCount);
+        totalPanelistScore += panelistScoreSum;
+        totalPanelistEvaluations += panelistCount;
       }
     }
 
-    const publicScore = this.calculateBayesianMean(
-      publicEvaluations,
-      eventStats,
-      //false,
-    );
-    const evaluatorsScore = this.calculateBayesianMean(
-      panelistEvaluations,
-      eventStats,
-      //true,
-    );
+    // Sort arrays to calculate confidence numbers
+    const sortedPublicCounts = publicEvaluationCounts.sort((a, b) => a - b);
+    const sortedPanelistCounts = panelistEvaluationCounts.sort((a, b) => a - b);
 
-    await this.prisma.presentation.update({
-      where: { id: presentationId },
-      data: {
-        publicAverageScore: publicScore,
-        evaluatorsAverageScore: evaluatorsScore,
+    // Calculate separate confidence numbers
+    const publicConfidenceNumber =
+      sortedPublicCounts[
+        Math.floor(
+          sortedPublicCounts.length * this.config.percentileForConfidence,
+        )
+      ] || this.config.defaultPublicConfidence;
+
+    const panelistConfidenceNumber =
+      sortedPanelistCounts[
+        Math.floor(
+          sortedPanelistCounts.length * this.config.percentileForConfidence,
+        )
+      ] || this.config.defaultPanelistConfidence;
+
+    // Calculate separate mean scores
+    const publicMeanScore = this.isRealiableStats(
+      eventEditionId,
+      totalPublicEvaluations,
+    )
+      ? totalPublicScore / totalPublicEvaluations
+      : this.config.defaultNeutralScore;
+
+    const panelistMeanScore = this.isRealiableStats(
+      eventEditionId,
+      totalPanelistEvaluations,
+    )
+      ? totalPanelistScore / totalPanelistEvaluations
+      : this.config.defaultNeutralScore;
+
+    // Calculate overall mean score
+    const totalEvaluations = totalPublicEvaluations + totalPanelistEvaluations;
+    const meanScore = this.isRealiableStats(eventEditionId, totalEvaluations)
+      ? (totalPublicScore + totalPanelistScore) / totalEvaluations
+      : this.config.defaultNeutralScore;
+
+    return {
+      totalPresentations: presentations.length,
+      totalEvaluations,
+      meanScore,
+      publicConfidenceNumber,
+      panelistConfidenceNumber,
+      publicMeanScore,
+      panelistMeanScore,
+    };
+  }
+
+  private async isRealiableStats(
+    eventEditionId: string,
+    actualNumOfEvaluations: number,
+  ): Promise<boolean> {
+    const criteria = await this.prisma.evaluationCriteria.findMany({
+      where: {
+        eventEditionId,
       },
     });
+
+    return (
+      criteria.length * this.config.minEvaluationsForReliableStats <=
+      actualNumOfEvaluations
+    );
+  }
+
+  private calculateBayesianMean(
+    evaluations: { score: number; weightRadio: number }[],
+    eventStats: EventStats,
+    isPanelist: boolean,
+  ): number | null {
+    if (evaluations.length === 0) {
+      return null;
+    }
+
+    // Calculate weighted sample mean
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    for (const e of evaluations) {
+      const weight = e.weightRadio || this.config.defaultWeight;
+      totalWeightedScore += e.score * weight;
+      totalWeight += weight;
+    }
+
+    const sampleMean = totalWeightedScore / totalWeight;
+
+    // Use different confidence numbers and mean scores based on evaluator type
+    const confidenceNumber = isPanelist
+      ? eventStats.panelistConfidenceNumber
+      : eventStats.publicConfidenceNumber;
+
+    const priorMean = isPanelist
+      ? eventStats.panelistMeanScore
+      : eventStats.publicMeanScore;
+
+    const numEvaluations = evaluations.length;
+    const bayesianMean =
+      (numEvaluations * sampleMean + confidenceNumber * priorMean) /
+      (numEvaluations + confidenceNumber);
+
+    return Math.max(
+      this.config.minScore,
+      Math.min(this.config.maxScore, bayesianMean),
+    );
   }
 
   async recalculateAllScores(eventEditionId: string): Promise<void> {
@@ -233,7 +241,9 @@ export class ScoringService {
       for (const evaluation of presentation.submission.Evaluation) {
         const evaluationData = {
           score: evaluation.score,
-          weightRadio: evaluation.evaluationCriteria.weightRadio || 1,
+          weightRadio:
+            evaluation.evaluationCriteria.weightRadio ||
+            this.config.defaultWeight,
         };
 
         if (evaluation.userId && panelistIds.includes(evaluation.userId)) {
@@ -246,12 +256,12 @@ export class ScoringService {
       const publicScore = this.calculateBayesianMean(
         publicEvaluations,
         eventStats,
-        //false,
+        false,
       );
       const evaluatorsScore = this.calculateBayesianMean(
         panelistEvaluations,
         eventStats,
-        //true,
+        true,
       );
 
       await this.prisma.presentation.update({
