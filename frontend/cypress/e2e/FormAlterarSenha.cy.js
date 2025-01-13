@@ -6,12 +6,11 @@ describe('Componente do Formulário de Alterar Senha', () => {
     });
   });
 
-  // uncomment the following function when the bug is fixed
-  // it('Deve exibir mensagens de erro para campos obrigatórios vazios', () => {
-  //   cy.get('button[type="submit"]').click();
-  //   cy.get('#senha + .error-message').should('contain', 'Senha é obrigatória!');
-  //   cy.get('#confirmaSenha + .error-message').should('contain', 'Confirmação de senha é obrigatória!');
-  // });
+  it('Deve exibir mensagens de erro para campos obrigatórios vazios', () => {
+    cy.get('button[type="submit"]').click();
+    cy.get('#senha + .error-message').should('contain', 'Senha é obrigatória!');
+    cy.get('#confirmaSenha + .error-message').should('contain', 'Confirmação de senha é obrigatória!');
+  });
 
   it('Deve exibir mensagem de erro se as senhas não coincidirem', () => {
     cy.get('#senha').type('SenhaSegura123!');
