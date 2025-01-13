@@ -38,7 +38,7 @@ export default function Carousel() {
           </p>
 
           <Link
-            className='btn btn-outline-light mt-3 px-4 py-2 schedule-button'
+            className='btn btn-outline-light mt-3 px-4 py-2 schedule-button fs-4'
             href='#Programacao'
           >
             {slide1.labelButton}
