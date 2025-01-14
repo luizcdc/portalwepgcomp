@@ -1,33 +1,59 @@
 #Programacao {
   margin: 0 auto;
-  padding: 20px 0 50px 0;
-  border-bottom: 1px solid #000000;
+  padding: 1.25rem 0 3.125rem 0;
+  border-bottom: 0.063rem solid #000000;
+}
+
+.full-content {
+  gap: 1.5rem;
 }
 
 .progamacao-title {
-  line-height: 50px;
+  line-height: 3.75rem;
   color: #054B75;
-  margin-bottom: 40px;
+  margin-bottom: 2.5rem;
 }
 
 .programacao-dias {
-  gap: 30px;
+  gap: 2.5rem;
+}
+
+.date-button {
+  line-height: 2.5rem;
+  gap: 1rem;
+  border: 0.188rem solid #FFA90F;
+  border-radius: 1.563rem;
+  padding: 1rem 2rem;
 }
 
 .programacao-item {
-  gap: 10px;
+  gap: 1.25rem;
 }
 
 .programacao-item-aux {
-  width: 44px;
+  width: 3.75rem;
 }
 
 .programacao-sala {
   background-color: #0065A3;
-  border-radius: 10px;
-  border: 1px solid #0065A3;
-  gap: 40px;
-  margin: 1rem 4.5rem;
+  border-radius: 0.625rem;
+  border: 0.063rem solid #0065A3;
+  gap: 2.5rem;
+  margin: 1.5rem 5rem;
+  padding: 1.25rem;
+}
+
+.list-item {
+  font-size: 1.8rem;
+  line-height: 3.5rem;
+}
+
+.list-paragraph {
+  width: 3rem;
+}
+
+.default-gap {
+  gap: 3rem;
 }
 
 @media (max-width:480px) {
