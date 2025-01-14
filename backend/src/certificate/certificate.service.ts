@@ -53,7 +53,6 @@ export class CertificateService {
     this.validateUserEligibility(user, eventEdition);
     const { userPublicAwardStandings, userEvaluatorsAwardStandings } =
       this.calculateAwardStandings(presentations, userSubmission);
-
     return new Promise((resolve) => {
       const doc = new PDFDocument({
         layout: 'landscape',
@@ -82,27 +81,52 @@ export class CertificateService {
    *  - userEvaluatorsAwardStandings: The user's standing based on evaluators average scores (1-based index)
    */
   private calculateAwardStandings(presentations, userSubmission) {
+    // Handle public scores
     presentations.sort((a, b) => {
       const scoreA = a.publicAverageScore ?? 0;
       const scoreB = b.publicAverageScore ?? 0;
       return scoreB - scoreA;
     });
-    const userPublicAwardStandings =
-      presentations.findIndex(
-        (presentation) => presentation.submissionId === userSubmission?.id,
-      ) + 1;
+
+    let currentRank = 1;
+    let currentScore = presentations[0]?.publicAverageScore ?? 0;
+    const publicRanks = new Map();
+
+    presentations.forEach((presentation, index) => {
+      if (presentation.publicAverageScore !== currentScore) {
+        currentRank = index + 1;
+        currentScore = presentation.publicAverageScore ?? 0;
+      }
+      publicRanks.set(presentation.submissionId, currentRank);
+    });
+
+    // Handle evaluator scores
     presentations.sort((a, b) => {
       const scoreA = a.evaluatorsAverageScore ?? 0;
       const scoreB = b.evaluatorsAverageScore ?? 0;
       return scoreB - scoreA;
     });
-    const userEvaluatorsAwardStandings =
-      presentations.findIndex(
-        (presentation) => presentation.submissionId === userSubmission?.id,
-      ) + 1;
+
+    currentRank = 1;
+    currentScore = presentations[0]?.evaluatorsAverageScore ?? 0;
+    const evaluatorRanks = new Map();
+
+    presentations.forEach((presentation, index) => {
+      if (presentation.evaluatorsAverageScore !== currentScore) {
+        currentRank = index + 1;
+        currentScore = presentation.evaluatorsAverageScore ?? 0;
+      }
+      evaluatorRanks.set(presentation.submissionId, currentRank);
+    });
+    // Use int_max instead of 0
+    const INT_MAX = 2 ** 31 - 1;
     return {
-      userPublicAwardStandings,
-      userEvaluatorsAwardStandings,
+      userPublicAwardStandings: userSubmission
+        ? publicRanks.get(userSubmission.id) || INT_MAX
+        : INT_MAX,
+      userEvaluatorsAwardStandings: userSubmission
+        ? evaluatorRanks.get(userSubmission.id) || INT_MAX
+        : INT_MAX,
     };
   }
 
