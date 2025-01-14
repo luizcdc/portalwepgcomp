@@ -109,7 +109,7 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         confirmButtonText: "Retornar",
       });
 
-      return true;
+      return false;
     } finally {
       setLoadingSubmission(false);
     }
