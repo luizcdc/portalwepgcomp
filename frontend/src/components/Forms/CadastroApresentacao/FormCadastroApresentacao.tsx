@@ -169,6 +169,10 @@ export function FormCadastroApresentacao({
 
           if (user?.profile == "DoctoralStudent") {
             router.push("/minha-apresentacao");
+          } else if (status) {
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
           }
         }
       }
