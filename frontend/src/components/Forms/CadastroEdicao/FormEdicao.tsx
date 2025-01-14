@@ -26,40 +26,30 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const formEdicaoSchema = z.object({
-  titulo: z.string({
-    required_error: "Nome do evento é obrigatório!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  titulo: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "Nome do evento é obrigatório"),
 
-  descricao: z.string({
-    required_error: "Descrição do evento é obrigatório!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  descricao: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "Descrição do evento é obrigatório!"),
 
   inicio: z
-    .string({
-      required_error: "Data e horário de início são obrigatórios!",
-      invalid_type_error: "Campo inválido!",
-    })
+    .string({ invalid_type_error: "Data e horário de início são obrigatórios!" })
     .datetime({
       message: "Data ou horário inválidos!",
-    })
-    .nullable(),
+    }),
 
   final: z
-    .string({
-      required_error: "Data e horário de fim são obrigatórios!",
-      invalid_type_error: "Campo inválido!",
-    })
+    .string({ invalid_type_error: "Data e horário de fim são obrigatórios!" })
     .datetime({
       message: "Data ou horário inválidos!",
-    })
-    .nullable(),
+    }),
 
-  local: z.string({
-    required_error: "Local do Evento é obrigatório!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  local: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "Local do Evento é obrigatório!"),
+    
   comissao: z
     .array(
       z.object({
@@ -104,21 +94,18 @@ const formEdicaoSchema = z.object({
     )
     .optional(),
 
-  sessoes: z.number().optional(),
-  duracao: z.number().optional(),
-  submissao: z.string({
-    required_error: "O texto para submissão é obrigatório!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  sessoes: z.number({ invalid_type_error: "O número de sessões é obrigatório!" }),
+  duracao: z.number({ invalid_type_error: "Informar a duração é obrigatório!" }),
+  submissao: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "O texto para submissão é obrigatório!"),
+    
   limite: z
-    .string({
-      required_error: "A data limite para submissão é obrigatória!",
-      invalid_type_error: "Campo inválido!",
-    })
+    .string({ invalid_type_error: "A data limite para submissão é obrigatória!" })
     .datetime({
-      message: "Data inválida!",
-    })
-    .nullable(),
+      message: "Data ou horário inválidos!",
+    }),
+    
   coordinatorId: z.string().optional(),
   partnersText: z.string().optional(),
 });
