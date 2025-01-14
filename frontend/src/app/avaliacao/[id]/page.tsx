@@ -13,6 +13,7 @@ import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { usePresentation } from "@/hooks/usePresentation";
 import LoadingPage from "@/components/LoadingPage";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
+import Link from "next/link";
 
 export default function Avaliacao({ params }) {
   const [saveEvaluation, setSaveEvaluation] = useState<
@@ -161,7 +162,7 @@ export default function Avaliacao({ params }) {
               onClick={sendEvaluation}
               disabled={loadingEvaluation}
             >
-              Enviar
+              <Link href="/home">Enviar</Link>
             </button>
           </div>
         )}
