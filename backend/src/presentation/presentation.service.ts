@@ -714,11 +714,17 @@ export class PresentationService {
     );
   }
 
-  async updateScores(presentationId: string) {
-    await this.scoringService.updatePresentationScores(presentationId);
-  }
-
   async recalculateAllScores(eventEditionId: string): Promise<void> {
+    const eventEditionExists = await this.prismaClient.eventEdition.findUnique({
+      where: {
+        id: eventEditionId,
+      },
+    });
+
+    if (!eventEditionExists) {
+      throw new AppException('Edição do evento não encontrada.', 404);
+    }
+
     await this.scoringService.recalculateAllScores(eventEditionId);
   }
 
