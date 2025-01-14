@@ -21,7 +21,7 @@ const formCadastroSchema = z.object({
   id: z.string().optional(),
   titulo: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "O título é obrigatório."),
+    .min(1, "O título é obrigatório"),
   abstract: z
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "O abstract é obrigatório"),
@@ -29,12 +29,12 @@ const formCadastroSchema = z.object({
     .string({ invalid_type_error: "Campo Inválido" })
     .uuid()
     .optional(),
-  orientador: z.string({ invalid_type_error: "Campo Inválido" }).uuid(),
+  orientador: z.string({ invalid_type_error: "Campo Inválido" }).uuid({ message: "O orientador é obrigatório" }),
   coorientador: z.string().optional(),
   data: z.string().optional(),
   celular: z
     .string()
-    .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos."),
+    .regex(/^\d{10,11}$/, "O celular deve conter 10 ou 11 dígitos"),
   slide: z.string({ invalid_type_error: "Campo Inválido" }).optional(), //temporário para a entrega,
 });
 
@@ -218,7 +218,9 @@ export function FormCadastroApresentacao({
 
       {user?.level !== "Default" && (
         <div className="col-12 mb-1">
-          <label className="form-label form-title">Selecionar doutorando</label>
+          <label className="form-label form-title">Selecionar doutorando
+            <span className="text-danger ms-1">*</span>
+          </label>
           <select
             className="form-control input-title"
             {...register("doutorando")}
