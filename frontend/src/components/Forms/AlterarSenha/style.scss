@@ -27,3 +27,17 @@
         background-color: #FFA90F;
     }
 }
+
+.password-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid #e4e4e4;
+    padding: 0 0.25rem;
+    border-radius: 6px;
+
+    .password {
+        border: none;
+    }
+}
