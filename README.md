@@ -44,7 +44,7 @@ Para executar os arquivos docker-compose.yml é necessário a instalação do do
 
 ## Como Executar o Projeto
 
-Para obter instruções detalhadas sobre a instalação do projeto, consulte o documento [Documento de Implantação/Instalação WEPGCOMP](https://docs.google.com/document/d/1K5SnhxKYCfnvJq_T8P_5-zqXeQSpqMXPh2FfLYe_G0Y). Os passos resumidos para execução local estão descritos abaixo.
+<!-- Para obter instruções detalhadas sobre a instalação do projeto, consulte o documento [Documento de Implantação/Instalação WEPGCOMP](https://docs.google.com/document/d/1K5SnhxKYCfnvJq_T8P_5-zqXeQSpqMXPh2FfLYe_G0Y). Os passos resumidos para execução local estão descritos abaixo. --->
 
 1. **Clone o Repositório**:
 
