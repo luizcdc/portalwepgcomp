@@ -1,10 +1,8 @@
-//import './commands';
-
 describe('Componente do Formulário de Cadastro de Apresentação', () => {
     beforeEach(() => {
       cy.visit('/login');
       cy.fixture('usuarios').as('userData');
-      cy.login('joao.silva@ufba.br', 'SenhaInvalida1234!');
+      cy.login('joao.silva@ufba.br', 'SenhaInvalida1234!'); // insert doctoral student credentials
       cy.visit('/cadastro-apresentacao');
 
     });
