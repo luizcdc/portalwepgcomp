@@ -190,7 +190,7 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       setValue("limite", edicaoData.submissionDeadline);
       setValue("partnersText", "");
     }
-  }, [edicaoData, setValue]);
+  }, [committerList]);
 
   useEffect(() => {
     if (!advisorsLoaded) {
@@ -271,7 +271,7 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
     if (edicaoData?.id) {
       getCommitterAll(edicaoData?.id);
     }
-  }, []);
+  }, [edicaoData]);
 
   const onInvalid = (errors) => console.error(errors);
 
