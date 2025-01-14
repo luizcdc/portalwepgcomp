@@ -80,7 +80,7 @@ export default function Listagem({
           {onChangeSearchValue && (
             <div
               className="input-group listagem-template-content-input"
-              style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+              style={{ visibility: isMyPresentation ? "hidden" : "visible", minWidth: "350px" }}
             >
               <input
                 placeholder={searchPlaceholder}
