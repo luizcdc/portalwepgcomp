@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 import PresentationModal from "../Modals/ModalApresentação/PresentationModal";
-import ScheduleCard from "../ScheduleCard";
+import ScheduleCard from "../ScheduleCard/ScheduleCard";
 import Calendar from "../UI/calendar";
 import Modal from "../UI/Modal/Modal";
 
