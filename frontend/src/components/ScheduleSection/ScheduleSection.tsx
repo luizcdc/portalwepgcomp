@@ -130,12 +130,12 @@ export default function ScheduleSection() {
 
         {roomsList.map((item, index) => (
           <div className="programacao-sala" key={index}>
-            <p
+            <h3
               className="fw-bold text-white m-0 text-center w-100 list-item"
             >
               {item.name}
-            </p>
-            <p className="m-0 list-paragraph"></p>
+            </h3>
+            <h5 className="m-0 list-paragraph"></h5>
           </div>
         ))}
 
@@ -159,9 +159,9 @@ export default function ScheduleSection() {
                       key={index + item.id}
                       className="d-flex align-items-center w-100 default-gap"
                     >
-                      <p className="m-0 list-paragraph">
+                      <h5 className="m-0 list-paragraph">
                         {moment(item.startTime).format("HH:mm")}
-                      </p>
+                      </h5>
                       <ScheduleCard
                         type="GeneralSession"
                         author={item?.speakerName ?? ""}
@@ -183,9 +183,9 @@ export default function ScheduleSection() {
                         key={index + pres.id}
                         className="d-flex align-items-center w-100 default-gap"
                       >
-                        <p className="m-0 list-paragraph">
+                        <h5 className="m-0 list-paragraph">
                           {moment(pres.startTime).format("HH:mm")}
-                        </p>
+                        </h5>
                         <ScheduleCard
                           type="PresentationSession"
                           author={pres?.submission?.mainAuthor?.name ?? ""}
