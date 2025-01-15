@@ -3,12 +3,20 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PageSizes, PDFDocument, PDFFont, rgb, StandardFonts } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { AppException } from '../exceptions/app.exception';
-import { CommitteeLevel, Profile, UserAccount } from '@prisma/client';
+import { CommitteeLevel, Profile } from '@prisma/client';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
 @Injectable()
 export class CertificateService {
+  private readonly fontsPaths = {
+    bold: 'src/certificate/assets/SourceSerif4-Bold.ttf',
+    regular: 'src/certificate/assets/SourceSerif4-Regular.ttf',
+    semibold: 'src/certificate/assets/SourceSerif4-SemiBold.ttf',
+    italic: 'src/certificate/assets/SourceSerif4-Italic.ttf',
+    medium: 'src/certificate/assets/SourceSerif4-Medium.ttf',
+    bolditalic: 'src/certificate/assets/SourceSerif4-BoldItalic.ttf',
+  };
   constructor(private prismaClient: PrismaService) {}
 
   async generateCertificateForUser(
@@ -56,28 +64,85 @@ export class CertificateService {
     this.validateUserEligibility(user, eventEdition);
     const { userPublicAwardStandings, userEvaluatorsAwardStandings } =
       this.calculateAwardStandings(presentations, userSubmission);
-    const pdfBytes = await this.buidBaseCertificate(
+    const fonts = {
+      bold: null,
+      regular: null,
+      semibold: null,
+      italic: null,
+      medium: null,
+      bolditalic: null,
+    };
+    const pdfBytes = await this.buildBaseCertificate(
+      fonts,
       user.profile,
       eventEditionId,
+      eventEdition.name,
     );
+    // TODO: Personalized info here
     return Buffer.from(pdfBytes);
   }
 
-  private async buidBaseCertificate(
+  private async getFontAndEmbed(
+    embeddedFonts: {
+      bold: null | PDFFont;
+      regular: null | PDFFont;
+      semibold: null | PDFFont;
+      italic: null | PDFFont;
+      medium: null | PDFFont;
+      bolditalic: null | PDFFont;
+    },
+    fontType: string,
+    pdfDoc: PDFDocument,
+  ): Promise<PDFFont> {
+    if (embeddedFonts[fontType] == null) {
+      const fontBytes = await fs.readFile(
+        path.join(process.cwd(), this.fontsPaths[fontType]),
+      );
+      embeddedFonts[fontType] = await pdfDoc.embedFont(fontBytes);
+    }
+    return embeddedFonts[fontType];
+  }
+
+  private async buildBaseCertificate(
+    fonts: {
+      bold: null | PDFFont;
+      regular: null | PDFFont;
+      semibold: null | PDFFont;
+      italic: null | PDFFont;
+      medium: null | PDFFont;
+      bolditalic: null | PDFFont;
+    },
     userProfileType: string,
     eventEditionId: string,
+    eventEditionName: string,
   ): Promise<Uint8Array<ArrayBufferLike>> {
     const pdfDoc = await PDFDocument.create();
+
     pdfDoc.registerFontkit(fontkit);
+    this.setPdfMetadata(pdfDoc, userProfileType, eventEditionName);
     const page = pdfDoc.addPage([PageSizes.A4[1], PageSizes.A4[0]]);
+    await this.renderCertificateHeader(fonts, pdfDoc, page, userProfileType);
+
+    await this.drawSignatures(page, fonts, pdfDoc, eventEditionId);
+    const pdfBytes = await pdfDoc.save();
+    return pdfBytes;
+  }
+
+  private async renderCertificateHeader(
+    fonts: {
+      bold: null | PDFFont;
+      regular: null | PDFFont;
+      semibold: null | PDFFont;
+      italic: null | PDFFont;
+      medium: null | PDFFont;
+      bolditalic: null | PDFFont;
+    },
+    pdfDoc: PDFDocument,
+    page,
+    userProfileType: string,
+  ) {
     const lines = ['Universidade Federal da Bahia', 'Instituto de Computação'];
-    const fontBytes = await fs.readFile(
-      path.join(
-        process.cwd(),
-        'src/certificate/assets/SourceSerif4-Medium.ttf',
-      ),
-    );
-    const font = await pdfDoc.embedFont(fontBytes);
+    const font = await this.getFontAndEmbed(fonts, 'medium', pdfDoc);
     const textSize = 26;
     const lineHeight = textSize * 1.25;
 
@@ -106,13 +171,7 @@ export class CertificateService {
       font: font,
     });
 
-    const fontTitleBytes = await fs.readFile(
-      path.join(
-        process.cwd(),
-        'src/certificate/assets/SourceSerif4-SemiBold.ttf',
-      ),
-    );
-    const fontTitle = await pdfDoc.embedFont(fontTitleBytes);
+    const fontTitle = await this.getFontAndEmbed(fonts, 'semibold', pdfDoc);
     const title =
       userProfileType == Profile.Professor
         ? 'CERTIFICADO DE AVALIADOR'
@@ -169,15 +228,34 @@ export class CertificateService {
       width: 95,
       height: ufbaLowResDims.height,
     });
+  }
 
-    await this.drawSignatures(page, pdfDoc, eventEditionId);
-
-    const pdfBytes = await pdfDoc.save();
-    return pdfBytes;
+  private setPdfMetadata(
+    pdfDoc: PDFDocument,
+    userProfileType: string,
+    eventEditionName: string,
+  ) {
+    pdfDoc.setTitle(`Certificado de ${userProfileType} - ${eventEditionName}`);
+    pdfDoc.setSubject(
+      'Certificado de participação no ' + eventEditionName + '.',
+    );
+    pdfDoc.setProducer('Portal WEPGCOMP');
+    pdfDoc.setCreator('Portal WEPGCOMP');
+    pdfDoc.setAuthor(
+      'Programa de Pós-Graduação em Ciência da Computação do IC-UFBA',
+    );
   }
 
   private async drawSignatures(
     page,
+    fonts: {
+      bold: null | PDFFont;
+      regular: null | PDFFont;
+      semibold: null | PDFFont;
+      italic: null | PDFFont;
+      medium: null | PDFFont;
+      bolditalic: null | PDFFont;
+    },
     pdfDoc: PDFDocument,
     eventEditionId: string,
   ) {
@@ -214,7 +292,7 @@ export class CertificateService {
     );
 
     // Get the font for the names and roles
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const font = await this.getFontAndEmbed(fonts, 'regular', pdfDoc);
     const fontSize = 12;
 
     // Left signature
