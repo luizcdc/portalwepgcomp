@@ -8,6 +8,7 @@ import { formatDate } from "@/utils/formatDate";
 
 import "./style.scss";
 import { usePathname } from "next/navigation";
+import PresentationCard from "@/components/CardApresentacao/PresentationCard";
 
 interface ListagemProps {
   title: string;
@@ -28,6 +29,7 @@ interface ListagemProps {
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
   onClear?: () => void;
+  fullInfo: boolean;
 }
 
 export default function Listagem({
@@ -48,6 +50,7 @@ export default function Listagem({
   onDelete,
   onEdit,
   onClear,
+  fullInfo,
 }: Readonly<ListagemProps>) {
   const pathname = usePathname();
 
@@ -78,7 +81,7 @@ export default function Listagem({
           {onChangeSearchValue && (
             <div
               className="input-group listagem-template-content-input"
-              style={{ visibility: isMyPresentation ? "hidden" : "visible" }}
+              style={{ visibility: isMyPresentation ? "hidden" : "visible", minWidth: "350px" }}
             >
               <input
                 placeholder={searchPlaceholder}
@@ -109,12 +112,12 @@ export default function Listagem({
           {!!cardsList.length &&
             !isFavorites &&
             cardsList?.map((card) => (
+              !fullInfo ? 
               <CardListagem
-                key={card.id}
+                key={card.name}
                 title={
                   pathname?.includes("edicoes")
-                    ? card?.name
-                    : card?.title ?? "Sem Título"
+                    ? card?.title : "Sem Título"
                 }
                 subtitle={
                   pathname?.includes("edicoes")
@@ -135,14 +138,26 @@ export default function Listagem({
                 onClickItem={() => onClickItem && onClickItem(card)}
                 onEdit={() => onEdit && onEdit(card?.id ?? "")}
                 onDelete={() => onDelete && onDelete(card?.id ?? "")}
+              /> :
+              <PresentationCard
+                key={card.name}
+                id={card.id}
+                title={card.title}
+                subtitle={card.subtitle}
+                name={card.name}
+                pdfFile={card.pdfFile}
+                email={card.email}
+                advisorName={card.advisorName}
+                onDelete={() => onDelete && onDelete(card.id ?? "")}
               />
             ))}
           {!!cardsList.length &&
             isFavorites &&
             cardsList?.map((card) => (
+              !fullInfo ? 
               <CardListagem
                 key={card.name}
-                title={card.name}
+                title={card.title}
                 subtitle={
                   title === "Sessões"
                     ? `${formatDate(card.startAt)}`
@@ -150,6 +165,17 @@ export default function Listagem({
                 }
                 showFavorite
                 onClickItem={() => onClickItem && onClickItem(card)}
+              /> :
+              <PresentationCard
+                key={card.name}
+                id={card.id}
+                title={card.title}
+                subtitle={card.subtitle}
+                name={card.name}
+                pdfFile={card.pdfFile}
+                email={card.email}
+                advisorName={card.advisorName}
+                onDelete={() => onDelete && onDelete(card.id ?? "")}
               />
             ))}
           {!cardsList.length && (

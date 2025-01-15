@@ -28,7 +28,7 @@ export default function CardListagem({
   idGeneralModal,
   idModalEdit,
   onDelete,
-  onEdit
+  onEdit,
 }: Readonly<CardListagem>) {
   const { showAlert } = useSweetAlert();
 
