@@ -1,13 +1,12 @@
 describe('Componente do Formulário de Cadastro de Edição', () => {
     beforeEach(() => {
-      cy.visit('/login');
       cy.fixture('usuarios').as('userData');
       cy.login('profsuperadmin@example.com', 'string'); // insert super-admin credentials
-      cy.visit('/cadastro-edicao');
 
     });
     // uncomment when the issue was fixed
     //   it('Deve validar mensagens de erro para campos obrigatórios', () => {
+    //     cy.visit('/cadastro-edicao');
     //     cy.get('button.submit-button').click();
     //     cy.get('button.submit-button').click();
         
@@ -21,9 +20,11 @@ describe('Componente do Formulário de Cadastro de Edição', () => {
     //   });
 
       it('Deve preencher e enviar o formulário com sucesso', () => {
+        const num = Math.floor(Math.random() * 1000);
+        cy.visit('/cadastro-edicao');
         cy.get('button.submit-button').click();
         cy.get('#nomeEvento').type('Evento de Teste Cypress');
-        cy.get('#descricao').type('Descrição do evento de teste Cypress');
+        cy.get('#descricao').type('Descrição do evento de teste Cypress ' + num);
         
         cy.get('#ed-inicio-data').click();
         cy.get('.react-datepicker__day--015').click();
@@ -49,6 +50,27 @@ describe('Componente do Formulário de Cadastro de Edição', () => {
         cy.get('button.submit-button').click();
     
         cy.url().should('include', '/home'); 
+      });
+
+      it('Deve editar e enviar o formulário com sucesso', () => {
+        cy.visit('/edicoes');
+        cy.get('.listagem-template-cards')
+          .find('.card-listagem')
+          .first()
+          .find('#edit-button')
+          .click();
+          cy.wait(500);
+        // remove this lines below after the issue was fixed
+          cy.get('#ed-inicio-data').click();
+          cy.get('.react-datepicker__day--018').click();
+      
+          cy.get('#ed-final-data').click();
+          cy.get('.react-datepicker__day--020').click();
+        // remove this lines above after the issue was fixed
+        cy.get('#nomeEvento').clear().type('Evento de Teste Cypress');
+        cy.get('button.submit-button').click();
+        cy.contains('Edição atualizada com sucesso!').should('be.visible');
+        
       });
   
   });

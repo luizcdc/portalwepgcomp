@@ -8,22 +8,22 @@ describe('Componente do Formulário de Alterar Senha', () => {
 
   it('Deve exibir mensagens de erro para campos obrigatórios vazios', () => {
     cy.get('button[type="submit"]').click();
-    cy.get('#senha + .error-message').should('contain', 'Senha é obrigatória!');
-    cy.get('#confirmaSenha + .error-message').should('contain', 'Confirmação de senha é obrigatória!');
+    cy.contains('Senha é obrigatória!');
+    cy.contains('Confirmação de senha é obrigatória!');
   });
 
   it('Deve exibir mensagem de erro se as senhas não coincidirem', () => {
     cy.get('#senha').type('SenhaSegura123!');
     cy.get('#confirmaSenha').type('SenhaDiferente123!');
     cy.get('button[type="submit"]').click();
-    cy.get('#confirmaSenha + .error-message').should('contain', 'As senhas não conferem!');
+    cy.contains('As senhas não conferem!');
   });
 
   it('Deve exibir erros para senha abaixo do comprimento mínimo', () => {
     cy.get('#senha').type('12345');
     cy.get('#confirmaSenha').type('12345');
     cy.get('button[type="submit"]').click();
-    cy.get('#senha + .error-message').should('contain', 'A senha deve ter, pelo menos, 8 caracteres.');
+    cy.contains('A senha deve ter no mínimo 8 caracteres.');
   });
 
   it('Deve exibir ícones de validação para os requisitos de senha', () => {

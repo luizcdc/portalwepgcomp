@@ -61,6 +61,7 @@ describe('Componente do Formulário de Contato', () => {
   
       // Clica no botão de envio
       cy.get(submitButton).click();
+      cy.wait(2000);
   
       // Verifica que uma mensagem de sucesso aparece
       cy.contains('Mensagem enviada com sucesso!').should('be.visible');
