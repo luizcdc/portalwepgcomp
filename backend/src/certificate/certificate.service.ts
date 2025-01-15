@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PageSizes, PDFDocument, PDFFont, rgb, StandardFonts } from 'pdf-lib';
+import {
+  PageSizes,
+  PDFDocument,
+  PDFFont,
+  rgb,
+  StandardFonts,
+  TextAlignment,
+} from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { AppException } from '../exceptions/app.exception';
 import { CommitteeLevel, Profile } from '@prisma/client';
@@ -72,14 +79,48 @@ export class CertificateService {
       medium: null,
       bolditalic: null,
     };
-    const pdfBytes = await this.buildBaseCertificate(
+    const { pdfDoc, page } = await this.buildBaseCertificate(
       fonts,
       user.profile,
       eventEditionId,
       eventEdition.name,
     );
-    // TODO: Personalized info here
-    return Buffer.from(pdfBytes);
+    let texto = '';
+    if (user.profile == Profile.Professor) {
+      texto += `   Certificamos que ${user.name} participou como avaliador(a) em sessões de apresentações do evento ${eventEdition.name}, promovido pelo Programa de Pós-Graduação em Ciência da Computação do Instituto de Computação da Universidade Federal da Bahia, no período de ${eventEdition.startDate.toLocaleDateString()} a ${eventEdition.endDate.toLocaleDateString()}.`;
+      if (user.panelistAwards.length) {
+        texto += ` Também ficamos felizes de informar que ${user.name} foi homenageado(a) como um dos melhores avaliadores pela comissão organizadora do ${eventEdition.name}.`;
+      }
+    } else {
+      texto += `    Certificamos que ${user.name} apresentou o trabalho de título "${userSubmission.title}" na categoria Apresentação Oral do evento ${eventEdition.name}, promovido pelo Programa de Pós-Graduação em Ciência da Computação do Instituto de Computação da Universidade Federal da Bahia, no período de ${eventEdition.startDate.toLocaleDateString()} a ${eventEdition.endDate.toLocaleDateString()}.`;
+      if (userPublicAwardStandings <= 3 && userEvaluatorsAwardStandings <= 3) {
+        texto += ` O trabalho de ${user.name} recebeu o prêmio Escolha do Público, classificado em ${userPublicAwardStandings}º lugar na avaliação dos membros do público. Seu trabalho também recebeu o prêmio Escolha dos Avaliadores, sendo classificado em ${userEvaluatorsAwardStandings}º lugar na avaliação da banca avaliadora.`;
+      } else if (userPublicAwardStandings <= 3) {
+        texto += ` O trabalho de ${user.name} recebeu o prêmio Escolha do Público, classificado em ${userPublicAwardStandings}º lugar na avaliação dos membros do público.`;
+      } else if (userEvaluatorsAwardStandings <= 3) {
+        texto += ` O trabalho de ${user.name} recebeu o prêmio Escolha dos Avaliadores, sendo classificado em ${userEvaluatorsAwardStandings}º lugar na avaliação da banca avaliadora.`;
+      }
+    }
+    const regularFont = await this.getFontAndEmbed(fonts, 'regular', pdfDoc);
+    page.drawText(texto, {
+      x: 50,
+      y: 330,
+      size: 16,
+      font: regularFont,
+      maxWidth: page.getWidth() - 50,
+      lineHeight: 19,
+    });
+    // Always use the date of the end of the event
+    const placeAndTime = `Salvador, Bahia, ${eventEdition.endDate.getDate()} de ${new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(eventEdition.endDate)} de ${eventEdition.endDate.getFullYear()}.`;
+    // Get the size of the text to center it
+    const placeAndTimeWidth = regularFont.widthOfTextAtSize(placeAndTime, 16);
+    page.drawText(placeAndTime, {
+      x: page.getWidth() - placeAndTimeWidth - 50,
+      y: 185,
+      size: 16,
+      font: regularFont,
+    });
+    return Buffer.from(await pdfDoc.save());
   }
 
   private async getFontAndEmbed(
@@ -115,7 +156,7 @@ export class CertificateService {
     userProfileType: string,
     eventEditionId: string,
     eventEditionName: string,
-  ): Promise<Uint8Array<ArrayBufferLike>> {
+  ): Promise<{ pdfDoc: PDFDocument; page: any }> {
     const pdfDoc = await PDFDocument.create();
 
     pdfDoc.registerFontkit(fontkit);
@@ -124,8 +165,7 @@ export class CertificateService {
     await this.renderCertificateHeader(fonts, pdfDoc, page, userProfileType);
 
     await this.drawSignatures(page, fonts, pdfDoc, eventEditionId);
-    const pdfBytes = await pdfDoc.save();
-    return pdfBytes;
+    return { pdfDoc, page };
   }
 
   private async renderCertificateHeader(
@@ -219,7 +259,7 @@ export class CertificateService {
       y: page.getHeight() / 2 - ufbaDims.height / 2,
       width: 300,
       height: ufbaDims.height,
-      opacity: 0.18,
+      opacity: 0.16,
     });
 
     page.drawImage(ufbaLowResImage, {
@@ -311,10 +351,13 @@ export class CertificateService {
       font,
     });
     page.drawText(leftRole, {
-      x: signatureLineSize - font.widthOfTextAtSize(leftRole, fontSize) / 2,
+      x: signatureLineSize - 150 / 2,
       y: 80,
       size: fontSize,
       font,
+      maxWidth: 150,
+      lineHeight: fontSize * 1.2,
+      align: TextAlignment.Center,
     });
 
     // Center signature
@@ -460,7 +503,7 @@ export class CertificateService {
     if (user.profile === Profile.Listener) {
       throw new AppException(
         'Usuário não participou como apresentador ou avaliador, portanto não pode receber certificado',
-        400,
+        404,
       );
     } else if (
       user.profile === Profile.DoctoralStudent &&
@@ -469,7 +512,7 @@ export class CertificateService {
     ) {
       throw new AppException(
         'Doutorando não tem submissões, portanto não pode receber certificado',
-        400,
+        404,
       );
     } else if (
       user.profile === Profile.Professor &&
@@ -479,7 +522,7 @@ export class CertificateService {
         // TODO: certificado para comissão se não participar de mesas avaliadoras? Tirar dúvida com
         // Fred
         'Professor não participou de mesas avaliadoras, portanto não pode receber certificado',
-        400,
+        404,
       );
     }
   }
