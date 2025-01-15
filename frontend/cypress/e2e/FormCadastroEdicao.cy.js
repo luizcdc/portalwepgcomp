@@ -59,7 +59,7 @@ describe('Componente do Formulário de Cadastro de Edição', () => {
           .first()
           .find('#edit-button')
           .click();
-          cy.wait(500);
+          cy.wait(2000);
         // remove this lines below after the issue was fixed
           cy.get('#ed-inicio-data').click();
           cy.get('.react-datepicker__day--018').click();

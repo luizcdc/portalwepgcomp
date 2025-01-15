@@ -1,11 +1,10 @@
 describe('Componente do Formulário de Contato', () => {
     beforeEach(() => {
-      cy.visit('/');
-      cy.get('a[href*="home#Contato"]').click()
+      cy.visit('/home#Contato');
     });
 
     it('Deve exibir erros de validação ao enviar campos vazios', () => {
-
+      cy.wait(2000);
       cy.get('button[type="submit"]').click();
   
       cy.contains('Nome é obrigatório!').should('be.visible');
@@ -14,7 +13,7 @@ describe('Componente do Formulário de Contato', () => {
     });
   
     it('Deve validar o campo de e-mail no formulário', () => {
-      
+      cy.wait(2000);
       const emailInput = 'input[placeholder="Insira seu e-mail"]';
       const invalidEmail = 'usuario@sem-dominio';
   
@@ -26,7 +25,7 @@ describe('Componente do Formulário de Contato', () => {
     });
   
     it('Não deve permitir o envio do formulário se o campo de mensagem estiver vazio', () => {
-      
+      cy.wait(2000);
       // Seletores dos elementos do formulário
       const nameInput = 'input[placeholder="Insira seu nome"]';
       const emailInput = 'input[placeholder="Insira seu e-mail"]';
@@ -47,7 +46,7 @@ describe('Componente do Formulário de Contato', () => {
     });
   
     it('Deve permitir o envio do formulário quando o campo de mensagem for preenchido', () => {
-
+      cy.wait(2000);
       // Seletores dos elementos do formulário
       const nameInput = 'input[placeholder="Insira seu nome"]';
       const emailInput = 'input[placeholder="Insira seu e-mail"]';
