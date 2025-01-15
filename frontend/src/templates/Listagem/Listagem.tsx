@@ -8,6 +8,7 @@ import { formatDate } from "@/utils/formatDate";
 
 import "./style.scss";
 import { usePathname } from "next/navigation";
+import PresentationCard from "@/components/CardApresentacao/PresentationCard";
 
 interface ListagemProps {
   title: string;
@@ -111,17 +112,13 @@ export default function Listagem({
           {!!cardsList.length &&
             !isFavorites &&
             cardsList?.map((card) => (
+              !fullInfo ? 
               <CardListagem
                 key={card.name}
-                id={card.id}
                 title={
                   pathname?.includes("edicoes")
                     ? card?.title : "Sem Título"
                 }
-                name={card?.name}
-                pdfFile={card?.pdfFile}
-                email={card?.email}
-                advisorName={card?.advisorName}
                 subtitle={
                   pathname?.includes("edicoes")
                     ? card?.description
@@ -139,20 +136,26 @@ export default function Listagem({
                 onClickItem={() => onClickItem && onClickItem(card)}
                 onEdit={() => onEdit && onEdit(card?.id ?? "")}
                 onDelete={() => onDelete && onDelete(card?.id ?? "")}
-                fullInfo={fullInfo}
+              /> :
+              <PresentationCard
+                key={card.name}
+                id={card.id}
+                title={card.title}
+                subtitle={card.subtitle}
+                name={card.name}
+                pdfFile={card.pdfFile}
+                email={card.email}
+                advisorName={card.advisorName}
+                onDelete={() => onDelete && onDelete(card.id ?? "")}
               />
             ))}
           {!!cardsList.length &&
             isFavorites &&
             cardsList?.map((card) => (
+              !fullInfo ? 
               <CardListagem
                 key={card.name}
-                id={card.id}
                 title={card.title}
-                name={card?.name}
-                pdfFile={card?.pdfFile}
-                email={card?.email}
-                advisorName={card?.advisorName}
                 subtitle={
                   title === "Sessões"
                     ? `${formatDate(card.startAt)}`
@@ -160,7 +163,17 @@ export default function Listagem({
                 }
                 showFavorite
                 onClickItem={() => onClickItem && onClickItem(card)}
-                fullInfo={fullInfo}
+              /> :
+              <PresentationCard
+                key={card.name}
+                id={card.id}
+                title={card.title}
+                subtitle={card.subtitle}
+                name={card.name}
+                pdfFile={card.pdfFile}
+                email={card.email}
+                advisorName={card.advisorName}
+                onDelete={() => onDelete && onDelete(card.id ?? "")}
               />
             ))}
           {!cardsList.length && (

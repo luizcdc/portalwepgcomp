@@ -9,8 +9,28 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 import { usePresentation } from "@/hooks/usePresentation";
 
-export default function PresentationCard({ props }: { props: any }) {
-  const presentationBookmarkData = { presentationId: props.id };
+interface PresentationCardProps {
+  id: string;
+  title: string;
+  subtitle: string;
+  name: string;
+  pdfFile: string;
+  email: string;
+  advisorName: string;
+  onDelete?: () => void;
+}
+
+export default function PresentationCard({
+  id,
+  title,
+  subtitle,
+  name,
+  pdfFile,
+  email,
+  advisorName,
+  onDelete,
+}: Readonly<PresentationCardProps>) {
+  const presentationBookmarkData = { presentationId: id };
   const {
     getPresentationBookmark,
     postPresentationBookmark,
@@ -37,6 +57,9 @@ export default function PresentationCard({ props }: { props: any }) {
     }
     if (presentationBookmark && presentationBookmark.bookmarked) {
       deletePresentationBookmark(presentationBookmarkData);
+      if(onDelete) {
+        onDelete();
+      }
     } else {
       postPresentationBookmark(presentationBookmarkData);
     }
@@ -46,11 +69,11 @@ export default function PresentationCard({ props }: { props: any }) {
   }
   
   const handleEvaluateClick = () => {
-    window.location.href = `/avaliacao/${props.id}`;
+    window.location.href = `/avaliacao/${id}`;
   };
   
-  const presentationDate = moment(props.presentationTime).format("DD/MM");
-  const presentationTime = moment(props.presentationTime).format("HH:MM");
+  const presentationDate = moment("").format("DD/MM");
+  const presentationTime = moment("").format("HH:MM");
   return (
     <div
       className="d-flex align-items-start flex-column text-black"
@@ -68,7 +91,7 @@ export default function PresentationCard({ props }: { props: any }) {
           className="fw-semibold text-start"
           style={{ fontSize: "18px", lineHeight: "27px" }}
         >
-          {props.title}
+          {title}
         </h3>
       </div>
       <div className="d-flex justify-content-between w-100">
@@ -80,12 +103,12 @@ export default function PresentationCard({ props }: { props: any }) {
             className="d-flex flex-row align-items-start"
             style={{ gap: "10px" }}
           >
-            <strong>{props.name}</strong>
+            <strong>{name}</strong>
             <div> | </div>
-            <div>{props.email}</div>
+            <div>{email}</div>
           </div>
           <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
-            Orientador(a): {props.advisorName}
+            Orientador(a): {advisorName}
           </h4>
         </div>
         {!!signed && (
@@ -126,7 +149,7 @@ export default function PresentationCard({ props }: { props: any }) {
               color: "#FFA90F",
               padding: "3px 20px",
             }}
-            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${props.pdfFile}`}
+            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${pdfFile}`}
             download
             target="_blank"
           >
@@ -136,7 +159,7 @@ export default function PresentationCard({ props }: { props: any }) {
       </div>
       <div style={{ textAlign: "justify" }}>
         <strong>Abstract: </strong>
-        {props.subtitle}
+        {subtitle}
       </div>
     </div>
   );

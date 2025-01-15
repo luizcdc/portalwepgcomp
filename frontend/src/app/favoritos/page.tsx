@@ -3,13 +3,12 @@
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { FavoritosMock } from "@/mocks/Favoritos";
 import Listagem from "@/templates/Listagem/Listagem";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePresentation } from "@/hooks/usePresentation";
 
 export default function Favoritos() {
   const { presentationBookmarks, getPresentationBookmarks, deletePresentationBookmark } = usePresentation();
   const { title, userArea } = FavoritosMock;
-  const openModal = useRef<HTMLButtonElement | null>(null);
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
@@ -29,16 +28,9 @@ export default function Favoritos() {
     setSessionsListValues(newSessionsList); 
   }, [presentationBookmarks, searchValue]);
 
-
-
-  const [modalContent, setModalContent] =
-    useState<any>(sessionsListValues);
-
-  function openModalPresentation(item) {
-    setModalContent({ ...modalContent, ...item });
-    openModal.current?.click();
+  function favoriteItem(item) {
+    setSessionsListValues({ ...sessionsListValues, ...item });
   }
-
 
   const handleDelete = async (submissionId: any) => {
     await deletePresentationBookmark(submissionId);
@@ -75,8 +67,8 @@ export default function Favoritos() {
           searchValue={searchValue}
           onChangeSearchValue={(value) => setSearchValue(value)}
           searchPlaceholder={userArea.search}
-          onClickItem={(item) => openModalPresentation(item)}
           onDelete={handleDelete}
+          onEdit={(item) => favoriteItem(item)}
           fullInfo={true}
         />
       </div>

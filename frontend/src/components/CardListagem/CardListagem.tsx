@@ -6,16 +6,10 @@ import "./style.scss";
 import Star from "../UI/Star";
 
 import { useSweetAlert } from "@/hooks/useAlert";
-import PresentationCard from "../CardApresentacao/PresentationCard";
 
 interface CardListagem {
-  id: string;
   title: string;
   subtitle: string;
-  name: string;
-  pdfFile: string;
-  email: string;
-  advisorName: string;
   showFavorite?: boolean;
   generalButtonLabel?: string;
   idModalEdit?: string;
@@ -23,17 +17,11 @@ interface CardListagem {
   onClickItem?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
-  fullInfo: boolean;
 }
 
 export default function CardListagem({
-  id,
   title,
   subtitle,
-  name,
-  pdfFile,
-  email,
-  advisorName,
   onClickItem,
   generalButtonLabel,
   showFavorite,
@@ -41,13 +29,8 @@ export default function CardListagem({
   idModalEdit,
   onDelete,
   onEdit,
-  fullInfo
 }: Readonly<CardListagem>) {
   const { showAlert } = useSweetAlert();
-
-  if (fullInfo) {
-    return (<PresentationCard props={{id: id, title: title, subtitle: subtitle, name: name, pdfFile: pdfFile, email:email, advisorName:advisorName}}></PresentationCard>);
-  }
 
   return (
     <div className="card-listagem" onClick={onClickItem}>
