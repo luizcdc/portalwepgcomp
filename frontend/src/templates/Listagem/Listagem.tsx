@@ -29,7 +29,7 @@ interface ListagemProps {
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
   onClear?: () => void;
-  fullInfo: boolean;
+  fullInfo?: boolean;
 }
 
 export default function Listagem({
