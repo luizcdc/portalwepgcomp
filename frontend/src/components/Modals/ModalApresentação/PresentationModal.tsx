@@ -63,13 +63,13 @@ export default function PresentationModal({ props }: { props: any }) {
       <div className="d-flex justify-content-between w-100">
         <div className="d-flex flex-column align-items-start fw-normal text-start first-subtitle">
           <div className="d-flex flex-row align-items-start second-subtitle">
-            <h6>
+            <h5>
               <strong>{props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}</strong> | {props?.submission?.mainAuthor?.email}
-            </h6>
+            </h5>
           </div>
-          <h6 className="fw-normal text-start">
+          <h5 className="fw-normal text-start">
             Orientador(a): {props.submission?.advisor?.name}
-          </h6>
+          </h5>
         </div>
         {!!signed && (
           <div>
@@ -80,9 +80,9 @@ export default function PresentationModal({ props }: { props: any }) {
         )}
       </div>
       <div className="d-flex calendar-div">
-        <h6 className="m-0 text-white calendar-text">
+        <h5 className="m-0 text-white calendar-text">
           {presentationDate} - SALA A - {presentationTime}
-        </h6>
+        </h5>
         {!!signed && (
           <div onClick={handleFavorite} className="pe-auto">
             {presentationBookmark && (
@@ -103,10 +103,10 @@ export default function PresentationModal({ props }: { props: any }) {
           </a>
         </div>
       </div>
-      <div className="abstract-text">
+      <h5 className="abstract-text">
         <strong>Abstract: </strong>
         {props.submission?.abstract}
-      </div>
+      </h5>
     </div>
   );
 }
