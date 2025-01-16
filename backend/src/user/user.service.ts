@@ -111,6 +111,60 @@ export class UserService {
     return professorsCount > 0 ? false : true;
   }
 
+  async setDefault(setDefaultDto: SetAdminDto): Promise<ResponseUserDto> {
+    const { requestUserId, targetUserId } = setDefaultDto;
+
+    const requestUser = await this.prismaClient.userAccount.findFirst({
+      where: {
+        id: requestUserId,
+      },
+    });
+
+    if (!requestUser) {
+      throw new AppException('Usuário solicitante não encontrado.', 404);
+    }
+
+    if (!this.isAdmin(requestUser)) {
+      throw new AppException(
+        'O usuário não possui privilégios de administrador ou super administrador.',
+        403,
+      );
+    }
+
+    const targetUser = await this.prismaClient.userAccount.findFirst({
+      where: {
+        id: targetUserId,
+      },
+    });
+
+    if (!targetUser) {
+      throw new AppException('Usuário-alvo não encontrado.', 404);
+    }
+
+    if (
+      targetUser.level === UserLevel.Superadmin &&
+      requestUser.level === UserLevel.Admin
+    ) {
+      throw new AppException(
+        'Um usuário administrador não tem permissão para rebaixar um super administrador.',
+        403,
+      );
+    }
+
+    const updatedTargetUser = await this.prismaClient.userAccount.update({
+      where: {
+        id: targetUserId,
+      },
+      data: {
+        level: UserLevel.Default,
+      },
+    });
+
+    const responseUserDto = new ResponseUserDto(updatedTargetUser);
+
+    return responseUserDto;
+  }
+
   async setAdmin(setAdminDto: SetAdminDto): Promise<ResponseUserDto> {
     const { requestUserId, targetUserId } = setAdminDto;
 
