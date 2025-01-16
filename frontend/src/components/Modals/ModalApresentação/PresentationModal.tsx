@@ -51,7 +51,7 @@ export default function PresentationModal({ props }: { props: any }) {
   };
 
   const presentationDate = moment(props.presentationTime).format("DD/MM");
-  const presentationTime = moment(props.presentationTime).format("HH:MM");
+  const presentationTime = moment(props.presentationTime).format("HH:mm");
   return (
     <div className="d-flex align-items-start flex-column text-black before-title">
 
