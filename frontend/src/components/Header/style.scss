@@ -55,7 +55,7 @@ ul {
 }
 
 .header-placeholder {
-    height: 126px;
+    min-height: 126px;
 }
 
 .navbar-image {
@@ -78,10 +78,7 @@ ul {
     .vr {
         display: none;
     }
-}
-
-@media (max-width: 445px) {
     .header-placeholder {
-        height: 180px;
+        min-height: 182px;
     }
 }
