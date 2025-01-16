@@ -17,6 +17,7 @@ interface PresentationCardProps {
   pdfFile: string;
   email: string;
   advisorName: string;
+  presentationData?: string;
   onDelete?: () => void;
 }
 
@@ -28,6 +29,7 @@ export default function PresentationCard({
   pdfFile,
   email,
   advisorName,
+  presentationData,
   onDelete,
 }: Readonly<PresentationCardProps>) {
   const presentationBookmarkData = { presentationId: id };
@@ -72,8 +74,8 @@ export default function PresentationCard({
     window.location.href = `/avaliacao/${id}`;
   };
   
-  const presentationDate = moment("").format("DD/MM");
-  const presentationTime = moment("").format("HH:MM");
+  const presentationDate = moment(presentationData).format("DD/MM");
+  const presentationTime = moment(presentationData).format("HH:MM");
   return (
     <div
       className="d-flex align-items-start flex-column text-black"

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Listagem from "@/templates/Listagem/Listagem";
+import Listagem, { mapCardList } from "@/templates/Listagem/Listagem";
 import { useRouter } from "next/navigation";
 import { useEdicao } from "@/hooks/useEdicao";
 import { edicaoApi } from "@/services/edicao";
@@ -49,7 +49,7 @@ export default function Edicoes() {
           title={"Edições do Evento"}
           labelAddButton={"Cadastrar Edição"}
           searchPlaceholder={"Pesquise por edição"}
-          cardsList={edicoes}
+          cardsList={mapCardList(edicoes, "name", "description")}
           onEdit={handleEditClick}
           onDelete={(id: string) => deleteEdicao(id)}
           onAddButtonClick={() => router.push("/cadastro-edicao")}
