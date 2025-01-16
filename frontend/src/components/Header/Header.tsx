@@ -1,18 +1,30 @@
 "use client";
+
+import { useState, useEffect, useContext } from "react";
+import { usePathname } from "next/navigation";
+
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { useContext } from "react";
+
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+
 import PerfilOuvinte from "../Perfil/PerfilOuvinte";
 import PerfilAdmin from "../Perfil/PerfilAdmin";
 import PerfilDoutorando from "../Perfil/PerfilDoutorando";
-import "./style.scss";
 import PerfilProfessor from "../Perfil/PerfilProfessor";
+
+import "./style.scss";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Header() {
   const { user, signed } = useContext(AuthContext);
+  const {
+    listEdicao,
+    edicoesList,
+    edicaoSelecionada,
+    setEdicaoSelecionada,
+    getEdicaoByYear,
+  } = useEdicao();
 
   type MenuItem =
     | "inicio"
@@ -33,6 +45,27 @@ export default function Header() {
       }
     }
   };
+
+  const yearsOptions = edicoesList
+    ?.map((ed) => {
+      if (ed.startDate) {
+        const fullYear = new Date(ed?.startDate).getFullYear();
+
+        return {
+          value: fullYear,
+          label: `Edição ${fullYear}`,
+          isActive: ed.isActive,
+        };
+      }
+
+      return { value: "", label: "", isActive: false };
+    })
+    ?.filter(
+      (option, index, self) =>
+        option.value &&
+        self.findIndex((o) => o.value === option.value) === index
+    )
+    ?.toSorted((a, b) => Number(b.value) - Number(a.value));
 
   function perfil() {
     if (!user) return null;
@@ -55,6 +88,7 @@ export default function Header() {
   useEffect(() => {
     const currentPath = pathname;
     const currentHash = window.location.hash;
+    listEdicao();
 
     if (currentPath === "/home") {
       if (currentHash === "#inicio") setSelectedItem("inicio");
@@ -70,6 +104,24 @@ export default function Header() {
     }
   }, [pathname]);
 
+  useEffect(() => {
+    if (edicaoSelecionada) {
+      console.log(edicaoSelecionada);
+      getEdicaoByYear(edicaoSelecionada.year);
+    }
+  }, [edicaoSelecionada.year]);
+
+  useEffect(() => {
+    if (edicoesList?.length) {
+      const edAtiva = edicoesList?.find((v) => v.isActive);
+
+      setEdicaoSelecionada({
+        year: String(new Date(edAtiva?.startDate ?? "").getFullYear()),
+        isActive: true,
+      });
+    }
+  }, [edicoesList]);
+
   return (
     <>
       <div className="header-placeholder">
@@ -77,16 +129,40 @@ export default function Header() {
       </div>
       <nav className="navbar navbar-expand-lg fixed">
         <div className="container-fluid">
-          <Link className="navbar-brand" href="/">
-            <Image
-              src={"/assets/images/logo_PGCOMP.svg"}
-              alt="PGCOMP Logo"
-              className="navbar-image"
-              width={300}
-              height={100}
-              priority
-            />
-          </Link>
+          <div className="container-brand-edition">
+            <Link className="navbar-brand" href="/">
+              <Image
+                src={"/assets/images/logo_PGCOMP.svg"}
+                alt="PGCOMP Logo"
+                className="navbar-image"
+                width={300}
+                height={100}
+                priority
+              />
+            </Link>
+
+            {
+              <select
+                id="event-edition-select"
+                className="form-select event-edition-select"
+                value={edicaoSelecionada.year}
+                onChange={(ed) =>
+                  setEdicaoSelecionada({
+                    year: ed.target.value,
+                    isActive:
+                      yearsOptions.find((v) => v.value == ed.target.value)
+                        ?.isActive ?? false,
+                  })
+                }
+              >
+                {yearsOptions?.map((op, i) => (
+                  <option id={`edicao-op${i}`} key={op.value} value={op.value}>
+                    {op.label}
+                  </option>
+                ))}
+              </select>
+            }
+          </div>
 
           <nav className="navbar">
             <button

@@ -18,12 +18,8 @@ export default function Orientacoes() {
   const isAdm = user?.level === "Superadmin";
 
   const { getOrientacoes, orientacoes } = useOrientacao();
-  const { getEdicaoByYear } = useEdicao();
 
   useEffect(() => {
-    const currentYear = String(new Date().getFullYear());
-
-    getEdicaoByYear(currentYear);
     getOrientacoes();
   }, []);
 

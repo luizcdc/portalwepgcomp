@@ -1,78 +1,88 @@
 ul {
-    gap: 0.9rem;
+  gap: 0.9rem;
 }
 
 @keyframes slidNavBrand {
-    0% {
-        margin-left: 100%;
-    }
-    100% {
-        margin-left: 0%;
-    }
+  0% {
+    margin-left: 100%;
+  }
+  100% {
+    margin-left: 0%;
+  }
 }
 
 .navbar-brand {
-    animation: 3s forwards 0s 1 slidNavBrand;
-    position: relative;
-    margin: auto;
+  animation: 3s forwards 0s 1 slidNavBrand;
+  position: relative;
+  margin: auto;
+}
+
+.container-brand-edition {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .event-edition-select {
+    max-width: 12rem;
+  }
 }
 
 .tamanho-texto-programacao-evento {
-    width: 215px;
+  width: 215px;
 }
 @keyframes slidNavMenu {
-    0% {
-        opacity: 0;
-        width: 0;
-    }
-    100% {
-        opacity: 1;
-        width: 650px;
-    }
+  0% {
+    opacity: 0;
+    width: 0;
+  }
+  100% {
+    opacity: 1;
+    width: 650px;
+  }
 }
 
 .navbar-toggler,
 .navbar-menu-itens {
-    animation: 1s forwards 2s 1 slidNavMenu;
-    opacity: 0;
-    width: 0;
+  animation: 1s forwards 2s 1 slidNavMenu;
+  opacity: 0;
+  width: 0;
 }
 
 .fixed {
-    position: fixed;
-    width: 100vw;
-    background-color: white;
-    z-index: 10000;
+  position: fixed;
+  width: 100vw;
+  background-color: white;
+  z-index: 10000;
 }
 
 .header-placeholder {
-    height: 126px;
+  height: 126px;
 }
 
 .navbar-image {
-    width: 350px !important;
+  width: 350px !important;
 }
 .navbar-menu-itens {
-    margin-right: 3rem;
+  margin-right: 3rem;
 }
-.nav-wall{
-    height: 40px;
+.nav-wall {
+  height: 40px;
 }
 
-@media (max-width:1000px)  {    
-    .navbar-menu-itens {
-        margin-right: 0 !important;
-    }
-    .container-fluid {
-        justify-content: center !important;
-    }
-    .vr {
-        display: none;
-    }
+@media (max-width: 1000px) {
+  .navbar-menu-itens {
+    margin-right: 0 !important;
+  }
+  .container-fluid {
+    justify-content: center !important;
+  }
+  .vr {
+    display: none;
+  }
 }
 
 @media (max-width: 445px) {
-    .header-placeholder {
-        height: 180px;
-    }
+  .header-placeholder {
+    height: 180px;
+  }
 }

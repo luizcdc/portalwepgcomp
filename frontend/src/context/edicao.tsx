@@ -22,9 +22,19 @@ interface EdicaoProviderData {
   loadingEdicoesList: boolean;
   loadingEdicao: boolean;
   edicoesList: Edicao[];
+  edicaoSelecionada: {
+    year: string;
+    isActive: boolean;
+  };
+  setEdicaoSelecionada: Dispatch<
+    SetStateAction<{
+      year: string;
+      isActive: boolean;
+    }>
+  >;
   Edicao: Edicao | null;
   setEdicao: Dispatch<SetStateAction<Edicao | null>>;
-  listEdicao: () => void;
+  listEdicao: () => Promise<Edicao[]>;
   getEdicaoById: (idEdicao: string) => void;
   getEdicaoByYear: (year: string) => void;
   createEdicao: (body: EdicaoParams) => void;
@@ -42,17 +52,23 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
   const [loadingEdicao, setLoadingEdicao] = useState<boolean>(false);
   const [edicoesList, setEdicoesList] = useState<Edicao[]>([]);
   const [Edicao, setEdicao] = useState<Edicao | null>(null);
+  const [edicaoSelecionada, setEdicaoSelecionada] = useState<{
+    year: string;
+    isActive: boolean;
+  }>({ year: "", isActive: false });
 
   const { showAlert } = useSweetAlert();
 
   const listEdicao = async () => {
-    setLoadingEdicao(true);
+    setLoadingEdicoesList(true);
 
     try {
       const response = await edicaoApi.listEdicao();
       setEdicoesList(response);
+      return response;
     } catch (err: any) {
       setEdicoesList([]);
+      return [];
     } finally {
       setLoadingEdicoesList(false);
     }
@@ -67,7 +83,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
     } catch (err: any) {
       setEdicao(null);
     } finally {
-      setLoadingEdicoesList(false);
+      setLoadingEdicao(false);
     }
   };
 
@@ -210,6 +226,8 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       value={{
         loadingEdicao,
         loadingEdicoesList,
+        edicaoSelecionada,
+        setEdicaoSelecionada,
         Edicao,
         edicoesList,
         setEdicao,
