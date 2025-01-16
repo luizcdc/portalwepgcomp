@@ -38,3 +38,16 @@
         }
     }
 }
+
+@media (max-width: 1000px) {
+    .buttons {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .premiacao .btn {
+        width: 70%;
+    }
+}
