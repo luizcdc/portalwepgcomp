@@ -65,3 +65,15 @@
     font-weight: bold;
     cursor: pointer;
 }
+
+@media (max-width: 810px){
+    .avalieElementos{
+        width: 90%;
+        height: 30%;
+    }
+
+    .avalieTexto{
+        text-align: center;
+        width: 95%;
+    }
+}
