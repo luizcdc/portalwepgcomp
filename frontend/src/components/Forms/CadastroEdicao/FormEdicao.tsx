@@ -103,7 +103,7 @@ const formEdicaoSchema = z.object({
   limite: z
     .string({ invalid_type_error: "A data limite para submissão é obrigatória!" })
     .datetime({
-      message: "Data ou horário inválidos!",
+      message: "Data inválida!",
     }),
     
   coordinatorId: z.string().optional(),
