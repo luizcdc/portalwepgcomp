@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { S3UtilsService } from './s3-utils.service';
 import { S3UtilsController } from './s3-utils.controller';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -32,12 +31,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [S3UtilsController],
-  providers: [
-    S3UtilsService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [S3UtilsService],
 })
 export class S3UtilsModule {}

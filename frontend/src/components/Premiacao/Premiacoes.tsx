@@ -56,7 +56,7 @@ export default function Premiacoes({
 
   return (
     <div className="d-flex flex-column premiacao-list">
-      <div className="input-group ms-5 mb-4">
+      <div className="input-group mb-4">
         <input
           type="text"
           className="form-control"
