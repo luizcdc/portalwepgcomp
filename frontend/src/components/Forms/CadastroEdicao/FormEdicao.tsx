@@ -252,8 +252,11 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
         window.location.reload();
       }, 3000);
     } else {
-      createEdicao(body);
-      router.push("/home");
+      const status = await createEdicao(body);
+      
+      if (status) {
+        router.push("/home");
+      }
     }
   };
 

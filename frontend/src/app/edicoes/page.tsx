@@ -35,6 +35,16 @@ export default function Edicoes() {
     }
   };
 
+  const handleDeleteEdicao = async (edicaoId: string) => {
+    const status = await deleteEdicao(edicaoId);
+
+    if (status) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    }
+  }
+
   return (
     <div
       className="d-flex flex-column"
@@ -51,7 +61,7 @@ export default function Edicoes() {
           searchPlaceholder={"Pesquise por edição"}
           cardsList={edicoes}
           onEdit={handleEditClick}
-          onDelete={(id: string) => deleteEdicao(id)}
+          onDelete={(id: string) => handleDeleteEdicao(id)}
           onAddButtonClick={() => router.push("/cadastro-edicao")}
         />
       )}
