@@ -15,10 +15,6 @@ export default function Banner({ title }: Readonly<BannerProps>) {
     >
       <h1
         className="fw-bold text-center text-white"
-        style={{
-          fontSize: "70px",
-          lineHeight: "80px",
-        }}
       >
         {title}
       </h1>
