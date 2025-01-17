@@ -4,7 +4,6 @@ import Image from "next/image";
 
 import CardListagem from "@/components/CardListagem/CardListagem";
 import Banner from "@/components/UI/Banner";
-import { formatDate } from "@/utils/formatDate";
 
 import "./style.scss";
 import { usePathname } from "next/navigation";
