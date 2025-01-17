@@ -155,8 +155,8 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
     if (edicaoData && Object.keys(edicaoData).length) {
       setValue("titulo", edicaoData.name);
       setValue("descricao", edicaoData.description);
-      setValue("inicio", dayjs(edicaoData.startDate).toDate().toString());
-      setValue("final", dayjs(edicaoData.endDate).toDate().toString());
+      setValue("inicio", edicaoData.startDate); //dayjs(edicaoData.startDate).toDate().toString());
+      setValue("final", edicaoData.endDate); //dayjs(edicaoData.endDate).toDate().toString());
       setValue("local", edicaoData.location);
       setValue("coordinatorId", user?.id);
       setValue(
