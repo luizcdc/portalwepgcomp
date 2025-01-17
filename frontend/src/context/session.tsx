@@ -234,7 +234,6 @@ export const SessionProvider = ({ children }: SessionProps) => {
     return sessionApi
       .swapPresentationsOnSession(idSession, body)
       .then((response) => {
-        setSessao(response);
         showAlert({
           icon: "success",
           title:
@@ -244,18 +243,9 @@ export const SessionProvider = ({ children }: SessionProps) => {
         });
         listSessions(eventEditionId);
 
-        const modalElementButton = document.getElementById(
-          "trocarOrdemApresentacaoClose"
-        ) as HTMLButtonElement;
-
-        if (modalElementButton) {
-          modalElementButton.click();
-        }
-
         return true;
       })
       .catch((err) => {
-        setSessao(null);
         showAlert({
           icon: "error",
           title: "Erro na troca da ordem das apresentações da sessão",
