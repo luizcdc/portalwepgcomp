@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventStats, ScoringConfig } from './scoring.types';
+import { EventEdition } from '@prisma/client';
 
 @Injectable()
 export class ScoringService {
@@ -14,13 +16,19 @@ export class ScoringService {
     percentileForConfidence: 0.4,
     defaultWeight: 1,
   };
+  private readonly logger = new Logger(ScoringService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prismaClient: PrismaService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {
+    this.initializeEventFinalScoresSchedulers();
+  }
 
   private async calculateEventStats(
     eventEditionId: string,
   ): Promise<EventStats> {
-    const presentations = await this.prisma.presentation.findMany({
+    const presentations = await this.prismaClient.presentation.findMany({
       where: {
         submission: {
           eventEditionId,
@@ -149,7 +157,7 @@ export class ScoringService {
     eventEditionId: string,
     actualNumOfEvaluations: number,
   ): Promise<boolean> {
-    const criteria = await this.prisma.evaluationCriteria.findMany({
+    const criteria = await this.prismaClient.evaluationCriteria.findMany({
       where: {
         eventEditionId,
       },
@@ -205,7 +213,7 @@ export class ScoringService {
   async recalculateAllScores(eventEditionId: string): Promise<void> {
     const eventStats = await this.calculateEventStats(eventEditionId);
 
-    const presentations = await this.prisma.presentation.findMany({
+    const presentations = await this.prismaClient.presentation.findMany({
       where: {
         submission: {
           eventEditionId,
@@ -264,7 +272,7 @@ export class ScoringService {
         true,
       );
 
-      await this.prisma.presentation.update({
+      await this.prismaClient.presentation.update({
         where: { id: presentation.id },
         data: {
           publicAverageScore: publicScore,
@@ -272,5 +280,74 @@ export class ScoringService {
         },
       });
     }
+  }
+
+  private async initializeEventFinalScoresSchedulers() {
+    try {
+      const events = await this.prismaClient.eventEdition.findMany({
+        where: {
+          endDate: {
+            gt: new Date(),
+          },
+        },
+      });
+
+      events.forEach((event) => {
+        this.scheduleEventFinalScoresRecalculation(event);
+      });
+
+      this.logger.log(
+        `Initialized schedulers for ${events.length} upcoming events`,
+      );
+    } catch (error) {
+      this.logger.error('Failed to initialize event schedulers:', error);
+    }
+  }
+
+  async scheduleEventFinalScoresRecalculation(event: EventEdition) {
+    const jobName = `recalculate-scores-${event.id}`;
+
+    try {
+      this.schedulerRegistry.deleteTimeout(jobName);
+    } catch (error) {
+      this.logger.error(
+        `Failed to delete existing timeout for event ${event.id}:`,
+        error,
+      );
+    }
+
+    // Calculate delay until event end
+    const now = new Date();
+    const endDate = new Date(event.endDate);
+    const delay = endDate.getTime() - now.getTime();
+
+    // Only schedule if the event hasn't ended yet
+    if (delay > 0) {
+      const timeout = setTimeout(async () => {
+        try {
+          this.logger.log(
+            `Recalculating scores for event ${event.id} (${event.name})`,
+          );
+          await this.recalculateAllScores(event.id);
+          this.logger.log(
+            `Successfully recalculated scores for event ${event.id}`,
+          );
+        } catch (error) {
+          this.logger.error(
+            `Failed to recalculate scores for event ${event.id}:`,
+            error,
+          );
+        }
+      }, delay);
+
+      this.schedulerRegistry.addTimeout(jobName, timeout);
+      this.logger.log(
+        `Scheduled score recalculation for event ${event.id} at ${endDate}`,
+      );
+    }
+  }
+
+  async handleEventUpdate(event: EventEdition) {
+    this.scheduleEventFinalScoresRecalculation(event);
   }
 }

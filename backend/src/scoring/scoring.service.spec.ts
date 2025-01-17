@@ -1,11 +1,38 @@
 import { ScoringService } from './scoring.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
+import { Logger } from '@nestjs/common';
+
+const createMockEventEdition = (partialEvent: Partial<any>) => {
+  return {
+    name: 'Default Event',
+    id: 'default-id',
+    description: 'Default description',
+    callForPapersText: 'Default call for papers',
+    partnersText: 'Default partners text',
+    location: 'Default location',
+    startDate: new Date(),
+    endDate: new Date(),
+    submissionStartDate: new Date(),
+    submissionDeadline: new Date(),
+    isActive: true,
+    isEvaluationRestrictToLoggedUsers: true,
+    presentationDuration: 20,
+    presentationsPerPresentationBlock: 6,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...partialEvent,
+  };
+};
 
 describe('ScoringService', () => {
   let service: ScoringService;
   let prismaService: PrismaService;
+  let schedulerRegistry: SchedulerRegistry;
+  let timeouts: NodeJS.Timeout[];
 
   beforeEach(() => {
+    timeouts = [];
     prismaService = {
       presentation: {
         findMany: jest.fn(),
@@ -14,9 +41,57 @@ describe('ScoringService', () => {
       evaluationCriteria: {
         findMany: jest.fn(),
       },
+      eventEdition: {
+        findMany: jest.fn().mockResolvedValue([]),
+      },
     } as unknown as PrismaService;
 
-    service = new ScoringService(prismaService);
+    jest.useFakeTimers();
+    const originalSetTimeout = global.setTimeout;
+
+    const mockSetTimeout = jest.fn(
+      (callback: (() => void) | ((args: void) => void), delay: number) => {
+        const timeout = originalSetTimeout(callback, delay);
+        timeouts.push(timeout);
+        return timeout;
+      },
+    ) as unknown as typeof global.setTimeout;
+
+    Object.defineProperty(mockSetTimeout, '__promisify__', {
+      enumerable: false,
+      value: originalSetTimeout.__promisify__,
+      writable: false,
+    });
+
+    global.setTimeout = mockSetTimeout;
+
+    schedulerRegistry = {
+      addTimeout: jest.fn((name: string, timeout: NodeJS.Timeout) => {
+        timeouts.push(timeout);
+      }),
+      deleteTimeout: jest.fn(),
+    } as unknown as SchedulerRegistry;
+
+    jest.spyOn(Logger.prototype, 'log').mockImplementation();
+    jest.spyOn(Logger.prototype, 'error').mockImplementation();
+    jest.spyOn(Logger.prototype, 'debug').mockImplementation();
+    jest.clearAllMocks();
+
+    service = new ScoringService(prismaService, schedulerRegistry);
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    timeouts.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
+    timeouts = [];
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
   });
 
   describe('recalculateAllScores', () => {
@@ -253,6 +328,106 @@ describe('ScoringService', () => {
       await service.recalculateAllScores('event1');
 
       expect(prismaService.presentation.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('initializeEventFinalScoresSchedulers', () => {
+    const mockUpcomingEvents = [
+      {
+        id: 'event1',
+        name: 'Event 1',
+        endDate: new Date(Date.now() + 86400000), // Tomorrow
+      },
+      {
+        id: 'event2',
+        name: 'Event 2',
+        endDate: new Date(Date.now() + 172800000), // Day after tomorrow
+      },
+    ];
+
+    it('should initialize schedulers for all upcoming events', async () => {
+      (prismaService.eventEdition.findMany as jest.Mock).mockResolvedValue(
+        mockUpcomingEvents,
+      );
+
+      await service['initializeEventFinalScoresSchedulers']();
+
+      expect(prismaService.eventEdition.findMany).toHaveBeenCalledWith({
+        where: {
+          endDate: {
+            gt: expect.any(Date),
+          },
+        },
+      });
+
+      expect(schedulerRegistry.addTimeout).toHaveBeenCalledTimes(2);
+      expect(Logger.prototype.log).toHaveBeenCalledWith(
+        'Initialized schedulers for 2 upcoming events',
+      );
+    });
+
+    it('should handle initialization errors gracefully', async () => {
+      const error = new Error('Database error');
+      (prismaService.eventEdition.findMany as jest.Mock).mockRejectedValue(
+        error,
+      );
+
+      await service['initializeEventFinalScoresSchedulers']();
+
+      expect(Logger.prototype.error).toHaveBeenCalledWith(
+        'Failed to initialize event schedulers:',
+        error,
+      );
+      expect(schedulerRegistry.addTimeout).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('scheduleEventScoreRecalculation', () => {
+    const mockEvent = createMockEventEdition({
+      id: 'event1',
+      endDate: new Date(Date.now() + 86400000),
+    });
+
+    it('should schedule score recalculation for future events', async () => {
+      await service.scheduleEventFinalScoresRecalculation(mockEvent);
+
+      expect(schedulerRegistry.deleteTimeout).toHaveBeenCalledWith(
+        `recalculate-scores-${mockEvent.id}`,
+      );
+      expect(schedulerRegistry.addTimeout).toHaveBeenCalledWith(
+        `recalculate-scores-${mockEvent.id}`,
+        expect.anything(),
+      );
+    });
+
+    it('should not schedule recalculation for past events', async () => {
+      const pastEvent = {
+        ...mockEvent,
+        endDate: new Date(Date.now() - 86400000), // Yesterday
+      };
+
+      await service.scheduleEventFinalScoresRecalculation(pastEvent);
+
+      expect(schedulerRegistry.addTimeout).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleEventUpdate', () => {
+    const mockEvent = createMockEventEdition({
+      id: 'event1',
+      endDate: new Date(Date.now() + 86400000),
+    });
+
+    it('should reschedule score recalculation when event is updated', async () => {
+      await service.handleEventUpdate(mockEvent);
+
+      expect(schedulerRegistry.deleteTimeout).toHaveBeenCalledWith(
+        `recalculate-scores-${mockEvent.id}`,
+      );
+      expect(schedulerRegistry.addTimeout).toHaveBeenCalledWith(
+        `recalculate-scores-${mockEvent.id}`,
+        expect.anything(),
+      );
     });
   });
 });

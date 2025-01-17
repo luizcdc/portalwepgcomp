@@ -728,7 +728,7 @@ export class PresentationService {
     await this.scoringService.recalculateAllScores(eventEditionId);
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
   async calculateScoresForActiveEvent() {
     try {
       this.logger.log('Starting daily score calculation for active event');
