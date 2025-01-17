@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
+import PresentationCard from "@/components/CardApresentacao/PresentationCard";
 import CardListagem from "@/components/CardListagem/CardListagem";
 import Banner from "@/components/UI/Banner";
-import { formatDate } from "@/utils/formatDate";
 
 import "./style.scss";
-import { usePathname } from "next/navigation";
-import PresentationCard from "@/components/CardApresentacao/PresentationCard";
 
 export function mapCardList(list: any[], title = "title", subtitle = "subtitle", description = "description") {
   return list.map(l => ({
@@ -121,64 +120,64 @@ export default function Listagem({
           {!!cardsList.length &&
             !isFavorites &&
             cardsList?.map((card) => (
-              !fullInfo ? 
-              <CardListagem
-                key={card.name}
-                title={
-                  card?.title || "Sem Título"
-                }
-                subtitle={
-                  card.subtitle
-                }
-                generalButtonLabel={generalButtonLabel}
-                idGeneralModal={
-                  card?.type == "Presentation" && !!card?.presentations.length
-                    ? idGeneralModal
-                    : ""
-                }
-                idModalEdit={
-                  pathname?.includes("edicoes") ? "editarEdicaoModal" : idModal
-                }
-                onClickItem={() => onClickItem && onClickItem(card)}
-                onEdit={() => onEdit && onEdit(card?.id ?? "")}
-                onDelete={() => onDelete && onDelete(card?.id ?? "")}
-              /> :
-              <PresentationCard
-                key={card.name}
-                id={card.id}
-                title={card.title}
-                subtitle={card.subtitle}
-                name={card.name}
-                pdfFile={card.pdfFile}
-                email={card.email}
-                advisorName={card.advisorName}
-                onDelete={() => onDelete && onDelete(card.id ?? "")}
-              />
+              !fullInfo ?
+                <CardListagem
+                  key={card.name}
+                  title={
+                    card?.title || "Sem Título"
+                  }
+                  subtitle={
+                    card.subtitle
+                  }
+                  generalButtonLabel={generalButtonLabel}
+                  idGeneralModal={
+                    card?.type == "Presentation" && !!card?.presentations.length
+                      ? idGeneralModal
+                      : ""
+                  }
+                  idModalEdit={
+                    pathname?.includes("edicoes") ? "editarEdicaoModal" : idModal
+                  }
+                  onClickItem={() => onClickItem && onClickItem(card)}
+                  onEdit={() => onEdit && onEdit(card?.id ?? "")}
+                  onDelete={() => onDelete && onDelete(card?.id ?? "")}
+                /> :
+                <PresentationCard
+                  key={card.name}
+                  id={card.id}
+                  title={card.title}
+                  subtitle={card.subtitle}
+                  name={card.name}
+                  pdfFile={card.pdfFile}
+                  email={card.email}
+                  advisorName={card.advisorName}
+                  onDelete={() => onDelete && onDelete(card.id ?? "")}
+                />
             ))}
           {!!cardsList.length &&
             isFavorites &&
             cardsList?.map((card) => (
-              !fullInfo ? 
-              <CardListagem
-                key={card.name}
-                title={card.title}
-                subtitle={
-                  card.subtitle
-                }
-                showFavorite
-                onClickItem={() => onClickItem && onClickItem(card)}
-              /> :
-              <PresentationCard
-                key={card.name}
-                id={card.id}
-                title={card.title}
-                subtitle={card.subtitle}
-                name={card.name}
-                pdfFile={card.pdfFile}
-                email={card.email}
-                advisorName={card.advisorName}
-                onDelete={() => onDelete && onDelete(card.id ?? "")}
-              />
+              !fullInfo ?
+                <CardListagem
+                  key={card.name}
+                  title={card.title}
+                  subtitle={
+                    card.subtitle
+                  }
+                  showFavorite
+                  onClickItem={() => onClickItem && onClickItem(card)}
+                /> :
+                <PresentationCard
+                  key={card.name}
+                  id={card.id}
+                  title={card.title}
+                  subtitle={card.subtitle}
+                  name={card.name}
+                  pdfFile={card.pdfFile}
+                  email={card.email}
+                  advisorName={card.advisorName}
+                  onDelete={() => onDelete && onDelete(card.id ?? "")}
+                />
             ))}
           {!cardsList.length && (
             <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
