@@ -1,24 +1,23 @@
-.listagem-template{
+.listagem-template {
     display: flex;
     flex-direction: column;
 
-    h2{
+    h2 {
         font-weight: 900;
     }
-    
-    .listagem-template-content{
+
+    .listagem-template-content {
         display: flex;
         flex-direction: column;
-        padding: 4rem ;
+        padding: 4rem;
 
-        .listagem-template-user-area{
+        .listagem-template-user-area {
             display: grid;
             grid-template-columns: 1.5fr 3fr 4fr;
             gap: 1rem;
             margin-bottom: 3rem;
-          
 
-            button{
+            button {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -31,20 +30,20 @@
                 font-weight: 600;
             }
 
-            .listagem-template-content-input{
+            .listagem-template-content-input {
                 max-width: 24rem;
 
-                >input{
+                >input {
                     border: 3px solid #FFA90F;
 
-                    ::placeholder{
+                    ::placeholder {
                         color: #ADB5BD;
                     }
                 }
             }
         }
-    
-        .listagem-template-cards{
+
+        .listagem-template-cards {
             display: grid;
             gap: 1rem;
 
@@ -53,7 +52,7 @@
             }
         }
 
-        .listagem-template-mais-cards{
+        .listagem-template-mais-cards {
             margin-top: 4rem;
             align-self: center;
             max-width: 24rem;
@@ -64,8 +63,25 @@
             padding: 0.5rem 1rem;
             border-radius: 1.875rem;
 
-            .listagem-template-mais-cards-icon{
+            .listagem-template-mais-cards-icon {
                 margin-left: 2rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .listagem-template-user-area {
+                grid-template-columns: 1fr;
+                justify-items: stretch;
+
+                .listagem-template-content-input {
+                    margin-top: 1rem;
+                    width: 100%;
+                }
+
+                > input,
+                > button {
+                    height: 3rem;
+                }
             }
         }
     }
