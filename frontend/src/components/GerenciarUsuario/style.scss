@@ -170,6 +170,7 @@
   .description{
     font-size: 20px;
     margin-left: 20px;
+    margin-right: 20px;
   }
   
   .users{
@@ -181,9 +182,9 @@
     border-color: #F17F0C;
     border-width: 2px;
     border-radius: 10px;
-    width: 1236px;
-    height: 90px;
-    padding-left: 15px;
+    width: 90%;
+    max-height: 200px;
+    padding: 15px;
     margin-left: 20px;
   }
   
@@ -270,5 +271,41 @@
     &:hover {
       border-color: #E68A00;
       background-color: #E68A00;
+    }
+  }
+
+  @media (max-width: 990px){
+    .filtros{
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .status{
+      min-height: 45px;
+    }
+  }
+
+  @media (max-width: 590px){
+    .form-control{
+      max-width: 250px;
+    }
+
+    .status{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 160px;
+      padding: 15px;
+    }
+
+    .drop-boxes{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .drop-section{
+      gap: 5px;
     }
   }
