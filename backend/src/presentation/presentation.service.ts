@@ -725,6 +725,11 @@ export class PresentationService {
       throw new AppException('Edição do evento não encontrada.', 404);
     }
 
+    const now = new Date();
+    if (eventEditionExists.endDate < now) {
+      throw new AppException('Evento já encerrado.', 400);
+    }
+
     await this.scoringService.recalculateAllScores(eventEditionId);
   }
 

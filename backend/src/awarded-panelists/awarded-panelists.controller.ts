@@ -30,7 +30,7 @@ export class AwardedPanelistsController {
   @ApiOperation({
     summary: 'Register awarded panelists in bulk',
     description:
-      'Register multiple awarded panelists for a specific event edition. (The panelist must be present in at least one presentation)',
+      'Sync awarded panelists - add new, remove existing, and maintain others for a specific event edition.',
   })
   @ApiBody({
     type: CreateAwardedPanelistsDto,
