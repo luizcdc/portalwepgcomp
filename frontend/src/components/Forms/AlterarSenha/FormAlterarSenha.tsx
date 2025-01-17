@@ -70,7 +70,7 @@ export function FormAlterarSenha({ params }) {
           Senha
           <span className='text-danger ms-1 form-title'>*</span>
         </label>
-        <div className='password-input'>
+        <div className='d-flex flex-direction-row gap-2 align-items-center'>
           <input
             type='password'
             className='form-control input-title'
@@ -134,7 +134,7 @@ export function FormAlterarSenha({ params }) {
           Confirmação de senha
           <span className='text-danger ms-1 form-title'>*</span>
         </label>
-        <div className='password-input'>
+        <div className='d-flex flex-direction-row gap-2 align-items-center'>
           <input
             type='password'
             className='form-control input-title'
@@ -151,10 +151,10 @@ export function FormAlterarSenha({ params }) {
         </p>
       </div>
 
-      <div className='d-grid gap-2 col-3 mx-auto'>
+      <div className='d-flex gap-2 col-6 mx-auto justify-content-center align-items-center'>
         <button
           type='submit'
-          className='btn text-white fs-5 fw-bold submit-button'
+          className='btn  text-white fs-5 fw-bold submit-button '
         >
           Enviar
         </button>
