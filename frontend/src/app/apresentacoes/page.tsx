@@ -3,16 +3,14 @@
 import { useEffect, useState } from "react";
 
 import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
+import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { SubmissionProvider } from "@/context/submission";
 import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
-
 import Listagem, { mapCardList } from "@/templates/Listagem/Listagem";
-
-import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 
 export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
