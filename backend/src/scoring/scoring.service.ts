@@ -287,13 +287,13 @@ export class ScoringService {
   }
 
   private adjustToUTC(date: Date): Date {
-    const utcDate = new Date(date);
-    return new Date(utcDate.getTime() + this.TIMEZONE_OFFSET);
+    const timezoneOffset = date.getTimezoneOffset();
+    return new Date(date.getTime() + timezoneOffset * 60000);
   }
 
-  private adjustToLocalTimezone(date: Date): Date {
+  private adjustToBrazilianTimezone(date: Date): Date {
     const localDate = new Date(date);
-    return new Date(localDate.getTime() - this.TIMEZONE_OFFSET);
+    return new Date(localDate.getTime() + this.TIMEZONE_OFFSET);
   }
 
   private async initializeEventFinalScoresSchedulers() {
@@ -301,7 +301,7 @@ export class ScoringService {
       const events = await this.prismaClient.eventEdition.findMany({
         where: {
           endDate: {
-            gt: this.adjustToUTC(new Date()),
+            gt: this.adjustToBrazilianTimezone(new Date()),
           },
         },
       });
@@ -327,7 +327,7 @@ export class ScoringService {
     }
 
     const now = new Date();
-    const endDate = this.adjustToLocalTimezone(new Date(event.endDate));
+    const endDate = this.adjustToUTC(new Date(event.endDate));
     const delay = endDate.getTime() - now.getTime();
     // Only schedule if the event hasn't ended yet
     if (delay > 0) {
