@@ -8,6 +8,7 @@ import { formatDate } from "@/utils/formatDate";
 
 import "./style.scss";
 import { usePathname } from "next/navigation";
+import { useEdicao } from "@/hooks/useEdicao";
 
 interface ListagemProps {
   title: string;
@@ -50,13 +51,14 @@ export default function Listagem({
   onClear,
 }: Readonly<ListagemProps>) {
   const pathname = usePathname();
+  const { Edicao } = useEdicao();
 
   return (
     <div className="listagem-template">
       <Banner title={title} />
       <div className="listagem-template-content">
         <div className="listagem-template-user-area">
-          {labelAddButton ? (
+          {labelAddButton && !!Edicao?.isActive ? (
             <button
               type="button"
               data-bs-toggle={idModal ? "modal" : undefined}

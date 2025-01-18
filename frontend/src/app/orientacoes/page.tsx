@@ -9,7 +9,6 @@ import { useContext, useEffect, useState } from "react";
 import "./style.scss";
 import { useOrientacao } from "@/hooks/useOrientacao";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
-import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Orientacoes() {
   const [setion, setSetion] = useState<number>(0);

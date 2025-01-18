@@ -22,16 +22,6 @@ interface EdicaoProviderData {
   loadingEdicoesList: boolean;
   loadingEdicao: boolean;
   edicoesList: Edicao[];
-  edicaoSelecionada: {
-    year: string;
-    isActive: boolean;
-  };
-  setEdicaoSelecionada: Dispatch<
-    SetStateAction<{
-      year: string;
-      isActive: boolean;
-    }>
-  >;
   Edicao: Edicao | null;
   setEdicao: Dispatch<SetStateAction<Edicao | null>>;
   listEdicao: () => Promise<Edicao[]>;
@@ -52,10 +42,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
   const [loadingEdicao, setLoadingEdicao] = useState<boolean>(false);
   const [edicoesList, setEdicoesList] = useState<Edicao[]>([]);
   const [Edicao, setEdicao] = useState<Edicao | null>(null);
-  const [edicaoSelecionada, setEdicaoSelecionada] = useState<{
-    year: string;
-    isActive: boolean;
-  }>({ year: "", isActive: false });
 
   const { showAlert } = useSweetAlert();
 
@@ -226,8 +212,6 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
       value={{
         loadingEdicao,
         loadingEdicoesList,
-        edicaoSelecionada,
-        setEdicaoSelecionada,
         Edicao,
         edicoesList,
         setEdicao,

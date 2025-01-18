@@ -7,6 +7,7 @@ import Organizacao from "@/components/Organizacao/Organizacao";
 import Orientacao from "@/components/Orientacao/Orientacao";
 import Realizacao from "@/components/Realizacao/Realizacao";
 import ScheduleSection from "@/components/ScheduleSection/ScheduleSection";
+
 import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Home() {

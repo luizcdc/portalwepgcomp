@@ -307,6 +307,7 @@ export default function FormSessaoGeral() {
           type="submit"
           id="sg-submit-button"
           className="btn btn-primary button-modal-component button-sessao-geral"
+          disabled={!Edicao?.isActive}
         >
           {confirmButton.label}
         </button>

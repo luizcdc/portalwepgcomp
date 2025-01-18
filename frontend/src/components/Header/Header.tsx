@@ -15,16 +15,12 @@ import PerfilProfessor from "../Perfil/PerfilProfessor";
 
 import "./style.scss";
 import { useEdicao } from "@/hooks/useEdicao";
+import { useActiveEdition } from "@/hooks/useActiveEdition";
 
 export default function Header() {
   const { user, signed } = useContext(AuthContext);
-  const {
-    listEdicao,
-    edicoesList,
-    edicaoSelecionada,
-    setEdicaoSelecionada,
-    getEdicaoByYear,
-  } = useEdicao();
+  const { listEdicao, edicoesList, getEdicaoByYear } = useEdicao();
+  const { setSelectEdition, selectEdition } = useActiveEdition();
 
   type MenuItem =
     | "inicio"
@@ -105,22 +101,21 @@ export default function Header() {
   }, [pathname]);
 
   useEffect(() => {
-    if (edicaoSelecionada) {
-      console.log(edicaoSelecionada);
-      getEdicaoByYear(edicaoSelecionada.year);
+    if (selectEdition.year) {
+      getEdicaoByYear(selectEdition.year);
     }
-  }, [edicaoSelecionada.year]);
+  }, [selectEdition.year]);
 
   useEffect(() => {
     if (edicoesList?.length) {
       const edAtiva = edicoesList?.find((v) => v.isActive);
 
-      setEdicaoSelecionada({
+      setSelectEdition({
         year: String(new Date(edAtiva?.startDate ?? "").getFullYear()),
         isActive: true,
       });
     }
-  }, [edicoesList]);
+  }, [edicoesList.length]);
 
   return (
     <>
@@ -141,13 +136,13 @@ export default function Header() {
               />
             </Link>
 
-            {
+            {!!yearsOptions.length && (
               <select
                 id="event-edition-select"
                 className="form-select event-edition-select"
-                value={edicaoSelecionada.year}
+                value={selectEdition.year}
                 onChange={(ed) =>
-                  setEdicaoSelecionada({
+                  setSelectEdition({
                     year: ed.target.value,
                     isActive:
                       yearsOptions.find((v) => v.value == ed.target.value)
@@ -161,7 +156,7 @@ export default function Header() {
                   </option>
                 ))}
               </select>
-            }
+            )}
           </div>
 
           <nav className="navbar">

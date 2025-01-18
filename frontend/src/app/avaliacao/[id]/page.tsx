@@ -13,6 +13,7 @@ import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { usePresentation } from "@/hooks/usePresentation";
 import LoadingPage from "@/components/LoadingPage";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Avaliacao({ params }) {
   const [saveEvaluation, setSaveEvaluation] = useState<
@@ -29,6 +30,7 @@ export default function Avaliacao({ params }) {
   } = useEvaluation();
   const { getPresentationAll, presentationList } = usePresentation();
   const { user } = useContext(AuthContext);
+  const { Edicao } = useEdicao();
 
   const sendEvaluation = () => {
     const body: EvaluationParams[] =
@@ -159,7 +161,7 @@ export default function Avaliacao({ params }) {
             <button
               className="avalieButton"
               onClick={sendEvaluation}
-              disabled={loadingEvaluation}
+              disabled={loadingEvaluation || !Edicao?.isActive}
             >
               Enviar
             </button>

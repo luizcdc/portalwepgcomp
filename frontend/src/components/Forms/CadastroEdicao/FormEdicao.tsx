@@ -130,7 +130,7 @@ interface FormEdicao {
 
 export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
   const { showAlert } = useSweetAlert();
-  const { createEdicao, updateEdicao } = useEdicao();
+  const { createEdicao, updateEdicao, Edicao } = useEdicao();
   const { getCommitterAll, committerList } = useCommittee();
   const { user } = useContext(AuthContext);
   const { getAdvisors, advisors } = useContext(UserContext);
@@ -593,7 +593,11 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       </div>
 
       <div className="d-grid gap-2 col-3 mx-auto">
-        <button type="submit" className="btn text-white fs-5 submit-button">
+        <button
+          type="submit"
+          className="btn text-white fs-5 submit-button"
+          disabled={!Edicao?.isActive}
+        >
           {confirmButton.label}
         </button>
       </div>
