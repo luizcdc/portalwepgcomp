@@ -7,26 +7,12 @@ import { edicaoApi } from "@/services/edicao";
 import ModalEditarEdicao from "@/components/Modals/ModalEditarEdicao/Modal EditarEdição";
 
 export default function Edicoes() {
-  const { deleteEdicao, loadingEdicoesList, getEdicaoByYear } = useEdicao();
+  const { deleteEdicao, loadingEdicoesList } = useEdicao();
   const router = useRouter();
   const [edicoes, setEdicoes] = useState<Edicao[]>([]);
   const [edicaoSelecionada, setEdicaoSelecionada] = useState<Edicao | null>(
     null
   );
-  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState(false);
-
-  useEffect(() => {
-    const fetchEdicaoAtual = async () => {
-      const currentYear = String(new Date().getFullYear());
-      const edicaoAtual = await edicaoApi.getEdicaoByYear(currentYear);
-
-      if (edicaoAtual) {
-        setIsAddButtonDisabled(true);
-      }
-    };
-
-    fetchEdicaoAtual();
-  }, []);
 
   useEffect(() => {
     const fetchEdicoes = async () => {
@@ -57,11 +43,11 @@ export default function Edicoes() {
         window.location.reload();
       }, 3000);
     }
-  };
+  }
 
   return (
     <div
-      className='d-flex flex-column'
+      className="d-flex flex-column"
       style={{
         gap: "50px",
       }}
@@ -77,7 +63,6 @@ export default function Edicoes() {
           onEdit={handleEditClick}
           onDelete={(id: string) => handleDeleteEdicao(id)}
           onAddButtonClick={() => router.push("/cadastro-edicao")}
-          isAddButtonDisabled={isAddButtonDisabled}
         />
       )}
 
