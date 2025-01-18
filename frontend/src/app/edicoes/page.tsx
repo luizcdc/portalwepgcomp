@@ -7,7 +7,7 @@ import { edicaoApi } from "@/services/edicao";
 import ModalEditarEdicao from "@/components/Modals/ModalEditarEdicao/Modal EditarEdição";
 
 export default function Edicoes() {
-  const { deleteEdicao, loadingEdicoesList, getEdicaoByYear } = useEdicao();
+  const { deleteEdicao, loadingEdicoesList } = useEdicao();
   const router = useRouter();
   const [edicoes, setEdicoes] = useState<Edicao[]>([]);
   const [edicaoSelecionada, setEdicaoSelecionada] = useState<Edicao | null>(
