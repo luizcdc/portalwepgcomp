@@ -30,6 +30,7 @@ describe('UserService', () => {
               create: jest.fn(),
               update: jest.fn(),
               databaseHasProfessors: jest.fn(),
+              setDefault: jest.fn(),
               setAdmin: jest.fn(),
               isAdmin: jest.fn(),
               setSuperAdmin: jest.fn(),
@@ -335,6 +336,175 @@ describe('UserService', () => {
         },
       });
       expect(result).toEqual(false);
+    });
+  });
+
+  describe('setDefault', () => {
+    it('should throw AppException if request user is not found', async () => {
+      prismaService.userAccount.findFirst = jest
+        .fn()
+        .mockResolvedValue(undefined);
+
+      const setDefaultDto = {
+        requestUserId: 'abc',
+        targetUserId: 'def',
+      };
+
+      await expect(service.setDefault(setDefaultDto)).rejects.toThrow(
+        new AppException('Usuário solicitante não encontrado.', 404),
+      );
+
+      expect(prismaService.userAccount.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: setDefaultDto.requestUserId,
+        },
+      });
+    });
+
+    it('should throw AppException if request user is not admin', async () => {
+      const requestUser = {
+        level: UserLevel.Default,
+      };
+
+      prismaService.userAccount.findFirst = jest
+        .fn()
+        .mockResolvedValue(requestUser);
+
+      const setDefaultDto = {
+        requestUserId: 'abc',
+        targetUserId: 'def',
+      };
+
+      await expect(service.setDefault(setDefaultDto)).rejects.toThrow(
+        new AppException(
+          'O usuário não possui privilégios de administrador ou super administrador.',
+          403,
+        ),
+      );
+
+      expect(prismaService.userAccount.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: setDefaultDto.requestUserId,
+        },
+      });
+    });
+
+    it('should throw AppException if target user is not found', async () => {
+      const requestUser = {
+        level: UserLevel.Admin,
+      };
+
+      prismaService.userAccount.findFirst = jest
+        .fn()
+        .mockResolvedValueOnce(requestUser)
+        .mockResolvedValueOnce(undefined);
+
+      const setDefaultDto = {
+        requestUserId: 'abc',
+        targetUserId: 'def',
+      };
+
+      await expect(service.setDefault(setDefaultDto)).rejects.toThrow(
+        new AppException('Usuário-alvo não encontrado.', 404),
+      );
+
+      expect(prismaService.userAccount.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: setDefaultDto.requestUserId,
+        },
+      });
+      expect(prismaService.userAccount.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: setDefaultDto.targetUserId,
+        },
+      });
+    });
+
+    it('should throw AppException if request user has lower access level than target user', async () => {
+      const requestUser = {
+        level: UserLevel.Admin,
+      };
+
+      const targetUser = {
+        level: UserLevel.Superadmin,
+      };
+
+      prismaService.userAccount.findFirst = jest
+        .fn()
+        .mockResolvedValueOnce(requestUser)
+        .mockResolvedValueOnce(targetUser);
+
+      const setDefaultDto = {
+        requestUserId: 'abc',
+        targetUserId: 'def',
+      };
+
+      await expect(service.setDefault(setDefaultDto)).rejects.toThrow(
+        new AppException(
+          'Um usuário administrador não tem permissão para rebaixar um super administrador.',
+          403,
+        ),
+      );
+
+      expect(prismaService.userAccount.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: setDefaultDto.requestUserId,
+        },
+      });
+      expect(prismaService.userAccount.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: setDefaultDto.targetUserId,
+        },
+      });
+    });
+
+    it('should return target user as default', async () => {
+      const requestUser = {
+        level: UserLevel.Admin,
+      };
+
+      const targetUser = {
+        id: '1',
+        name: 'John',
+        email: 'user@example.com',
+        registrationNumber: '2021001',
+        photoFilePath: null,
+        profile: 'DoctoralStudent',
+        level: 'Admin',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      prismaService.userAccount.findFirst = jest
+        .fn()
+        .mockResolvedValue(requestUser);
+      prismaService.userAccount.update = jest
+        .fn()
+        .mockResolvedValue(targetUser);
+
+      const setDefaultDto = {
+        requestUserId: 'abc',
+        targetUserId: 'def',
+      };
+
+      const result = await service.setDefault(setDefaultDto);
+
+      expect(prismaService.userAccount.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: setDefaultDto.requestUserId,
+        },
+      });
+      expect(prismaService.userAccount.update).toHaveBeenCalledWith({
+        where: {
+          id: setDefaultDto.targetUserId,
+        },
+        data: {
+          level: UserLevel.Default,
+        },
+      });
+
+      expect(result).toEqual(targetUser as ResponseUserDto);
     });
   });
 
