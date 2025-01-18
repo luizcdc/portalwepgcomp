@@ -29,11 +29,6 @@
                 padding: 0.5rem 1rem;
                 border-radius: 10px;
                 font-weight: 600;
-
-                &:disabled {
-                        background-color: gray;
-                        cursor: not-allowed;
-                    }
             }
 
             .listagem-template-content-input{
