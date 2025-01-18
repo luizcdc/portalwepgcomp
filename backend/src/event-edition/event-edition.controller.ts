@@ -106,7 +106,7 @@ export class EventEditionController {
   }
 
   @Post('/remove-admins-from-ended-events')
-  async removeAdminsFromEvent () {
+  async removeAdminsFromEvent() {
     return await this.eventEditionService.removeAdminsFromEndedEvents();
   }
 }

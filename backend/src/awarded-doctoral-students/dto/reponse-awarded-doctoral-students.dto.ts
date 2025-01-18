@@ -75,8 +75,8 @@ export class RankingResponseDtoDto {
   presentationBlockId: string;
   positionWithinBlock: number;
   status: PresentationStatus;
-  publicAverageScore: number | null;
-  evaluatorsAverageScore: number | null;
+  publicAverageScore: string | null;
+  evaluatorsAverageScore: string | null;
   submission: SubmissionDto;
 
   constructor(presentation: any) {
@@ -84,8 +84,17 @@ export class RankingResponseDtoDto {
     this.presentationBlockId = presentation.presentationBlockId;
     this.positionWithinBlock = presentation.positionWithinBlock;
     this.status = presentation.status;
-    this.publicAverageScore = presentation.publicAverageScore;
-    this.evaluatorsAverageScore = presentation.evaluatorsAverageScore;
+
+    // Format scores with two decimal places or set to null if not available
+    this.publicAverageScore =
+      presentation.publicAverageScore !== null
+        ? presentation.publicAverageScore.toFixed(2)
+        : null;
+    this.evaluatorsAverageScore =
+      presentation.evaluatorsAverageScore !== null
+        ? presentation.evaluatorsAverageScore.toFixed(2)
+        : null;
+
     this.submission = new SubmissionDto({
       ...presentation.submission,
       mainAuthor: new UserDto(presentation.submission.mainAuthor),

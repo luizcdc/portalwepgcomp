@@ -6,6 +6,10 @@ import { EventEdition } from '@prisma/client';
 
 @Injectable()
 export class ScoringService {
+  private readonly MAX_TIMEOUT = 2147483647; // ~24.85 days in milliseconds
+  // DB is stored in UTC, but when we get it from the DB, it's already in UTC-3
+  private readonly TIMEZONE_OFFSET = -3 * 60 * 60 * 1000; // UTC-3 in milliseconds
+
   private config: ScoringConfig = {
     defaultPublicConfidence: 5,
     defaultPanelistConfidence: 3,
@@ -282,12 +286,22 @@ export class ScoringService {
     }
   }
 
+  private adjustToUTC(date: Date): Date {
+    const utcDate = new Date(date);
+    return new Date(utcDate.getTime() + this.TIMEZONE_OFFSET);
+  }
+
+  private adjustToLocalTimezone(date: Date): Date {
+    const localDate = new Date(date);
+    return new Date(localDate.getTime() - this.TIMEZONE_OFFSET);
+  }
+
   private async initializeEventFinalScoresSchedulers() {
     try {
       const events = await this.prismaClient.eventEdition.findMany({
         where: {
           endDate: {
-            gt: new Date(),
+            gt: this.adjustToUTC(new Date()),
           },
         },
       });
@@ -306,44 +320,58 @@ export class ScoringService {
 
   async scheduleEventFinalScoresRecalculation(event: EventEdition) {
     const jobName = `recalculate-scores-${event.id}`;
-
     try {
       this.schedulerRegistry.deleteTimeout(jobName);
-    } catch (error) {
-      this.logger.error(
-        `Failed to delete existing timeout for event ${event.id}:`,
-        error,
-      );
+    } catch {
+      this.logger.log(`No existing timeout found for event ${event.id}`);
     }
 
-    // Calculate delay until event end
     const now = new Date();
-    const endDate = new Date(event.endDate);
+    const endDate = this.adjustToLocalTimezone(new Date(event.endDate));
     const delay = endDate.getTime() - now.getTime();
-
     // Only schedule if the event hasn't ended yet
     if (delay > 0) {
-      const timeout = setTimeout(async () => {
-        try {
+      /* 
+        If delay exceeds maximum timeout, schedule an intermediate 
+        timeout (32-bit signed integer limit for ms representation)
+      */
+      if (delay > this.MAX_TIMEOUT) {
+        const timeout = setTimeout(() => {
           this.logger.log(
-            `Recalculating scores for event ${event.id} (${event.name})`,
+            `Intermediate timeout reached for event ${event.id}, rescheduling...`,
           );
-          await this.recalculateAllScores(event.id);
-          this.logger.log(
-            `Successfully recalculated scores for event ${event.id}`,
-          );
-        } catch (error) {
-          this.logger.error(
-            `Failed to recalculate scores for event ${event.id}:`,
-            error,
-          );
-        }
-      }, delay);
+          this.scheduleEventFinalScoresRecalculation(event);
+        }, this.MAX_TIMEOUT);
 
-      this.schedulerRegistry.addTimeout(jobName, timeout);
-      this.logger.log(
-        `Scheduled score recalculation for event ${event.id} at ${endDate}`,
-      );
+        this.schedulerRegistry.addTimeout(jobName, timeout);
+        this.logger.log(
+          `Scheduled intermediate timeout for event ${event.id} in ${Math.floor(
+            this.MAX_TIMEOUT / (1000 * 60 * 60 * 24),
+          )} days`,
+        );
+      } else {
+        const timeout = setTimeout(async () => {
+          try {
+            this.logger.log(
+              `Recalculating scores for event ${event.id} (${event.name})`,
+            );
+            await this.recalculateAllScores(event.id);
+            this.logger.log(
+              `Successfully recalculated scores for event ${event.id}`,
+            );
+          } catch (error) {
+            this.logger.error(
+              `Failed to recalculate scores for event ${event.id}:`,
+              error,
+            );
+          }
+        }, delay);
+
+        this.schedulerRegistry.addTimeout(jobName, timeout);
+        this.logger.log(
+          `Scheduled final score recalculation for event ${event.id} at ${endDate}`,
+        );
+      }
     }
   }
 
