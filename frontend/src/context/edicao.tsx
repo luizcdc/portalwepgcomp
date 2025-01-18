@@ -27,10 +27,10 @@ interface EdicaoProviderData {
   listEdicao: () => void;
   getEdicaoById: (idEdicao: string) => void;
   getEdicaoByYear: (year: string) => void;
-  createEdicao: (body: EdicaoParams) => void;
+  createEdicao: (body: EdicaoParams) => Promise<boolean>;
   updateEdicao: (idEdicao: string, body: EdicaoParams) => void;
   updateEdicaoActivate: (idEdicao: string, body: EdicaoParams) => void;
-  deleteEdicao: (idEdicao: string) => void;
+  deleteEdicao: (idEdicao: string) => Promise<boolean>;
 }
 
 export const EdicaoContext = createContext<EdicaoProviderData>(
@@ -85,7 +85,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
     }
   };
 
-  const createEdicao = async (body: EdicaoParams) => {
+  const createEdicao = async (body: EdicaoParams): Promise<boolean> => {
     setLoadingEdicao(true);
     try {
       const response = await edicaoApi.createEdicao(body);
@@ -97,6 +97,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         timer: 3000,
         showConfirmButton: false,
       });
+      return true;
     } catch (err: any) {
       console.error(err);
       setEdicao(null);
@@ -110,6 +111,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
           "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
+      return false;
     } finally {
       setLoadingEdicao(false);
     }
@@ -174,7 +176,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
     }
   };
 
-  const deleteEdicao = async (idEdicao: string) => {
+  const deleteEdicao = async (idEdicao: string): Promise<boolean> => {
     setLoadingEdicao(true);
 
     try {
@@ -187,6 +189,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
         timer: 3000,
         showConfirmButton: false,
       });
+      return true;
     } catch (err: any) {
       console.error(err);
       setEdicao(null);
@@ -200,6 +203,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
           "Ocorreu um erro durante a remoção. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
+      return false;
     } finally {
       setLoadingEdicao(false);
     }

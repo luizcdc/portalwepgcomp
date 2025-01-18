@@ -2,7 +2,7 @@
 
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { FavoritosMock } from "@/mocks/Favoritos";
-import Listagem from "@/templates/Listagem/Listagem";
+import Listagem, { mapCardList } from "@/templates/Listagem/Listagem";
 import { useEffect, useState } from "react";
 import { usePresentation } from "@/hooks/usePresentation";
 
@@ -41,6 +41,17 @@ export default function Favoritos() {
     setSessionsListValues(updatedSubmissions);
   };
 
+  const sessionMaped = sessionsListValues.map((presentation) => ({
+    id: presentation?.submission.id,
+    title: presentation?.submission.title,
+    name: presentation?.submission.mainAuthor.name,
+    email: presentation?.submission.mainAuthor.email,
+    subtitle: presentation?.submission.abstract,
+    pdfFile: presentation?.submission.pdfFile,
+    advisorName: presentation?.submission?.advisor?.name,
+    ...presentation,
+  }));
+
   return (
     <ProtectedLayout>
       <div
@@ -51,17 +62,7 @@ export default function Favoritos() {
       >
         <Listagem        
           title={title}
-          cardsList={sessionsListValues.map((presentation) => ({
-            id: presentation?.submission.id,
-            title: presentation?.submission.title,
-            name: presentation?.submission.mainAuthor.name,
-            email: presentation?.submission.mainAuthor.email,
-            subtitle: presentation?.submission.abstract,
-            pdfFile: presentation?.submission.pdfFile,
-            advisorName: presentation?.submission?.advisor?.name,
-            ...presentation,
-
-          }))}
+          cardsList={mapCardList(sessionMaped, "title", "abstract")}
           isFavorites
           idModal={title.trim() + "-modal"}
           searchValue={searchValue}

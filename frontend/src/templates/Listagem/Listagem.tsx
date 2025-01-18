@@ -4,11 +4,19 @@ import Image from "next/image";
 
 import CardListagem from "@/components/CardListagem/CardListagem";
 import Banner from "@/components/UI/Banner";
-import { formatDate } from "@/utils/formatDate";
 
 import "./style.scss";
 import { usePathname } from "next/navigation";
 import PresentationCard from "@/components/CardApresentacao/PresentationCard";
+
+export function mapCardList(list: any[], title = "title", subtitle = "subtitle", description = "description") {
+  return list.map(l => ({
+    title: l[title],
+    subtitle: l[subtitle],
+    description: l[description],
+    ...l
+  }));
+}
 
 interface ListagemProps {
   title: string;
@@ -116,15 +124,10 @@ export default function Listagem({
               <CardListagem
                 key={card.name}
                 title={
-                  pathname?.includes("edicoes")
-                    ? card?.title : "Sem Título"
+                  card?.title || "Sem Título"
                 }
                 subtitle={
-                  pathname?.includes("edicoes")
-                    ? card?.description
-                    : pathname?.includes("sessoes")
-                    ? `${formatDate(card.startTime)}`
-                    : card.subtitle
+                  card.subtitle
                 }
                 generalButtonLabel={generalButtonLabel}
                 idGeneralModal={
@@ -159,9 +162,7 @@ export default function Listagem({
                 key={card.name}
                 title={card.title}
                 subtitle={
-                  title === "Sessões"
-                    ? `${formatDate(card.startAt)}`
-                    : card.subtitle
+                  card.subtitle
                 }
                 showFavorite
                 onClickItem={() => onClickItem && onClickItem(card)}
