@@ -286,11 +286,6 @@ export class ScoringService {
     }
   }
 
-  private adjustToUTC(date: Date): Date {
-    const timezoneOffset = date.getTimezoneOffset();
-    return new Date(date.getTime() + timezoneOffset * 60000);
-  }
-
   private adjustToBrazilianTimezone(date: Date): Date {
     const localDate = new Date(date);
     return new Date(localDate.getTime() + this.TIMEZONE_OFFSET);
@@ -326,8 +321,8 @@ export class ScoringService {
       this.logger.log(`No existing timeout found for event ${event.id}`);
     }
 
-    const now = new Date();
-    const endDate = this.adjustToUTC(new Date(event.endDate));
+    const now = this.adjustToBrazilianTimezone(new Date());
+    const endDate = new Date(event.endDate);
     const delay = endDate.getTime() - now.getTime();
     // Only schedule if the event hasn't ended yet
     if (delay > 0) {
