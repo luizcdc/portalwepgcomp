@@ -15,6 +15,21 @@ export class AwardedPanelistsService {
   ): Promise<CreateAwardedPanelistsResponseDto> {
     const { eventEditionId, panelists } = createAwardedPanelistsDto;
 
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: {
+        id: eventEditionId,
+      },
+    });
+
+    if (!eventEdition) {
+      throw new AppException('Edição do evento não encontrada.', 404);
+    }
+
+    const userIds = panelists.map((p) => p.userId);
+    if (new Set(userIds).size !== userIds.length) {
+      throw new AppException('userIds repetidos na lista de avaliadores.', 400);
+    }
+
     // check if the panelists are valid
     const validPanelists = await this.prismaClient.panelist.findMany({
       where: {
