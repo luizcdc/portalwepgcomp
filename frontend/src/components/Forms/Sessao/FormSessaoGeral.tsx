@@ -23,7 +23,7 @@ import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const formSessaoGeralSchema = z.object({
+const formSessaoAuxiliarSchema = z.object({
   titulo: z
     .string({
       invalid_type_error: "Campo inválido!",
@@ -63,13 +63,13 @@ const formSessaoGeralSchema = z.object({
     .nullable(),
 });
 
-export default function FormSessaoGeral() {
-  const { formGeralFields, confirmButton } = ModalSessaoMock;
+export default function FormSessaoAuxiliar() {
+  const { formAuxiliarFields, confirmButton } = ModalSessaoMock;
   const { createSession, updateSession, sessao, setSessao, roomsList } =
     useSession();
   const { Edicao } = useEdicao();
 
-  type FormSessaoGeralSchema = z.infer<typeof formSessaoGeralSchema>;
+  type FormSessaoAuxiliarSchema = z.infer<typeof formSessaoAuxiliarSchema>;
 
   const defaultValues = sessao?.id
     ? {
@@ -91,8 +91,8 @@ export default function FormSessaoGeral() {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormSessaoGeralSchema>({
-    resolver: zodResolver(formSessaoGeralSchema),
+  } = useForm<FormSessaoAuxiliarSchema>({
+    resolver: zodResolver(formSessaoAuxiliarSchema),
     defaultValues,
   });
 
@@ -103,7 +103,7 @@ export default function FormSessaoGeral() {
     return hour < 22 && hour > 6;
   };
 
-  const handleFormSessaoGeral = (data: FormSessaoGeralSchema) => {
+  const handleFormSessaoAuxiliar = (data: FormSessaoAuxiliarSchema) => {
     const { titulo, nome, sala, inicio, final } = data;
 
     const eventEditionId = getEventEditionIdStorage();
@@ -126,7 +126,6 @@ export default function FormSessaoGeral() {
 
     if (sessao?.id) {
       updateSession(sessao?.id, eventEditionId ?? "", body).then((status) => {
-        console.log(status);
         if (status) {
           reset();
           setSessao(null);
@@ -167,18 +166,18 @@ export default function FormSessaoGeral() {
   return (
     <form
       className="row g-3 form-sessao"
-      onSubmit={handleSubmit(handleFormSessaoGeral)}
+      onSubmit={handleSubmit(handleFormSessaoAuxiliar)}
     >
       <div className="col-12 mb-1">
         <label className="form-label fw-bold form-title ">
-          {formGeralFields.titulo.label}
+          {formAuxiliarFields.titulo.label}
           <span className="text-danger ms-1 form-title">*</span>
         </label>
         <input
           type="text"
           className="form-control input-title"
           id="sg-titulo-input"
-          placeholder={formGeralFields.titulo.placeholder}
+          placeholder={formAuxiliarFields.titulo.placeholder}
           {...register("titulo")}
         />
         <p className="text-danger error-message">{errors.titulo?.message}</p>
@@ -186,13 +185,13 @@ export default function FormSessaoGeral() {
 
       <div className="col-12 mb-1">
         <label className="form-label fw-bold form-title">
-          {formGeralFields.nome.label}
+          {formAuxiliarFields.nome.label}
         </label>
         <input
           type="text"
           className="form-control input-title"
           id="sg-nome-input"
-          placeholder={formGeralFields.nome.placeholder}
+          placeholder={formAuxiliarFields.nome.placeholder}
           {...register("nome")}
         />
         <p className="text-danger error-message">{errors.nome?.message}</p>
@@ -200,7 +199,7 @@ export default function FormSessaoGeral() {
 
       <div className="col-12 mb-1">
         <label className="form-label fw-bold form-title">
-          {formGeralFields.sala.label}
+          {formAuxiliarFields.sala.label}
         </label>
         <select
           id="sg-sala-select"
@@ -208,7 +207,7 @@ export default function FormSessaoGeral() {
           {...register("sala")}
         >
           <option value="" hidden>
-            {formGeralFields.sala.placeholder}
+            {formAuxiliarFields.sala.placeholder}
           </option>
           {roomsOptions?.map((op, i) => (
             <option id={`sala-op${i}`} key={op.value} value={op.value}>
@@ -224,7 +223,7 @@ export default function FormSessaoGeral() {
           htmlFor="datetime-local"
           className="form-label fw-bold form-title"
         >
-          {formGeralFields.inicio.label}
+          {formAuxiliarFields.inicio.label}
           <span className="text-danger ms-1 form-title">*</span>
         </label>
 
@@ -252,7 +251,7 @@ export default function FormSessaoGeral() {
                   .toDate()}
                 isClearable
                 filterTime={filterTimes}
-                placeholderText={formGeralFields.inicio.placeholder}
+                placeholderText={formAuxiliarFields.inicio.placeholder}
                 toggleCalendarOnIconClick
               />
             )}
@@ -266,7 +265,7 @@ export default function FormSessaoGeral() {
           htmlFor="datetime-local"
           className="form-label fw-bold form-title"
         >
-          {formGeralFields.final.label}
+          {formAuxiliarFields.final.label}
           <span className="text-danger ms-1 form-title">*</span>
         </label>
 
@@ -294,7 +293,7 @@ export default function FormSessaoGeral() {
                   .toDate()}
                 isClearable
                 filterTime={filterTimes}
-                placeholderText={formGeralFields.final.placeholder}
+                placeholderText={formAuxiliarFields.final.placeholder}
                 toggleCalendarOnIconClick
               />
             )}
@@ -306,7 +305,7 @@ export default function FormSessaoGeral() {
         <button
           type="submit"
           id="sg-submit-button"
-          className="btn btn-primary button-modal-component button-sessao-geral"
+          className="btn btn-primary button-modal-component button-sessao-Auxiliar"
         >
           {confirmButton.label}
         </button>
