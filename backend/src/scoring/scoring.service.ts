@@ -291,6 +291,11 @@ export class ScoringService {
     return new Date(localDate.getTime() + this.TIMEZONE_OFFSET);
   }
 
+  private adjustToUTC(date: Date): Date {
+    const timezoneOffset = date.getTimezoneOffset();
+    return new Date(date.getTime() + timezoneOffset * 60000);
+  }
+
   private async initializeEventFinalScoresSchedulers() {
     try {
       const events = await this.prismaClient.eventEdition.findMany({
@@ -321,8 +326,8 @@ export class ScoringService {
       this.logger.log(`No existing timeout found for event ${event.id}`);
     }
 
-    const now = this.adjustToBrazilianTimezone(new Date());
-    const endDate = new Date(event.endDate);
+    const now = new Date();
+    const endDate = this.adjustToUTC(event.endDate);
     const delay = endDate.getTime() - now.getTime();
     // Only schedule if the event hasn't ended yet
     if (delay > 0) {
