@@ -28,8 +28,18 @@ ul {
 }
 
 .tamanho-texto-programacao-evento {
-  width: 215px;
+    width: 188px;
 }
+
+.welcome-user{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: black;
+}
+
 @keyframes slidNavMenu {
   0% {
     opacity: 0;
@@ -56,7 +66,7 @@ ul {
 }
 
 .header-placeholder {
-  height: 126px;
+    min-height: 126px;
 }
 
 .navbar-image {
@@ -69,20 +79,17 @@ ul {
   height: 40px;
 }
 
-@media (max-width: 1000px) {
-  .navbar-menu-itens {
-    margin-right: 0 !important;
-  }
-  .container-fluid {
-    justify-content: center !important;
-  }
-  .vr {
-    display: none;
-  }
-}
-
-@media (max-width: 445px) {
-  .header-placeholder {
-    height: 180px;
-  }
+@media (max-width:1000px)  {    
+    .navbar-menu-itens {
+        margin-right: 0 !important;
+    }
+    .container-fluid {
+        justify-content: center !important;
+    }
+    .vr {
+        display: none;
+    }
+    .header-placeholder {
+        min-height: 182px;
+    }
 }

@@ -13,12 +13,17 @@ export default function ModalEditarEdicao({
 }: Readonly<ModalEditarEdicaoProps>) {
   return (
     <ModalComponent
-      id="editarEdicaoModal"
+      id='editarEdicaoModal'
       loading={false}
-      labelConfirmButton="Alterar"
+      labelConfirmButton='Alterar'
     >
-      <div className=" d-flex justify-content-center mb-5 modal-editar-edicao">
-        <FormEdicao edicaoData={edicaoData} />
+      <div className='body-modal'>
+        <h1 className='d-flex justify-content-center mt-5 fw-bold ms-2'>
+          Editar Evento
+        </h1>
+        <div className=' d-flex justify-content-center mb-5 modal-editar-edicao'>
+          <FormEdicao edicaoData={edicaoData} />
+        </div>
       </div>
     </ModalComponent>
   );

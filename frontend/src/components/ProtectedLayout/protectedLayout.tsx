@@ -28,21 +28,5 @@ export const ProtectedLayout = ({
     }
   }, []);
 
-  // if (!signed) {
-  //   return (
-  //     <div className="d-flex flex-column align-items-center justify-content-center protected-layout">
-  //       <h1 className="title-protected-layout">
-  //         <Image
-  //           src={"/assets/images/emoji_frown.svg"}
-  //           alt="Emoji Triste"
-  //           width={60}
-  //           height={60}
-  //         />
-  //         Ops! Você não possui acesso e será redirecionado para o login!
-  //       </h1>
-  //     </div>
-  //   );
-  // }
-
   return children;
 };

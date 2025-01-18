@@ -244,7 +244,9 @@ export default function Header() {
                 <div className="vr text-black"></div>
                 <li className="nav-item">
                   {signed ? (
-                    perfil()
+                    <div className="welcome-user">
+                      Olá, {user?.name}!{perfil()}
+                    </div>
                   ) : (
                     <Link
                       className="nav-link active text-black"
