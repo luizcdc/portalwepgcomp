@@ -155,7 +155,7 @@ export function FormCadastroApresentacao({
         };
 
         if (formEdited && formEdited.id) {
-          await updateSubmissionById(formEdited.id, submissionData);
+          const status = await updateSubmissionById(formEdited.id, submissionData);
           setTimeout(() => {
             window.location.reload();
           }, 3000);
