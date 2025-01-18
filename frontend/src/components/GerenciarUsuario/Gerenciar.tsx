@@ -93,10 +93,12 @@ export default function Gerenciar() {
 
       <div className="description">
         Usuário Ativo: Usuário com cadastro validado e ativo no sistema.
-        <br />
+      </div>
+      <div className="description">
         Usuário Pendente: Usuário cujo cadastro aguarda aprovação pela comissão
         (geralmente professores).
-        <br />
+      </div>
+      <div className="description">
         Usuário Inativo: Usuário com cadastro inválido ou negado pela comissão
         no sistema.
       </div>
@@ -238,7 +240,7 @@ export default function Gerenciar() {
       </div>
 
       <div className="users">
-        <div className="name">Usuário inválido</div>
+        <div className="name">Uriel Barbosa Fagundes de Sá Almeida dos Santos</div>
         <div className="drop-boxes">
           <div className="drop-section">
             <div className="drop-text">Status:</div>
