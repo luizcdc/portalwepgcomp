@@ -9,11 +9,11 @@ export const ModalSessaoMock = {
   tipo: {
     label: "Tipo de sessão",
     options: [
-      { value: "General", label: "Sessão geral do evento" },
+      { value: "General", label: "Sessão auxiliar do evento" },
       { value: "Presentation", label: "Sessão de apresentações" },
     ],
   },
-  formGeralFields: {
+  formAuxiliarFields: {
     titulo: {
       label: "Título",
       placeholder: "Insira o título da sua sessão",
