@@ -7,14 +7,20 @@ import Banner from "@/components/UI/Banner";
 
 import "./style.scss";
 import { usePathname } from "next/navigation";
+import { useEdicao } from "@/hooks/useEdicao";
 import PresentationCard from "@/components/CardApresentacao/PresentationCard";
 
-export function mapCardList(list: any[], title = "title", subtitle = "subtitle", description = "description") {
-  return list.map(l => ({
+export function mapCardList(
+  list: any[],
+  title = "title",
+  subtitle = "subtitle",
+  description = "description"
+) {
+  return list.map((l) => ({
     title: l[title],
     subtitle: l[subtitle],
     description: l[description],
-    ...l
+    ...l,
   }));
 }
 
@@ -61,13 +67,14 @@ export default function Listagem({
   fullInfo,
 }: Readonly<ListagemProps>) {
   const pathname = usePathname();
+  const { Edicao } = useEdicao();
 
   return (
     <div className="listagem-template">
       <Banner title={title} />
       <div className="listagem-template-content">
         <div className="listagem-template-user-area">
-          {labelAddButton ? (
+          {labelAddButton && !!Edicao?.isActive ? (
             <button
               type="button"
               data-bs-toggle={idModal ? "modal" : undefined}
@@ -89,7 +96,10 @@ export default function Listagem({
           {onChangeSearchValue && (
             <div
               className="input-group listagem-template-content-input"
-              style={{ visibility: isMyPresentation ? "hidden" : "visible", minWidth: "350px" }}
+              style={{
+                visibility: isMyPresentation ? "hidden" : "visible",
+                minWidth: "350px",
+              }}
             >
               <input
                 placeholder={searchPlaceholder}
@@ -119,66 +129,66 @@ export default function Listagem({
         <div className="listagem-template-cards">
           {!!cardsList.length &&
             !isFavorites &&
-            cardsList?.map((card) => (
-              !fullInfo ? 
-              <CardListagem
-                key={card.name}
-                title={
-                  card?.title || "Sem Título"
-                }
-                subtitle={
-                  card.subtitle
-                }
-                generalButtonLabel={generalButtonLabel}
-                idGeneralModal={
-                  card?.type == "Presentation" && !!card?.presentations.length
-                    ? idGeneralModal
-                    : ""
-                }
-                idModalEdit={
-                  pathname?.includes("edicoes") ? "editarEdicaoModal" : idModal
-                }
-                onClickItem={() => onClickItem && onClickItem(card)}
-                onEdit={() => onEdit && onEdit(card?.id ?? "")}
-                onDelete={() => onDelete && onDelete(card?.id ?? "")}
-              /> :
-              <PresentationCard
-                key={card.name}
-                id={card.id}
-                title={card.title}
-                subtitle={card.subtitle}
-                name={card.name}
-                pdfFile={card.pdfFile}
-                email={card.email}
-                advisorName={card.advisorName}
-                onDelete={() => onDelete && onDelete(card.id ?? "")}
-              />
-            ))}
+            cardsList?.map((card) =>
+              !fullInfo ? (
+                <CardListagem
+                  key={card.name}
+                  title={card?.title || "Sem Título"}
+                  subtitle={card.subtitle}
+                  generalButtonLabel={generalButtonLabel}
+                  idGeneralModal={
+                    card?.type == "Presentation" && !!card?.presentations.length
+                      ? idGeneralModal
+                      : ""
+                  }
+                  idModalEdit={
+                    pathname?.includes("edicoes")
+                      ? "editarEdicaoModal"
+                      : idModal
+                  }
+                  onClickItem={() => onClickItem && onClickItem(card)}
+                  onEdit={() => onEdit && onEdit(card?.id ?? "")}
+                  onDelete={() => onDelete && onDelete(card?.id ?? "")}
+                />
+              ) : (
+                <PresentationCard
+                  key={card.name}
+                  id={card.id}
+                  title={card.title}
+                  subtitle={card.subtitle}
+                  name={card.name}
+                  pdfFile={card.pdfFile}
+                  email={card.email}
+                  advisorName={card.advisorName}
+                  onDelete={() => onDelete && onDelete(card.id ?? "")}
+                />
+              )
+            )}
           {!!cardsList.length &&
             isFavorites &&
-            cardsList?.map((card) => (
-              !fullInfo ? 
-              <CardListagem
-                key={card.name}
-                title={card.title}
-                subtitle={
-                  card.subtitle
-                }
-                showFavorite
-                onClickItem={() => onClickItem && onClickItem(card)}
-              /> :
-              <PresentationCard
-                key={card.name}
-                id={card.id}
-                title={card.title}
-                subtitle={card.subtitle}
-                name={card.name}
-                pdfFile={card.pdfFile}
-                email={card.email}
-                advisorName={card.advisorName}
-                onDelete={() => onDelete && onDelete(card.id ?? "")}
-              />
-            ))}
+            cardsList?.map((card) =>
+              !fullInfo ? (
+                <CardListagem
+                  key={card.name}
+                  title={card.title}
+                  subtitle={card.subtitle}
+                  showFavorite
+                  onClickItem={() => onClickItem && onClickItem(card)}
+                />
+              ) : (
+                <PresentationCard
+                  key={card.name}
+                  id={card.id}
+                  title={card.title}
+                  subtitle={card.subtitle}
+                  name={card.name}
+                  pdfFile={card.pdfFile}
+                  email={card.email}
+                  advisorName={card.advisorName}
+                  onDelete={() => onDelete && onDelete(card.id ?? "")}
+                />
+              )
+            )}
           {!cardsList.length && (
             <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
               <h4 className="empty-list mb-0">

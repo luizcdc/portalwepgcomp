@@ -333,6 +333,7 @@ export default function FormSessaoApresentacoes() {
           type="submit"
           id="sa-submit-button"
           className="btn btn-primary button-modal-component button-sessao-geral"
+          disabled={!Edicao?.isActive}
         >
           {confirmButton.label}
         </button>
