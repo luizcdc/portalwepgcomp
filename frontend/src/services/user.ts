@@ -20,6 +20,31 @@ export const userApi = {
         return data;
     },
 
+    switchActiveUser: async (userId: string) => {
+
+        const { data } = await instance.patch(`${baseUrl}/activate/${userId}`);
+
+        return data;
+    },
+
+    markAsDefaultUser: async (body: SetPermissionParams) => {
+        const { data } = await instance.post(`${baseUrl}/set-default`, body);
+
+        return data;
+    },
+
+    markAsAdminUser: async (body: SetPermissionParams) => {
+        const { data } = await instance.post(`${baseUrl}/set-admin`, body);
+
+        return data;
+    },
+
+    markAsSpAdminUser: async (body: SetPermissionParams) => {
+        const { data } = await instance.post(`${baseUrl}/set-super-admin`, body);
+
+        return data;
+    },
+
     registerUser: async (body: RegisterUserParams) => {
 
         const { data } = await instance.post(`${baseUrl}/register`, body);

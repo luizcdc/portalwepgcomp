@@ -8,6 +8,11 @@ interface GetUserParams {
     roles?: RoleType;
 }
 
+interface SetPermissionParams{
+    requestUserId: string,
+    targetUserId: string
+}
+
 interface RegisterUserParams {
     name: string,
     email: string,
@@ -24,6 +29,8 @@ interface User extends RegisterUserParams {
     createdAt: Date;
     deletedAt: Date;
     updatedAt: Date;
+    level: RoleType;
+    isActive: boolean;
 }
 
 interface ResetPasswordSendEmailParams {

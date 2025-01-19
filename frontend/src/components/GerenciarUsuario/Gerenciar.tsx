@@ -2,36 +2,95 @@
 
 import Image from "next/image";
 import "./style.scss";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useUsers } from "@/hooks/useUsers";
+import LoadingPage from "../LoadingPage";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 
 export default function Gerenciar() {
   const [ativo, setAtivo] = useState<boolean>(false);
   const [pendente, setPendente] = useState<boolean>(false);
   const [inativo, setInativo] = useState<boolean>(false);
+  const [spAdmin, setSpAdmin] = useState<boolean>(false);
+  const [admin, setAdmin] = useState<boolean>(false);
+  const [normal, setNormal] = useState<boolean>(false);
 
-  const [userStatus, setUserStatus] = useState<number>(0);
-  const [userPermission, setUserPermission] = useState<number>(0);
+  const { user } = useContext(AuthContext);
 
-  const getStatus = () => {
-    switch (userStatus) {
-      case 0:
-        return "ATIVO";
-      case 1:
-        return "PENDENTE";
-      case 2:
-        return "INATIVO";
+  const {
+    userList,
+    markAsAdminUser,
+    markAsDefaultUser,
+    markAsSpAdminUser,
+    switchActiveUser,
+    loadingUserList,
+    getUsers,
+  } = useUsers();
+
+  const statusOptions = ["ATIVO", "PENDENTE", "INATIVO"];
+  const permissionsOptions = ["SUP ADMINISTRADOR", "ADMINISTRADOR", "NORMAL"];
+
+  const getStatus = (isActive: boolean, isPending: boolean) => {
+    if (isActive) {
+      return "ATIVO";
     }
+
+    if (isPending) {
+      return "PENDENTE";
+    }
+
+    return "INATIVO";
   };
 
-  const getPermission = () => {
-    switch (userPermission) {
-      case 2:
-        return "SUP ADMINISTRADOR";
-      case 1:
-        return "ADMINISTRADOR";
-      case 0:
-        return "NORMAL";
+  const getPermission = (role: RoleType) => {
+    const rolesOptions = {
+      Superadmin: "SUP ADMINISTRADOR",
+      Admin: "ADMINISTRADOR",
+      Default: "NORMAL",
+    };
+
+    return rolesOptions[role];
+  };
+
+  const userStatusClassname = {
+    ATIVO: "button-ativo-true",
+    PENDENTE: "button-pendente-true",
+    INATIVO: "button-pendente-false",
+  };
+
+  const buttonsStatusClassname = {
+    ATIVO: ativo ? "button-ativo-true" : "button-ativo-false",
+    PENDENTE: pendente ? "button-pendente-true" : "button-pendente-false",
+    INATIVO: inativo ? "button-inativo-true" : "button-inativo-false",
+    ["SUP ADMINISTRADOR"]: spAdmin ? "button-ativo-true" : "button-ativo-false",
+    ADMINISTRADOR: admin ? "button-pendente-true" : "button-pendente-false",
+    NORMAL: normal ? "button-inativo-true" : "button-inativo-false",
+  };
+
+  const handleFilter = {
+    ATIVO: () => setAtivo(!ativo),
+    PENDENTE: () => setPendente(!pendente),
+    INATIVO: () => setInativo(!inativo),
+    ["SUP ADMINISTRADOR"]: () => setSpAdmin(!spAdmin),
+    ADMINISTRADOR: () => setAdmin(!admin),
+    NORMAL: () => setNormal(!normal),
+  };
+
+  const handleUserPermission = (targetUser: User, newPermission: string) => {
+    const body: SetPermissionParams = {
+      requestUserId: user?.id ?? "",
+      targetUserId: targetUser.id,
+    };
+
+    if (newPermission === "SUP ADMINISTRADOR") {
+      return markAsSpAdminUser(body);
     }
+
+    if (newPermission === "ADMINISTRADOR") {
+      return markAsAdminUser(body);
+    }
+
+    return markAsDefaultUser(body);
   };
 
   return (
@@ -57,36 +116,29 @@ export default function Gerenciar() {
           </div>
         </div>
 
-        <div className="status">
-          <div className="filtrar">FILTRAR</div>
-
-          <div
-            className={
-              ativo == true ? "button-ativo-true" : "button-ativo-false"
-            }
-            onClick={() => setAtivo(!ativo)}
-          >
-            ATIVO
+        <div className="status d-flex flex-column align-items-start">
+          <div className="filtrar mt-3 text-black">FILTRAR</div>
+          <div className="d-flex">
+            {statusOptions?.map((status) => (
+              <button
+                key={status}
+                className={`${buttonsStatusClassname[status]} button-status`}
+                onClick={handleFilter[status]}
+              >
+                {status}
+              </button>
+            ))}
           </div>
-
-          <div
-            className={
-              pendente == true
-                ? "button-pendente-true"
-                : "button-pendente-false"
-            }
-            onClick={() => setPendente(!pendente)}
-          >
-            PENDENTE
-          </div>
-
-          <div
-            className={
-              inativo == true ? "button-inativo-true" : "button-inativo-false"
-            }
-            onClick={() => setInativo(!inativo)}
-          >
-            INATIVO
+          <div className="d-flex mb-3">
+            {permissionsOptions?.map((permission) => (
+              <button
+                key={permission}
+                className={`${buttonsStatusClassname[permission]} button-status`}
+                onClick={handleFilter[permission]}
+              >
+                {permission}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -103,209 +155,74 @@ export default function Gerenciar() {
         no sistema.
       </div>
 
-      <div className="users">
-        <div className="name">Nome do usuário</div>
-        <div className="drop-boxes">
-          <div className="drop-section">
-            <div className="drop-text">Status:</div>
-            <div className="dropdown-center">
-              <button
-                className={
-                  userStatus == 0
-                    ? "button-ativo-true dropdown-toggle border-0"
-                    : userStatus == 1
-                    ? "button-pendente-true dropdown-toggle border-0"
-                    : "button-inativo-true dropdown-toggle border-0"
-                }
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                {getStatus()}
-              </button>
-              <ul className="dropdown-menu border-3 border-light">
-                <div className="drop-button1" onClick={() => setUserStatus(0)}>
-                  ATIVO
-                </div>
-                <div className="drop-button1" onClick={() => setUserStatus(1)}>
-                  PENDENTE
-                </div>
-                <div className="drop-button1" onClick={() => setUserStatus(2)}>
-                  INATIVO
-                </div>
-              </ul>
-            </div>
-          </div>
+      {!!loadingUserList && <LoadingPage />}
 
-          <div className="drop-section">
-            <div className="drop-text">Permissão:</div>
-            <div className="dropdown">
-              <button
-                className="drop-permit dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                {getPermission()}
-              </button>
-              <ul className="dropdown-menu border-3 border-light">
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(2)}
-                >
-                  SUP ADMINISTRADOR
-                </div>
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(1)}
-                >
-                  ADMINISTRADOR
-                </div>
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(0)}
-                >
-                  NORMAL
-                </div>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+      {!loadingUserList &&
+        userList?.map((userValue) => {
+          const userStatus = getStatus(userValue.isActive, false);
+          const userPermission = getPermission(userValue.level);
 
-      <div className="users">
-        <div className="name">Professor Cássio</div>
-        <div className="drop-boxes">
-          <div className="drop-section">
-            <div className="drop-text">Status:</div>
-            <div className="dropdown-center">
-              <button
-                className={
-                  "button-pendente-true dropdown-toggle border-0"
-                }
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                PENDENTE
-              </button>
-              <ul className="dropdown-menu border-3 border-light">
-                <div className="drop-button1" onClick={() => setUserStatus(0)}>
-                  ATIVO
+          return (
+            <div key={userValue.id} className="users">
+              <div className="name">{userValue.name}</div>
+              <div className="drop-boxes">
+                <div className="drop-section">
+                  <div className="drop-text">Status:</div>
+                  <div className="dropdown-center">
+                    <select
+                      className={`${userStatusClassname[userStatus]} dropdown-toggle border-0 text-center`}
+                      onChange={() => {
+                        switchActiveUser(userValue.id);
+                      }}
+                      value={userStatus}
+                    >
+                      {statusOptions?.map((status) => (
+                        <option
+                          key={status}
+                          className="drop-button1"
+                          style={{
+                            display:
+                              status === userStatus || status === "PENDENTE"
+                                ? "none"
+                                : "block",
+                          }}
+                        >
+                          {status}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div className="drop-button1" onClick={() => setUserStatus(1)}>
-                  PENDENTE
-                </div>
-                <div className="drop-button1" onClick={() => setUserStatus(2)}>
-                  INATIVO
-                </div>
-              </ul>
-            </div>
-          </div>
 
-          <div className="drop-section">
-            <div className="drop-text">Permissão:</div>
-            <div className="dropdown">
-              <button
-                className="drop-permit dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                ADMINISTRADOR
-              </button>
-              <ul className="dropdown-menu border-3 border-light">
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(2)}
-                >
-                  SUP ADMINISTRADOR
+                <div className="drop-section">
+                  <div className="drop-text">Permissão:</div>
+                  <div className="dropdown">
+                    <select
+                      className={`drop-permit dropdown-toggle`}
+                      onChange={(permission) => {
+                        handleUserPermission(
+                          userValue,
+                          permission.target.value
+                        );
+                      }}
+                      value={userPermission}
+                    >
+                      {permissionsOptions?.map((permission) => (
+                        <option
+                          key={permission}
+                          disabled={userPermission === permission}
+                          className="drop-button1"
+                        >
+                          {permission}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(1)}
-                >
-                  ADMINISTRADOR
-                </div>
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(0)}
-                >
-                  NORMAL
-                </div>
-              </ul>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="users">
-        <div className="name">Uriel Barbosa Fagundes de Sá Almeida dos Santos</div>
-        <div className="drop-boxes">
-          <div className="drop-section">
-            <div className="drop-text">Status:</div>
-            <div className="dropdown-center">
-              <button
-                className={
-                  "button-inativo-true dropdown-toggle border-0" 
-                }
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                INATIVO
-              </button>
-              <ul className="dropdown-menu border-3 border-light">
-                <div className="drop-button1" onClick={() => setUserStatus(0)}>
-                  ATIVO
-                </div>
-                <div className="drop-button1" onClick={() => setUserStatus(1)}>
-                  PENDENTE
-                </div>
-                <div className="drop-button1" onClick={() => setUserStatus(2)}>
-                  INATIVO
-                </div>
-              </ul>
-            </div>
-          </div>
-
-          <div className="drop-section">
-            <div className="drop-text">Permissão:</div>
-            <div className="dropdown">
-              <button
-                className="drop-permit dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                NORMAL
-              </button>
-              <ul className="dropdown-menu border-3 border-light">
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(2)}
-                >
-                  SUP ADMINISTRADOR
-                </div>
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(1)}
-                >
-                  ADMINISTRADOR
-                </div>
-                <div
-                  className="drop-button2"
-                  onClick={() => setUserPermission(0)}
-                >
-                  NORMAL
-                </div>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="save">Salvar</div>
+          );
+        })}
     </div>
   );
 }

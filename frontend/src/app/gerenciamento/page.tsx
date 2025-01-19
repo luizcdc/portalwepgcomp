@@ -1,19 +1,26 @@
-"use client"
+"use client";
 
 import Banner from "@/components/UI/Banner";
-import Gerenciar from "@/components/GerenciarUsuario/Gerenciar"
+import Gerenciar from "@/components/GerenciarUsuario/Gerenciar";
+import { useEffect } from "react";
+import { useUsers } from "@/hooks/useUsers";
 
-export default function Gerenciamento(){
+export default function Gerenciamento() {
+  const { getUsers } = useUsers();
 
-    return(
+  useEffect(() => {
+    getUsers({});
+  }, []);
 
-        <div
-        className="d-flex flex-column"
-        style={{
-            gap: "30px",
-        }}>
-            <Banner title="Gerenciamento de Usuários"/>
-            <Gerenciar/>
-        </div>
-    );
+  return (
+    <div
+      className="d-flex flex-column"
+      style={{
+        gap: "30px",
+      }}
+    >
+      <Banner title="Gerenciamento de Usuários" />
+      <Gerenciar />
+    </div>
+  );
 }
