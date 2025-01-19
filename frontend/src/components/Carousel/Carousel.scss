@@ -1,5 +1,5 @@
 #carousel-wepgcomp {
-    top: 126px;
+    min-height: 730px;
 }
 
 .carousel-component{
@@ -8,11 +8,13 @@
     }
     p{
         text-align: center;
+        font-size: 22px;
     }
 
     .title{
         font-weight: 800;
         text-align: center;
+        font-size: 70px;
     }
 
     .indicators-content{
@@ -78,14 +80,18 @@
     .carousel-slide-content{
         width: 100vw;
         height: 80vh;
-        min-height: 400px;
+        min-height: 730px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         color: white;
-        position: relative;
         padding: 1rem 2rem 4rem;
+
+        h1.text-center {
+            font-size: 70px;
+            line-height: 80px;   
+        }
 
         .image-background{
             z-index: -1;
@@ -97,11 +103,22 @@
     margin-top: 1rem;
 }
 
-@media (max-width:480px)  {
-    .carousel-slide .carousel-slide-content {
-        justify-content: flex-start !important;
+@media (max-width:700px)  {
+    .carousel-slide .carousel-slide-content{
+        height: 50vh;
+        min-height: 450px;
+
+        h1.text-center {
+            font-size: 55px;   
+        }
     }
 
+    #carousel-wepgcomp {
+        min-height: 450px;
+    }
+}
+
+@media (max-width:480px)  {
     .carousel-indicators {
         margin-top: .5rem;
     }
@@ -125,11 +142,18 @@
             }
         }
     }
-}
 
-@media (max-width: 445px) {
+    .carousel-slide .carousel-slide-content{
+        height: 40vh;
+        min-height: 300px;
+
+        h1.text-center {
+            font-size: 40px;   
+        }
+    }
+
     #carousel-wepgcomp {
-        top: 180px;
+        min-height: 300px;
     }
 }
 

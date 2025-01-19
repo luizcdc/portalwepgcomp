@@ -10,7 +10,7 @@ import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubmission } from "@/hooks/useSubmission";
 import { MinhasApresentacoesMock } from "@/mocks/MinhasApresentacoes";
-import Listagem from "@/templates/Listagem/Listagem";
+import Listagem, { mapCardList } from "@/templates/Listagem/Listagem";
 
 import "./style.scss";
 
@@ -102,11 +102,7 @@ export default function MinhasApresentacoes() {
             searchValue={searchValue}
             onChangeSearchValue={(value) => setSearchValue(value)}
             searchPlaceholder={userArea.search}
-            cardsList={sessionsListValues.map((submission) => ({
-              id: submission.id,
-              title: submission.title,
-              subtitle: submission.abstract,
-            }))}
+            cardsList={mapCardList(sessionsListValues, "title", "abstract")}
             isLoading={loadingSubmissionList}
             onDelete={handleDelete}
             onEdit={handleEdit}

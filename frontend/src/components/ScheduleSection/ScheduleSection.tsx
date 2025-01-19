@@ -70,38 +70,7 @@ export default function ScheduleSection() {
     if (Edicao?.id) listRooms(Edicao?.id);
   }, [Edicao]);
 
-  const colorsSession = [
-    "#FFE4B5",
-    "#FFB6C1",
-    "#ADD8E6",
-    "#90EE90",
-    "#FFFFE0",
-    "#FFDAB9",
-    "#FFC0CB",
-    "#AFEEEE",
-    "#98FB98",
-    "#FFFACD",
-    "#FFCCCB",
-    "#87CEFA",
-    "#7CFC00",
-    "#FAFAD2",
-    "#F08080",
-    "#B0E0E6",
-    "#00FF7F",
-    "#FFF5EE",
-    "#FFDEAD",
-    "#B0C4DE",
-    "#F5FFFA",
-    "#FFEB99",
-    "#FFD1DC",
-    "#CAE7FF",
-    "#DFFFD6",
-    "#FFFFF0",
-    "#FFC3A0",
-    "#B3E5FC",
-    "#DFF6FF",
-    "#E6FFE6",
-  ];
+  const colorsSession = ["#0066BA", "#03A61C", "#FF1A25", "#F2CB05"];
 
   return (
     <div id="Programacao">
@@ -176,7 +145,7 @@ export default function ScheduleSection() {
                         gap: "40px",
                       }}
                     >
-                      <p className="m-0" style={{ width: "44px" }}>
+                      <p className="m-0 programacao-hora">
                         {moment(item.startTime).format("HH:mm")}
                       </p>
                       <ScheduleCard
@@ -184,6 +153,7 @@ export default function ScheduleSection() {
                         author={item?.speakerName ?? ""}
                         title={item?.title ?? ""}
                         onClickEvent={() => {}}
+                        cardColor="white"
                       />
                       <div className="m-0 programacao-item-aux"></div>
                     </div>

@@ -1,0 +1,23 @@
+.modal-alteracao-usuario{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+       
+    .linha {
+      width: 100%;
+    }
+    
+    .content-alteracao-usuario {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    p {
+      text-align: justify;
+    }
+
+    .title-alteracao-usuario {
+      font-weight: 700;
+    }
+}

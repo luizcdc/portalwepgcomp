@@ -58,11 +58,7 @@ export default function ScheduleCard({
         width: "100%",
         cursor: type == "GeneralSession" ? "default" : "pointer",
         backgroundColor:
-          over && type != "GeneralSession"
-            ? "#F17F0C"
-            : cardColor
-            ? cardColor
-            : "white",
+          over && type != "GeneralSession" ? "#F17F0C" : cardColor,
       }}
       onMouseOver={() => setOver(true)}
       onMouseOut={() => setOver(false)}
@@ -73,7 +69,7 @@ export default function ScheduleCard({
           {author ? (
             <h6
               style={{
-                fontSize: "13px",
+                fontSize: "20px",
                 fontWeight: "600",
                 lineHeight: "19.5px",
                 margin: "0",
@@ -86,7 +82,7 @@ export default function ScheduleCard({
           )}
           <p
             style={{
-              fontSize: "13px",
+              fontSize: "16px",
               fontWeight: "400",
               lineHeight: "28px",
               margin: "0",

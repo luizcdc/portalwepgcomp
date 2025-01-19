@@ -30,7 +30,7 @@
     "sass": "^1.80.6",
     "sweetalert2": "^11.14.5",
     "sweetalert2-react-content": "^5.0.7",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.5.0",
