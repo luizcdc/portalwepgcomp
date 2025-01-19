@@ -59,11 +59,21 @@ export class UserController {
     return await this.userService.remove(id);
   }
 
-  @Patch('activate/:id')
+  @Patch('toggle-activation/:id')
   @UserLevels(UserLevel.Superadmin)
   @ApiBearerAuth()
-  async activateUser(@Param('id') id: string) {
-    return this.userService.activateProfessor(id);
+  @ApiQuery({
+    name: 'activate',
+    required: true,
+    description: 'Activate or deactivate the user.',
+  })
+  @ApiTags('Users')
+  async toggleUserActivation(@Param('id') id: string, @Query('activate') activate: boolean) {
+    if (activate === undefined) {
+      throw new AppException('O campo "activate" é obrigatório.', 400);
+    }
+
+    return this.userService.toggleUserActivation(id, activate);
   }
 
   @Get()
