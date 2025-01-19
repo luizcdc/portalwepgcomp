@@ -286,6 +286,20 @@ export class ScoringService {
     }
   }
 
+  /**
+   * Adjusts a date to Brazilian timezone (UTC-3).
+   *
+   * The dates stored in the database represent times in Brazil, but they are stored without an explicit timezone.
+   * This causes the database to interpret the stored times as if they were in UTC (timezone 0). As a result,
+   * comparisons between the current time in Brazil and the stored times may be inaccurate.
+   *
+   * For example:
+   * - An event stored in the database with an `endDate` of "20:00" represents 8:00 PM in Brazil.
+   * - However, because the database assumes the time is in UTC, it treats "20:00" as 8:00 PM UTC,
+   *   which is equivalent to 5:00 PM in Brazil (UTC-3).
+   * - When comparing the stored `endDate` with the current time in Brazil, the comparison will be off by 3 hours.
+   *
+   */
   private adjustToBrazilianTimezone(date: Date): Date {
     const localDate = new Date(date);
     return new Date(localDate.getTime() + this.TIMEZONE_OFFSET);
