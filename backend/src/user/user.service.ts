@@ -315,20 +315,16 @@ export class UserService {
     status?: string,
   ): Promise<ResponseUserDto[]> {
     const whereClause: any = {};
-    if (roles) {
-      if (Array.isArray(roles) && roles.length > 0) {
-        whereClause.level = { in: roles };
-      } else if (typeof roles === 'string') {
-        whereClause.level = roles;
-      }
+    if (roles && Array.isArray(roles)) {
+      whereClause.level = { in: roles as UserLevel[] };
+    } else if (roles && typeof roles === 'string') {
+      whereClause.level = roles as UserLevel;
     }
-
-    if (profiles) {
-      if (Array.isArray(profiles) && profiles.length > 0) {
-        whereClause.profile = { in: profiles };
-      } else if (typeof profiles === 'string') {
-        whereClause.profile = profiles;
-      }
+    
+    if (profiles && Array.isArray(profiles)) {
+      whereClause.profile = { in: profiles as Profile[] };
+    } else if (profiles && typeof profiles === 'string') {
+      whereClause.profile = profiles as Profile;
     }
 
     if (status) {

@@ -81,18 +81,18 @@ export class UserController {
     name: 'roles',
     required: false,
     description:
-      'Filter by user levels (e.g., "Admin", "Default"). Accepts multiple values.',
+      'Filter by user levels (e.g., Admin, Default). Accepts multiple values.',
   })
   @ApiQuery({
     name: 'profiles',
     required: false,
     description:
-      'Filter by profiles (e.g., "Professor", "Listener"). Accepts multiple values.',
+      'Filter by profiles (e.g., Professor, Listener). Accepts multiple values.',
   })
   @ApiQuery({
     name: 'status',
     required: false,
-    description: 'Filter by user status (e.g., "Active", "Inactive").',
+    description: 'Filter by user status (e.g., Active, Inactive).',
   })
   @UserLevels(UserLevel.Default, UserLevel.Admin, UserLevel.Superadmin)
   @ApiBearerAuth()
@@ -103,12 +103,12 @@ export class UserController {
   ) {
     const toArray = (input?: string | string[]): string[] => {
       if (!input) return [];
-      return Array.isArray(input) ? input : [input];
+      if (Array.isArray(input)) return input;
+      return input.split(',').map(value => value.trim());
     };
 
-    const rolesArray = roles === undefined ? undefined : toArray(roles);
-    const profilesArray =
-      profiles === undefined ? undefined : toArray(profiles);
+    const rolesArray = roles ? toArray(roles) : undefined;
+    const profilesArray = profiles ? toArray(profiles) : undefined;
 
     return await this.userService.findAll(rolesArray, profilesArray, status);
   }
