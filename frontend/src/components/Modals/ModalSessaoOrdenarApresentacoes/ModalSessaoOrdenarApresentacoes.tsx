@@ -1,6 +1,5 @@
 "use client";
 
-import FormSessaoOrdenarApresentacoes from "@/components/Forms/SessaoOrdenarApresentacoes/FormSessaoOrdenarApresentacoes";
 import "./style.scss";
 import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import { useSession } from "@/hooks/useSession";

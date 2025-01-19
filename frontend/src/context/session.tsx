@@ -244,7 +244,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
 
         return true;
       })
-      .catch((errors) => {
+      .catch(() => {
         showAlert({
           icon: "error",
           title: "Erro na troca da ordem das apresentações da sessão",

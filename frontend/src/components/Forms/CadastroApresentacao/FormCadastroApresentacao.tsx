@@ -156,9 +156,12 @@ export function FormCadastroApresentacao({
 
         if (formEdited && formEdited.id) {
           const status = await updateSubmissionById(formEdited.id, submissionData);
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          
+          if (status) {
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
         } else {
           const status = await createSubmission(submissionData);
 

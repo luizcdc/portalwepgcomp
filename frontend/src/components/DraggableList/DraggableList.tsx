@@ -16,7 +16,7 @@ export default function DraggableList({
   list = [],
   labelTitle,
   labelSubtitle,
-  onChangeOrder = (data) => {}
+  onChangeOrder = () => {}
 }: Readonly<DraggableList>) {
   const [listedData, setListedData] = useState<any[]>([]);
   const [draggedItem, setDraggedItem] = useState<any>({});
@@ -25,13 +25,6 @@ export default function DraggableList({
   setTimeout(() => {
     if (listedData && !listedData.length) setListedData(list);
   }, 100);
-
-  const reorder = (_list, startIndex, endIndex) => {
-    const result = Array.from(_list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  };
 
   const historyMovement = (fromIndex: number, toIndex: number) => {
     const toId = listedData[toIndex].id;
