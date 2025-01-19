@@ -312,6 +312,7 @@ export class UserService {
   async findAll(
     roles?: string | string[],
     profiles?: string | string[],
+    status?: string,
   ): Promise<ResponseUserDto[]> {
     const whereClause: any = {};
     if (roles) {
@@ -328,6 +329,10 @@ export class UserService {
       } else if (typeof profiles === 'string') {
         whereClause.profile = profiles;
       }
+    }
+
+    if (status) {
+      whereClause.isActive = status === 'Active' ? true : false;
     }
 
     const users = await this.prismaClient.userAccount.findMany({
