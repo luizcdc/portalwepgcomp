@@ -39,7 +39,7 @@ interface SessionProviderData {
   swapPresentationsOnSession: (
     idSession: string,
     eventEditionId: string,
-    body: SwapPresentationsOnSession
+    bodies: SwapPresentationsOnSession[]
   ) => Promise<boolean>;
 }
 
@@ -228,12 +228,11 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const swapPresentationsOnSession = async (
     idSession: string,
     eventEditionId: string,
-    body: SwapPresentationsOnSession
+    presentations: SwapPresentationsOnSession[]
   ) => {
     setLoadingSessao(true);
-    return sessionApi
-      .swapPresentationsOnSession(idSession, body)
-      .then((response) => {
+    const body = { presentations };
+    return sessionApi.swapPresentationsOnSession(idSession, body).then(() => {
         showAlert({
           icon: "success",
           title:
@@ -245,14 +244,11 @@ export const SessionProvider = ({ children }: SessionProps) => {
 
         return true;
       })
-      .catch((err) => {
+      .catch((errors) => {
         showAlert({
           icon: "error",
           title: "Erro na troca da ordem das apresentações da sessão",
-          text:
-            err.response?.data?.message?.message ||
-            err.response?.data?.message ||
-            "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+          text: "Ocorreu um erro durante a troca. Tente novamente mais tarde!",
           confirmButtonText: "Retornar",
         });
 

@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import ReactDragListView from "react-drag-listview";
 import "./style.scss";
 
+export interface DraggedMovement {
+  fromId: string;
+  toId: string;
+}
 interface DraggableList {
   list: any[];
   labelTitle: string;
   labelSubtitle: string;
-  onChangeOrder(data: any[], fromIndex: number, toIndex: number): void; 
+  onChangeOrder(data: any[], draggedMovement: DraggedMovement[]): void; 
 }
 export default function DraggableList({
   list = [],
@@ -16,7 +20,7 @@ export default function DraggableList({
 }: Readonly<DraggableList>) {
   const [listedData, setListedData] = useState<any[]>([]);
   const [draggedItem, setDraggedItem] = useState<any>({});
-  const draggedMove = [];
+  const [draggedMove, setDraggedMove] = useState<DraggedMovement[]>([]);
 
   setTimeout(() => {
     if (listedData && !listedData.length) setListedData(list);
@@ -27,6 +31,22 @@ export default function DraggableList({
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
     return result;
+  };
+
+  const historyMovement = (fromIndex: number, toIndex: number) => {
+    const toId = listedData[toIndex].id;
+    const fromId = listedData[fromIndex].id;
+    const isRevertMovement = draggedMove.findIndex(movement => movement.fromId == toId && movement.toId == fromId);
+    const isRepeatedMovement = draggedMove.findIndex(movement => movement.fromId == fromId && movement.toId == toId);
+
+    if (isRevertMovement >= 0) {
+      draggedMove.splice(isRevertMovement, 1);
+    } else 
+    if (isRepeatedMovement <= 0) {
+      draggedMove.push({ fromId, toId });
+    }
+
+    setDraggedMove([...draggedMove]);
   };
 
   const onDragStart = (e, index) => {
@@ -48,9 +68,7 @@ export default function DraggableList({
     // add the dragged item after the dragged over item
     orderedDataList.splice(toIndex, 0, draggedItem);
 
-    // draggedMove.push({ fromIndex, toIndex });
-
-    // setDraggedMove(draggedMove);
+    historyMovement(fromIndex, toIndex);
 
     return setListedData(orderedDataList);
   };
@@ -60,9 +78,16 @@ export default function DraggableList({
     if (toIndex < 0) return;
 
     /* REORDER PARENT OR SUBLIST, ELSE THROW ERROR */
-    const orderedDataList = reorder(listedData, fromIndex, toIndex);
-    onChangeOrder(orderedDataList, fromIndex, toIndex);
-    return setListedData(orderedDataList);
+    // const orderedDataList = reorder(listedData, fromIndex, toIndex);
+    const movements: any = [];
+    draggedMove.forEach((m) => {
+      if (!movements.find(movement => movement.fromId == m.fromId && movement.toId == m.toId)) {
+        movements.push(m);  
+      }
+    });
+    onChangeOrder(listedData, movements);
+    setDraggedMove([]);
+    // return setListedData(orderedDataList);
   };
   
   return (

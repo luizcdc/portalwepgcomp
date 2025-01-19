@@ -44,7 +44,7 @@ export const sessionApi = {
     },
 
     swapPresentationsOnSession: async ( idSession: string,
-        body: SwapPresentationsOnSession) => {
+        body: SwapMultiplePresentationsOnSession) => {
         const { data } = await instance.patch(`${baseUrl}/${idSession}/presentations/swap`, body);
 
         return data;

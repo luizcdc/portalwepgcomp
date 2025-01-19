@@ -5,7 +5,7 @@ import "./style.scss";
 import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import { useSession } from "@/hooks/useSession";
 import { useEffect, useState } from 'react';
-import DraggableList from '@/components/DraggableList/DraggableList';
+import DraggableList, { DraggedMovement } from '@/components/DraggableList/DraggableList';
 import { getEventEditionIdStorage } from '@/context/AuthProvider/util';
 
 export default function ModalSessaoOrdenarApresentacoes() {
@@ -19,16 +19,22 @@ export default function ModalSessaoOrdenarApresentacoes() {
     setListaOrdenada(listaOrdenadaSessao);
   }, [sessao]);
 
-  const handleOnChangeOrder = async (data: any[], fromIndex: number, toIndex: number) => {
-    const apresentacao1 = sessao?.presentations[fromIndex];
-    const apresentacao2 = sessao?.presentations[toIndex];
+  const getPresentationId = (id): string => sessao?.presentations?.find(p => p.submissionId == id)?.id || "";
+
+  const handleOnChangeOrder = async (data: any[], draggedMovement: DraggedMovement[]) => {
     const eventEditionId = getEventEditionIdStorage();
     
-    
-    await swapPresentationsOnSession(sessao?.id || "", eventEditionId ?? "", {
-      presentation1Id: apresentacao1?.id || "",
-      presentation2Id: apresentacao2?.id || "",
-    });
+    const swapPresentationBodies = draggedMovement
+      .map(movement => ({
+        presentation1Id: getPresentationId(movement.fromId),
+        presentation2Id: getPresentationId(movement.toId)
+      } as SwapPresentationsOnSession));
+
+    await swapPresentationsOnSession(
+      sessao?.id || "",
+      eventEditionId ?? "",
+      swapPresentationBodies
+    );
 
     setListaOrdenada(data);
   }
