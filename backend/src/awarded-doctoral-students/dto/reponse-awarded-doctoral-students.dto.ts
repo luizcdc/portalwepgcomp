@@ -88,11 +88,11 @@ export class RankingResponseDtoDto {
     // Convert to number with two decimal places or set to null if not available
     this.publicAverageScore =
       presentation.publicAverageScore !== null
-        ? Number(Number(presentation.publicAverageScore).toFixed(2))
+        ? Number(presentation.publicAverageScore.toFixed(2))
         : null;
     this.evaluatorsAverageScore =
       presentation.evaluatorsAverageScore !== null
-        ? Number(Number(presentation.evaluatorsAverageScore).toFixed(2))
+        ? Number(presentation.publicAverageScore.toFixed(2))
         : null;
 
     this.submission = new SubmissionDto({
