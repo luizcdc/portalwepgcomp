@@ -62,9 +62,8 @@ export class EventEditionController {
     );
   }
 
+  @Public()
   @Get()
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
-  @ApiBearerAuth()
   async getAll() {
     return await this.eventEditionService.getAll();
   }

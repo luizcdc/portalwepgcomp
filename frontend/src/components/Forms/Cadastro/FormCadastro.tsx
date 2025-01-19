@@ -109,10 +109,8 @@ export function FormCadastro() {
   const [senha, setSenha] = useState("");
   const [requisitos, setRequisitos] = useState({
     minLength: false,
-    upperCase: false,
-    lowerCase: false,
+    hasLetter: false,
     number: false,
-    specialChar: false,
   });
 
   const handleFormCadastro = (data: FormCadastroSchema) => {
@@ -151,10 +149,8 @@ export function FormCadastro() {
 
     setRequisitos({
       minLength: value.length >= 8,
-      upperCase: /[A-Z]/.test(value),
-      lowerCase: /[a-z]/.test(value),
-      number: /\d.*\d.*\d.*\d/.test(value),
-      specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+      hasLetter: /[a-zA-Z]/.test(value),
+      number: /\d/.test(value)
     });
   };
 
@@ -198,7 +194,12 @@ export function FormCadastro() {
               className="form-check-label fw-bold input-title"
               htmlFor="radio1"
             >
-              Doutorando
+              Doutorando (PGCOMP)
+              <i
+                className="bi bi-info-circle ms-2"
+                data-bs-toggle="tooltip"
+                title="Aluno do PGCOMP que irá apresentar projetos no workshop."
+              ></i>
             </label>
           </div>
           <div className="form-check me-3">
@@ -213,7 +214,12 @@ export function FormCadastro() {
               className="form-check-label fw-bold input-title"
               htmlFor="radio2"
             >
-              Professor
+              Professor (PGCOMP)
+              <i
+                className="bi bi-info-circle ms-2"
+                data-bs-toggle="tooltip"
+                title=" Professor do PGCOMP que poderá assistir e avaliar os projetos apresentados no workshop."
+              ></i>
             </label>
           </div>
           <div className="form-check">
@@ -229,6 +235,11 @@ export function FormCadastro() {
               htmlFor="radio3"
             >
               Ouvinte
+              <i
+                className="bi bi-info-circle ms-2"
+                data-bs-toggle="tooltip"
+                title="Participantes que irão assistir ou expor no workshop."
+              ></i>
             </label>
           </div>
         </div>
@@ -297,9 +308,8 @@ export function FormCadastro() {
           </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${
-                requisitos.minLength ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -309,52 +319,26 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.upperCase ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.hasLetter ? "text-success" : "text-danger"
+                }`}
             >
-              {requisitos.upperCase ? (
+              {requisitos.hasLetter ? (
                 <i className="bi bi-shield-fill-check" />
               ) : (
                 <i className="bi bi-shield-fill-x" />
               )}{" "}
-              1 letra maiúscula
+              1 letra
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.lowerCase ? "text-success" : "text-danger"
-              }`}
-            >
-              {requisitos.lowerCase ? (
-                <i className="bi bi-shield-fill-check" />
-              ) : (
-                <i className="bi bi-shield-fill-x" />
-              )}{" "}
-              1 letra minúscula
-            </li>
-            <li
-              className={`fw-semibold list-title ${
-                requisitos.number ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
               ) : (
                 <i className="bi bi-shield-fill-x" />
               )}{" "}
-              4 números
-            </li>
-            <li
-              className={`fw-semibold list-title ${
-                requisitos.specialChar ? "text-success" : "text-danger"
-              }`}
-            >
-              {requisitos.specialChar ? (
-                <i className="bi bi-shield-fill-check" />
-              ) : (
-                <i className="bi bi-shield-fill-x" />
-              )}{" "}
-              1 caracter especial
+              1 número
             </li>
           </ul>
         </div>

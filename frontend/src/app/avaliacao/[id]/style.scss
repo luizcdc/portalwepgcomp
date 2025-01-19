@@ -5,6 +5,11 @@
     gap: 50px;
     margin-bottom: 300px;
 }
+.i{
+    display: flex;
+    align-items: start;
+    justify-content: flex-start;
+}
 .avalieElementos{
     display: flex;
     flex-direction: row;
@@ -59,4 +64,16 @@
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
+}
+
+@media (max-width: 830px){
+    .avalieElementos{
+        width: 90%;
+        height: 30%;
+    }
+
+    .avalieTexto{
+        text-align: center;
+        width: 95%;
+    }
 }

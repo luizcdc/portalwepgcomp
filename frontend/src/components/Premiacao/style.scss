@@ -28,3 +28,14 @@
         }
     }
 }
+
+@media (max-width: 1000px) {
+    .premiacao-list {
+        padding: 20px 20px;
+    }
+
+    .input-group {
+        display: flex;
+        justify-content: center;
+    }
+}
