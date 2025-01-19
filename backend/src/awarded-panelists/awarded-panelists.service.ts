@@ -33,7 +33,7 @@ export class AwardedPanelistsService {
     // check if the panelists are valid
     const validPanelists = await this.prismaClient.panelist.findMany({
       where: {
-        userId: { in: panelists.map((p) => p.userId) },
+        userId: { in: userIds },
         presentationBlock: { eventEditionId },
       },
       distinct: ['userId'],
