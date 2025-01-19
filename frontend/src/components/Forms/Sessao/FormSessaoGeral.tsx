@@ -305,7 +305,8 @@ export default function FormSessaoAuxiliar() {
         <button
           type="submit"
           id="sg-submit-button"
-          className="btn btn-primary button-modal-component button-sessao-Auxiliar"
+          className="btn btn-primary button-modal-component button-sessao-auxiliar"
+          disabled={!Edicao?.isActive}
         >
           {confirmButton.label}
         </button>

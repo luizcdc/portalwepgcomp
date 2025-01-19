@@ -12,20 +12,20 @@ on:
 defaults:
   run:
     working-directory: backend
-    
+
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x]
-        
+
     steps:
       - uses: actions/checkout@v2
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} 
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Clean modules
         run: npm run clean
       - name: Create .env
@@ -57,8 +57,8 @@ jobs:
           fail_on_empty: false
           sort_keys: false
       - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} 
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Execute migrations
         run: npm run prisma:migrate
       - name: Deploy Project Artifacts to Vercel
-        run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }} 
+        run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }}

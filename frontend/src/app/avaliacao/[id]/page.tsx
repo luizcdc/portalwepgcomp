@@ -13,6 +13,7 @@ import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { usePresentation } from "@/hooks/usePresentation";
 import LoadingPage from "@/components/LoadingPage";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Avaliacao({ params }) {
   const [saveEvaluation, setSaveEvaluation] = useState<
@@ -29,6 +30,7 @@ export default function Avaliacao({ params }) {
   } = useEvaluation();
   const { getPresentationAll, presentationList } = usePresentation();
   const { user } = useContext(AuthContext);
+  const { Edicao } = useEdicao();
 
   const sendEvaluation = () => {
     const body: EvaluationParams[] =
@@ -85,35 +87,35 @@ export default function Avaliacao({ params }) {
   return (
     <ProtectedLayout>
       <div
-        className='d-flex flex-column'
+        className="d-flex flex-column"
         style={{
           gap: "10px",
         }}
       >
-        <Banner title='Avaliação' />
+        <Banner title="Avaliação" />
         {(loadingEvaluation || !presentation?.submission?.title) && (
           <LoadingPage />
         )}
         {!loadingEvaluation && presentation?.submission?.title && (
-          <div className='avalieApresentacao'>
-            <div className='avalieElementos'>
-              <div className='avalieIdentificador'>
-                <div className='avalieApresentador'>
+          <div className="avalieApresentacao">
+            <div className="avalieElementos">
+              <div className="avalieIdentificador">
+                <div className="avalieApresentador">
                   {presentation?.submission?.mainAuthor?.name}
                 </div>
-                <div className='avaliePesquisa'>
+                <div className="avaliePesquisa">
                   {presentation?.submission?.title}
                 </div>
               </div>
             </div>
 
-            <div className='avaliePerguntas'>
+            <div className="avaliePerguntas">
               {saveEvaluation?.map((evaluationData, devIndex) => (
                 <div
                   key={evaluationData?.criteria?.id}
-                  className='avalieQuestion'
+                  className="avalieQuestion"
                 >
-                  <div className='avalieTexto'>
+                  <div className="avalieTexto">
                     {`${devIndex + 1}. ${
                       evaluationData?.criteria?.description
                     }`}
@@ -142,11 +144,11 @@ export default function Avaliacao({ params }) {
                 </div>
               ))}
               {!saveEvaluation?.length && (
-                <div className='d-flex align-items-center justify-content-center p-3 mt-4 me-5'>
-                  <h4 className='empty-list mb-0'>
+                <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+                  <h4 className="empty-list mb-0">
                     <Image
-                      src='/assets/images/empty_box.svg'
-                      alt='Lista vazia'
+                      src="/assets/images/empty_box.svg"
+                      alt="Lista vazia"
                       width={90}
                       height={90}
                     />
@@ -155,21 +157,21 @@ export default function Avaliacao({ params }) {
                 </div>
               )}
             </div>
-            <div className='d-flex  flex-direction-row'>
+            <div className="d-flex  flex-direction-row">
               <button
-                className='avalieButton'
+                className="avalieButton"
                 onClick={sendEvaluation}
-                disabled={loadingEvaluation}
+                disabled={loadingEvaluation || !Edicao?.isActive}
               >
                 Enviar
               </button>
               <i
-                className='bi bi-info-circle ms-4 gap-3 fs-5'
-                data-bs-toggle='tooltip'
-                title='O sistema calcula a nota final de cada apresentação usando média bayesiana, separando avaliações de avaliadores e público geral. 
+                className="bi bi-info-circle ms-4 gap-3 fs-5"
+                data-bs-toggle="tooltip"
+                title="O sistema calcula a nota final de cada apresentação usando média bayesiana, separando avaliações de avaliadores e público geral. 
               A fórmula central é: (N × Média da Amostra + C × Média Prévia) / (N + C), onde N é o número de avaliações recebidas pela apresentação, C é o número de confiança (calculado pelo percentil 40% do número de avaliações por apresentação no evento), Média da Amostra é a média ponderada das avaliações recebidas pela apresentação e Média Prévia é a média geral do evento.
               Se não houver dados suficientes para o calculo das estatisticas do evento (geral em seu inicio), são utiliados valores padrão:
-              Número de Confiança: 5 para o público e 3 para os avaliadores.'
+              Número de Confiança: 5 para o público e 3 para os avaliadores."
               ></i>
             </div>
           </div>

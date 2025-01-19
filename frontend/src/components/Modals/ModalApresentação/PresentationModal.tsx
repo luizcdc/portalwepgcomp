@@ -8,6 +8,7 @@ import Star from "@/components/UI/Star";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { usePresentation } from "@/hooks/usePresentation";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function PresentationModal({ props }: { props: any }) {
   const presentationBookmarkData = { presentationId: props.id };
@@ -21,6 +22,7 @@ export default function PresentationModal({ props }: { props: any }) {
 
   const { signed } = useContext(AuthContext);
   const router = useRouter();
+  const { Edicao } = useEdicao();
 
   useEffect(() => {
     if (signed) {
@@ -29,7 +31,7 @@ export default function PresentationModal({ props }: { props: any }) {
       );
     }
   }, []);
-  
+
   function handleFavorite() {
     if (!signed) {
       router.push("/login");
@@ -44,11 +46,11 @@ export default function PresentationModal({ props }: { props: any }) {
       bookmarked: !(presentationBookmark && presentationBookmark.bookmarked),
     });
   }
-  
+
   const handleEvaluateClick = () => {
     window.location.href = `/avaliacao/${props.id}`;
   };
-  
+
   const presentationDate = moment(props.presentationTime).format("DD/MM");
   const presentationTime = moment(props.presentationTime).format("HH:MM");
   return (
@@ -80,7 +82,9 @@ export default function PresentationModal({ props }: { props: any }) {
             className="d-flex flex-row align-items-start"
             style={{ gap: "10px" }}
           >
-            <strong>{props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}</strong>
+            <strong>
+              {props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}
+            </strong>
             <div> | </div>
             <div>{props?.submission?.mainAuthor?.email}</div>
           </div>
@@ -88,7 +92,7 @@ export default function PresentationModal({ props }: { props: any }) {
             Orientador(a): {props.submission?.advisor?.name}
           </h4>
         </div>
-        {!!signed && (
+        {!!signed && !!Edicao?.isActive && (
           <div>
             <button className="avaliar-button" onClick={handleEvaluateClick}>
               Avaliar
@@ -108,7 +112,7 @@ export default function PresentationModal({ props }: { props: any }) {
         >
           {presentationDate} - SALA A - {presentationTime}
         </em>
-        {!!signed && (
+        {!!signed && !!Edicao?.isActive && (
           <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
             {presentationBookmark && (
               <Star
