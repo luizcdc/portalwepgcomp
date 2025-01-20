@@ -1,5 +1,6 @@
 .cadastro{
-    margin-top: 100px;
+    width: 100%;
+    max-width: 680px;
 
     h1,
     h2 {
@@ -14,5 +15,14 @@
         border-width: 0.125rem;
         border-color: #FFA90F;
         border-style: solid;
+    }
+}
+
+@media (max-width: 1000px) {
+    .cadastro{
+        h1,
+        h2 {
+            font-size: 1.5rem;
+        }
     }
 }
