@@ -31,6 +31,13 @@ export class UserController {
     return await this.userService.create(createUserDto);
   }
 
+  @Post('set-default')
+  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
+  @ApiBearerAuth()
+  async setDefault(@Body() setDefaultDto: SetAdminDto) {
+    return await this.userService.setDefault(setDefaultDto);
+  }
+
   @Post('set-admin')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   @ApiBearerAuth()

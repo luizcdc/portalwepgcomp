@@ -24,7 +24,7 @@ interface EdicaoProviderData {
   edicoesList: Edicao[];
   Edicao: Edicao | null;
   setEdicao: Dispatch<SetStateAction<Edicao | null>>;
-  listEdicao: () => void;
+  listEdicao: () => Promise<Edicao[]>;
   getEdicaoById: (idEdicao: string) => void;
   getEdicaoByYear: (year: string) => void;
   createEdicao: (body: EdicaoParams) => Promise<boolean>;
@@ -46,13 +46,15 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
   const { showAlert } = useSweetAlert();
 
   const listEdicao = async () => {
-    setLoadingEdicao(true);
+    setLoadingEdicoesList(true);
 
     try {
       const response = await edicaoApi.listEdicao();
       setEdicoesList(response);
+      return response;
     } catch (err: any) {
       setEdicoesList([]);
+      return [];
     } finally {
       setLoadingEdicoesList(false);
     }
@@ -67,7 +69,7 @@ export const EdicaoProvider = ({ children }: EdicaoProps) => {
     } catch (err: any) {
       setEdicao(null);
     } finally {
-      setLoadingEdicoesList(false);
+      setLoadingEdicao(false);
     }
   };
 

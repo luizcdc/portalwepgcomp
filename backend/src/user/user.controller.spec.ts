@@ -21,6 +21,7 @@ describe('UserController', () => {
           provide: UserService,
           useValue: {
             create: jest.fn(),
+            setDefault: jest.fn(),
             setAdmin: jest.fn(),
             setSuperAdmin: jest.fn(),
             remove: jest.fn(),
@@ -72,6 +73,37 @@ describe('UserController', () => {
 
       expect(userService.create).toHaveBeenCalledWith(createUserDto);
       expect(result).toEqual(userResponse);
+    });
+  });
+
+  describe('set-default', () => {
+    it('should set an user as default and return the result', async () => {
+      const setDefaultDto: SetAdminDto = {
+        requestUserId: 'c73c2c5a-b6ee-4d8e-a47a-5c159728f2ea',
+        targetUserId: '6047cb57-db11-4dc4-a305-33b86723dd09',
+      };
+
+      const setDefaultResponse = {
+        id: '1',
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        photoFilePath: 'user-photo-url',
+        profile: Profile.Professor,
+        level: UserLevel.Default,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isVerified: false,
+      };
+
+      jest
+        .spyOn(userService, 'setDefault')
+        .mockResolvedValue(setDefaultResponse);
+
+      const result = await controller.setDefault(setDefaultDto);
+
+      expect(userService.setDefault).toHaveBeenCalledWith(setDefaultDto);
+      expect(result).toEqual(setDefaultResponse);
     });
   });
 
