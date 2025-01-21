@@ -10,6 +10,7 @@ import {
 
 import { sessionApi } from "@/services/sessions";
 import { useSweetAlert } from "@/hooks/useAlert";
+import { useSweetToast } from "@/hooks/useToast";
 
 interface SessionProps {
   children: ReactNode;
@@ -56,6 +57,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const [roomsList, setRoomsList] = useState<Room[]>([]);
 
   const { showAlert } = useSweetAlert();
+  const { showToast } = useSweetToast();
 
   const listSessions = async (eventEditionId: string) => {
     setLoadingSessoesList(true);
@@ -233,23 +235,18 @@ export const SessionProvider = ({ children }: SessionProps) => {
     setLoadingSessao(true);
     const body = { presentations };
     return sessionApi.swapPresentationsOnSession(idSession, body).then(() => {
-        showAlert({
+        showToast({
           icon: "success",
-          title:
-            "Troca na ordem das apresentações da sessão realizada com sucesso!",
-          timer: 3000,
-          showConfirmButton: false,
+          title: "Troca na ordem das apresentações da sessão realizada com sucesso!",
         });
         listSessions(eventEditionId);
 
         return true;
       })
       .catch(() => {
-        showAlert({
+        showToast({
           icon: "error",
           title: "Erro na troca da ordem das apresentações da sessão",
-          text: "Ocorreu um erro durante a troca. Tente novamente mais tarde!",
-          confirmButtonText: "Retornar",
         });
 
         return false;
