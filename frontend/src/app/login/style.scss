@@ -3,10 +3,15 @@ h1 {
     color: #0066BA;
 }
 
+.container {
+    max-width: 654px;
+}
+
 hr {
-    border-width: 0.125rem;
+    border-width: 0.12rem;
     border-color: #FFA90F;
     border-style: solid;
+    max-width: 654px;
 }
 
 .link {
