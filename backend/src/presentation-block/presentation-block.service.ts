@@ -4,7 +4,7 @@ import { AppException } from '../exceptions/app.exception';
 import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto';
 import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto';
 import { PresentationBlockType, PresentationStatus } from '@prisma/client';
-import { SwapMltiplePresentationsDto, SwapPresentationsDto } from './dto/swap-presentations.dto';
+import { SwapMultiplePresentationsDto, SwapPresentationsDto } from './dto/swap-presentations.dto';
 
 @Injectable()
 export class PresentationBlockService {
@@ -512,9 +512,9 @@ export class PresentationBlockService {
 
   async swapPresentations(
     id: string,
-    swapMltiplePresentationsDto: SwapMltiplePresentationsDto,
+    SwapMultiplePresentationsDto: SwapMultiplePresentationsDto,
   ) {
-    for (const swapPresentationDto of swapMltiplePresentationsDto.presentations) {
+    for (const swapPresentationDto of SwapMultiplePresentationsDto.presentations) {
       const { presentation1Id, presentation2Id } = swapPresentationDto;
   
       const presentation1 = await this.prismaClient.presentation.findUnique({

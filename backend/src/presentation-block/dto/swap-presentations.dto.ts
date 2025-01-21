@@ -7,6 +7,6 @@ export class SwapPresentationsDto {
   presentation2Id: string;
 }
 
-export class SwapMltiplePresentationsDto {
+export class SwapMultiplePresentationsDto {
   presentations: SwapPresentationsDto[];
 }
