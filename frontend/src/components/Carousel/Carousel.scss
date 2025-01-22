@@ -103,9 +103,41 @@
     margin-top: 1rem;
 }
 
+@media (max-width:1024px)  {
+    .carousel-component .slide-2-content .concept-content {
+        display: none;
+    }
+}
+
+@media (max-width:760px)  {
+    .carousel-slide-content {
+        height: 70vh;
+    }
+
+    .carousel-component .title {
+        font-size: 1.6rem;
+    }
+
+    .carousel-component p {
+        font-size: 1rem;
+    }
+
+    .carousel-component a {
+        font-size: 1rem !important;
+    }
+
+    .carousel-component .lead {
+        text-align: center;
+    }
+
+    .slide-2-content {
+        flex-direction: column;
+    }
+}
+
 @media (max-width:700px)  {
     .carousel-slide .carousel-slide-content{
-        height: 50vh;
+        height: 70vh;
         min-height: 450px;
 
         h1.text-center {
@@ -144,7 +176,7 @@
     }
 
     .carousel-slide .carousel-slide-content{
-        height: 40vh;
+        height: 70vh;
         min-height: 300px;
 
         h1.text-center {

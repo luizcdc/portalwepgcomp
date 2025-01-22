@@ -58,7 +58,6 @@ export function FormLogin() {
   } else {
     return (
       <form className='row login' onSubmit={handleSubmit(handleLogin)}>
-        <hr />
         <div className='col-12 mb-3'>
           <label className='form-label fw-bold form-title'>
             E-mail
@@ -105,7 +104,7 @@ export function FormLogin() {
             </button>
           </div>
         </div>
-        <div className='d-grid gap-2 col-3 mx-auto mb-4'>
+        <div className='d-flex gap-2 mx-auto mb-4'>
           <button
             type='submit'
             className='btn text-white fw-semibold fs-6 button-primary'

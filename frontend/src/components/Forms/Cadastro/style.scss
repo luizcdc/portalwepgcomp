@@ -42,3 +42,21 @@ input::placeholder {
 .eye{
     cursor: pointer;
 }
+
+@media (max-width: 1000px) {
+    .form-label{
+        font-size: 1.05rem !important;
+    }
+
+    .mt-5 {
+        margin: 0 !important;
+    }
+
+    .mx-auto {
+        width: 100%;
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        margin: 0 !important;
+    }
+}
