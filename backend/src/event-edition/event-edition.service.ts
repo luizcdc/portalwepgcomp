@@ -16,7 +16,6 @@ import {
 } from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
 import { Cron } from '@nestjs/schedule';
-import { AppException } from 'src/exceptions/app.exception';
 
 @Injectable()
 export class EventEditionService {
@@ -55,8 +54,14 @@ export class EventEditionService {
         data: {
           name: createEventEditionDto.name,
           description: createEventEditionDto.description,
-          callForPapersText: createEventEditionDto.callForPapersText,
-          partnersText: createEventEditionDto.partnersText,
+          callForPapersText:
+            createEventEditionDto.callForPapersText ||
+            activeEvent?.callForPapersText ||
+            '',
+          partnersText:
+            createEventEditionDto.partnersText ||
+            activeEvent?.partnersText ||
+            '',
           location: createEventEditionDto.location,
           startDate: createEventEditionDto.startDate,
           endDate: createEventEditionDto.endDate,
@@ -74,7 +79,7 @@ export class EventEditionService {
       // Copy evaluation criteria if they exist
       if (evaluationCriteria != null && evaluationCriteria.length > 0) {
         await Promise.all(
-          evaluationCriteria.map((criteria) =>
+          evaluationCriteria.map(async (criteria) =>
             prisma.evaluationCriteria.create({
               data: {
                 eventEditionId: createdEventEdition.id,
@@ -90,7 +95,7 @@ export class EventEditionService {
       // Copy rooms if they exist
       if (rooms != null && rooms.length > 0) {
         await Promise.all(
-          rooms.map((room) =>
+          rooms.map(async (room) =>
             prisma.room.create({
               data: {
                 eventEditionId: createdEventEdition.id,
@@ -167,30 +172,34 @@ export class EventEditionService {
     }
   }
 
-  async validateUniqueCommitteeMembers(createFromEventEditionFormDto: CreateFromEventEditionFormDto): Promise<void> {
+  async validateUniqueCommitteeMembers(
+    createFromEventEditionFormDto: CreateFromEventEditionFormDto,
+  ): Promise<void> {
     const {
-        organizingCommitteeIds,
-        itSupportIds,
-        administrativeSupportIds,
-        communicationIds,
+      organizingCommitteeIds,
+      itSupportIds,
+      administrativeSupportIds,
+      communicationIds,
     } = createFromEventEditionFormDto;
 
     // Agrupa todos os IDs em um único array
     const allIds = [
-        ...organizingCommitteeIds,
-        ...itSupportIds,
-        ...administrativeSupportIds,
-        ...communicationIds,
+      ...(organizingCommitteeIds || []),
+      ...(itSupportIds || []),
+      ...(administrativeSupportIds || []),
+      ...(communicationIds || []),
     ];
 
     // Verifica se há duplicações
-    const duplicates = allIds.filter((id, index) => allIds.indexOf(id) !== index);
+    const duplicates = allIds.filter(
+      (id, index) => allIds.indexOf(id) !== index,
+    );
 
     if (duplicates.length > 0) {
-        throw new BadRequestException(
-            //`Os seguintes IDs de usuários estão atribuídos a mais de um cargo: ${[...new Set(duplicates)].join(', ')}.`,
-            `Um usuário só pode assumir um cargo na comissão organizadora.`,
-        );
+      throw new BadRequestException(
+        //`Os seguintes IDs de usuários estão atribuídos a mais de um cargo: ${[...new Set(duplicates)].join(', ')}.`,
+        `Um usuário só pode assumir um cargo na comissão organizadora.`,
+      );
     }
   }
 
@@ -199,7 +208,7 @@ export class EventEditionService {
   ): Promise<EventEditionResponseDto> {
     // Valida os IDs antes de criar o evento
     await this.validateUniqueCommitteeMembers(createFromEventEditionFormDto);
-    
+
     const eventEdition = await this.create(createFromEventEditionFormDto);
 
     const { id: eventEditionId } = eventEdition;
@@ -244,37 +253,40 @@ export class EventEditionService {
     ids: Array<string>,
     role: CommitteeRole,
   ) {
+    if (!ids?.length) return;
+
     await Promise.all(
       ids.map(async (id) => {
-          const existingMember = await this.prismaClient.committeeMember.findUnique({
-              where: {
-                  eventEditionId_userId: {
-                      eventEditionId: eventEditionId,
-                      userId: id,
-                  },
-              },
-          });
-
-          if (existingMember) {
-            throw new BadRequestException(
-              'Um usuário só pode assumir um cargo na comissão organizadora.',
-            );
-          }
-    
-          const committeeMember = await this.prismaClient.committeeMember.create({
-            data: {
+        const existingMember =
+          await this.prismaClient.committeeMember.findUnique({
+            where: {
+              eventEditionId_userId: {
                 eventEditionId: eventEditionId,
                 userId: id,
-                level: CommitteeLevel.Committee,
-                role,
+              },
             },
           });
 
-          if (committeeMember) {
-            await this.updateUserLevel(id, committeeMember.level);
-          }
+        if (existingMember) {
+          throw new BadRequestException(
+            'Um usuário só pode assumir um cargo na comissão organizadora.',
+          );
+        }
+
+        const committeeMember = await this.prismaClient.committeeMember.create({
+          data: {
+            eventEditionId: eventEditionId,
+            userId: id,
+            level: CommitteeLevel.Committee,
+            role,
+          },
+        });
+
+        if (committeeMember) {
+          await this.updateUserLevel(id, committeeMember.level);
+        }
       }),
-    );  
+    );
   }
 
   private async updateUserLevel(
