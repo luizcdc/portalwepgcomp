@@ -22,11 +22,11 @@ export default function PerfilProfessor() {
             Emitir Certificado
           </Link>
         </li> */}
-        {/* <li>
-          <Link className="dropdown-item" href="#">
+        <li>
+          <Link className="dropdown-item" href="/minhas-bancas">
             Minhas bancas
           </Link>
-        </li> */}
+        </li>
         <li>
           <Link className="dropdown-item" href="/favoritos">
             Favoritos

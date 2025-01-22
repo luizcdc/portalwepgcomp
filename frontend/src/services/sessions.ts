@@ -49,4 +49,10 @@ export const sessionApi = {
 
         return data;
     },
+
+    listPresentionBlockByPanelist: async (idEventEdition: string, userIdofPanelist: string) => {
+        const { data } = await instance.get(`${baseUrl}?eventEditionId=${idEventEdition}&userIdofPanelist=${userIdofPanelist}`)
+       
+        return data;
+    }
 }
