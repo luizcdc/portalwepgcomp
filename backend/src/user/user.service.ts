@@ -402,4 +402,11 @@ export class UserService {
       throw error;
     }
   }
+
+  async updateRegistrationNumber(userId: string, registrationNumber: string | null): Promise<void> {
+    await this.prismaClient.userAccount.update({
+      where: { id: userId },
+      data: { registrationNumber },
+    });
+  }
 }
