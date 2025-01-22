@@ -8,10 +8,31 @@ import Star from "@/components/UI/Star";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { usePresentation } from "@/hooks/usePresentation";
-import { useEdicao } from "@/hooks/useEdicao";
 
-export default function PresentationModal({ props }: { props: any }) {
-  const presentationBookmarkData = { presentationId: props.id };
+interface PresentationCardProps {
+  id: string;
+  title: string;
+  subtitle: string;
+  name: string;
+  pdfFile: string;
+  email: string;
+  advisorName: string;
+  presentationData?: string;
+  onDelete?: () => void;
+}
+
+export default function PresentationCard({
+  id,
+  title,
+  subtitle,
+  name,
+  pdfFile,
+  email,
+  advisorName,
+  presentationData,
+  onDelete,
+}: Readonly<PresentationCardProps>) {
+  const presentationBookmarkData = { presentationId: id };
   const {
     getPresentationBookmark,
     postPresentationBookmark,
@@ -22,7 +43,6 @@ export default function PresentationModal({ props }: { props: any }) {
 
   const { signed } = useContext(AuthContext);
   const router = useRouter();
-  const { Edicao } = useEdicao();
 
   useEffect(() => {
     if (signed) {
@@ -31,7 +51,7 @@ export default function PresentationModal({ props }: { props: any }) {
       );
     }
   }, []);
-
+  
   function handleFavorite() {
     if (!signed) {
       router.push("/login");
@@ -39,6 +59,9 @@ export default function PresentationModal({ props }: { props: any }) {
     }
     if (presentationBookmark && presentationBookmark.bookmarked) {
       deletePresentationBookmark(presentationBookmarkData);
+      if(onDelete) {
+        onDelete();
+      }
     } else {
       postPresentationBookmark(presentationBookmarkData);
     }
@@ -46,17 +69,17 @@ export default function PresentationModal({ props }: { props: any }) {
       bookmarked: !(presentationBookmark && presentationBookmark.bookmarked),
     });
   }
-
+  
   const handleEvaluateClick = () => {
-    window.location.href = `/avaliacao/${props.id}`;
+    window.location.href = `/avaliacao/${id}`;
   };
-
-  const presentationDate = moment(props.presentationTime).format("DD/MM");
-  const presentationTime = moment(props.presentationTime).format("HH:MM");
+  
+  const presentationDate = moment(presentationData).format("DD/MM");
+  const presentationTime = moment(presentationData).format("HH:MM");
   return (
     <div
       className="d-flex align-items-start flex-column text-black"
-      style={{ padding: "0 25px 25px 25px", gap: "10px" }}
+      style={{ padding: "25px", gap: "10px", border: '3px solid #f17f0c', borderRadius: '10px'}}
     >
       <div
         className="d-flex align-items-center w-100"
@@ -70,7 +93,7 @@ export default function PresentationModal({ props }: { props: any }) {
           className="fw-semibold text-start"
           style={{ fontSize: "18px", lineHeight: "27px" }}
         >
-          {props?.submission?.title}
+          {title}
         </h3>
       </div>
       <div className="d-flex justify-content-between w-100">
@@ -82,17 +105,15 @@ export default function PresentationModal({ props }: { props: any }) {
             className="d-flex flex-row align-items-start"
             style={{ gap: "10px" }}
           >
-            <strong>
-              {props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}
-            </strong>
+            <strong>{name}</strong>
             <div> | </div>
-            <div>{props?.submission?.mainAuthor?.email}</div>
+            <div>{email}</div>
           </div>
           <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
-            Orientador(a): {props.submission?.advisor?.name}
+            Orientador(a): {advisorName}
           </h4>
         </div>
-        {!!signed && !!Edicao?.isActive && (
+        {!!signed && (
           <div>
             <button className="avaliar-button" onClick={handleEvaluateClick}>
               Avaliar
@@ -112,7 +133,7 @@ export default function PresentationModal({ props }: { props: any }) {
         >
           {presentationDate} - SALA A - {presentationTime}
         </em>
-        {!!signed && !!Edicao?.isActive && (
+        {!!signed && (
           <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
             {presentationBookmark && (
               <Star
@@ -130,7 +151,7 @@ export default function PresentationModal({ props }: { props: any }) {
               color: "#FFA90F",
               padding: "3px 20px",
             }}
-            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${props?.submission?.pdfFile}`}
+            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${pdfFile}`}
             download
             target="_blank"
           >
@@ -140,7 +161,7 @@ export default function PresentationModal({ props }: { props: any }) {
       </div>
       <div style={{ textAlign: "justify" }}>
         <strong>Abstract: </strong>
-        {props.submission?.abstract}
+        {subtitle}
       </div>
     </div>
   );

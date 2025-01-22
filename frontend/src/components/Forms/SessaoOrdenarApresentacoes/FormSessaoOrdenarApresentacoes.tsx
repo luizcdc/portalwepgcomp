@@ -11,6 +11,7 @@ import "./style.scss";
 import { useSession } from "@/hooks/useSession";
 import { useEffect, useState } from "react";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
+import { useEdicao } from "@/hooks/useEdicao";
 
 const formSessaoOrdenarApresentacoesSchema = z.object({
   apresentacao1: z
@@ -31,6 +32,8 @@ export default function FormSessaoOrdenarApresentacoes() {
   const { confirmButton } = ModalSessaoMock;
 
   const { swapPresentationsOnSession, sessao } = useSession();
+
+  const { Edicao } = useEdicao();
 
   type FormSessaoOrdenarApresentacoesSchema = z.infer<
     typeof formSessaoOrdenarApresentacoesSchema
@@ -139,6 +142,7 @@ export default function FormSessaoOrdenarApresentacoes() {
           type="submit"
           id="sa-submit-button"
           className="btn btn-primary button-modal-component button-sessao-geral"
+          disabled={!Edicao?.isActive}
         >
           {confirmButton.label}
         </button>
