@@ -129,16 +129,12 @@ export default function Listagem({
         <div className="listagem-template-cards">
           {!!cardsList.length &&
             !isFavorites &&
-            cardsList?.map((card) => (
-              !fullInfo ?
+            cardsList?.map((card) =>
+              !fullInfo ? (
                 <CardListagem
                   key={card.name}
-                  title={
-                    card?.title || "Sem Título"
-                  }
-                  subtitle={
-                    card.subtitle
-                  }
+                  title={card?.title || "Sem Título"}
+                  subtitle={card.subtitle}
                   generalButtonLabel={generalButtonLabel}
                   idGeneralModal={
                     card?.type == "Presentation" && !!card?.presentations.length
@@ -146,12 +142,15 @@ export default function Listagem({
                       : ""
                   }
                   idModalEdit={
-                    pathname?.includes("edicoes") ? "editarEdicaoModal" : idModal
+                    pathname?.includes("edicoes")
+                      ? "editarEdicaoModal"
+                      : idModal
                   }
                   onClickItem={() => onClickItem && onClickItem(card)}
                   onEdit={() => onEdit && onEdit(card?.id ?? "")}
                   onDelete={() => onDelete && onDelete(card?.id ?? "")}
-                /> :
+                />
+              ) : (
                 <PresentationCard
                   key={card.name}
                   id={card.id}
@@ -163,20 +162,20 @@ export default function Listagem({
                   advisorName={card.advisorName}
                   onDelete={() => onDelete && onDelete(card.id ?? "")}
                 />
-            ))}
+              )
+            )}
           {!!cardsList.length &&
             isFavorites &&
-            cardsList?.map((card) => (
-              !fullInfo ?
+            cardsList?.map((card) =>
+              !fullInfo ? (
                 <CardListagem
                   key={card.name}
                   title={card.title}
-                  subtitle={
-                    card.subtitle
-                  }
+                  subtitle={card.subtitle}
                   showFavorite
                   onClickItem={() => onClickItem && onClickItem(card)}
-                /> :
+                />
+              ) : (
                 <PresentationCard
                   key={card.name}
                   id={card.id}
@@ -188,7 +187,8 @@ export default function Listagem({
                   advisorName={card.advisorName}
                   onDelete={() => onDelete && onDelete(card.id ?? "")}
                 />
-            ))}
+              )
+            )}
           {!cardsList.length && (
             <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
               <h4 className="empty-list mb-0">

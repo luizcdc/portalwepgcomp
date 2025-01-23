@@ -85,8 +85,8 @@ export default function PresentationModal({ props }: { props: any }) {
         <h5 className="m-0 text-white calendar-text">
           {presentationDate} - SALA A - {presentationTime}
         </h5>
-        {!!signed && (
-          <div onClick={handleFavorite} className="pe-auto">
+        {!!signed && !!Edicao?.isActive && (
+          <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
             {presentationBookmark && (
               <Star
                 color={presentationBookmark.bookmarked ? "#F17F0C" : "#D9D9D9"}
