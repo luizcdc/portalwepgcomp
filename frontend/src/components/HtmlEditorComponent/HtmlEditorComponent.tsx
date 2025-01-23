@@ -5,6 +5,7 @@ import HtmlEditor from "../HtmlEditor/HtmlEditor";
 import "./style.scss";
 
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useEdicao } from "@/hooks/useEdicao";
 
 interface HtmlEditorComponentProps {
   content: string;
@@ -19,12 +20,13 @@ export default function HtmlEditorComponent({
 }: Readonly<HtmlEditorComponentProps>) {
   const [preview, setPreview] = useState<boolean>(!content);
   const { user } = useContext(AuthContext);
+  const { Edicao } = useEdicao();
 
   const isAdm = user?.level === "Superadmin";
 
   return (
     <div className="previewHtmlEditor">
-      {!isAdm || preview ? (
+      {!isAdm || preview || !Edicao?.isActive ? (
         <div dangerouslySetInnerHTML={{ __html: content }} />
       ) : (
         <HtmlEditor value={content} onChange={onChange} />
@@ -35,6 +37,7 @@ export default function HtmlEditorComponent({
           <button
             className="buttonPreviewHtmlEditor"
             onClick={() => setPreview(!preview)}
+            disabled={!Edicao?.isActive}
           >
             {preview ? "Editar" : "Ver prévia"}
           </button>
@@ -42,6 +45,7 @@ export default function HtmlEditorComponent({
             <button
               className="buttonPreviewHtmlEditor"
               onClick={handleEditField}
+              disabled={!Edicao?.isActive}
             >
               Salvar
             </button>

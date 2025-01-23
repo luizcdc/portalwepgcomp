@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import Star from "@/components/UI/Star";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { usePresentation } from "@/hooks/usePresentation";
+import { useEdicao } from "@/hooks/useEdicao";
 
 import "./style.scss";
 
@@ -22,6 +23,7 @@ export default function PresentationModal({ props }: { props: any }) {
 
   const { signed } = useContext(AuthContext);
   const router = useRouter();
+  const { Edicao } = useEdicao();
 
   useEffect(() => {
     if (signed) {
@@ -71,7 +73,7 @@ export default function PresentationModal({ props }: { props: any }) {
             Orientador(a): {props.submission?.advisor?.name}
           </h5>
         </div>
-        {!!signed && (
+        {!!signed && !!Edicao?.isActive && (
           <div>
             <button className="avaliar-button" onClick={handleEvaluateClick}>
               Avaliar

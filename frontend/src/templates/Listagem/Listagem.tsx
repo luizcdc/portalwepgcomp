@@ -8,13 +8,19 @@ import CardListagem from "@/components/CardListagem/CardListagem";
 import Banner from "@/components/UI/Banner";
 
 import "./style.scss";
+import { useEdicao } from "@/hooks/useEdicao";
 
-export function mapCardList(list: any[], title = "title", subtitle = "subtitle", description = "description") {
-  return list.map(l => ({
+export function mapCardList(
+  list: any[],
+  title = "title",
+  subtitle = "subtitle",
+  description = "description"
+) {
+  return list.map((l) => ({
     title: l[title],
     subtitle: l[subtitle],
     description: l[description],
-    ...l
+    ...l,
   }));
 }
 
@@ -61,13 +67,14 @@ export default function Listagem({
   fullInfo,
 }: Readonly<ListagemProps>) {
   const pathname = usePathname();
+  const { Edicao } = useEdicao();
 
   return (
     <div className="listagem-template">
       <Banner title={title} />
       <div className="listagem-template-content">
         <div className="listagem-template-user-area">
-          {labelAddButton ? (
+          {labelAddButton && !!Edicao?.isActive ? (
             <button
               type="button"
               data-bs-toggle={idModal ? "modal" : undefined}
@@ -89,7 +96,10 @@ export default function Listagem({
           {onChangeSearchValue && (
             <div
               className="input-group listagem-template-content-input"
-              style={{ visibility: isMyPresentation ? "hidden" : "visible", minWidth: "350px" }}
+              style={{
+                visibility: isMyPresentation ? "hidden" : "visible",
+                minWidth: "350px",
+              }}
             >
               <input
                 placeholder={searchPlaceholder}
