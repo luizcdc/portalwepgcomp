@@ -28,7 +28,6 @@ const formCadastroSchema = z.object({
     .min(1, "O abstract é obrigatório"),
   doutorando: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .uuid()
     .optional(),
   orientador: z.string({ invalid_type_error: "Campo Inválido" }).uuid({ message: "O orientador é obrigatório" }),
   coorientador: z.string().optional(),
