@@ -54,6 +54,7 @@ export default function ModalSessaoOrdenarApresentacoes() {
             list={listaOrdenada}
             labelTitle="title"
             labelSubtitle="abstract"
+            componentParentId="trocarOrdemApresentacao"
             onChangeOrder={handleOnChangeOrder}
             />
         </div>

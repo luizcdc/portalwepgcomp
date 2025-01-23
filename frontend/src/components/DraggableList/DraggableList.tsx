@@ -10,17 +10,21 @@ interface DraggableList {
   list: any[];
   labelTitle: string;
   labelSubtitle: string;
+  componentParentId?: string;
   onChangeOrder(data: any[], draggedMovement: DraggedMovement[]): void; 
 }
 export default function DraggableList({
   list = [],
   labelTitle,
   labelSubtitle,
+  componentParentId,
   onChangeOrder = () => {}
 }: Readonly<DraggableList>) {
   const [listedData, setListedData] = useState<any[]>([]);
   const [draggedItem, setDraggedItem] = useState<any>({});
+  const [draggedItemIndex, setDraggedItemIndex] = useState<number>(-1);
   const [draggedMove, setDraggedMove] = useState<DraggedMovement[]>([]);
+  const [touchMove, setTouchMove] = useState<number>(0);
 
   setTimeout(() => {
     if (listedData && !listedData.length) setListedData(list);
@@ -44,7 +48,50 @@ export default function DraggableList({
 
   const onDragStart = (e, index) => {
     setDraggedItem(listedData[index]);
+    setDraggedItemIndex(index);
   };
+
+  const onTouchEnd = (e) => {
+    if (draggedMove.length) {
+      onDragEnd();
+    }
+  }
+  const onTouchMove = (e) => {
+    if (e.changedTouches && e.changedTouches.length) {
+      const touch = e.changedTouches[0];
+      const movement = touch.clientY;
+      const componentParent = document.getElementById(componentParentId);
+      
+      const scroll = (y) => {
+        if (componentParent) {
+          componentParent.scrollTo(y, y);
+        }
+      } 
+      const moveToNext = (_index) => {
+        if (0 <= _index && listedData.length > _index) {
+          onDragOver(_index);
+          setTimeout(() => {
+            setDraggedItemIndex(_index);
+          }, 3000);
+        }
+      }
+
+      if (touchMove > (movement + 5)) {
+        const index = draggedItemIndex - 1;
+        scroll(movement + 5, movement + 5);
+        moveToNext(index);
+      } else
+      if (touchMove < (movement - 5)) {
+        const index = draggedItemIndex + 1;
+        scroll(movement - 5, movement - 5);
+        moveToNext(index);
+      }
+
+      if (!touchMove) {
+        setTouchMove(movement);
+      }
+    }
+  }
 
   const onDragOver = (toIndex) => {
     const draggedOverItem = listedData[toIndex];
@@ -71,7 +118,6 @@ export default function DraggableList({
     if (toIndex < 0) return;
 
     /* REORDER PARENT OR SUBLIST, ELSE THROW ERROR */
-    // const orderedDataList = reorder(listedData, fromIndex, toIndex);
     const movements: any = [];
     draggedMove.forEach((m) => {
       if (!movements.find(movement => movement.fromId == m.fromId && movement.toId == m.toId)) {
@@ -80,7 +126,6 @@ export default function DraggableList({
     });
     onChangeOrder(listedData, movements);
     setDraggedMove([]);
-    // return setListedData(orderedDataList);
   };
   
   return (
@@ -97,7 +142,10 @@ export default function DraggableList({
           className="draggable"
           key={index + "drag"}
           onDragStart={e => onDragStart(e, index)}
-          onDragOver={() => onDragOver(index)}>
+          onTouchStart={e => onDragStart(e, index)}
+          onDragOver={() => onDragOver(index)}
+          onTouchMove={(e) => onTouchMove(e)}
+          onTouchEnd={(e) => onTouchEnd(e)}>
           <div className="card-listagem mt-4">
             <div className="row">
               <div className="col-1 drag-icon grabbable">
