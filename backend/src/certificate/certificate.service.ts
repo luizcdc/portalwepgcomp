@@ -490,7 +490,6 @@ export class CertificateService {
    * - When user is a Doctoral Student without submissions (400)
    * - When user is a Professor without panel participations (400)
    *
-   * @private
    */
   public async validateUserEligibility(user, eventEdition) {
     if (!user) {
