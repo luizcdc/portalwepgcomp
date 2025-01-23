@@ -27,10 +27,6 @@ export default function CadastroApresentacao() {
                     <span className="ms-2">2025</span>
                   </h1>
                   <hr />
-                  <h2 className="d-flex justify-content-center mb-4 fw-bold text-black">
-                    Cadastro de Apresentação
-                  </h2>
-                  <br />
                 </div>
                 <div className="container d-flex justify-content-center mb-5">
                   <FormCadastroApresentacao />
