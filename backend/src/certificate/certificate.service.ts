@@ -5,7 +5,7 @@ import {
   PDFDocument,
   PDFFont,
   rgb,
-  StandardFonts,
+  // StandardFonts,
   TextAlignment,
 } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
@@ -13,6 +13,8 @@ import { AppException } from '../exceptions/app.exception';
 import { CommitteeLevel, Profile } from '@prisma/client';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { MailingService } from '../mailing/mailing.service';
 
 @Injectable()
 export class CertificateService {
@@ -24,7 +26,10 @@ export class CertificateService {
     medium: 'src/certificate/assets/SourceSerif4-Medium.ttf',
     bolditalic: 'src/certificate/assets/SourceSerif4-BoldItalic.ttf',
   };
-  constructor(private prismaClient: PrismaService) {}
+  constructor(
+    private prismaClient: PrismaService,
+    private mailingService: MailingService,
+  ) {}
 
   async generateCertificateForUser(
     userId: string,
@@ -492,9 +497,8 @@ export class CertificateService {
    * - When user is a Doctoral Student without submissions (400)
    * - When user is a Professor without panel participations (400)
    *
-   * @private
    */
-  private validateUserEligibility(user, eventEdition) {
+  public validateUserEligibility(user, eventEdition) {
     if (!user) {
       throw new AppException('Usuário não encontrado', 404);
     } else if (!eventEdition) {
@@ -524,6 +528,72 @@ export class CertificateService {
         'Professor não participou de mesas avaliadoras, portanto não pode receber certificado',
         404,
       );
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleCron() {
+    const oneDayBefore = new Date();
+    oneDayBefore.setDate(oneDayBefore.getDate() - 1);
+    oneDayBefore.setHours(0, 0, 0, 0);
+
+    const oneDayBeforeAdjusted = new Date(
+      oneDayBefore.getTime() - oneDayBefore.getTimezoneOffset() * 60000,
+    );
+    const nextDay = new Date(oneDayBeforeAdjusted);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    const events = await this.prismaClient.eventEdition.findMany({
+      where: {
+        isActive: true,
+        endDate: {
+          gte: oneDayBeforeAdjusted,
+          lt: nextDay,
+        },
+      },
+    });
+
+    for (const event of events) {
+      const users = await this.prismaClient.userAccount.findMany({
+        include: {
+          panelistParticipations: {
+            where: {
+              presentationBlock: {
+                eventEditionId: event.id,
+              },
+            },
+          },
+          mainAuthored: {
+            where: {
+              eventEditionId: event.id,
+            },
+          },
+          panelistAwards: {
+            where: {
+              eventEditionId: event.id,
+            },
+          },
+          certificates: {
+            where: { eventEditionId: event.id },
+          },
+        },
+      });
+
+      for (const user of users) {
+        try {
+          this.validateUserEligibility(user, event);
+
+          const text = `Seu certificado já está pronto para ser baixado na página do WEPGCOMP!`;
+          const CertificateEmail = {
+            from: `"${user.name}" <${user.email}>`,
+            to: user.email,
+            subject: 'Certificado',
+            text,
+          };
+
+          this.mailingService.sendEmail(CertificateEmail);
+        } catch {}
+      }
     }
   }
 }
