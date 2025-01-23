@@ -20,6 +20,7 @@ import { GuidanceModule } from './guidance/guidance.module';
 import { AwardedPanelistsModule } from './awarded-panelists/awarded-panelists.module';
 import { AwardedDoctoralStudentsModule } from './awarded-doctoral-students/awarded-doctoral-students.module';
 import { EvaluationCriteriaModule } from './evaluation-criteria/evaluation-criteria.module';
+import { ScoringModule } from './scoring/scoring.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { EvaluationCriteriaModule } from './evaluation-criteria/evaluation-crite
     AwardedPanelistsModule,
     AwardedDoctoralStudentsModule,
     EvaluationCriteriaModule,
+    ScoringModule,
   ],
   controllers: [AppController],
   providers: [AppService],

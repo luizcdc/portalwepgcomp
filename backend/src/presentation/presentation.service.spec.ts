@@ -1,5 +1,6 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmissionService } from '../submission/submission.service';
+import { ScoringService } from '../scoring/scoring.service';
 import { PresentationService } from './presentation.service';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { PresentationResponseDto } from './dto/response-presentation.dto';
@@ -28,6 +29,7 @@ describe('PresentationService', () => {
   let service: PresentationService;
   let prismaService: PrismaService;
   let submissionService: SubmissionService;
+  let scoringService: ScoringService;
 
   beforeEach(() => {
     prismaService = {
@@ -50,6 +52,7 @@ describe('PresentationService', () => {
       },
       eventEdition: {
         findUnique: jest.fn(),
+        findFirst: jest.fn(),
       },
       userAccount: {
         findUnique: jest.fn(),
@@ -61,7 +64,15 @@ describe('PresentationService', () => {
       validateSubmission: jest.fn().mockResolvedValue(true),
     } as any;
 
-    service = new PresentationService(prismaService, submissionService);
+    scoringService = {
+      recalculateAllScores: jest.fn(),
+    } as any;
+
+    service = new PresentationService(
+      prismaService,
+      submissionService,
+      scoringService,
+    );
   });
 
   it('should be defined', () => {
@@ -1432,148 +1443,116 @@ describe('PresentationService', () => {
     });
   });
 
-  describe('score calculation methods', () => {
-    describe('calculateAndUpdateScores', () => {
-      it('should calculate and update presentation scores correctly', async () => {
-        const presentationId = 'presentation1';
-        const mockPresentation = {
-          id: presentationId,
-          presentationBlock: {
-            panelists: [{ userId: 'panelist1' }, { userId: 'panelist2' }],
-          },
-          submission: {
-            Evaluation: [
-              { userId: 'panelist1', score: 4.5 },
-              { userId: 'panelist2', score: 4.0 },
-              { userId: 'public1', score: 3.5 },
-              { userId: 'public2', score: 3.0 },
-            ],
-          },
-        };
+  describe('recalculateAllScores', () => {
+    it('should successfully recalculate scores for an event edition', async () => {
+      const eventEditionId = 'event1';
 
-        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
-          mockPresentation,
-        );
-        (prismaService.presentation.update as jest.Mock).mockResolvedValue({
-          id: presentationId,
-          publicAverageScore: 3.25,
-          evaluatorsAverageScore: 4.25,
-        });
-
-        await service.calculateAndUpdateScores(presentationId);
-
-        expect(prismaService.presentation.update).toHaveBeenCalledWith({
-          where: { id: presentationId },
-          data: {
-            publicAverageScore: 3.25,
-            evaluatorsAverageScore: 4.25,
-          },
-        });
+      // Mock eventEdition exists
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue({
+        id: eventEditionId,
+        name: 'Test Event',
       });
 
-      it('should handle presentation with no evaluations', async () => {
-        const presentationId = 'presentation1';
-        const mockPresentation = {
-          id: presentationId,
-          presentationBlock: {
-            panelists: [],
-          },
-          submission: {
-            Evaluation: [],
-          },
-        };
+      await service.recalculateAllScores(eventEditionId);
 
-        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
-          mockPresentation,
-        );
-        (prismaService.presentation.update as jest.Mock).mockResolvedValue({
-          id: presentationId,
-          publicAverageScore: null,
-          evaluatorsAverageScore: null,
-        });
-
-        await service.calculateAndUpdateScores(presentationId);
-
-        expect(prismaService.presentation.update).toHaveBeenCalledWith({
-          where: { id: presentationId },
-          data: {
-            publicAverageScore: null,
-            evaluatorsAverageScore: null,
-          },
-        });
-      });
-
-      it('should throw error if presentation not found', async () => {
-        const presentationId = 'nonexistent';
-        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
-          null,
-        );
-
-        await expect(
-          service.calculateAndUpdateScores(presentationId),
-        ).rejects.toThrow('Presentation not found');
-      });
+      // Verify scoringService was called
+      expect(scoringService.recalculateAllScores).toHaveBeenCalledWith(
+        eventEditionId,
+      );
     });
 
-    describe('recalculateAllScores', () => {
-      it('should recalculate scores for all presentations', async () => {
-        const eventEditionId = 'mockEventEditionId';
-        const mockPresentations = [
-          { id: 'presentation1' },
-          { id: 'presentation2' },
-        ];
+    it('should throw an error if event edition is not found', async () => {
+      const eventEditionId = 'nonexistent';
 
-        const mockPresentation = {
-          id: 'presentation1',
-          presentationBlock: {
-            panelists: [
-              {
-                userId: 'panelist1',
-                user: { id: 'panelist1', name: 'Panelist 1' },
-              },
-            ],
-          },
-          submission: {
-            Evaluation: [
-              {
-                userId: 'panelist1',
-                score: 8.5,
-                user: { id: 'panelist1', name: 'Panelist 1' },
-              },
-            ],
-          },
-        };
+      // Mock eventEdition doesn't exist
+      (prismaService.eventEdition.findUnique as jest.Mock).mockResolvedValue(
+        null,
+      );
 
-        (prismaService.presentation.findMany as jest.Mock).mockResolvedValue(
-          mockPresentations,
-        );
+      await expect(
+        service.recalculateAllScores(eventEditionId),
+      ).rejects.toThrow('Edição do evento não encontrada.');
 
-        (prismaService.presentation.findUnique as jest.Mock).mockResolvedValue(
-          mockPresentation,
-        );
+      // Verify scoringService was not called
+      expect(scoringService.recalculateAllScores).not.toHaveBeenCalled();
+    });
+  });
 
-        (prismaService.presentation.update as jest.Mock).mockResolvedValue({});
+  describe('calculateScoresForActiveEvent', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
 
-        await service.recalculateAllScores(eventEditionId);
+    it('should calculate scores for active event', async () => {
+      const mockActiveEvent = {
+        id: 'active1',
+        name: 'Active Event',
+        endDate: new Date('2025-12-31'),
+      };
 
-        expect(prismaService.presentation.findMany).toHaveBeenCalledWith({
-          where: {
-            submission: {
-              eventEditionId,
-            },
-          },
-          select: { id: true },
-        });
+      (prismaService.eventEdition.findFirst as jest.Mock).mockResolvedValueOnce(
+        mockActiveEvent,
+      );
 
-        expect(prismaService.presentation.findUnique).toHaveBeenCalledTimes(
-          mockPresentations.length,
-        );
-        expect(prismaService.presentation.update).toHaveBeenCalledTimes(
-          mockPresentations.length,
-        );
+      (
+        prismaService.eventEdition.findUnique as jest.Mock
+      ).mockResolvedValueOnce(mockActiveEvent);
 
-        expect(mockPresentations.length).toBe(2);
-      });
+      await service.calculateScoresForActiveEvent();
+
+      expect(scoringService.recalculateAllScores).toHaveBeenCalledWith(
+        mockActiveEvent.id,
+      );
+    });
+
+    it('should not calculate scores if no active event exists', async () => {
+      (prismaService.eventEdition.findFirst as jest.Mock).mockResolvedValueOnce(
+        null,
+      );
+
+      await service.calculateScoresForActiveEvent();
+
+      expect(scoringService.recalculateAllScores).not.toHaveBeenCalled();
+    });
+
+    it('should not calculate scores if active event has ended', async () => {
+      const mockEndedEvent = {
+        id: 'ended1',
+        name: 'Ended Event',
+        endDate: new Date('2024-01-01'),
+      };
+
+      (prismaService.eventEdition.findFirst as jest.Mock).mockResolvedValueOnce(
+        mockEndedEvent,
+      );
+
+      await service.calculateScoresForActiveEvent();
+
+      expect(scoringService.recalculateAllScores).not.toHaveBeenCalled();
+    });
+
+    it('should handle errors during score calculation', async () => {
+      const mockActiveEvent = {
+        id: 'active1',
+        name: 'Active Event',
+        endDate: new Date('2025-12-31'),
+      };
+
+      (prismaService.eventEdition.findFirst as jest.Mock).mockResolvedValueOnce(
+        mockActiveEvent,
+      );
+
+      (
+        prismaService.eventEdition.findUnique as jest.Mock
+      ).mockResolvedValueOnce(mockActiveEvent);
+
+      (scoringService.recalculateAllScores as jest.Mock).mockRejectedValueOnce(
+        new Error('Scoring failed'),
+      );
+
+      await expect(
+        service.calculateScoresForActiveEvent(),
+      ).resolves.not.toThrow();
     });
   });
 });

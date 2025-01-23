@@ -16,11 +16,15 @@ import {
 } from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
 import { Cron } from '@nestjs/schedule';
+import { ScoringService } from '../scoring/scoring.service';
 import { AppException } from '../exceptions/app.exception';
 
 @Injectable()
 export class EventEditionService {
-  constructor(private prismaClient: PrismaService) {}
+  constructor(
+    private prismaClient: PrismaService,
+    private scoringService: ScoringService,
+  ) {}
 
   async create(createEventEditionDto: CreateEventEditionDto) {
     return this.prismaClient.$transaction(async (prisma) => {
@@ -139,7 +143,9 @@ export class EventEditionService {
       }
 
       const eventResponseDto = new EventEditionResponseDto(createdEventEdition);
-
+      await this.scoringService.scheduleEventFinalScoresRecalculation(
+        createdEventEdition,
+      );
       return eventResponseDto;
     });
   }
@@ -536,6 +542,8 @@ export class EventEditionService {
     });
 
     const eventResponseDto = new EventEditionResponseDto(updatedEvent);
+
+    await this.scoringService.handleEventUpdate(updatedEvent);
 
     return eventResponseDto;
   }
