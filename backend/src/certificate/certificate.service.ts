@@ -522,6 +522,12 @@ export class CertificateService {
         404,
       );
     }
+    if (eventEdition.endDate > new Date()) {
+      throw new AppException(
+        'Evento ainda não terminou, portanto certificados não estão disponíveis',
+        404,
+      );
+    }
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
