@@ -6,6 +6,7 @@ import "./style.scss";
 import Star from "../UI/Star";
 
 import { useSweetAlert } from "@/hooks/useAlert";
+import { useEdicao } from "@/hooks/useEdicao";
 
 interface CardListagem {
   title: string;
@@ -28,9 +29,10 @@ export default function CardListagem({
   idGeneralModal,
   idModalEdit,
   onDelete,
-  onEdit
+  onEdit,
 }: Readonly<CardListagem>) {
   const { showAlert } = useSweetAlert();
+  const { Edicao } = useEdicao();
 
   return (
     <div className="card-listagem" onClick={onClickItem}>
@@ -39,7 +41,7 @@ export default function CardListagem({
         <p>{subtitle}</p>
       </div>
       <div className="buttons-area">
-        {!!idGeneralModal && !!generalButtonLabel && (
+        {!!idGeneralModal && !!generalButtonLabel && !!Edicao?.isActive && (
           <button
             className="button-general"
             data-bs-toggle="modal"
@@ -51,13 +53,17 @@ export default function CardListagem({
         {showFavorite ? (
           <Star color={"#F17F0C"} />
         ) : (
-          <button data-bs-toggle="modal" data-bs-target={`#${idModalEdit}`}
-            onClick={() => {  
+          <button
+            data-bs-toggle="modal"
+            data-bs-target={`#${idModalEdit}`}
+            onClick={() => {
               if (onEdit) {
                 onEdit();
               }
-            }}>
-            <Image 
+            }}
+            style={{ display: Edicao?.isActive ? "block" : "none" }}
+          >
+            <Image
               src="/assets/images/edit.svg"
               id="edit-button"
               alt="edit button"
@@ -66,7 +72,7 @@ export default function CardListagem({
             />
           </button>
         )}
-        {!!onDelete && (
+        {!!onDelete && !!Edicao?.isActive && (
           <button
             onClick={() => {
               showAlert({

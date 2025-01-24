@@ -366,7 +366,7 @@ export function FormCadastro() {
         </p>
       </div>
 
-      <div className="d-grid gap-2 col-3 mx-auto">
+      <div className="gap-2 col-3 mx-auto">
         <button
           type="submit"
           className="btn fw-bold fs-5 text-white submit-button"

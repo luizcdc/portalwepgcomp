@@ -16,6 +16,7 @@ import { useSweetAlert } from "@/hooks/useAlert";
 import { useSubmissionFile } from "@/hooks/useSubmissionFile";
 
 import "./style.scss";
+import { useEdicao } from "@/hooks/useEdicao";
 
 const formCadastroSchema = z.object({
   id: z.string().optional(),
@@ -58,6 +59,7 @@ export function FormCadastroApresentacao({
   const [formEditedLoaded, setFormEditedLoaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const { Edicao } = useEdicao();
 
   const {
     register,
@@ -341,6 +343,7 @@ export function FormCadastroApresentacao({
           type="submit"
           data-bs-toggle="collapse"
           className="btn text-white fs-5 submit-button"
+          disabled={!Edicao?.isActive}
         >
           {formEdited && formEdited.id ? "Alterar" : "Cadastrar"}
         </button>
