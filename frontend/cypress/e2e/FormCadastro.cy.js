@@ -107,6 +107,7 @@ describe('Componente do Formulário de Cadastro', () => {
       cy.wait(2000);
       cy.get('#nome').type(ouvinte.nome + generateRandomLetters(5));
       cy.get(`input[value="${ouvinte.perfil}"]`).check();
+      cy.get('#matricula').type(Math.floor(Math.random() * 1000000000));
       cy.get('#email').type(ouvinte.email +  generateRandomLetters(5));
       cy.get('#senha').type(ouvinte.senha);
       cy.get('#confirmaSenha').type(ouvinte.senha);
