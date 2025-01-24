@@ -55,7 +55,7 @@ export default function PerfilAdmin({
 
         {profile === "Professor" && (
           <li>
-            <Link className='dropdown-item' href='/minhas-bancas'>
+            <Link className="dropdown-item" href="/minhas-bancas">
               Minhas bancas
             </Link>
           </li>

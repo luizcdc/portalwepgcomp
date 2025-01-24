@@ -6,6 +6,10 @@
     justify-content: center;
     padding-bottom: 400px;
   }
+
+  .listagem{
+    gap: 1rem;
+  }
   
   .filtros {
     display: flex;
@@ -67,8 +71,14 @@
   }
   
   .filtrar {
-    font-size: 14px;
+    font-size: 18px;
+    font-weight: bold;
     color: #adb5bd;
+  }
+
+  .button-status{
+    background: none;
+    margin-right: 8px;
   }
   
   .button-ativo-false {
@@ -77,13 +87,16 @@
     justify-content: center;
     border: solid;
     border-color: #019a34;
+    color: #019a34;
     border-width: 2px;
     border-radius: 12px;
     font-size: 15px;
+    background-color: white;
     font-weight: bold;
-    width: 123px;
+    min-width: 123px;
     height: 22px;
     cursor: pointer;
+    padding: 0 0.75rem;
   }
   
   .button-ativo-true {
@@ -98,9 +111,10 @@
     background-color: #019a34;
     font-size: 15px;
     font-weight: bold;
-    width: 123px;
+    min-width: 123px;
     height: 22px;
     cursor: pointer;
+    padding: 0 0.75rem;
   }
   
   .button-pendente-false {
@@ -109,13 +123,16 @@
     justify-content: center;
     border: solid;
     border-color: #e8b301;
+    color: #e8b301;
+    background-color: white;
     border-width: 2px;
     border-radius: 12px;
     font-size: 15px;
     font-weight: bold;
-    width: 123px;
+    min-width: 123px;
     height: 22px;
     cursor: pointer;
+    padding: 0 0.75rem;
   }
   
   .button-pendente-true {
@@ -130,9 +147,10 @@
     background-color: #e8b301;
     font-size: 15px;
     font-weight: bold;
-    width: 123px;
+    min-width: 123px;
     height: 22px;
     cursor: pointer;
+    padding: 0 0.75rem;
   }
   
   .button-inativo-false {
@@ -141,13 +159,16 @@
     justify-content: center;
     border: solid;
     border-color: #45414a;
+    color: #45414a;
+    background-color: white;
     border-width: 2px;
     border-radius: 12px;
     font-size: 15px;
     font-weight: bold;
-    width: 123px;
+    min-width: 123px;
     height: 22px;
     cursor: pointer;
+    padding: 0 0.75rem;
   }
   
   .button-inativo-true {
@@ -162,9 +183,10 @@
     background-color: #45414a;
     font-size: 15px;
     font-weight: bold;
-    width: 123px;
+    min-width: 123px;
     height: 22px;
     cursor: pointer;
+    padding: 0 0.75rem;
   }
   
   .description{
@@ -213,13 +235,13 @@
   .drop-button1{
     display: flex;
     align-items: center;
+    text-align: center;
     font-size: 15px;
     height: 32px;
     padding-left: 5px;
     cursor: pointer;
-    &:hover {
-      background-color: #e9e7e6;
-    }
+    background-color: #e9e7e6;
+    color: black;
   }
   
   .drop-permit {
@@ -274,7 +296,7 @@
     }
   }
 
-  @media (max-width: 990px){
+  @media (max-width: 1180px){
     .filtros{
       display: flex;
       flex-direction: column;
@@ -283,6 +305,12 @@
 
     .status{
       min-height: 45px;
+      min-width: 150px;
+    }
+
+    .filtros-botoes{
+      flex-direction: column;
+      gap: 0.5rem;
     }
   }
 
@@ -295,7 +323,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      max-width: 160px;
+      min-width: 200px;
       padding: 15px;
     }
 
