@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateEvaluationCriteriaDto } from './dto/create-evaluation-criteria.dto';
 import { AppException } from '../exceptions/app.exception';
+import { UpdateEvaluationCriteriaDto } from './dto/update-evaluation-criteria.dto';
+import { CreateEvaluationCriteriaDto } from './dto/create-evaluation-criteria.dto';
 
 @Injectable()
 export class EvaluationCriteriaService {
@@ -55,5 +56,14 @@ export class EvaluationCriteriaService {
     return await this.prisma.evaluationCriteria.createMany({
       data: toCreate,
     });
+  }
+
+  async editFromList(evaluationCriteria: UpdateEvaluationCriteriaDto[]) {
+    for (const criteria of evaluationCriteria) {
+      await this.prisma.evaluationCriteria.update({
+        where: { id: criteria.id },
+        data: criteria,
+      });
+    }
   }
 }

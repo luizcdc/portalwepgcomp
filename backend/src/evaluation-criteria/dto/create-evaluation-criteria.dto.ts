@@ -1,16 +1,7 @@
-import { IsUUID, IsNumber, IsOptional, IsString } from 'class-validator';
+import { OmitType } from '@nestjs/mapped-types';
+import { UpdateEvaluationCriteriaDto } from './update-evaluation-criteria.dto';
 
-export class CreateEvaluationCriteriaDto {
-  @IsString()
-  title: string;
-
-  @IsString()
-  description: string;
-
-  @IsNumber()
-  @IsOptional()
-  weightRadio?: number;
-
-  @IsUUID()
-  eventEditionId: string;
-}
+export class CreateEvaluationCriteriaDto extends OmitType(
+  UpdateEvaluationCriteriaDto,
+  ['id'] as const,
+) {}

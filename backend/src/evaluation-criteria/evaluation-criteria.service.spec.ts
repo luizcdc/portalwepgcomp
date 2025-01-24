@@ -11,6 +11,7 @@ describe('EvaluationCriteriaService', () => {
       findMany: jest.fn(),
       findFirst: jest.fn(),
       createMany: jest.fn(),
+      update: jest.fn(),
     },
   };
 
@@ -27,6 +28,7 @@ describe('EvaluationCriteriaService', () => {
 
     mockPrismaService.evaluationCriteria.findFirst = jest.fn();
     mockPrismaService.evaluationCriteria.createMany = jest.fn();
+    mockPrismaService.evaluationCriteria.update = jest.fn();
     jest.clearAllMocks();
   });
 
@@ -198,6 +200,57 @@ describe('EvaluationCriteriaService', () => {
       ).toHaveBeenCalledWith({
         data: [criteriaList[1]],
       });
+    });
+  });
+
+  describe('editFromList', () => {
+    it('should update multiple evaluation criteria successfully', async () => {
+      const criteriaList = [
+        {
+          id: '1',
+          title: 'Updated Title 1',
+          description: 'Updated Description 1',
+          weightRadio: 0.7,
+          eventEditionId: '12345',
+        },
+        {
+          id: '2',
+          title: 'Updated Title 2',
+          description: 'Updated Description 2',
+          weightRadio: 0.3,
+          eventEditionId: '12345',
+        },
+      ];
+
+      mockPrismaService.evaluationCriteria.update.mockResolvedValue({});
+
+      await service.editFromList(criteriaList);
+
+      expect(mockPrismaService.evaluationCriteria.update).toHaveBeenCalledTimes(
+        2,
+      );
+      expect(
+        mockPrismaService.evaluationCriteria.update,
+      ).toHaveBeenNthCalledWith(1, {
+        where: { id: '1' },
+        data: criteriaList[0],
+      });
+      expect(
+        mockPrismaService.evaluationCriteria.update,
+      ).toHaveBeenNthCalledWith(2, {
+        where: { id: '2' },
+        data: criteriaList[1],
+      });
+    });
+
+    it('should handle empty list of criteria', async () => {
+      const criteriaList = [];
+
+      await service.editFromList(criteriaList);
+
+      expect(
+        mockPrismaService.evaluationCriteria.update,
+      ).not.toHaveBeenCalled();
     });
   });
 });

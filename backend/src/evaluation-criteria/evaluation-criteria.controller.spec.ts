@@ -9,6 +9,7 @@ describe('EvaluationCriteriaController', () => {
   const mockEvaluationCriteriaService = {
     findAll: jest.fn(),
     createFromList: jest.fn(),
+    editFromList: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -79,6 +80,58 @@ describe('EvaluationCriteriaController', () => {
       expect(result).toEqual(mockResponse);
       expect(service.createFromList).toHaveBeenCalledWith(emptyPayload);
       expect(service.createFromList).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('editFromList', () => {
+    beforeEach(() => {
+      mockEvaluationCriteriaService.editFromList = jest.fn();
+    });
+
+    it('should update multiple evaluation criteria successfully', async () => {
+      const mockPayload = [
+        {
+          id: '1',
+          eventEditionId: '12345',
+          title: 'Updated Methodology',
+          description: 'Updated methodology description',
+          weightRadio: 0.5,
+        },
+        {
+          id: '2',
+          eventEditionId: '12345',
+          title: 'Updated Innovation',
+          description: 'Updated innovation description',
+          weightRadio: 0.5,
+        },
+      ];
+
+      const mockResponse = { count: 2 };
+
+      mockEvaluationCriteriaService.editFromList.mockResolvedValue(
+        mockResponse,
+      );
+
+      const result = await controller.editFromList(mockPayload);
+
+      expect(result).toEqual(mockResponse);
+      expect(service.editFromList).toHaveBeenCalledWith(mockPayload);
+      expect(service.editFromList).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle empty array of criteria for update', async () => {
+      const emptyPayload = [];
+      const mockResponse = { count: 0 };
+
+      mockEvaluationCriteriaService.editFromList.mockResolvedValue(
+        mockResponse,
+      );
+
+      const result = await controller.editFromList(emptyPayload);
+
+      expect(result).toEqual(mockResponse);
+      expect(service.editFromList).toHaveBeenCalledWith(emptyPayload);
+      expect(service.editFromList).toHaveBeenCalledTimes(1);
     });
   });
 
