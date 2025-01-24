@@ -16,6 +16,7 @@ interface UserProviderData {
   loadingResetPassword: boolean;
   loadingUserList: boolean;
   loadingAdvisors: boolean;
+  loadingSwitchActive: boolean;
   user: User | null;
   userList: User[];
   advisors: User[];
@@ -24,6 +25,10 @@ interface UserProviderData {
   resetPasswordSendEmail: (body: ResetPasswordSendEmailParams) => Promise<void>;
   resetPassword: (body: ResetPasswordParams) => Promise<void>;
   getAdvisors: () => Promise<void>;
+  switchActiveUser: (userId: string, activate: boolean) => Promise<void>;
+  markAsDefaultUser: (body: SetPermissionParams) => Promise<void>;
+  markAsAdminUser: (body: SetPermissionParams) => Promise<void>;
+  markAsSpAdminUser: (body: SetPermissionParams) => Promise<void>;
 }
 
 export const UserContext = createContext<UserProviderData>(
@@ -37,6 +42,8 @@ export const UserProvider = ({ children }: UserProps) => {
   const [loadingResetPassword, setLoadingResetPassword] =
     useState<boolean>(false);
   const [loadingAdvisors, setLoadingAdvisors] = useState<boolean>(false);
+  const [loadingSwitchActive, setLoadingSwitchActive] =
+    useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [userList, setUserList] = useState<User[]>([]);
   const [advisors, setAdvisors] = useState<User[]>([]);
@@ -47,25 +54,27 @@ export const UserProvider = ({ children }: UserProps) => {
   const getUsers = async (params: GetUserParams) => {
     setLoadingUserList(true);
 
-    try {
-      const response = await userApi.getUsers(params);
-      setUserList(response);
-      console.log("Listado com sucesso");
-    } catch (err: any) {
-      setUserList([]);
+    userApi
+      .getUsers(params)
+      .then((response) => {
+        setUserList(response);
+      })
+      .catch((err) => {
+        setUserList([]);
 
-      showAlert({
-        icon: "error",
-        title: "Erro ao listar usuários",
-        text:
-          err.response?.data?.message?.message ||
-          err.response?.data?.message ||
-          "Ocorreu um erro durante a busca.",
-        confirmButtonText: "Retornar",
+        showAlert({
+          icon: "error",
+          title: "Erro ao listar usuários",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro durante a busca.",
+          confirmButtonText: "Retornar",
+        });
+      })
+      .finally(() => {
+        setLoadingUserList(false);
       });
-    } finally {
-      setLoadingUserList(false);
-    }
   };
 
   const registerUser = async (body: RegisterUserParams) => {
@@ -165,6 +174,118 @@ export const UserProvider = ({ children }: UserProps) => {
     }
   };
 
+  const switchActiveUser = async (userId: string, activate: boolean) => {
+    setLoadingSwitchActive(true);
+
+    userApi
+      .switchActiveUser(userId, activate)
+      .then(() => {
+        showAlert({
+          icon: "success",
+          title: "Status de ativação alterado com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+        getUsers({});
+      })
+      .catch((err) => {
+        showAlert({
+          icon: "error",
+          title: "Erro ao trocar status",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro ao tentar alterar status. Tente novamente!",
+          confirmButtonText: "Retornar",
+        });
+      })
+      .finally(() => setLoadingSwitchActive(false));
+  };
+
+  const markAsDefaultUser = async (body: SetPermissionParams) => {
+    setLoadingSwitchActive(true);
+
+    userApi
+      .markAsDefaultUser(body)
+      .then(() => {
+        showAlert({
+          icon: "success",
+          title: "Nível de permissão alterado com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+        getUsers({});
+      })
+      .catch((err) => {
+        showAlert({
+          icon: "error",
+          title: "Erro ao alterar permissão",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro ao tentar alterar permissão. Tente novamente!",
+          confirmButtonText: "Retornar",
+        });
+      })
+      .finally(() => setLoadingSwitchActive(false));
+  };
+
+  const markAsAdminUser = async (body: SetPermissionParams) => {
+    setLoadingSwitchActive(true);
+
+    userApi
+      .markAsAdminUser(body)
+      .then(() => {
+        showAlert({
+          icon: "success",
+          title: "Nível de permissão alterado com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+        getUsers({});
+      })
+      .catch((err) => {
+        showAlert({
+          icon: "error",
+          title: "Erro ao alterar permissão",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro ao tentar alterar permissão. Tente novamente!",
+          confirmButtonText: "Retornar",
+        });
+      })
+      .finally(() => setLoadingSwitchActive(false));
+  };
+
+  const markAsSpAdminUser = async (body: SetPermissionParams) => {
+    setLoadingSwitchActive(true);
+
+    userApi
+      .markAsSpAdminUser(body)
+      .then(() => {
+        showAlert({
+          icon: "success",
+          title: "Nível de permissão alterado com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+        getUsers({});
+      })
+      .catch((err) => {
+        showAlert({
+          icon: "error",
+          title: "Erro ao alterar permissão",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro ao tentar alterar permissão. Tente novamente!",
+          confirmButtonText: "Retornar",
+        });
+      })
+      .finally(() => setLoadingSwitchActive(false));
+  };
+
   const getAdvisors = async () => {
     setLoadingAdvisors(true);
 
@@ -197,6 +318,7 @@ export const UserProvider = ({ children }: UserProps) => {
         loadingResetPassword,
         loadingUserList,
         loadingAdvisors,
+        loadingSwitchActive,
         user,
         userList,
         advisors,
@@ -205,6 +327,10 @@ export const UserProvider = ({ children }: UserProps) => {
         resetPasswordSendEmail,
         resetPassword,
         getAdvisors,
+        switchActiveUser,
+        markAsDefaultUser,
+        markAsAdminUser,
+        markAsSpAdminUser,
       }}
     >
       {children}

@@ -23,7 +23,7 @@ export default function PerfilProfessor() {
           </Link>
         </li> */}
         <li>
-          <Link className='dropdown-item' href='/minhas-bancas'>
+          <Link className="dropdown-item" href="/minhas-bancas">
             Minhas bancas
           </Link>
         </li>
