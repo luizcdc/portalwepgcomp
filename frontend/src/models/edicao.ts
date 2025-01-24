@@ -25,4 +25,5 @@ interface Edicao extends EdicaoParams {
   createdAt: string;
   deletedAt: string;
   updatedAt: string;
+  isActive: boolean;
 }

@@ -16,14 +16,36 @@ import {
 } from './dto/update-event-edition.dto';
 import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
 import { Cron } from '@nestjs/schedule';
-import { AppException } from 'src/exceptions/app.exception';
+import { ScoringService } from '../scoring/scoring.service';
+import { AppException } from '../exceptions/app.exception';
 
 @Injectable()
 export class EventEditionService {
-  constructor(private prismaClient: PrismaService) {}
+  constructor(
+    private prismaClient: PrismaService,
+    private scoringService: ScoringService,
+  ) {}
 
   async create(createEventEditionDto: CreateEventEditionDto) {
     return this.prismaClient.$transaction(async (prisma) => {
+      const currentYear = new Date().getFullYear();
+
+      const existingCurrentYearEvent = await prisma.eventEdition.findFirst({
+        where: {
+          startDate: {
+            gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+            lte: new Date(`${currentYear}-12-31T23:59:59.999Z`),
+          },
+        },
+      });
+
+      if (existingCurrentYearEvent) {
+        throw new AppException(
+          `Já existe um evento criado para o ano ${currentYear}.`,
+          400,
+        );
+      }
+
       const activeEvent = await prisma.eventEdition.findFirst({
         where: {
           isActive: true,
@@ -121,7 +143,9 @@ export class EventEditionService {
       }
 
       const eventResponseDto = new EventEditionResponseDto(createdEventEdition);
-
+      await this.scoringService.scheduleEventFinalScoresRecalculation(
+        createdEventEdition,
+      );
       return eventResponseDto;
     });
   }
@@ -167,30 +191,34 @@ export class EventEditionService {
     }
   }
 
-  async validateUniqueCommitteeMembers(createFromEventEditionFormDto: CreateFromEventEditionFormDto): Promise<void> {
+  async validateUniqueCommitteeMembers(
+    createFromEventEditionFormDto: CreateFromEventEditionFormDto,
+  ): Promise<void> {
     const {
-        organizingCommitteeIds,
-        itSupportIds,
-        administrativeSupportIds,
-        communicationIds,
+      organizingCommitteeIds,
+      itSupportIds,
+      administrativeSupportIds,
+      communicationIds,
     } = createFromEventEditionFormDto;
 
     // Agrupa todos os IDs em um único array
     const allIds = [
-        ...organizingCommitteeIds,
-        ...itSupportIds,
-        ...administrativeSupportIds,
-        ...communicationIds,
+      ...organizingCommitteeIds,
+      ...itSupportIds,
+      ...administrativeSupportIds,
+      ...communicationIds,
     ];
 
     // Verifica se há duplicações
-    const duplicates = allIds.filter((id, index) => allIds.indexOf(id) !== index);
+    const duplicates = allIds.filter(
+      (id, index) => allIds.indexOf(id) !== index,
+    );
 
     if (duplicates.length > 0) {
-        throw new BadRequestException(
-            //`Os seguintes IDs de usuários estão atribuídos a mais de um cargo: ${[...new Set(duplicates)].join(', ')}.`,
-            `Um usuário só pode assumir um cargo na comissão organizadora.`,
-        );
+      throw new BadRequestException(
+        //`Os seguintes IDs de usuários estão atribuídos a mais de um cargo: ${[...new Set(duplicates)].join(', ')}.`,
+        `Um usuário só pode assumir um cargo na comissão organizadora.`,
+      );
     }
   }
 
@@ -199,7 +227,7 @@ export class EventEditionService {
   ): Promise<EventEditionResponseDto> {
     // Valida os IDs antes de criar o evento
     await this.validateUniqueCommitteeMembers(createFromEventEditionFormDto);
-    
+
     const eventEdition = await this.create(createFromEventEditionFormDto);
 
     const { id: eventEditionId } = eventEdition;
@@ -246,35 +274,36 @@ export class EventEditionService {
   ) {
     await Promise.all(
       ids.map(async (id) => {
-          const existingMember = await this.prismaClient.committeeMember.findUnique({
-              where: {
-                  eventEditionId_userId: {
-                      eventEditionId: eventEditionId,
-                      userId: id,
-                  },
-              },
-          });
-
-          if (existingMember) {
-            throw new BadRequestException(
-              'Um usuário só pode assumir um cargo na comissão organizadora.',
-            );
-          }
-    
-          const committeeMember = await this.prismaClient.committeeMember.create({
-            data: {
+        const existingMember =
+          await this.prismaClient.committeeMember.findUnique({
+            where: {
+              eventEditionId_userId: {
                 eventEditionId: eventEditionId,
                 userId: id,
-                level: CommitteeLevel.Committee,
-                role,
+              },
             },
           });
 
-          if (committeeMember) {
-            await this.updateUserLevel(id, committeeMember.level);
-          }
+        if (existingMember) {
+          throw new BadRequestException(
+            'Um usuário só pode assumir um cargo na comissão organizadora.',
+          );
+        }
+
+        const committeeMember = await this.prismaClient.committeeMember.create({
+          data: {
+            eventEditionId: eventEditionId,
+            userId: id,
+            level: CommitteeLevel.Committee,
+            role,
+          },
+        });
+
+        if (committeeMember) {
+          await this.updateUserLevel(id, committeeMember.level);
+        }
       }),
-    );  
+    );
   }
 
   private async updateUserLevel(
@@ -513,6 +542,8 @@ export class EventEditionService {
     });
 
     const eventResponseDto = new EventEditionResponseDto(updatedEvent);
+
+    await this.scoringService.handleEventUpdate(updatedEvent);
 
     return eventResponseDto;
   }

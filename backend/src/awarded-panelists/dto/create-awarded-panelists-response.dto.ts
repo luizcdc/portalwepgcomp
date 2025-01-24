@@ -1,12 +1,15 @@
 export class CreateAwardedPanelistsResponseDto {
-  newAwardedPanelists: string[];
-  alreadyAwardedPanelists: string[];
+  addedPanelists: string[];
+  removedPanelists: string[];
+  maintainedPanelists: string[];
 
   constructor(params: {
-    newAwardedPanelists: string[];
-    alreadyAwardedPanelists: string[];
+    addedPanelists: string[];
+    removedPanelists: string[];
+    maintainedPanelists: string[];
   }) {
-    this.newAwardedPanelists = params.newAwardedPanelists;
-    this.alreadyAwardedPanelists = params.alreadyAwardedPanelists;
+    this.addedPanelists = params.addedPanelists;
+    this.removedPanelists = params.removedPanelists;
+    this.maintainedPanelists = params.maintainedPanelists;
   }
 }

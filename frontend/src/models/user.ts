@@ -2,10 +2,17 @@
 
 type ProfileType = "Professor" | "DoctoralStudent" | "Listener";
 type RoleType = "Superadmin" | "Admin" | "Default";
+type StatusType = "Active" | "Inactive";
 
 interface GetUserParams {
     profiles?: ProfileType;
     roles?: RoleType;
+    status?: StatusType;
+}
+
+interface SetPermissionParams{
+    requestUserId: string,
+    targetUserId: string
 }
 
 interface RegisterUserParams {
@@ -24,6 +31,8 @@ interface User extends RegisterUserParams {
     createdAt: Date;
     deletedAt: Date;
     updatedAt: Date;
+    level: RoleType;
+    isActive: boolean;
 }
 
 interface ResetPasswordSendEmailParams {

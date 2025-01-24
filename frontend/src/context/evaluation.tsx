@@ -3,6 +3,7 @@
 import { createContext, ReactNode, useState } from "react";
 import { evaluationApi } from "@/services/evaluation";
 import { useSweetAlert } from "@/hooks/useAlert";
+import { useRouter } from "next/navigation";
 
 interface EvaluationProps {
   children: ReactNode;
@@ -31,6 +32,8 @@ export const EvaluationProvider = ({ children }: EvaluationProps) => {
 
   const { showAlert } = useSweetAlert();
 
+  const router = useRouter();
+
   const makeEvaluation = async (body: EvaluationParams[]) => {
     setLoadingEvaluation(true);
     evaluationApi
@@ -43,6 +46,7 @@ export const EvaluationProvider = ({ children }: EvaluationProps) => {
           timer: 3000,
           showConfirmButton: false,
         });
+        router.push("/home");
       })
       .catch((err) => {
         setEvaluations([]);
