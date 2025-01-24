@@ -54,20 +54,14 @@ export class EventEditionService {
           startDate: 'desc',
         },
       });
-      let evaluationCriteria = [];
-      let rooms = [];
-      if (activeEvent != null) {
-        evaluationCriteria = await prisma.evaluationCriteria.findMany({
-          where: {
-            eventEditionId: activeEvent?.id,
-          },
-        });
-        rooms = await prisma.room.findMany({
-          where: {
-            eventEditionId: activeEvent?.id,
-          },
-        });
-      }
+
+      const { evaluationCriteria, rooms } =
+        await this.defineEvaluationCriteriaAndRooms(
+          activeEvent,
+          prisma,
+          createEventEditionDto,
+        );
+
       if (!createEventEditionDto.submissionStartDate) {
         createEventEditionDto.submissionStartDate = new Date();
       }
@@ -154,6 +148,34 @@ export class EventEditionService {
       );
       return eventResponseDto;
     });
+  }
+
+  private async defineEvaluationCriteriaAndRooms(
+    activeEvent: {
+      id: string;
+    },
+    prisma,
+    createEventEditionDto: CreateEventEditionDto,
+  ) {
+    let evaluationCriteria = [];
+    let rooms = [];
+    if (activeEvent != null) {
+      evaluationCriteria = await prisma.evaluationCriteria.findMany({
+        where: {
+          eventEditionId: activeEvent?.id,
+        },
+      });
+      rooms = createEventEditionDto.roomName
+        ? [createEventEditionDto.roomName]
+        : await prisma.room.findMany({
+            where: {
+              eventEditionId: activeEvent?.id,
+            },
+          });
+    } else {
+      rooms = [createEventEditionDto.roomName || 'Auditório Principal'];
+    }
+    return { evaluationCriteria, rooms };
   }
 
   private validateSubmissionPeriod(
