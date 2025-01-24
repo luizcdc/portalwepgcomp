@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CertificateService } from './certificate.service';
 import { PrismaService } from '../prisma/prisma.service';
-// import { AppException } from '../exceptions/app.exception';
 import { Profile, UserLevel, PresentationStatus } from '@prisma/client';
 import * as fontkit from '@pdf-lib/fontkit';
 import { PDFDocument } from 'pdf-lib';
