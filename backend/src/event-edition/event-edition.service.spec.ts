@@ -5,6 +5,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateEventEditionDto } from './dto/create-event-edition.dto';
 import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
+import { ScoringService } from '../scoring/scoring.service';
 
 const oneDay = 24 * 60 * 60 * 1000;
 const today = new Date();
@@ -12,6 +13,7 @@ const today = new Date();
 describe('EventEditionService', () => {
   let service: EventEditionService;
   let prismaService: PrismaService;
+  let scoringService: ScoringService;
 
   const mockPrismaService = {
     eventEdition: {
@@ -51,11 +53,20 @@ describe('EventEditionService', () => {
           provide: PrismaService,
           useValue: mockPrismaService,
         },
+        {
+          provide: ScoringService,
+          useValue: {
+            calculateScore: jest.fn(),
+            handleEventUpdate: jest.fn(),
+            scheduleEventFinalScoresRecalculation: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<EventEditionService>(EventEditionService);
     prismaService = module.get<PrismaService>(PrismaService);
+    scoringService = module.get<ScoringService>(ScoringService);
   });
 
   afterEach(() => {

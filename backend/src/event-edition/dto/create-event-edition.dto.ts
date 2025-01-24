@@ -60,7 +60,7 @@ export class CreateEventEditionDto {
 
   @IsString()
   @IsOptional()
-  roomName: string;
+  roomName?: string;
 }
 
 export class CreateFromEventEditionFormDto {
@@ -114,5 +114,5 @@ export class CreateFromEventEditionFormDto {
 
   @IsString()
   @IsOptional()
-  roomName: string;
+  roomName?: string;
 }
