@@ -25,7 +25,7 @@ interface UserProviderData {
   resetPasswordSendEmail: (body: ResetPasswordSendEmailParams) => Promise<void>;
   resetPassword: (body: ResetPasswordParams) => Promise<void>;
   getAdvisors: () => Promise<void>;
-  switchActiveUser: (userId: string) => Promise<void>;
+  switchActiveUser: (userId: string, activate: boolean) => Promise<void>;
   markAsDefaultUser: (body: SetPermissionParams) => Promise<void>;
   markAsAdminUser: (body: SetPermissionParams) => Promise<void>;
   markAsSpAdminUser: (body: SetPermissionParams) => Promise<void>;
@@ -174,11 +174,11 @@ export const UserProvider = ({ children }: UserProps) => {
     }
   };
 
-  const switchActiveUser = async (userId: string) => {
+  const switchActiveUser = async (userId: string, activate: boolean) => {
     setLoadingSwitchActive(true);
 
     userApi
-      .switchActiveUser(userId)
+      .switchActiveUser(userId, activate)
       .then(() => {
         showAlert({
           icon: "success",

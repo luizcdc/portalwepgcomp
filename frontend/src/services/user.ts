@@ -20,9 +20,9 @@ export const userApi = {
         return data;
     },
 
-    switchActiveUser: async (userId: string) => {
+    switchActiveUser: async (userId: string, activate: boolean) => {
 
-        const { data } = await instance.patch(`${baseUrl}/activate/${userId}`);
+        const { data } = await instance.patch(`${baseUrl}/toggle-activation/${userId}?activate=${activate}`);
 
         return data;
     },
