@@ -9,6 +9,8 @@ describe('Componente do Formulário de Cadastro de Apresentação', () => {
       cy.login(doutorando.email, doutorando.senha); // insert doctoral student credentials
       cy.visit('/cadastro-apresentacao');
 
+      cy.wait(2000);
+
       cy.get('button[type="submit"]').click();
 
       cy.get('button[type="submit"]').click();
@@ -18,10 +20,11 @@ describe('Componente do Formulário de Cadastro de Apresentação', () => {
       cy.contains('O orientador é obrigatório').should('be.visible');
       cy.contains('O celular deve conter 10 ou 11 dígitos').should('be.visible');
     });
-    // uncomment when the issue was fixed
+
     // it('Deve permitir ao doutorando preencher e submeter o formulário com sucesso', function () {
     //   const num = Math.floor(Math.random() * 1000);
     //   const { professor, doutorando } = this.userData;
+    //   cy.wait(2000);
 
     //   cy.login(doutorando.email, doutorando.senha); // insert doctoral student credentials
     //   cy.visit('/cadastro-apresentacao');
@@ -37,9 +40,10 @@ describe('Componente do Formulário de Cadastro de Apresentação', () => {
     //   cy.contains('Apresentação cadastrada com sucesso!').should('be.visible');
     //   cy.url().should('include', '/minha-apresentacao');
     // });
-    // uncomment when the issue was fixed
+
     // it('Deve permitir ao doutorando editar e submeter o formulário com sucesso', function () {
     //   const { doutorando } = this.userData;
+    //   cy.wait(2000);
       
     //   cy.login(doutorando.email, doutorando.senha); // insert doctoral student credentials
     //   cy.visit('/minha-apresentacao');
@@ -63,8 +67,10 @@ describe('Componente do Formulário de Cadastro de Apresentação', () => {
 
       cy.login('profsuperadmin@example.com', 'string'); // insert admin credentials
       cy.visit('/cadastro-apresentacao');
-
+      
       const { professor } = this.userData;
+      cy.wait(2000);
+
       cy.get('#doutorando-select').select('Ernesto Reis'); // insert doctoral student name 
       cy.get('button[type="submit"]').click();
       cy.get('input[placeholder="Insira o título da pesquisa"]').type('Título de Teste ' + num);

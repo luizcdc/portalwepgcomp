@@ -7,12 +7,14 @@ describe('Componente do Formulário de Alterar Senha', () => {
   });
 
   it('Deve exibir mensagens de erro para campos obrigatórios vazios', () => {
+    cy.wait(2000);
     cy.get('button[type="submit"]').click();
     cy.contains('Senha é obrigatória!');
     cy.contains('Confirmação de senha é obrigatória!');
   });
 
   it('Deve exibir mensagem de erro se as senhas não coincidirem', () => {
+    cy.wait(2000);
     cy.get('#senha').type('SenhaSegura123!');
     cy.get('#confirmaSenha').type('SenhaDiferente123!');
     cy.get('button[type="submit"]').click();
@@ -20,6 +22,7 @@ describe('Componente do Formulário de Alterar Senha', () => {
   });
 
   it('Deve exibir erros para senha abaixo do comprimento mínimo', () => {
+    cy.wait(2000);
     cy.get('#senha').type('12345');
     cy.get('#confirmaSenha').type('12345');
     cy.get('button[type="submit"]').click();
@@ -27,12 +30,25 @@ describe('Componente do Formulário de Alterar Senha', () => {
   });
 
   it('Deve exibir ícones de validação para os requisitos de senha', () => {
+    cy.wait(2000);
     cy.get('#senha').type('senhafraca');
     cy.get('.list-title.text-success').should('have.length', 2); // Exemplo baseado em 3 requisitos, 2 atendidos
     cy.get('.list-title.text-danger').should('have.length', 1); // 1 requisito não atendido
   });
 
+  it('Deve exibir erro para token inválido ou expirado', () => {
+    cy.visit('/alterar-senha/invalidToken');
+    cy.wait(2000);
+
+    cy.get('#senha').type('NovaSenhaSegura123!');
+    cy.get('#confirmaSenha').type('NovaSenhaSegura123!');
+    cy.get('button[type="submit"]').click();
+
+    cy.contains('Token inválido ou expirado.').should('be.visible');
+  });
+
   it('Deve redefinir senha com sucesso com token válido', () => {
+    cy.wait(2000);
     cy.get('#senha').type('NovaSenhaSegura123');
     cy.get('#confirmaSenha').type('NovaSenhaSegura123');
     cy.get('button[type="submit"]').click();
@@ -40,16 +56,6 @@ describe('Componente do Formulário de Alterar Senha', () => {
     // Checando se foi redirecionado para a página de Login
     cy.url().should('include', '/login');
     cy.contains('Senha alterada com sucesso').should('be.visible');
-  });
-
-  it('Deve exibir erro para token inválido ou expirado', () => {
-    cy.visit('/alterar-senha/invalidToken');
-
-    cy.get('#senha').type('NovaSenhaSegura123!');
-    cy.get('#confirmaSenha').type('NovaSenhaSegura123!');
-    cy.get('button[type="submit"]').click();
-
-    cy.contains('Token inválido ou expirado.').should('be.visible');
   });
 
 });
