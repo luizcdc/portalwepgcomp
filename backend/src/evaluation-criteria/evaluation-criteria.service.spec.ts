@@ -9,6 +9,8 @@ describe('EvaluationCriteriaService', () => {
   const mockPrismaService = {
     evaluationCriteria: {
       findMany: jest.fn(),
+      findFirst: jest.fn(),
+      createMany: jest.fn(),
     },
   };
 
@@ -23,7 +25,8 @@ describe('EvaluationCriteriaService', () => {
     service = module.get<EvaluationCriteriaService>(EvaluationCriteriaService);
     prismaService = module.get<PrismaService>(PrismaService);
 
-    // Resetar mocks para evitar interferências entre testes
+    mockPrismaService.evaluationCriteria.findFirst = jest.fn();
+    mockPrismaService.evaluationCriteria.createMany = jest.fn();
     jest.clearAllMocks();
   });
 
@@ -85,6 +88,116 @@ describe('EvaluationCriteriaService', () => {
       expect(prismaService.evaluationCriteria.findMany).toHaveBeenCalledTimes(
         1,
       );
+    });
+  });
+
+  describe('createFromList', () => {
+    it('should create new evaluation criteria successfully', async () => {
+      const criteriaList = [
+        {
+          title: 'Criteria 1',
+          description: 'Description 1',
+          weightRadio: 0.5,
+          eventEditionId: '12345',
+        },
+        {
+          title: 'Criteria 2',
+          description: 'Description 2',
+          weightRadio: 1.0,
+          eventEditionId: '12345',
+        },
+      ];
+
+      mockPrismaService.evaluationCriteria.findFirst.mockResolvedValue(null);
+      mockPrismaService.evaluationCriteria.createMany.mockResolvedValue({
+        count: 2,
+      });
+
+      const result = await service.createFromList(criteriaList);
+
+      expect(result).toEqual({ count: 2 });
+      expect(
+        mockPrismaService.evaluationCriteria.findFirst,
+      ).toHaveBeenCalledTimes(2);
+      expect(
+        mockPrismaService.evaluationCriteria.createMany,
+      ).toHaveBeenCalledWith({
+        data: criteriaList,
+      });
+    });
+
+    it('should throw error when duplicate titles exist in input', async () => {
+      const criteriaList = [
+        {
+          title: 'Same Title',
+          description: 'Description 1',
+          eventEditionId: '12345',
+        },
+        {
+          title: 'Same Title',
+          description: 'Description 2',
+          eventEditionId: '12345',
+        },
+      ];
+
+      mockPrismaService.evaluationCriteria.findFirst.mockResolvedValue(null);
+
+      await expect(service.createFromList(criteriaList)).rejects.toThrow(
+        'Não é possível criar dois critérios de avaliação com o mesmo título ou descrição para o mesmo evento',
+      );
+    });
+
+    it('should throw error when duplicate descriptions exist in input', async () => {
+      const criteriaList = [
+        {
+          title: 'Title 1',
+          description: 'Same Description',
+          eventEditionId: '12345',
+        },
+        {
+          title: 'Title 2',
+          description: 'Same Description',
+          eventEditionId: '12345',
+        },
+      ];
+
+      mockPrismaService.evaluationCriteria.findFirst.mockResolvedValue(null);
+
+      await expect(service.createFromList(criteriaList)).rejects.toThrow(
+        'Não é possível criar dois critérios de avaliação com o mesmo título ou descrição para o mesmo evento',
+      );
+    });
+
+    it('should skip existing criteria', async () => {
+      const criteriaList = [
+        {
+          title: 'Existing',
+          description: 'Existing Description',
+          eventEditionId: '12345',
+        },
+        {
+          title: 'New',
+          description: 'New Description',
+          eventEditionId: '12345',
+        },
+      ];
+
+      mockPrismaService.evaluationCriteria.findFirst
+        .mockResolvedValueOnce({ id: '1', ...criteriaList[0] })
+        .mockResolvedValueOnce(null);
+
+      mockPrismaService.evaluationCriteria.createMany.mockResolvedValue({
+        count: 1,
+      });
+
+      const result = await service.createFromList(criteriaList);
+
+      expect(result).toEqual({ count: 1 });
+      expect(
+        mockPrismaService.evaluationCriteria.createMany,
+      ).toHaveBeenCalledWith({
+        data: [criteriaList[1]],
+      });
     });
   });
 });
