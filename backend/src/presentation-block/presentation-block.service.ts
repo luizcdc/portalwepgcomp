@@ -5,10 +5,14 @@ import { CreatePresentationBlockDto } from './dto/create-presentation-block.dto'
 import { UpdatePresentationBlockDto } from './dto/update-presentation-block.dto';
 import { PresentationBlockType, PresentationStatus } from '@prisma/client';
 import { SwapPresentationsDto } from './dto/swap-presentations.dto';
+import { ScoringService } from '../scoring/scoring.service';
 
 @Injectable()
 export class PresentationBlockService {
-  constructor(private readonly prismaClient: PrismaService) {}
+  constructor(
+    private readonly prismaClient: PrismaService,
+    private readonly scoringService: ScoringService,
+  ) {}
 
   async create(createPresentationBlockDto: CreatePresentationBlockDto) {
     const eventEdition = await this.validateTypeAndEventEdition(
@@ -117,7 +121,7 @@ export class PresentationBlockService {
         })),
       });
     }
-
+    await this.scoringService.handleEventUpdate(eventEdition.id);
     return createdPresentationBlock;
   }
 
@@ -353,7 +357,7 @@ export class PresentationBlockService {
       ...without_num_presentations
     } = updatePresentationBlockDto;
 
-    return await this.prismaClient.$transaction(async (tx) => {
+    const result = await this.prismaClient.$transaction(async (tx) => {
       // For each submission, do like in this.create() (if it exists, reassign to this presentationBlock, if it doesn't, create the presentation), and update the positionWithinBlock
       // if the lenght == 0, delete all presentations
       if (submissions && submissions.length > 0) {
@@ -462,6 +466,9 @@ export class PresentationBlockService {
         data: without_num_presentations,
       });
     });
+
+    this.scoringService.handleEventUpdate(result.eventEditionId);
+    return result;
   }
 
   private validateTypeUpdate(
@@ -503,11 +510,14 @@ export class PresentationBlockService {
   }
 
   async remove(id: string) {
-    return await this.prismaClient.presentationBlock.delete({
+    const result = await this.prismaClient.presentationBlock.delete({
       where: {
         id,
       },
     });
+
+    this.scoringService.handleEventUpdate(result.eventEditionId);
+    return result;
   }
 
   async swapPresentations(

@@ -341,14 +341,35 @@ export class ScoringService {
     }
 
     const now = new Date();
-    const endDate = this.adjustToUTC(event.endDate);
-    const delay = endDate.getTime() - now.getTime();
-    // Only schedule if the event hasn't ended yet
+    const endDate = event.endDate;
+
+    // Find the last presentation block
+    const lastBlock = await this.prismaClient.presentationBlock.findFirst({
+      where: {
+        eventEditionId: event.id,
+      },
+      orderBy: {
+        startTime: 'desc',
+      },
+    });
+
+    let scheduleTime: Date;
+    let decision: string;
+
+    // If the last block is General type, use its start time
+    if (lastBlock && lastBlock.type === 'General') {
+      scheduleTime = lastBlock.startTime;
+      decision = 'Last block start time';
+    } else {
+      // Otherwise, use the original event end date
+      scheduleTime = endDate;
+      decision = 'Event end date';
+    }
+
+    const delay = scheduleTime.getTime() - now.getTime();
+
+    // Only schedule if the calculated time hasn't passed yet
     if (delay > 0) {
-      /* 
-        If delay exceeds maximum timeout, schedule an intermediate 
-        timeout (32-bit signed integer limit for ms representation)
-      */
       if (delay > this.MAX_TIMEOUT) {
         const timeout = setTimeout(() => {
           this.logger.log(
@@ -383,13 +404,23 @@ export class ScoringService {
 
         this.schedulerRegistry.addTimeout(jobName, timeout);
         this.logger.log(
-          `Scheduled final score recalculation for event ${event.id} at ${endDate}`,
+          `Scheduled final score recalculation for event ${event.id} at ${scheduleTime} (${decision})`,
         );
       }
     }
   }
 
-  async handleEventUpdate(event: EventEdition) {
-    this.scheduleEventFinalScoresRecalculation(event);
+  async handleEventUpdate(eventEditionId: string): Promise<void> {
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: {
+        id: eventEditionId,
+      },
+    });
+
+    if (!eventEdition) {
+      throw new Error(`Event ${eventEditionId} not found`);
+    }
+
+    this.scheduleEventFinalScoresRecalculation(eventEdition);
   }
 }

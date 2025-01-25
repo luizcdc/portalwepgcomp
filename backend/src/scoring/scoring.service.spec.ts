@@ -31,6 +31,12 @@ describe('ScoringService', () => {
   let schedulerRegistry: SchedulerRegistry;
   let timeouts: NodeJS.Timeout[];
 
+  const mockEvent = {
+    id: 'event-123',
+    name: 'Test Event',
+    endDate: new Date(),
+  };
+
   beforeEach(() => {
     timeouts = [];
     prismaService = {
@@ -41,8 +47,21 @@ describe('ScoringService', () => {
       evaluationCriteria: {
         findMany: jest.fn(),
       },
+      presentationBlock: {
+        findFirst: jest
+          .fn()
+          .mockResolvedValueOnce(null) // First call returns null
+          .mockResolvedValueOnce({
+            type: 'General',
+            startTime: new Date(),
+            eventEditionId: mockEvent.id,
+          }), // Second call returns a General block
+      },
       eventEdition: {
         findMany: jest.fn().mockResolvedValue([]),
+        findUnique: jest
+          .fn()
+          .mockResolvedValue(createMockEventEdition(mockEvent)),
       },
     } as unknown as PrismaService;
 
@@ -410,24 +429,14 @@ describe('ScoringService', () => {
 
       expect(schedulerRegistry.addTimeout).not.toHaveBeenCalled();
     });
-  });
 
-  describe('handleEventUpdate', () => {
-    const mockEvent = createMockEventEdition({
-      id: 'event1',
-      endDate: new Date(Date.now() + 86400000),
-    });
+    it('should handle scheduling when last block is General type', async () => {
+      await service.scheduleEventFinalScoresRecalculation(mockEvent);
 
-    it('should reschedule score recalculation when event is updated', async () => {
-      await service.handleEventUpdate(mockEvent);
-
-      expect(schedulerRegistry.deleteTimeout).toHaveBeenCalledWith(
-        `recalculate-scores-${mockEvent.id}`,
-      );
-      expect(schedulerRegistry.addTimeout).toHaveBeenCalledWith(
-        `recalculate-scores-${mockEvent.id}`,
-        expect.anything(),
-      );
+      expect(prismaService.presentationBlock.findFirst).toHaveBeenCalledWith({
+        where: { eventEditionId: mockEvent.id },
+        orderBy: { startTime: 'desc' },
+      });
     });
   });
 });

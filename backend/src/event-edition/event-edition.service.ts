@@ -543,7 +543,7 @@ export class EventEditionService {
 
     const eventResponseDto = new EventEditionResponseDto(updatedEvent);
 
-    await this.scoringService.handleEventUpdate(updatedEvent);
+    await this.scoringService.handleEventUpdate(updatedEvent.id);
 
     return eventResponseDto;
   }
