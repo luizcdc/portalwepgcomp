@@ -171,17 +171,17 @@ async function main() {
 
   const eventEdition = await prisma.eventEdition.create({
     data: {
-      name: 'WEPGCOMP 2025',
+      name: 'WEPGCOMP 2024',
       description:
         'Um evento para estudantes de doutorado apresentarem suas pesquisas.',
       callForPapersText: 'Envie seus artigos para avaliação e apresentação.',
       partnersText:
         '<b>Apoiado por:</b><br>Instituto qualquercoisa<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="black"/><rect x="6" y="6" width="12" height="12" fill="white"/></svg>',
       location: 'UFBA, Salvador, Bahia, Brasil',
-      startDate: new Date('2025-05-01'),
-      endDate: new Date('2025-05-03'),
-      submissionStartDate: new Date('2025-01-01'),
-      submissionDeadline: new Date('2025-04-01'),
+      startDate: new Date('2024-05-01'),
+      endDate: new Date('2024-05-03'),
+      submissionStartDate: new Date('2024-01-01'),
+      submissionDeadline: new Date('2024-04-01'),
       isActive: true,
       isEvaluationRestrictToLoggedUsers: true,
       presentationDuration: 15,
@@ -270,7 +270,7 @@ async function main() {
         title: 'The Impact of AI in Modern Research',
         abstract: 'A study on how AI impacts modern research methodologies.',
         pdfFile: 'path/to/document1.pdf',
-        phoneNumber: '123-456-7890',
+        phoneNumber: '(12) 93456-7896',
         status: SubmissionStatus.Submitted,
       },
     }),
@@ -282,7 +282,7 @@ async function main() {
         title: 'Quantum Computing Advances',
         abstract: 'Exploring the latest advancements in quantum computing.',
         pdfFile: 'path/to/document2.pdf',
-        phoneNumber: '123-456-7891',
+        phoneNumber: '(12) 93456-7896',
         status: SubmissionStatus.Submitted,
       },
     }),
@@ -295,7 +295,7 @@ async function main() {
         abstract:
           'An analysis of blockchain technology applications in finance.',
         pdfFile: 'path/to/document3.pdf',
-        phoneNumber: '123-456-7892',
+        phoneNumber: '(12) 93456-7896',
         status: SubmissionStatus.Submitted,
       },
     }),
@@ -307,7 +307,7 @@ async function main() {
         title: 'Machine Learning in Healthcare',
         abstract: 'Investigating ML applications in healthcare diagnosis.',
         pdfFile: 'path/to/document4.pdf',
-        phoneNumber: '123-456-7893',
+        phoneNumber: '(12) 93456-7896',
         status: SubmissionStatus.Submitted,
       },
     }),
@@ -319,7 +319,7 @@ async function main() {
         title: 'Cloud Computing Security',
         abstract: 'Analysis of security challenges in cloud computing.',
         pdfFile: 'path/to/document5.pdf',
-        phoneNumber: '123-456-7894',
+        phoneNumber: '(12) 93456-7896',
         status: SubmissionStatus.Submitted,
       },
     }),
@@ -331,7 +331,7 @@ async function main() {
         title: 'Internet of Things Networks',
         abstract: 'Study of IoT network architectures and protocols.',
         pdfFile: 'path/to/document6.pdf',
-        phoneNumber: '123-456-7895',
+        phoneNumber: '(12) 93456-7896',
         status: SubmissionStatus.Submitted,
       },
     }),
@@ -343,11 +343,23 @@ async function main() {
         title: 'Big Data Analytics',
         abstract: 'Exploring big data analytics and visualization tools.',
         pdfFile: 'path/to/document7.pdf',
-        phoneNumber: '123-456-7896',
+        phoneNumber: '(12) 93456-7896',
         status: SubmissionStatus.Submitted,
       },
     }),
   ];
+  await prisma.submission.create({
+    data: {
+      advisorId: professors[1].id,
+      mainAuthorId: doctoralStudents[7].id,
+      eventEditionId: eventEdition.id,
+      title: 'Cybersecurity in Modern Networks',
+      abstract: 'Analysis of current cybersecurity challenges and solutions.',
+      pdfFile: 'path/to/document8.pdf',
+      phoneNumber: '(12) 93456-7896',
+      status: SubmissionStatus.Submitted,
+    },
+  }),
 
   const evaluationCriteria = await prisma.evaluationCriteria.findMany({
     where: { eventEditionId: eventEdition.id },
@@ -376,7 +388,7 @@ async function main() {
       roomId: room.id,
       type: PresentationBlockType.Presentation,
       title: 'Apresentações de Pesquisa em IA',
-      startTime: new Date('2025-05-01T09:00:00'),
+      startTime: new Date('2024-05-01T09:00:00'),
       duration:
         eventEdition.presentationDuration *
         eventEdition.presentationsPerPresentationBlock,
@@ -389,7 +401,20 @@ async function main() {
       roomId: room.id,
       type: PresentationBlockType.Presentation,
       title: 'Apresentações de Pesquisa em Computação Quântica',
-      startTime: new Date('2025-05-01T10:00:00'),
+      startTime: new Date('2024-05-01T10:00:00'),
+      duration:
+        eventEdition.presentationDuration *
+        eventEdition.presentationsPerPresentationBlock,
+    },
+  });
+
+  const presentationBlock3 = await prisma.presentationBlock.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      roomId: room.id,
+      type: PresentationBlockType.Presentation,
+      title: 'Apresentações de Pesquisa em Cybersecurity',
+      startTime: new Date('2024-05-01T11:00:00'),
       duration:
         eventEdition.presentationDuration *
         eventEdition.presentationsPerPresentationBlock,
@@ -419,6 +444,15 @@ async function main() {
       },
     });
   }
+
+  await prisma.presentation.create({
+    data: {
+      submissionId: submissions[6].id,
+      presentationBlockId: presentationBlock3.id,
+      positionWithinBlock: 0,
+      status: PresentationStatus.ToPresent,
+    },
+  });
 
   const panelistUsers = professors.slice(0, 4);
   for (const professor of panelistUsers) {
@@ -464,6 +498,16 @@ async function main() {
       name: 'Participation Certificate',
       email: 'johndoe@example.com',
     },
+  });
+
+  // Seed for Guidance
+  await prisma.guidance.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      summary: "<p style=\"text-align: center;\">Obtenha todas as orientações que precisa para participar do WEPGCOMP.</p><p style=\"text-align: center;\">O objetivo do evento é apresentar as pesquisas em andamento realizadas pelos alunos de doutorado (a partir do segundo ano), </p><p style=\"text-align: center;\">bem como propiciar um ambiente de troca de conhecimento e congregação para toda a comunidade.</p>",
+      reviewerGuidance: "<p><strong style=\"font-size: 24px;\">Informações</strong> </p><ul><li>A Programação Preliminar do WEPGCOMP 2024 pode ser encontrada na&nbsp;página do evento.</li><li>O evento está organizado em&nbsp;sessões temáticas&nbsp;para apresentação de trabalhos das/os doutorandas/os matriculadas/os no componente curricular MATA33.</li><li>A apresentação no WEPGCOMP é&nbsp;opcional&nbsp;para as/os doutorandas/os que realizaram ou realizarão o exame de qualificação (MATA34) em 2024. Nesse caso, a nota do componente MATA33 será a mesma atribuída ao componente MATA34 em 2024.</li><li>Cada trabalho apresentado em uma sessão contará com um grupo de, no mínimo, três docentes responsáveis pela avaliação do trabalho, além de seu orientador.</li><li>O evento será realizado na modalidade&nbsp;presencial.</li></ul><p><span style=\"font-size: 24px;\"><strong>Recomendações para a Audiência</strong></span> </p><ul><li>Recomenda-se chegar à sala antes do início de cada sessão.</li><li>Após as perguntas dos avaliadores, se houver tempo, o coordenador da sessão fará a moderação das perguntas da audiência.</li></ul>",
+      authorGuidance: "<p style=\"text-align: center;\">Obtenha todas as orientações que precisa para participar do WEPGCOMP.</p><p style=\"text-align: center;\">O objetivo do evento é apresentar as pesquisas em andamento realizadas pelos alunos de doutorado (a partir do segundo ano), </p><p style=\"text-align: center;\">bem como propiciar um ambiente de troca de conhecimento e congregação para toda a comunidade.</p>"
+    }
   });
 
   console.log('Seeding completed.');
