@@ -123,7 +123,7 @@ export class PresentationBlockService {
     }
 
     if (createPresentationBlockDto.type === PresentationBlockType.General) {
-      this.scoringService.handleEventUpdate(eventEdition.id);
+      await this.scoringService.handleEventUpdate(eventEdition.id);
     }
 
     return createdPresentationBlock;
