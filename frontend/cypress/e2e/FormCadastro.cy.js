@@ -4,8 +4,18 @@ describe('Componente do Formulário de Cadastro', () => {
       cy.fixture('usuarios').as('userData');
     });
 
+    function generateRandomLetters(length) {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += letters.charAt(Math.floor(Math.random() * letters.length));
+      }
+      return result;
+    }
+
     it('Deve validar campos obrigatórios', () => {
       // Tenta enviar o formulário vazio
+      cy.wait(2000);
       cy.get('button[type="submit"]').click();
   
       // Valida mensagens de erro
@@ -16,8 +26,9 @@ describe('Componente do Formulário de Cadastro', () => {
     });
   
     it('Deve validar o formato do e-mail', () => {
+      cy.wait(2000);
       cy.get('button[type="submit"]').click();
-      cy.get('#email').type('email-invalido');
+      cy.get('#email').type('132');
   
       cy.contains('E-mail inválido!').should('be.visible');
     });
@@ -50,6 +61,7 @@ describe('Componente do Formulário de Cadastro', () => {
     });
   
     it('Deve verificar que as senhas coincidem', () => {
+      cy.wait(2000);
       cy.get('#senha').type('SenhaValida123!');
       cy.get('#confirmaSenha').type('OutraSenha123!');
       cy.get('button[type="submit"]').click();
@@ -59,10 +71,11 @@ describe('Componente do Formulário de Cadastro', () => {
   
     it('Deve cadastrar um usuário Doutorando com sucesso', function() {
       const { doutorando } = this.userData;
-      cy.get('#nome').type(doutorando.nome);
+      cy.wait(2000);
+      cy.get('#nome').type(doutorando.nome + generateRandomLetters(5));
       cy.get(`input[value="${doutorando.perfil}"]`).check();
-      cy.get('#matricula').type(doutorando.matricula);
-      cy.get('#email').type(doutorando.email);
+      cy.get('#matricula').type(Math.floor(Math.random() * 1000000000));
+      cy.get('#email').type(doutorando.email +  generateRandomLetters(5));
       cy.get('#senha').type(doutorando.senha);
       cy.get('#confirmaSenha').type(doutorando.senha);
   
@@ -75,10 +88,11 @@ describe('Componente do Formulário de Cadastro', () => {
   
     it('Deve cadastrar um usuário Professor com sucesso', function() {
       const { professor } = this.userData;
-      cy.get('#nome').type(professor.nome);
+      cy.wait(2000);
+      cy.get('#nome').type(professor.nome + generateRandomLetters(5));
       cy.get(`input[value="${professor.perfil}"]`).check();
-      cy.get('#matricula').type(professor.matricula);
-      cy.get('#email').type(professor.email);
+      cy.get('#matricula').type(Math.floor(Math.random() * 1000000000));
+      cy.get('#email').type(professor.email +  generateRandomLetters(5));
       cy.get('#senha').type(professor.senha);
       cy.get('#confirmaSenha').type(professor.senha);
   
@@ -90,9 +104,11 @@ describe('Componente do Formulário de Cadastro', () => {
   
     it('Deve cadastrar um usuário Ouvinte com sucesso', function() {
       const { ouvinte } = this.userData;
-      cy.get('#nome').type(ouvinte.nome);
+      cy.wait(2000);
+      cy.get('#nome').type(ouvinte.nome + generateRandomLetters(5));
       cy.get(`input[value="${ouvinte.perfil}"]`).check();
-      cy.get('#email').type(ouvinte.email);
+      cy.get('#matricula').type(Math.floor(Math.random() * 1000000000));
+      cy.get('#email').type(ouvinte.email +  generateRandomLetters(5));
       cy.get('#senha').type(ouvinte.senha);
       cy.get('#confirmaSenha').type(ouvinte.senha);
   

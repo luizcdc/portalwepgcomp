@@ -1,10 +1,10 @@
 {
   "doutorando": {
-    "nome": "João da Silva",
+    "nome": "Joao Silva",
     "perfil": "doutorando",
     "matricula": "1234567890",
     "email": "joao.silva@ufba.br",
-    "senha": "SenhaValida1234!"
+    "senha": "SenhaInvalida1234!"
   },
   "professor": {
     "nome": "Maria Santos",

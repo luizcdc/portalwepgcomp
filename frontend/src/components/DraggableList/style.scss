@@ -1,0 +1,22 @@
+.draggable {
+  user-select: none;
+  border-radius: 10px;
+  box-shadow: 0px 1px 1px 1px;
+  transition: all 0.2s ease-in-out;
+}
+
+.draggable:hover {
+  transform: scale(1.01);
+}
+
+.dragLine {
+  border-bottom: dashed 2px rgba(245, 75, 53, 0.445) !important;
+}
+
+.grabbable {
+  cursor: grab !important;
+}
+
+.drag-icon {
+  margin: auto !important;
+}

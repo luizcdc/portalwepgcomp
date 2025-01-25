@@ -3,6 +3,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventStats, ScoringConfig } from './scoring.types';
 import { EventEdition } from '@prisma/client';
+import { PresentationBlockType } from '@prisma/client';
 
 @Injectable()
 export class ScoringService {
@@ -305,11 +306,6 @@ export class ScoringService {
     return new Date(localDate.getTime() + this.TIMEZONE_OFFSET);
   }
 
-  private adjustToUTC(date: Date): Date {
-    const timezoneOffset = date.getTimezoneOffset();
-    return new Date(date.getTime() + timezoneOffset * 60000);
-  }
-
   private async initializeEventFinalScoresSchedulers() {
     try {
       const events = await this.prismaClient.eventEdition.findMany({
@@ -341,14 +337,38 @@ export class ScoringService {
     }
 
     const now = new Date();
-    const endDate = this.adjustToUTC(event.endDate);
-    const delay = endDate.getTime() - now.getTime();
-    // Only schedule if the event hasn't ended yet
+    const endDate = event.endDate;
+
+    // Find the last presentation block
+    const lastBlock = await this.prismaClient.presentationBlock.findFirst({
+      where: {
+        eventEditionId: event.id,
+      },
+      orderBy: {
+        startTime: 'desc',
+      },
+    });
+
+    let scheduleTime: Date;
+    let decision: string;
+    // If the last block is General type, use its start time
+    if (
+      lastBlock &&
+      lastBlock.type === PresentationBlockType.General &&
+      lastBlock.startTime > now
+    ) {
+      scheduleTime = lastBlock.startTime;
+      decision = 'Last block start time';
+    } else {
+      // Otherwise, use the original event end date
+      scheduleTime = endDate;
+      decision = 'Event end date';
+    }
+
+    const delay = scheduleTime.getTime() - now.getTime();
+
+    // Only schedule if the calculated time hasn't passed yet
     if (delay > 0) {
-      /* 
-        If delay exceeds maximum timeout, schedule an intermediate 
-        timeout (32-bit signed integer limit for ms representation)
-      */
       if (delay > this.MAX_TIMEOUT) {
         const timeout = setTimeout(() => {
           this.logger.log(
@@ -359,7 +379,7 @@ export class ScoringService {
 
         this.schedulerRegistry.addTimeout(jobName, timeout);
         this.logger.log(
-          `Scheduled intermediate timeout for event ${event.id} in ${Math.floor(
+          `Scheduled intermediate timeout for event ${event.id} (${decision}) in ${Math.floor(
             this.MAX_TIMEOUT / (1000 * 60 * 60 * 24),
           )} days`,
         );
@@ -383,13 +403,34 @@ export class ScoringService {
 
         this.schedulerRegistry.addTimeout(jobName, timeout);
         this.logger.log(
-          `Scheduled final score recalculation for event ${event.id} at ${endDate}`,
+          `Scheduled final score recalculation for event ${event.id} at ${scheduleTime} (${decision})`,
         );
       }
     }
   }
 
-  async handleEventUpdate(event: EventEdition) {
-    this.scheduleEventFinalScoresRecalculation(event);
+  async handleEventUpdate(eventEditionId: string): Promise<void> {
+    const eventEdition = await this.prismaClient.eventEdition.findUnique({
+      where: {
+        id: eventEditionId,
+      },
+    });
+
+    if (!eventEdition) {
+      this.logger.log(
+        `Event ${eventEditionId} not found for the handleEventUpdate`,
+        400,
+      );
+      return;
+    }
+
+    if (eventEdition.endDate < new Date()) {
+      this.logger.log(
+        `Event ${eventEditionId} has already ended, not scheduling recalculation`,
+      );
+      return;
+    }
+
+    this.scheduleEventFinalScoresRecalculation(eventEdition);
   }
 }
