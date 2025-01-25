@@ -10,6 +10,7 @@ import {
 
 import { sessionApi } from "@/services/sessions";
 import { useSweetAlert } from "@/hooks/useAlert";
+import { useSweetToast } from "@/hooks/useToast";
 
 interface SessionProps {
   children: ReactNode;
@@ -40,7 +41,7 @@ interface SessionProviderData {
   swapPresentationsOnSession: (
     idSession: string,
     eventEditionId: string,
-    body: SwapPresentationsOnSession
+    bodies: SwapPresentationsOnSession[]
   ) => Promise<boolean>;
   listPresentionBlockByPanelist: (
     eventEditionId: string,
@@ -63,6 +64,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const [roomsList, setRoomsList] = useState<Room[]>([]);
 
   const { showAlert } = useSweetAlert();
+  const { showToast } = useSweetToast();
 
   const listSessions = async (eventEditionId: string) => {
     setLoadingSessoesList(true);
@@ -253,42 +255,23 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const swapPresentationsOnSession = async (
     idSession: string,
     eventEditionId: string,
-    body: SwapPresentationsOnSession
+    presentations: SwapPresentationsOnSession[]
   ) => {
     setLoadingSessao(true);
-    return sessionApi
-      .swapPresentationsOnSession(idSession, body)
-      .then((response) => {
-        setSessao(response);
-        showAlert({
+    const body = { presentations };
+    return sessionApi.swapPresentationsOnSession(idSession, body).then(() => {
+        showToast({
           icon: "success",
-          title:
-            "Troca na ordem das apresentações da sessão realizada com sucesso!",
-          timer: 3000,
-          showConfirmButton: false,
+          title: "Troca na ordem das apresentações da sessão realizada com sucesso!",
         });
         listSessions(eventEditionId);
 
-        const modalElementButton = document.getElementById(
-          "trocarOrdemApresentacaoClose"
-        ) as HTMLButtonElement;
-
-        if (modalElementButton) {
-          modalElementButton.click();
-        }
-
         return true;
       })
-      .catch((err) => {
-        setSessao(null);
-        showAlert({
+      .catch(() => {
+        showToast({
           icon: "error",
           title: "Erro na troca da ordem das apresentações da sessão",
-          text:
-            err.response?.data?.message?.message ||
-            err.response?.data?.message ||
-            "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
-          confirmButtonText: "Retornar",
         });
 
         return false;
