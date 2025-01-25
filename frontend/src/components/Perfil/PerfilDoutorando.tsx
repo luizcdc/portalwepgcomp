@@ -3,9 +3,14 @@ import { useContext } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
+import { certificate } from "@/services/certificate";
 
 export default function PerfilDoutorando() {
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
+  const certificateDownload = () => {
+    certificate(user?.id || '');
+  };
+  
   return (
     <li className="dropdown">
       <button
@@ -17,11 +22,11 @@ export default function PerfilDoutorando() {
         <i className="bi bi-list fs-3"></i>
       </button>
       <ul className="dropdown-menu dropdown-menu-end border-3 border-light">
-        {/* <li>
-          <Link className="dropdown-item" href="#">
+        <li>
+          <Link className="dropdown-item" href="#" onClick={certificateDownload}>
             Emitir Certificado
           </Link>
-        </li> */}
+        </li>
         <li>
           <Link className="dropdown-item" href="/minha-apresentacao">
             Minha Apresentação
