@@ -135,6 +135,14 @@ async function main() {
       level: UserLevel.Default,
       isVerified: true,
     },
+    {
+      name: 'Doutorando Default 7',
+      email: 'docdefault7@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
   ];
 
   for (const user of users_data) {
@@ -188,7 +196,6 @@ async function main() {
       presentationsPerPresentationBlock: 3,
     },
   });
-
   const room = await prisma.room.create({
     data: {
       eventEditionId: eventEdition.id,
