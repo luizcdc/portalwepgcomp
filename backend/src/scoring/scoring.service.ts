@@ -3,6 +3,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventStats, ScoringConfig } from './scoring.types';
 import { EventEdition } from '@prisma/client';
+import { PresentationBlockType } from '@prisma/client';
 
 @Injectable()
 export class ScoringService {
@@ -305,11 +306,6 @@ export class ScoringService {
     return new Date(localDate.getTime() + this.TIMEZONE_OFFSET);
   }
 
-  private adjustToUTC(date: Date): Date {
-    const timezoneOffset = date.getTimezoneOffset();
-    return new Date(date.getTime() + timezoneOffset * 60000);
-  }
-
   private async initializeEventFinalScoresSchedulers() {
     try {
       const events = await this.prismaClient.eventEdition.findMany({
@@ -357,7 +353,7 @@ export class ScoringService {
     let decision: string;
 
     // If the last block is General type, use its start time
-    if (lastBlock && lastBlock.type === 'General') {
+    if (lastBlock && lastBlock.type === PresentationBlockType.General) {
       scheduleTime = lastBlock.startTime;
       decision = 'Last block start time';
     } else {
@@ -418,7 +414,18 @@ export class ScoringService {
     });
 
     if (!eventEdition) {
-      throw new Error(`Event ${eventEditionId} not found`);
+      this.logger.log(
+        `Event ${eventEditionId} not found for the handleEventUpdate`,
+        400,
+      );
+      return;
+    }
+
+    if (eventEdition.endDate < new Date()) {
+      this.logger.log(
+        `Event ${eventEditionId} has already ended, not scheduling recalculation`,
+      );
+      return;
     }
 
     this.scheduleEventFinalScoresRecalculation(eventEdition);
