@@ -150,6 +150,7 @@ model EventEdition {
   guidance                          Guidance?
   certificates                      Certificate[]
   presentationBlocks                PresentationBlock[]
+  EvaluationCriteria EvaluationCriteria[]
 
   @@map("event_edition")
 }
@@ -178,7 +179,8 @@ model EvaluationCriteria {
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   evaluations    Evaluation[]
-
+  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
+  
   @@map("evaluation_criteria")
 }
 
