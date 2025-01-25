@@ -121,7 +121,11 @@ export class PresentationBlockService {
         })),
       });
     }
-    await this.scoringService.handleEventUpdate(eventEdition.id);
+
+    if (createPresentationBlockDto.type === PresentationBlockType.General) {
+      this.scoringService.handleEventUpdate(eventEdition.id);
+    }
+
     return createdPresentationBlock;
   }
 
@@ -467,7 +471,9 @@ export class PresentationBlockService {
       });
     });
 
-    this.scoringService.handleEventUpdate(result.eventEditionId);
+    if (updatePresentationBlockDto.type === PresentationBlockType.General) {
+      await this.scoringService.handleEventUpdate(result.eventEditionId);
+    }
     return result;
   }
 
@@ -516,7 +522,7 @@ export class PresentationBlockService {
       },
     });
 
-    this.scoringService.handleEventUpdate(result.eventEditionId);
+    await this.scoringService.handleEventUpdate(result.eventEditionId);
     return result;
   }
 
