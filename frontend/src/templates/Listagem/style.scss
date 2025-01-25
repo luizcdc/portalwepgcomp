@@ -70,3 +70,9 @@
         }
     }
 }
+
+@media (max-width: 610px){
+    .form-control{
+        max-width: 170px;
+    }
+}
