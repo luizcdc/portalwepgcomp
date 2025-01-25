@@ -24,7 +24,7 @@ async function main() {
 
   const users_data = [
     {
-      name: 'Professor Superadmin',
+      name: 'Paulo CoordenadorSuperadmin da Silva',
       email: 'profsuperadmin@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -32,7 +32,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doutorando Admin',
+      name: 'João DoutorandoAdmin',
       email: 'docadmin@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -40,7 +40,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Professor Admin',
+      name: 'Carlos ProfessorAdmin',
       email: 'profadmin@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -48,7 +48,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Ouvinte Admin',
+      name: 'Sílvio OuvinteAdmin',
       email: 'listadmin@example.com',
       password: '1234$Ad@',
       profile: Profile.Listener,
@@ -56,7 +56,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Professor Default',
+      name: 'Pedro dos Santos',
       email: 'profdefault@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -64,7 +64,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Ouvinte Default',
+      name: 'Joana Silva',
       email: 'listdefault@example.com',
       password: '1234$Ad@',
       profile: Profile.Listener,
@@ -72,7 +72,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doutorando Default',
+      name: 'Ana Rodrigues',
       email: 'docdefault@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -80,7 +80,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Professor Default 2',
+      name: 'Walter Marinho',
       email: 'profdefault2@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -88,7 +88,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Professor Default 3',
+      name: 'Karl Marx',
       email: 'profdefault3@example.com',
       password: '1234$Ad@',
       profile: Profile.Professor,
@@ -96,7 +96,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doutorando Default 2',
+      name: 'Ludwig Wittgenstein',
       email: 'docdefault2@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -104,7 +104,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doutorando Default 3',
+      name: 'Julia Kristeva',
       email: 'docdefault3@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -112,7 +112,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doutorando Default 4',
+      name: 'Michel Foucault',
       email: 'docdefault4@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -120,7 +120,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doutorando Default 5',
+      name: 'Rubem Alves',
       email: 'docdefault5@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -128,7 +128,7 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doutorando Default 6',
+      name: 'Machado de Assis',
       email: 'docdefault6@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
@@ -136,8 +136,56 @@ async function main() {
       isVerified: true,
     },
     {
-      name: 'Doutorando Default 7',
+      name: 'Clarice Lispector',
       email: 'docdefault7@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'José Saramago',
+      email: 'docdefault8@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Paulo Freire',
+      email: 'docdefault9@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Virginia Woolf',
+      email: 'docdefault10@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Simone de Beauvoir',
+      email: 'docdefault11@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Hannah Arendt',
+      email: 'docdefault12@example.com',
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    },
+    {
+      name: 'Jean-Paul Sartre',
+      email: 'docdefault13@example.com',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
       level: UserLevel.Default,
@@ -275,7 +323,8 @@ async function main() {
         mainAuthorId: doctoralStudents[0].id,
         eventEditionId: eventEdition.id,
         title: 'The Impact of AI in Modern Research',
-        abstract: 'A study on how AI impacts modern research methodologies.',
+        abstract:
+          'A study on how AI impacts modern research methodologies. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.',
         pdfFile: 'path/to/document1.pdf',
         phoneNumber: '(12) 93456-7896',
         status: SubmissionStatus.Submitted,
@@ -354,20 +403,93 @@ async function main() {
         status: SubmissionStatus.Submitted,
       },
     }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[1].id,
+        mainAuthorId: doctoralStudents[7].id,
+        eventEditionId: eventEdition.id,
+        title: 'Cybersecurity in Modern Networks',
+        abstract: 'Analysis of current cybersecurity challenges and solutions.',
+        pdfFile: 'path/to/document8.pdf',
+        phoneNumber: '(12) 93456-7896',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[2].id,
+        mainAuthorId: doctoralStudents[8].id,
+        eventEditionId: eventEdition.id,
+        title: 'Artificial Neural Networks',
+        abstract: 'Study of ANN architectures and training algorithms.',
+        pdfFile: 'path/to/document9.pdf',
+        phoneNumber: '(12) 93456-7896',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[0].id,
+        mainAuthorId: doctoralStudents[9].id,
+        eventEditionId: eventEdition.id,
+        title: 'Software Engineering Practices',
+        abstract: 'Analysis of software engineering methodologies and tools.',
+        pdfFile: 'path/to/document10.pdf',
+        phoneNumber: '(12) 93456-7896',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[1].id,
+        mainAuthorId: doctoralStudents[10].id,
+        eventEditionId: eventEdition.id,
+        title: 'Computer Vision Applications',
+        abstract:
+          'Exploring CV applications in image recognition and analysis.',
+        pdfFile: 'path/to/document11.pdf',
+        phoneNumber: '(12) 93456-7896',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[2].id,
+        mainAuthorId: doctoralStudents[11].id,
+        eventEditionId: eventEdition.id,
+        title: 'Natural Language Processing',
+        abstract: 'Study of NLP algorithms and applications in text analysis.',
+        pdfFile: 'path/to/document12.pdf',
+        phoneNumber: '(12) 93456-7896',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[0].id,
+        mainAuthorId: doctoralStudents[12].id,
+        eventEditionId: eventEdition.id,
+        title: 'Distributed Systems Architectures',
+        abstract:
+          'Analysis of distributed systems architectures and protocols.',
+        pdfFile: 'path/to/document13.pdf',
+        phoneNumber: '(12) 93456-7896',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
+    await prisma.submission.create({
+      data: {
+        advisorId: professors[1].id,
+        mainAuthorId: doctoralStudents[13].id,
+        eventEditionId: eventEdition.id,
+        title: 'Mobile Computing Technologies',
+        abstract: 'Exploring mobile computing technologies and applications.',
+        pdfFile: 'path/to/document14.pdf',
+        phoneNumber: '(12) 93456-7896',
+        status: SubmissionStatus.Submitted,
+      },
+    }),
   ];
-
-  await prisma.submission.create({
-    data: {
-      advisorId: professors[1].id,
-      mainAuthorId: doctoralStudents[7].id,
-      eventEditionId: eventEdition.id,
-      title: 'Cybersecurity in Modern Networks',
-      abstract: 'Analysis of current cybersecurity challenges and solutions.',
-      pdfFile: 'path/to/document8.pdf',
-      phoneNumber: '(12) 93456-7896',
-      status: SubmissionStatus.Submitted,
-    },
-  });
 
   const evaluationCriteria = await prisma.evaluationCriteria.findMany({
     where: { eventEditionId: eventEdition.id },
@@ -429,6 +551,62 @@ async function main() {
     },
   });
 
+  await prisma.presentationBlock.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      type: PresentationBlockType.General,
+      title: 'Pausa para Almoço',
+      startTime: new Date('2024-05-01T12:00:00'),
+      duration: 120,
+    },
+  });
+
+  const presentationBlock4 = await prisma.presentationBlock.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      roomId: room.id,
+      type: PresentationBlockType.Presentation,
+      title: 'Apresentações de Pesquisa em Otimização',
+      startTime: new Date('2024-05-02T11:00:00'),
+      duration:
+        eventEdition.presentationDuration *
+        eventEdition.presentationsPerPresentationBlock,
+    },
+  });
+
+  await prisma.presentationBlock.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      type: PresentationBlockType.General,
+      title: 'Pausa para Almoço',
+      startTime: new Date('2024-05-02T12:00:00'),
+      duration: 120,
+    },
+  });
+
+  const presentationBlock5 = await prisma.presentationBlock.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      roomId: room.id,
+      type: PresentationBlockType.Presentation,
+      title: 'Apresentações de Pesquisa em Redes de Computadores',
+      startTime: new Date('2024-05-02T13:00:00'),
+      duration:
+        eventEdition.presentationDuration *
+        eventEdition.presentationsPerPresentationBlock,
+    },
+  });
+
+  await prisma.presentationBlock.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      type: PresentationBlockType.General,
+      title: 'Encerramento',
+      startTime: new Date('2024-05-02T14:00:00'),
+      duration: 120,
+    },
+  });
+
   // First three submissions to presentationBlock 1
   for (let i = 0; i < 3; i++) {
     await prisma.presentation.create({
@@ -461,6 +639,30 @@ async function main() {
       status: PresentationStatus.ToPresent,
     },
   });
+
+  // next 3 submissions to presentationBlock 4
+  for (let i = 7; i < 10; i++) {
+    await prisma.presentation.create({
+      data: {
+        submissionId: submissions[i].id,
+        presentationBlockId: presentationBlock4.id,
+        positionWithinBlock: i - 7,
+        status: PresentationStatus.ToPresent,
+      },
+    });
+  }
+
+  // next 3 submissions to presentationBlock 5
+  for (let i = 10; i < 13; i++) {
+    await prisma.presentation.create({
+      data: {
+        submissionId: submissions[i].id,
+        presentationBlockId: presentationBlock5.id,
+        positionWithinBlock: i - 10,
+        status: PresentationStatus.ToPresent,
+      },
+    });
+  }
 
   const panelistUsers = professors.slice(0, 4);
   for (const professor of panelistUsers) {
