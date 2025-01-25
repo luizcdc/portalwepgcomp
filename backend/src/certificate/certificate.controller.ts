@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Header,
   Param,
   Request,
   Res,
@@ -19,7 +18,6 @@ export class CertificateController {
   constructor(private readonly certificateService: CertificateService) {}
 
   @Get('event-edition/:eventEditionId')
-  @Header('Content-Type', 'application/pdf')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin, UserLevel.Default)
   async downloadCertificate(
     @Request() req: any,
