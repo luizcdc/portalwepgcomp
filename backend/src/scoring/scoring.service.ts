@@ -380,7 +380,7 @@ export class ScoringService {
 
         this.schedulerRegistry.addTimeout(jobName, timeout);
         this.logger.log(
-          `Scheduled intermediate timeout for event ${event.id} in ${Math.floor(
+          `Scheduled intermediate timeout for event ${event.id} (${decision}) in ${Math.floor(
             this.MAX_TIMEOUT / (1000 * 60 * 60 * 24),
           )} days`,
         );
