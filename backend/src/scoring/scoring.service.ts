@@ -351,9 +351,12 @@ export class ScoringService {
 
     let scheduleTime: Date;
     let decision: string;
-
     // If the last block is General type, use its start time
-    if (lastBlock && lastBlock.type === PresentationBlockType.General) {
+    if (
+      lastBlock &&
+      lastBlock.type === PresentationBlockType.General &&
+      lastBlock.startTime > now
+    ) {
       scheduleTime = lastBlock.startTime;
       decision = 'Last block start time';
     } else {

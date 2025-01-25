@@ -360,7 +360,7 @@ describe('ScoringService', () => {
         },
       });
 
-      expect(schedulerRegistry.addTimeout).toHaveBeenCalledTimes(1);
+      expect(schedulerRegistry.addTimeout).toHaveBeenCalledTimes(2);
       expect(Logger.prototype.log).toHaveBeenCalledWith(
         'Initialized schedulers for 1 upcoming events',
       );
