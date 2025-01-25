@@ -54,20 +54,14 @@ export class EventEditionService {
           startDate: 'desc',
         },
       });
-      let evaluationCriteria = [];
-      let rooms = [];
-      if (activeEvent != null) {
-        evaluationCriteria = await prisma.evaluationCriteria.findMany({
-          where: {
-            eventEditionId: activeEvent?.id,
-          },
-        });
-        rooms = await prisma.room.findMany({
-          where: {
-            eventEditionId: activeEvent?.id,
-          },
-        });
-      }
+
+      const { evaluationCriteria, rooms } =
+        await this.defineEvaluationCriteriaAndRooms(
+          activeEvent,
+          prisma,
+          createEventEditionDto,
+        );
+
       if (!createEventEditionDto.submissionStartDate) {
         createEventEditionDto.submissionStartDate = new Date();
       }
@@ -77,8 +71,14 @@ export class EventEditionService {
         data: {
           name: createEventEditionDto.name,
           description: createEventEditionDto.description,
-          callForPapersText: createEventEditionDto.callForPapersText,
-          partnersText: createEventEditionDto.partnersText,
+          callForPapersText:
+            createEventEditionDto.callForPapersText ||
+            activeEvent?.callForPapersText ||
+            '',
+          partnersText:
+            createEventEditionDto.partnersText ||
+            activeEvent?.partnersText ||
+            '',
           location: createEventEditionDto.location,
           startDate: createEventEditionDto.startDate,
           endDate: createEventEditionDto.endDate,
@@ -96,7 +96,7 @@ export class EventEditionService {
       // Copy evaluation criteria if they exist
       if (evaluationCriteria != null && evaluationCriteria.length > 0) {
         await Promise.all(
-          evaluationCriteria.map((criteria) =>
+          evaluationCriteria.map(async (criteria) =>
             prisma.evaluationCriteria.create({
               data: {
                 eventEditionId: createdEventEdition.id,
@@ -112,7 +112,7 @@ export class EventEditionService {
       // Copy rooms if they exist
       if (rooms != null && rooms.length > 0) {
         await Promise.all(
-          rooms.map((room) =>
+          rooms.map(async (room) =>
             prisma.room.create({
               data: {
                 eventEditionId: createdEventEdition.id,
@@ -148,6 +148,34 @@ export class EventEditionService {
       );
       return eventResponseDto;
     });
+  }
+
+  private async defineEvaluationCriteriaAndRooms(
+    activeEvent: {
+      id: string;
+    },
+    prisma,
+    createEventEditionDto: CreateEventEditionDto,
+  ) {
+    let evaluationCriteria = [];
+    let rooms = [];
+    if (activeEvent != null) {
+      evaluationCriteria = await prisma.evaluationCriteria.findMany({
+        where: {
+          eventEditionId: activeEvent?.id,
+        },
+      });
+      rooms = createEventEditionDto.roomName
+        ? [createEventEditionDto.roomName]
+        : await prisma.room.findMany({
+            where: {
+              eventEditionId: activeEvent?.id,
+            },
+          });
+    } else {
+      rooms = [createEventEditionDto.roomName || 'Auditório Principal'];
+    }
+    return { evaluationCriteria, rooms };
   }
 
   private validateSubmissionPeriod(
@@ -203,10 +231,10 @@ export class EventEditionService {
 
     // Agrupa todos os IDs em um único array
     const allIds = [
-      ...organizingCommitteeIds,
-      ...itSupportIds,
-      ...administrativeSupportIds,
-      ...communicationIds,
+      ...(organizingCommitteeIds || []),
+      ...(itSupportIds || []),
+      ...(administrativeSupportIds || []),
+      ...(communicationIds || []),
     ];
 
     // Verifica se há duplicações
@@ -272,6 +300,8 @@ export class EventEditionService {
     ids: Array<string>,
     role: CommitteeRole,
   ) {
+    if (!ids?.length) return;
+
     await Promise.all(
       ids.map(async (id) => {
         const existingMember =
