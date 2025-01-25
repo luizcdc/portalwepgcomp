@@ -13,9 +13,11 @@ interface PremiacaoProviderData {
   premiacaoListBanca: Premiacoes[];
   premiacaoListAudiencia: Premiacoes[];
   premiacaoListAvaliadores: AuthorOrEvaluator[];
+  premiacaoAvaliadores: AvaliadorParams[];
   getPremiacoesBanca: (eventId: string) => void;
   getPremiacoesAudiencia: (eventId: string) => void;
   getPremiacoesAvaliadores: (eventId: string) => void;
+  createAwardedPanelists: (body: AvaliadorParams) => Promise<boolean>;
 }
 
 export const PremiacaoContext = createContext<PremiacaoProviderData>(
@@ -34,6 +36,9 @@ export const PremiacaoProvider = ({ children }: SubmissionProps) => {
   >([]);
   const [premiacaoListAvaliadores, setPremiacaoListAvaliadores] = useState<
     AuthorOrEvaluator[]
+  >([]);
+  const [premiacaoAvaliadores, setPremiacaoAvaliadores] = useState<
+    AvaliadorParams[]
   >([]);
 
   const { showAlert } = useSweetAlert();
@@ -104,6 +109,40 @@ export const PremiacaoProvider = ({ children }: SubmissionProps) => {
     }
   };
 
+  const createAwardedPanelists = async (
+    body: AvaliadorParams
+  ): Promise<boolean> => {
+    setLoadingPremiacaoList(true);
+    try {
+      const response = await premiacaoApi.createAwardedPanelists(body);
+      setPremiacaoAvaliadores(response);
+      setLoadingpremiacao(response);
+
+      showAlert({
+        icon: "success",
+        title: "Avaliadores salvos com sucesso!",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return true;
+    } catch (err: any) {
+      console.error(err);
+
+      showAlert({
+        icon: "error",
+        title: "Erro ao salvar os avaliadores",
+        text:
+          err.response?.data?.message?.message ||
+          err.response?.data?.message ||
+          "Ocorreu um erro durante a escolha dos avaliadores. Tente novamente mais tarde!",
+        confirmButtonText: "Retornar",
+      });
+      return false;
+    } finally {
+      setLoadingPremiacaoList(false);
+    }
+  };
+
   return (
     <PremiacaoContext.Provider
       value={{
@@ -112,9 +151,11 @@ export const PremiacaoProvider = ({ children }: SubmissionProps) => {
         premiacaoListBanca,
         premiacaoListAudiencia,
         premiacaoListAvaliadores,
+        premiacaoAvaliadores,
         getPremiacoesBanca,
         getPremiacoesAudiencia,
         getPremiacoesAvaliadores,
+        createAwardedPanelists,
       }}
     >
       {children}
