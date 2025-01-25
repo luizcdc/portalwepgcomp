@@ -66,7 +66,8 @@ export class CertificateService {
     });
     const userSubmission = user.mainAuthored?.[0];
 
-    this.validateUserEligibility(user, eventEdition);
+    await this.validateUserEligibility(user, eventEdition);
+
     const { userPublicAwardStandings, userEvaluatorsAwardStandings } =
       this.calculateAwardStandings(presentations, userSubmission);
     const fonts = {
