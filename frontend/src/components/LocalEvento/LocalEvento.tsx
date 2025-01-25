@@ -16,7 +16,7 @@ export default function LocalEvento() {
         style={{
           gap: "30px",
           margin: "  auto",
-          width: "92%",
+          width: "85%",
           padding: "30px 0",
         }}
       >
