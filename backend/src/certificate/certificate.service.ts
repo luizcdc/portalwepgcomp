@@ -577,7 +577,8 @@ export class CertificateService {
       });
       for (const user of users) {
         try {
-          this.validateUserEligibility(user, event);
+          await this.validateUserEligibility(user, event);
+
           const text = `Seu certificado já está pronto para ser baixado na página do WEPGCOMP!`;
           const CertificateEmail = {
             from: `"${user.name}" <${user.email}>`,
