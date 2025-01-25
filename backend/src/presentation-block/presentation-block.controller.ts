@@ -57,7 +57,7 @@ export class PresentationBlockController {
   async findAll(
     @Request() req: any,
     @Query('eventEditionId') eventEditionId: string,
-    @Query('panelistId') panelistId?: string,
+    @Query('userIdOfPanelist') panelistId?: string,
   ): Promise<ResponsePresentationBlockDto[]> {
     const presentationBlocks = await this.presentationBlockService.findAll(
       req.user.userId,

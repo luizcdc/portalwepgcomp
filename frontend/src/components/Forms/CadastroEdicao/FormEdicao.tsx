@@ -27,7 +27,7 @@ dayjs.extend(timezone);
 const formEdicaoSchema = z.object({
   titulo: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "Nome do evento é obrigatório"),
+    .min(1, "Nome do evento é obrigatório!"),
 
   descricao: z
     .string({ invalid_type_error: "Campo Inválido" })

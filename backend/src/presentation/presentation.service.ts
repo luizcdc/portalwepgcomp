@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreatePresentationDto } from './dto/create-presentation.dto';
 import { CreatePresentationWithSubmissionDto } from './dto/create-presentation-with-submission.dto';
 import { SubmissionService } from '../submission/submission.service';
+import { ScoringService } from '../scoring/scoring.service';
 import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePresentationDto } from './dto/update-presentation.dto';
@@ -26,6 +27,7 @@ export class PresentationService {
   constructor(
     private prismaClient: PrismaService,
     private submissionService: SubmissionService,
+    private scoringService: ScoringService,
   ) {}
 
   async create(createPresentationDto: CreatePresentationDto) {
@@ -712,98 +714,26 @@ export class PresentationService {
     );
   }
 
-  async calculateAndUpdateScores(presentationId: string): Promise<void> {
-    // Fetch the presentation with its presentationBlock, panelists, and submission
-    const presentation = await this.prismaClient.presentation.findUnique({
-      where: { id: presentationId },
-      include: {
-        presentationBlock: {
-          include: {
-            panelists: {
-              include: {
-                user: true,
-              },
-            },
-          },
-        },
-        submission: {
-          include: {
-            Evaluation: {
-              include: {
-                user: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!presentation) {
-      throw new Error('Presentation not found');
-    }
-
-    const evaluations = presentation.submission.Evaluation;
-    const panelistUserIds = presentation.presentationBlock.panelists.map(
-      (panelist) => panelist.userId,
-    );
-
-    // Separate evaluations into public and panelist groups
-    const publicEvaluations = evaluations.filter(
-      (evaluation) =>
-        !evaluation.userId || !panelistUserIds.includes(evaluation.userId),
-    );
-
-    const panelistEvaluations = evaluations.filter(
-      (evaluation) =>
-        evaluation.userId && panelistUserIds.includes(evaluation.userId),
-    );
-
-    // Calculate public average score
-    const publicAverageScore = this.calculateAverageScore(publicEvaluations);
-
-    // Calculate panelists average score
-    const evaluatorsAverageScore =
-      this.calculateAverageScore(panelistEvaluations);
-
-    // Update the presentation with new scores
-    await this.prismaClient.presentation.update({
-      where: { id: presentationId },
-      data: {
-        publicAverageScore,
-        evaluatorsAverageScore,
-      },
-    });
-  }
-
-  private calculateAverageScore(evaluations: any[]): number | null {
-    // get the average score of the all evaluations
-    if (!evaluations.length) {
-      return null;
-    }
-
-    const totalScore = evaluations.reduce(
-      (sum, evaluation) => sum + evaluation.score,
-      0,
-    );
-    return Number((totalScore / evaluations.length).toFixed(2));
-  }
-
   async recalculateAllScores(eventEditionId: string): Promise<void> {
-    const presentations = await this.prismaClient.presentation.findMany({
+    const eventEditionExists = await this.prismaClient.eventEdition.findUnique({
       where: {
-        submission: {
-          eventEditionId,
-        },
+        id: eventEditionId,
       },
-      select: { id: true },
     });
 
-    for (const presentation of presentations) {
-      await this.calculateAndUpdateScores(presentation.id);
+    if (!eventEditionExists) {
+      throw new AppException('Edição do evento não encontrada.', 404);
     }
+
+    const now = new Date();
+    if (eventEditionExists.endDate < now) {
+      throw new AppException('Evento já encerrado.', 400);
+    }
+
+    await this.scoringService.recalculateAllScores(eventEditionId);
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
   async calculateScoresForActiveEvent() {
     try {
       this.logger.log('Starting daily score calculation for active event');

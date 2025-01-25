@@ -23,6 +23,7 @@ interface SessionProviderData {
   sessao: Sessao | null;
   roomsList: Room[];
   loadingRoomsList: boolean;
+  presentationBlockByPanelistList: Sessao[];
   setSessao: Dispatch<SetStateAction<Sessao | null>>;
   listSessions: (eventEditionId: string) => void;
   listRooms: (eventEditionId: string) => void;
@@ -42,6 +43,10 @@ interface SessionProviderData {
     eventEditionId: string,
     bodies: SwapPresentationsOnSession[]
   ) => Promise<boolean>;
+  listPresentionBlockByPanelist: (
+    eventEditionId: string,
+    userIdOfPanelist: string
+  ) => void;
 }
 
 export const SessionContext = createContext<SessionProviderData>(
@@ -52,6 +57,8 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const [loadingSessoesList, setLoadingSessoesList] = useState<boolean>(false);
   const [loadingSessao, setLoadingSessao] = useState<boolean>(false);
   const [sessoesList, setSessoesList] = useState<Sessao[]>([]);
+  const [presentationBlockByPanelistList, setPresentationBlockByPanelistList] =
+    useState<Sessao[]>([]);
   const [sessao, setSessao] = useState<Sessao | null>(null);
   const [loadingRoomsList, setLoadingRoomsList] = useState<boolean>(false);
   const [roomsList, setRoomsList] = useState<Room[]>([]);
@@ -69,6 +76,24 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .catch((err) => {
         console.log(err);
         setSessoesList([]);
+      })
+      .finally(() => {
+        setLoadingSessoesList(false);
+      });
+  };
+
+  const listPresentionBlockByPanelist = async (
+    eventEditionId: string,
+    userIdOfPanelist: string
+  ) => {
+    setLoadingSessoesList(true);
+    sessionApi
+      .listPresentionBlockByPanelist(eventEditionId, userIdOfPanelist)
+      .then((response) => {
+        setPresentationBlockByPanelistList(response);
+      })
+      .catch(() => {
+        setPresentationBlockByPanelistList([]);
       })
       .finally(() => {
         setLoadingSessoesList(false);
@@ -273,6 +298,8 @@ export const SessionProvider = ({ children }: SessionProps) => {
         updateSession,
         deleteSession,
         swapPresentationsOnSession,
+        listPresentionBlockByPanelist,
+        presentationBlockByPanelistList,
       }}
     >
       {children}

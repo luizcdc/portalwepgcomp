@@ -226,6 +226,7 @@ export function FormCadastroApresentacao({
             <span className="text-danger ms-1">*</span>
           </label>
           <select
+            id="doutorando-select"
             className="form-control input-title"
             {...register("doutorando")}
             disabled={loadingUserList}
