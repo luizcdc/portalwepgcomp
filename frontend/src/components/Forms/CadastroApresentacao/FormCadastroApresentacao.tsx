@@ -157,10 +157,13 @@ export function FormCadastroApresentacao({
         };
 
         if (formEdited && formEdited.id) {
-          await updateSubmissionById(formEdited.id, submissionData);
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          const status = await updateSubmissionById(formEdited.id, submissionData);
+          
+          if (status) {
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
         } else {
           const status = await createSubmission(submissionData);
 
@@ -228,6 +231,7 @@ export function FormCadastroApresentacao({
             <span className="text-danger ms-1">*</span>
           </label>
           <select
+            id="doutorando-select"
             className="form-control input-title"
             {...register("doutorando")}
             disabled={loadingUserList}

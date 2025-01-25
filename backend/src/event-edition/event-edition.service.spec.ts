@@ -5,6 +5,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateEventEditionDto } from './dto/create-event-edition.dto';
 import { UpdateEventEditionDto } from './dto/update-event-edition.dto';
 import { EventEditionResponseDto } from './dto/event-edition-response';
+import { ScoringService } from '../scoring/scoring.service';
 
 const oneDay = 24 * 60 * 60 * 1000;
 const today = new Date();
@@ -12,6 +13,7 @@ const today = new Date();
 describe('EventEditionService', () => {
   let service: EventEditionService;
   let prismaService: PrismaService;
+  let scoringService: ScoringService;
 
   const mockPrismaService = {
     eventEdition: {
@@ -51,11 +53,20 @@ describe('EventEditionService', () => {
           provide: PrismaService,
           useValue: mockPrismaService,
         },
+        {
+          provide: ScoringService,
+          useValue: {
+            calculateScore: jest.fn(),
+            handleEventUpdate: jest.fn(),
+            scheduleEventFinalScoresRecalculation: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<EventEditionService>(EventEditionService);
     prismaService = module.get<PrismaService>(PrismaService);
+    scoringService = module.get<ScoringService>(ScoringService);
   });
 
   afterEach(() => {
@@ -265,7 +276,9 @@ describe('EventEditionService', () => {
         updatedAt: new Date(),
       };
 
-      mockPrismaService.eventEdition.findFirst.mockResolvedValue(activeEvent);
+      mockPrismaService.eventEdition.findFirst
+        .mockResolvedValueOnce(null)
+        .mockResolvedValue(activeEvent);
       mockPrismaService.evaluationCriteria.findMany.mockResolvedValue(
         evaluationCriteria,
       );
@@ -559,121 +572,151 @@ describe('EventEditionService', () => {
     let currentDate: Date;
 
     beforeEach(() => {
-        currentDate = new Date();
+      currentDate = new Date();
     });
 
     it('should not throw an error if no duplicates exist', async () => {
-        const dto = {
-            name: 'Test Event',
-            description: 'Description',
-            location: 'Test Location', // Adicionada a propriedade
-            startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
-            endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
-            submissionStartDate: new Date(currentDate.getTime() + 1 * 24 * 60 * 60 * 1000),
-            submissionDeadline: new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000),
-            isEvaluationRestrictToLoggedUsers: true,
-            presentationDuration: 20,
-            presentationsPerPresentationBlock: 6,
-            organizingCommitteeIds: ['user1', 'user2'],
-            itSupportIds: ['user3', 'user4'],
-            administrativeSupportIds: ['user5'],
-            communicationIds: ['user6'],
-        };
+      const dto = {
+        name: 'Test Event',
+        description: 'Description',
+        location: 'Test Location', // Adicionada a propriedade
+        startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
+        endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
+        submissionStartDate: new Date(
+          currentDate.getTime() + 1 * 24 * 60 * 60 * 1000,
+        ),
+        submissionDeadline: new Date(
+          currentDate.getTime() + 2 * 24 * 60 * 60 * 1000,
+        ),
+        isEvaluationRestrictToLoggedUsers: true,
+        presentationDuration: 20,
+        presentationsPerPresentationBlock: 6,
+        organizingCommitteeIds: ['user1', 'user2'],
+        itSupportIds: ['user3', 'user4'],
+        administrativeSupportIds: ['user5'],
+        communicationIds: ['user6'],
+      };
 
-        await expect(service.validateUniqueCommitteeMembers(dto)).resolves.not.toThrow();
+      await expect(
+        service.validateUniqueCommitteeMembers(dto),
+      ).resolves.not.toThrow();
     });
 
     it('should throw an error if duplicates exist across roles', async () => {
-        const dto = {
-            name: 'Test Event',
-            description: 'Description',
-            location: 'Test Location', // Adicionada a propriedade
-            startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
-            endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
-            submissionStartDate: new Date(currentDate.getTime() + 1 * 24 * 60 * 60 * 1000),
-            submissionDeadline: new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000),
-            isEvaluationRestrictToLoggedUsers: true,
-            presentationDuration: 20,
-            presentationsPerPresentationBlock: 6,
-            organizingCommitteeIds: ['user1', 'user2'],
-            itSupportIds: ['user2'], // Duplicate
-            administrativeSupportIds: ['user3'],
-            communicationIds: ['user4'],
-        };
+      const dto = {
+        name: 'Test Event',
+        description: 'Description',
+        location: 'Test Location', // Adicionada a propriedade
+        startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
+        endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
+        submissionStartDate: new Date(
+          currentDate.getTime() + 1 * 24 * 60 * 60 * 1000,
+        ),
+        submissionDeadline: new Date(
+          currentDate.getTime() + 2 * 24 * 60 * 60 * 1000,
+        ),
+        isEvaluationRestrictToLoggedUsers: true,
+        presentationDuration: 20,
+        presentationsPerPresentationBlock: 6,
+        organizingCommitteeIds: ['user1', 'user2'],
+        itSupportIds: ['user2'], // Duplicate
+        administrativeSupportIds: ['user3'],
+        communicationIds: ['user4'],
+      };
 
-        await expect(service.validateUniqueCommitteeMembers(dto)).rejects.toThrow(
-            //new BadRequestException('Os seguintes IDs de usuários estão atribuídos a mais de um cargo: user2.'),
-            new BadRequestException('Um usuário só pode assumir um cargo na comissão organizadora.'),
-        );
+      await expect(service.validateUniqueCommitteeMembers(dto)).rejects.toThrow(
+        //new BadRequestException('Os seguintes IDs de usuários estão atribuídos a mais de um cargo: user2.'),
+        new BadRequestException(
+          'Um usuário só pode assumir um cargo na comissão organizadora.',
+        ),
+      );
     });
 
     it('should throw an error if multiple duplicates exist', async () => {
-        const dto = {
-            name: 'Test Event',
-            description: 'Description',
-            location: 'Test Location', // Adicionada a propriedade
-            startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
-            endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
-            submissionStartDate: new Date(currentDate.getTime() + 1 * 24 * 60 * 60 * 1000),
-            submissionDeadline: new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000),
-            isEvaluationRestrictToLoggedUsers: true,
-            presentationDuration: 20,
-            presentationsPerPresentationBlock: 6,
-            organizingCommitteeIds: ['user1', 'user2'],
-            itSupportIds: ['user2', 'user3'], // Duplicate: user2
-            administrativeSupportIds: ['user3'], // Duplicate: user3
-            communicationIds: ['user4'],
-        };
+      const dto = {
+        name: 'Test Event',
+        description: 'Description',
+        location: 'Test Location', // Adicionada a propriedade
+        startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
+        endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
+        submissionStartDate: new Date(
+          currentDate.getTime() + 1 * 24 * 60 * 60 * 1000,
+        ),
+        submissionDeadline: new Date(
+          currentDate.getTime() + 2 * 24 * 60 * 60 * 1000,
+        ),
+        isEvaluationRestrictToLoggedUsers: true,
+        presentationDuration: 20,
+        presentationsPerPresentationBlock: 6,
+        organizingCommitteeIds: ['user1', 'user2'],
+        itSupportIds: ['user2', 'user3'], // Duplicate: user2
+        administrativeSupportIds: ['user3'], // Duplicate: user3
+        communicationIds: ['user4'],
+      };
 
-        await expect(service.validateUniqueCommitteeMembers(dto)).rejects.toThrow(
-           // new BadRequestException('Os seguintes IDs de usuários estão atribuídos a mais de um cargo: user2, user3.'),
-           new BadRequestException('Um usuário só pode assumir um cargo na comissão organizadora.'),
-        );
+      await expect(service.validateUniqueCommitteeMembers(dto)).rejects.toThrow(
+        // new BadRequestException('Os seguintes IDs de usuários estão atribuídos a mais de um cargo: user2, user3.'),
+        new BadRequestException(
+          'Um usuário só pode assumir um cargo na comissão organizadora.',
+        ),
+      );
     });
 
     it('should throw an error if IDs are repeated within the same role', async () => {
-        const dto = {
-            name: 'Test Event',
-            description: 'Description',
-            location: 'Test Location', // Adicionada a propriedade
-            startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
-            endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
-            submissionStartDate: new Date(currentDate.getTime() + 1 * 24 * 60 * 60 * 1000),
-            submissionDeadline: new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000),
-            isEvaluationRestrictToLoggedUsers: true,
-            presentationDuration: 20,
-            presentationsPerPresentationBlock: 6,
-            organizingCommitteeIds: ['user1', 'user1'], // Repeated within the same role
-            itSupportIds: [],
-            administrativeSupportIds: [],
-            communicationIds: [],
-        };
+      const dto = {
+        name: 'Test Event',
+        description: 'Description',
+        location: 'Test Location', // Adicionada a propriedade
+        startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
+        endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
+        submissionStartDate: new Date(
+          currentDate.getTime() + 1 * 24 * 60 * 60 * 1000,
+        ),
+        submissionDeadline: new Date(
+          currentDate.getTime() + 2 * 24 * 60 * 60 * 1000,
+        ),
+        isEvaluationRestrictToLoggedUsers: true,
+        presentationDuration: 20,
+        presentationsPerPresentationBlock: 6,
+        organizingCommitteeIds: ['user1', 'user1'], // Repeated within the same role
+        itSupportIds: [],
+        administrativeSupportIds: [],
+        communicationIds: [],
+      };
 
-        await expect(service.validateUniqueCommitteeMembers(dto)).rejects.toThrow(
-            // new BadRequestException('Os seguintes IDs de usuários estão atribuídos a mais de um cargo: user1.'),
-            new BadRequestException('Um usuário só pode assumir um cargo na comissão organizadora.'),
-        );
+      await expect(service.validateUniqueCommitteeMembers(dto)).rejects.toThrow(
+        // new BadRequestException('Os seguintes IDs de usuários estão atribuídos a mais de um cargo: user1.'),
+        new BadRequestException(
+          'Um usuário só pode assumir um cargo na comissão organizadora.',
+        ),
+      );
     });
 
     it('should handle empty arrays without errors', async () => {
-        const dto = {
-            name: 'Test Event',
-            description: 'Description',
-            location: 'Test Location', // Adicionada a propriedade
-            startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
-            endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
-            submissionStartDate: new Date(currentDate.getTime() + 1 * 24 * 60 * 60 * 1000),
-            submissionDeadline: new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000),
-            isEvaluationRestrictToLoggedUsers: true,
-            presentationDuration: 20,
-            presentationsPerPresentationBlock: 6,
-            organizingCommitteeIds: [],
-            itSupportIds: [],
-            administrativeSupportIds: [],
-            communicationIds: [],
-        };
+      const dto = {
+        name: 'Test Event',
+        description: 'Description',
+        location: 'Test Location', // Adicionada a propriedade
+        startDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000),
+        endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000),
+        submissionStartDate: new Date(
+          currentDate.getTime() + 1 * 24 * 60 * 60 * 1000,
+        ),
+        submissionDeadline: new Date(
+          currentDate.getTime() + 2 * 24 * 60 * 60 * 1000,
+        ),
+        isEvaluationRestrictToLoggedUsers: true,
+        presentationDuration: 20,
+        presentationsPerPresentationBlock: 6,
+        organizingCommitteeIds: [],
+        itSupportIds: [],
+        administrativeSupportIds: [],
+        communicationIds: [],
+      };
 
-        await expect(service.validateUniqueCommitteeMembers(dto)).resolves.not.toThrow();
+      await expect(
+        service.validateUniqueCommitteeMembers(dto),
+      ).resolves.not.toThrow();
     });
   });
 });
