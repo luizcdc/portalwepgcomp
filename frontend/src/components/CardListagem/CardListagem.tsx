@@ -65,6 +65,7 @@ export default function CardListagem({
           >
             <Image
               src="/assets/images/edit.svg"
+              id="edit-button"
               alt="edit button"
               width={50}
               height={50}
