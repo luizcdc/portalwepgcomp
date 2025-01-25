@@ -51,16 +51,16 @@ export default function DraggableList({
     setDraggedItemIndex(index);
   };
 
-  const onTouchEnd = (e) => {
+  const onTouchEnd = () => {
     if (draggedMove.length) {
-      onDragEnd();
+      onDragEnd(0,0);
     }
   }
   const onTouchMove = (e) => {
     if (e.changedTouches && e.changedTouches.length) {
       const touch = e.changedTouches[0];
       const movement = touch.clientY;
-      const componentParent = document.getElementById(componentParentId);
+      const componentParent = document.getElementById(componentParentId || "");
       
       const scroll = (y) => {
         if (componentParent) {
@@ -78,12 +78,12 @@ export default function DraggableList({
 
       if (touchMove > (movement + 5)) {
         const index = draggedItemIndex - 1;
-        scroll(movement + 5, movement + 5);
+        scroll(movement + 5);
         moveToNext(index);
       } else
       if (touchMove < (movement - 5)) {
         const index = draggedItemIndex + 1;
-        scroll(movement - 5, movement - 5);
+        scroll(movement - 5);
         moveToNext(index);
       }
 
@@ -145,7 +145,7 @@ export default function DraggableList({
           onTouchStart={e => onDragStart(e, index)}
           onDragOver={() => onDragOver(index)}
           onTouchMove={(e) => onTouchMove(e)}
-          onTouchEnd={(e) => onTouchEnd(e)}>
+          onTouchEnd={() => onTouchEnd()}>
           <div className="card-listagem mt-4">
             <div className="row">
               <div className="col-1 drag-icon grabbable">
