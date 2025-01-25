@@ -59,11 +59,21 @@ export class UserController {
     return await this.userService.remove(id);
   }
 
-  @Patch('activate/:id')
+  @Patch('toggle-activation/:id')
   @UserLevels(UserLevel.Superadmin)
   @ApiBearerAuth()
-  async activateUser(@Param('id') id: string) {
-    return this.userService.activateProfessor(id);
+  @ApiQuery({
+    name: 'activate',
+    required: true,
+    description: 'Activate or deactivate the user.',
+  })
+  @ApiTags('Users')
+  async toggleUserActivation(@Param('id') id: string, @Query('activate') activate: boolean) {
+    if (activate === undefined) {
+      throw new AppException('O campo "activate" é obrigatório.', 400);
+    }
+
+    return this.userService.toggleUserActivation(id, activate);
   }
 
   @Get()
@@ -71,30 +81,36 @@ export class UserController {
     name: 'roles',
     required: false,
     description:
-      'Filter by user levels (e.g., "Admin", "Default"). Accepts multiple values.',
+      'Filter by user levels (e.g., Admin, Default). Accepts multiple values.',
   })
   @ApiQuery({
     name: 'profiles',
     required: false,
     description:
-      'Filter by profiles (e.g., "Professor", "Listener"). Accepts multiple values.',
+      'Filter by profiles (e.g., Professor, Listener). Accepts multiple values.',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter by user status (e.g., Active, Inactive).',
   })
   @UserLevels(UserLevel.Default, UserLevel.Admin, UserLevel.Superadmin)
   @ApiBearerAuth()
   async getUsers(
     @Query('roles') roles?: string | string[],
     @Query('profiles') profiles?: string | string[],
+    @Query('status') status?: string,
   ) {
     const toArray = (input?: string | string[]): string[] => {
       if (!input) return [];
-      return Array.isArray(input) ? input : [input];
+      if (Array.isArray(input)) return input;
+      return input.split(',').map(value => value.trim());
     };
 
-    const rolesArray = roles === undefined ? undefined : toArray(roles);
-    const profilesArray =
-      profiles === undefined ? undefined : toArray(profiles);
+    const rolesArray = roles ? toArray(roles) : undefined;
+    const profilesArray = profiles ? toArray(profiles) : undefined;
 
-    return await this.userService.findAll(rolesArray, profilesArray);
+    return await this.userService.findAll(rolesArray, profilesArray, status);
   }
 
   @Get('advisors')
