@@ -5,6 +5,10 @@
       "dom.iterable",
       "esnext"
     ],
+    "typeRoots": [
+      "node_modules/@types",
+      "cypress/support"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -33,7 +37,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "cypress/**/*.ts",
+    "cypress/support/**/*.ts"
   ],
   "exclude": [
     "node_modules"
