@@ -14,7 +14,7 @@ import {
   UpdateEventEditionDto,
   UpdateFromEventEditionFormDto,
 } from './dto/update-event-edition.dto';
-import { CommitteeLevel, CommitteeRole, UserLevel } from '@prisma/client';
+import { CommitteeLevel, CommitteeRole, Prisma, UserLevel } from '@prisma/client';
 import { Cron } from '@nestjs/schedule';
 import { ScoringService } from '../scoring/scoring.service';
 import { AppException } from '../exceptions/app.exception';
@@ -112,15 +112,18 @@ export class EventEditionService {
       // Copy rooms if they exist
       if (rooms != null && rooms.length > 0) {
         await Promise.all(
-          rooms.map(async (room) =>
-            prisma.room.create({
+          rooms.map(async (room) => {
+            if (!room.name) {
+              throw new AppException('Room name is missing.', 400);
+            }
+            await prisma.room.create({
               data: {
                 eventEditionId: createdEventEdition.id,
                 name: room.name,
-                description: room.description,
+                description: room.description || '', // Fallback para descrição
               },
-            }),
-          ),
+            });
+          }),
         );
       }
 
@@ -151,32 +154,30 @@ export class EventEditionService {
   }
 
   private async defineEvaluationCriteriaAndRooms(
-    activeEvent: {
-      id: string;
-    },
-    prisma,
+    activeEvent: { id: string } | null,
+    prisma: Prisma.TransactionClient,
     createEventEditionDto: CreateEventEditionDto,
   ) {
-    let evaluationCriteria = [];
-    let rooms = [];
-    if (activeEvent != null) {
-      evaluationCriteria = await prisma.evaluationCriteria.findMany({
-        where: {
-          eventEditionId: activeEvent?.id,
-        },
-      });
-      rooms = createEventEditionDto.roomName
-        ? [createEventEditionDto.roomName]
+    const evaluationCriteria = activeEvent
+      ? await prisma.evaluationCriteria.findMany({
+          where: {
+            eventEditionId: activeEvent.id,
+          },
+        })
+      : [];
+  
+    const rooms = activeEvent
+      ? createEventEditionDto.roomName
+        ? [{ name: createEventEditionDto.roomName, description: '' }]
         : await prisma.room.findMany({
-            where: {
-              eventEditionId: activeEvent?.id,
-            },
-          });
-    } else {
-      rooms = [createEventEditionDto.roomName || 'Auditório Principal'];
-    }
+            where: { eventEditionId: activeEvent.id },
+            select: { name: true, description: true },
+          })
+      : [{ name: createEventEditionDto.roomName || 'Auditório Principal', description: '' }];
+  
     return { evaluationCriteria, rooms };
   }
+  
 
   private validateSubmissionPeriod(
     createEventEditionDto: CreateEventEditionDto | UpdateEventEditionDto,
@@ -573,7 +574,7 @@ export class EventEditionService {
 
     const eventResponseDto = new EventEditionResponseDto(updatedEvent);
 
-    await this.scoringService.handleEventUpdate(updatedEvent);
+    await this.scoringService.handleEventUpdate(updatedEvent.id);
 
     return eventResponseDto;
   }

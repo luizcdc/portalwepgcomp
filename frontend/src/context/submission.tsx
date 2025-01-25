@@ -15,7 +15,7 @@ interface SubmissionProviderData {
   getSubmissions: (params: GetSubmissionParams) => void;
   getSubmissionById: (idSubmission: string) => void;
   createSubmission: (body: SubmissionParams) => Promise<boolean>;
-  updateSubmissionById: (idSubmission: string, body: SubmissionParams) => void;
+  updateSubmissionById: (idSubmission: string, body: SubmissionParams) => Promise<boolean>;
   deleteSubmissionById: (idSubmission: string) => void;
 }
 
@@ -134,6 +134,8 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         timer: 3000,
         showConfirmButton: false,
       });
+
+      return true;
     } catch (err: any) {
       console.error(err);
       setSubmission(null);
@@ -147,6 +149,8 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
           "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
         confirmButtonText: "Retornar",
       });
+
+      return false;
     } finally {
       setLoadingSubmission(false);
     }

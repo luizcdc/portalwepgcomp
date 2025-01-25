@@ -28,7 +28,6 @@ const formCadastroSchema = z.object({
     .min(1, "O abstract é obrigatório"),
   doutorando: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .uuid()
     .optional(),
   orientador: z.string({ invalid_type_error: "Campo Inválido" }).uuid({ message: "O orientador é obrigatório" }),
   coorientador: z.string().optional(),
@@ -158,10 +157,13 @@ export function FormCadastroApresentacao({
         };
 
         if (formEdited && formEdited.id) {
-          await updateSubmissionById(formEdited.id, submissionData);
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          const status = await updateSubmissionById(formEdited.id, submissionData);
+          
+          if (status) {
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
         } else {
           const status = await createSubmission(submissionData);
 
