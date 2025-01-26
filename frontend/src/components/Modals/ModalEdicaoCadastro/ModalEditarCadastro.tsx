@@ -17,6 +17,7 @@ export default function ModalEditarCadastro({
   return (
     <ModalComponent
       id="editarApresentacaoModal"
+      idCloseModal="editarApresentacaoModalClose"
       loading={false}
       labelConfirmButton="Alterar"
       onClose={onClose}

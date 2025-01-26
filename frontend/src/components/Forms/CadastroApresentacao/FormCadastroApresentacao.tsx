@@ -26,10 +26,10 @@ const formCadastroSchema = z.object({
   abstract: z
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "O abstract é obrigatório"),
-  doutorando: z
+  doutorando: z.string({ invalid_type_error: "Campo Inválido" }).optional(),
+  orientador: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .optional(),
-  orientador: z.string({ invalid_type_error: "Campo Inválido" }).uuid({ message: "O orientador é obrigatório" }),
+    .uuid({ message: "O orientador é obrigatório" }),
   coorientador: z.string().optional(),
   data: z.string().optional(),
   celular: z
@@ -157,27 +157,21 @@ export function FormCadastroApresentacao({
         };
 
         if (formEdited && formEdited.id) {
-          const status = await updateSubmissionById(formEdited.id, submissionData);
-          
-          if (status) {
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }
+          updateSubmissionById(formEdited.id, submissionData).then((status) => {
+            if (status) {
+              reset();
+            }
+          });
         } else {
-          const status = await createSubmission(submissionData);
+          createSubmission(submissionData).then((status) => {
+            if (status) {
+              reset();
 
-          if (status) {
-            reset();
-          }
-
-          if (user?.profile == "DoctoralStudent") {
-            router.push("/minha-apresentacao");
-          } else if (status) {
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }
+              if (user?.profile == "DoctoralStudent") {
+                router.push("/minha-apresentacao");
+              }
+            }
+          });
         }
       }
     } else {
@@ -227,7 +221,8 @@ export function FormCadastroApresentacao({
 
       {user?.level !== "Default" && (
         <div className="col-12 mb-1">
-          <label className="form-label form-title">Selecionar doutorando
+          <label className="form-label form-title">
+            Selecionar doutorando
             <span className="text-danger ms-1">*</span>
           </label>
           <select

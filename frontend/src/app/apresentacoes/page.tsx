@@ -105,6 +105,7 @@ export default function Apresentacoes() {
               isLoading={loadingSubmissionList}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onClear={() => setFormEdited(null)}
               isAddButtonDisabled={isAddButtonDisabled}
             />
             <ModalEditarCadastro formEdited={formEdited} />

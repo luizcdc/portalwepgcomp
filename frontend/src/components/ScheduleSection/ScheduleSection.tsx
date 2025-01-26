@@ -73,9 +73,7 @@ export default function ScheduleSection() {
 
   return (
     <div id="Programacao">
-      <div
-        className="d-flex flex-column w-100 full-content"
-      >
+      <div className="d-flex flex-column w-100 full-content">
         <h1 className="fw-bold text-center display-4 progamacao-title">
           Programação
         </h1>
@@ -99,9 +97,7 @@ export default function ScheduleSection() {
 
         {roomsList.map((item, index) => (
           <div className="programacao-sala" key={index}>
-            <h3
-              className="fw-bold text-white m-0 text-center w-100 list-item"
-            >
+            <h3 className="fw-bold text-white m-0 text-center w-100 list-item">
               {item.name}
             </h3>
             <h5 className="m-0 list-paragraph"></h5>
@@ -174,18 +170,18 @@ export default function ScheduleSection() {
               moment(item.startTime).format("YYYY-MM-DD") ===
               moment(selectedDate).format("YYYY-MM-DD")
           )?.length && (
-              <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
-                <h4 className="empty-list mb-0">
-                  <Image
-                    src="/assets/images/empty_box.svg"
-                    alt="Lista vazia"
-                    width={90}
-                    height={90}
-                  />
-                  Essa lista ainda está vazia
-                </h4>
-              </div>
-            )}
+            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+              <h4 className="empty-list mb-0">
+                <Image
+                  src="/assets/images/empty_box.svg"
+                  alt="Lista vazia"
+                  width={90}
+                  height={90}
+                />
+                Essa lista ainda está vazia
+              </h4>
+            </div>
+          )}
         </div>
       </div>
 

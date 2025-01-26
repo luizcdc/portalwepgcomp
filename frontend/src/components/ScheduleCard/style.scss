@@ -1,19 +1,41 @@
 .first-div {
-    border: 0.063rem solid #F17F0C;
+  border: 0.063rem solid #f17f0c;
 }
 
 .first-title {
-    line-height: 1.219rem;
+  line-height: 1.219rem;
+  font-size: 20px;
 }
 
 .first-author {
-    line-height: 1.75rem;
+  line-height: 1.75rem;
+  font-size: 18px;
 }
 
 .second-author {
-    line-height: 1.219rem;
+  line-height: 1.219rem;
+  font-size: 20px;
 }
 
 .second-title {
-    line-height: 1.75rem;
+  line-height: 1.75rem;
+  font-size: 18px;
+}
+
+@media (max-width: 980px) {
+  .first-title {
+    font-size: 14px;
+  }
+
+  .first-author {
+    font-size: 12px;
+  }
+
+  .second-author {
+    font-size: 14px;
+  }
+
+  .second-title {
+    font-size: 12px;
+  }
 }
