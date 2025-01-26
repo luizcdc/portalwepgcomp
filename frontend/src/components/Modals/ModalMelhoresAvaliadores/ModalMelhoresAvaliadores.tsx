@@ -3,19 +3,9 @@ import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import { FormMelhorAvaliador } from "@/components/Forms/MelhoresAvaliadores/FormMelhoresAvaliadores";
 import "./style.scss";
 
-interface ModalMelhoresAvaliadoresProps {
-  handleClose: () => void;
-}
-
-export default function ModalMelhoresAvaliadores({
-  handleClose,
-}: ModalMelhoresAvaliadoresProps) {
-  const handleSave = () => {
-    handleClose();
-  };
+export default function ModalMelhoresAvaliadores() {
   return (
     <ModalComponent
-      onClose={handleClose}
       onConfirm={() => {
         const form = document.querySelector("form");
         form?.dispatchEvent(
@@ -33,7 +23,7 @@ export default function ModalMelhoresAvaliadores({
           Escolha os melhores avaliadores
         </div>
         <div className=' d-flex justify-content-center fs-6 ms-5'>
-          <FormMelhorAvaliador onSubmit={handleSave} />
+          <FormMelhorAvaliador />
         </div>
       </div>
     </ModalComponent>

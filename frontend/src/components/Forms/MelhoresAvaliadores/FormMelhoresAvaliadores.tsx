@@ -24,7 +24,7 @@ const formMelhorAvaliadorSchema = z.object({
 });
 type formMelhorAvaliadorSchema = z.infer<typeof formMelhorAvaliadorSchema>;
 
-export function FormMelhorAvaliador({ onSubmit }: { onSubmit: () => void }) {
+export function FormMelhorAvaliador() {
   const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
   const [panelistsLoaded, setPanelistsLoaded] = useState(false);
@@ -84,7 +84,6 @@ export function FormMelhorAvaliador({ onSubmit }: { onSubmit: () => void }) {
       setTimeout(() => {
         window.location.reload();
       }, 3000);
-      onSubmit();
     }
   };
 
