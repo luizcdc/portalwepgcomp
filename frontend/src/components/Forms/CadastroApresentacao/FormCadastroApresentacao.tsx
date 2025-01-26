@@ -40,22 +40,16 @@ const formCadastroSchema = z.object({
 
 type formCadastroSchema = z.infer<typeof formCadastroSchema>;
 
-interface FormCadastroApresentacao {
-  formEdited?: any;
-}
-export function FormCadastroApresentacao({
-  formEdited,
-}: Readonly<FormCadastroApresentacao>) {
+export function FormCadastroApresentacao() {
   const router = useRouter();
   const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
-  const { createSubmission, updateSubmissionById } =
+  const { createSubmission, updateSubmissionById, submission, setSubmission } =
     useContext(SubmissionContext);
   const { getAdvisors, advisors, getUsers, userList, loadingUserList } =
     useContext(UserContext);
   const { sendFile } = useSubmissionFile();
   const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
-  const [formEditedLoaded, setFormEditedLoaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const { Edicao } = useEdicao();
@@ -71,19 +65,16 @@ export function FormCadastroApresentacao({
   });
 
   useEffect(() => {
-    if (formEdited && Object.keys(formEdited).length && !formEditedLoaded) {
-      setValue("id", formEdited.id);
-      setValue("titulo", formEdited.title);
-      setValue("abstract", formEdited.abstract);
-      setValue("doutorando", formEdited.mainAuthorId);
-      setValue("orientador", formEdited.advisorId);
-      setValue("coorientador", formEdited.coAdvisor);
-      setValue("data", formEdited.data);
-      setValue("slide", formEdited.pdfFile);
-      setFileName(formEdited.pdfFile);
-      setValue("celular", formEdited.phoneNumber);
-
-      setFormEditedLoaded(true);
+    if (submission && Object.keys(submission).length) {
+      setValue("id", submission.id);
+      setValue("titulo", submission?.title);
+      setValue("abstract", submission?.abstract ?? "");
+      setValue("doutorando", submission?.mainAuthorId);
+      setValue("orientador", submission?.advisorId);
+      setValue("coorientador", submission?.coAdvisor);
+      setValue("slide", submission?.pdfFile);
+      setFileName(submission?.pdfFile);
+      setValue("celular", submission?.phoneNumber);
     } else {
       setValue("id", "");
       setValue("titulo", "");
@@ -97,9 +88,8 @@ export function FormCadastroApresentacao({
 
       setFile(null);
       setFileName(null);
-      setFormEditedLoaded(false);
     }
-  }, [formEdited, setValue]);
+  }, [submission, setValue]);
 
   useEffect(() => {
     if (!advisorsLoaded) {
@@ -144,7 +134,7 @@ export function FormCadastroApresentacao({
 
       if (response?.key) {
         const submissionData = {
-          ...formEdited,
+          ...submission,
           eventEditionId: getEventEditionIdStorage() ?? "",
           mainAuthorId: data.doutorando || user.id,
           title: data.titulo,
@@ -156,16 +146,18 @@ export function FormCadastroApresentacao({
           phoneNumber: data.celular,
         };
 
-        if (formEdited && formEdited.id) {
-          updateSubmissionById(formEdited.id, submissionData).then((status) => {
+        if (submission && submission?.id) {
+          updateSubmissionById(submission.id, submissionData).then((status) => {
             if (status) {
               reset();
+              setSubmission(null);
             }
           });
         } else {
           createSubmission(submissionData).then((status) => {
             if (status) {
               reset();
+              setSubmission(null);
 
               if (user?.profile == "DoctoralStudent") {
                 router.push("/minha-apresentacao");
@@ -176,7 +168,7 @@ export function FormCadastroApresentacao({
       }
     } else {
       const submissionData = {
-        ...formEdited,
+        ...submission,
         eventEditionId: getEventEditionIdStorage() ?? "",
         mainAuthorId: data.doutorando || user.id,
         title: data.titulo,
@@ -184,22 +176,24 @@ export function FormCadastroApresentacao({
         advisorId: data.orientador as UUID,
         coAdvisor: data.coorientador || "",
         dateSuggestion: data.data ? new Date(data.data) : undefined,
-        pdfFile: data.slide,
+        pdfFile: data.slide ?? "",
         phoneNumber: data.celular,
       };
 
-      if (formEdited && formEdited.id) {
-        await updateSubmissionById(formEdited.id, submissionData);
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+      if (submission && submission?.id) {
+        updateSubmissionById(submission.id, submissionData).then((status) => {
+          if (status) {
+            reset();
+            setSubmission(null);
+          }
+        });
       }
     }
   };
   const onInvalid = (errors) => console.error(errors);
 
   const modalTitle =
-    formEdited && formEdited.id
+    submission && submission.id
       ? "Editar Apresentação"
       : "Cadastrar Apresentação";
 
@@ -348,7 +342,7 @@ export function FormCadastroApresentacao({
           className="btn text-white fs-5 submit-button"
           disabled={!Edicao?.isActive}
         >
-          {formEdited && formEdited.id ? "Alterar" : "Cadastrar"}
+          {submission && submission?.id ? "Alterar" : "Cadastrar"}
         </button>
       </div>
     </form>

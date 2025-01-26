@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
 import { submissionApi } from "@/services/submission";
@@ -12,6 +18,7 @@ interface SubmissionProviderData {
   loadingSubmission: boolean;
   submissionList: Submission[];
   submission: Submission | null;
+  setSubmission: Dispatch<SetStateAction<Submission | null>>;
   getSubmissions: (params: GetSubmissionParams) => void;
   getSubmissionById: (idSubmission: string) => void;
   createSubmission: (body: SubmissionParams) => Promise<boolean>;
@@ -141,24 +148,26 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
       .then((response) => {
         setSubmission(response);
 
-        getSubmissions({ eventEditionId: body.eventEditionId });
+        return getSubmissions({ eventEditionId: body.eventEditionId }).then(
+          () => {
+            const modalElementButton = document.getElementById(
+              "editarApresentacaoModalClose"
+            ) as HTMLButtonElement;
 
-        const modalElementButton = document.getElementById(
-          "editarApresentacaoModalClose"
-        ) as HTMLButtonElement;
+            if (modalElementButton) {
+              modalElementButton.click();
+            }
 
-        if (modalElementButton) {
-          modalElementButton.click();
-        }
+            showAlert({
+              icon: "success",
+              title: "Apresentação editada com sucesso!",
+              timer: 3000,
+              showConfirmButton: false,
+            });
 
-        showAlert({
-          icon: "success",
-          title: "Apresentação editada com sucesso!",
-          timer: 3000,
-          showConfirmButton: false,
-        });
-
-        return true;
+            return true;
+          }
+        );
       })
       .catch((err) => {
         setSubmission(null);
@@ -217,6 +226,7 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         loadingSubmission,
         loadingSubmissionList,
         submission,
+        setSubmission,
         submissionList,
         getSubmissions,
         getSubmissionById,
