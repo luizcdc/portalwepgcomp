@@ -1,6 +1,7 @@
 "use client";
 import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 import { FormMelhorAvaliador } from "@/components/Forms/MelhoresAvaliadores/FormMelhoresAvaliadores";
+import "./style.scss";
 
 interface ModalMelhoresAvaliadoresProps {
   handleClose: () => void;
@@ -10,25 +11,29 @@ export default function ModalMelhoresAvaliadores({
   handleClose,
 }: ModalMelhoresAvaliadoresProps) {
   const handleSave = () => {
-    console.log("Salvar os melhores avaliadores");
     handleClose();
   };
   return (
     <ModalComponent
       onClose={handleClose}
-      onConfirm={handleSave}
-      isShortModal={true}
+      onConfirm={() => {
+        const form = document.querySelector("form");
+        form?.dispatchEvent(
+          new Event("submit", { cancelable: true, bubbles: true })
+        );
+      }}
       id='escolherAvaliadorModal'
+      idCloseModal='escolherAvaliadorModalClose'
       loading={false}
       labelConfirmButton='Salvar'
       colorButtonConfirm='success'
     >
       <div className='body-modal'>
-        <h1 className='d-flex justify-content-center mt-5 fw-bold ms-2'>
-          Escolha os Melhores Avaliadores
-        </h1>
-        <div className=' d-flex justify-content-center mb-5'>
-          <FormMelhorAvaliador />
+        <div className=' d-flex justify-content-center fw-bold ms-5 fs-1'>
+          Escolha os melhores avaliadores
+        </div>
+        <div className=' d-flex justify-content-center fs-6 ms-5'>
+          <FormMelhorAvaliador onSubmit={handleSave} />
         </div>
       </div>
     </ModalComponent>

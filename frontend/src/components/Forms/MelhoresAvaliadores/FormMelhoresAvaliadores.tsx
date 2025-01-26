@@ -4,10 +4,9 @@ import Select from "react-select";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
-import { UserContext } from "@/context/user";
 import { useSweetAlert } from "@/hooks/useAlert";
-import { ModalSessaoMock } from "@/mocks/ModalSessoes";
 import { usePremiacao } from "@/hooks/usePremiacao";
 
 const formMelhorAvaliadorSchema = z.object({
@@ -20,18 +19,17 @@ const formMelhorAvaliadorSchema = z.object({
         }),
       })
     )
-    .optional(),
+    .max(3, { message: "Você deve selecionar até 3 avaliadores!" }),
   eventEditionId: z.string(),
 });
 type formMelhorAvaliadorSchema = z.infer<typeof formMelhorAvaliadorSchema>;
 
-export function FormMelhorAvaliador() {
+export function FormMelhorAvaliador({ onSubmit }: { onSubmit: () => void }) {
   const { showAlert } = useSweetAlert();
   const { user } = useContext(AuthContext);
-  const { confirmButton } = ModalSessaoMock;
-  const { getAdvisors, advisors } = useContext(UserContext);
-  const [advisorsLoaded, setAdvisorsLoaded] = useState(false);
-  const { premiacaoAvaliadores, createAwardedPanelists } = usePremiacao();
+  const [panelistsLoaded, setPanelistsLoaded] = useState(false);
+  const { createAwardedPanelists, getPanelists, listPanelists } =
+    usePremiacao();
 
   const [avaliadoresOptions, setAvaliadoresOptions] = useState<OptionType[]>(
     []
@@ -42,21 +40,24 @@ export function FormMelhorAvaliador() {
     formState: { errors },
   } = useForm<formMelhorAvaliadorSchema>({
     resolver: zodResolver(formMelhorAvaliadorSchema),
+    defaultValues: {
+      eventEditionId: getEventEditionIdStorage() ?? "",
+    },
   });
 
   useEffect(() => {
-    if (!advisorsLoaded) {
-      getAdvisors();
-      setAdvisorsLoaded(true);
+    if (!panelistsLoaded) {
+      getPanelists(getEventEditionIdStorage() ?? "");
+      setPanelistsLoaded(true);
     }
-  }, [advisorsLoaded, getAdvisors]);
+  }, [panelistsLoaded, getPanelists]);
 
   const handleFormAvaliadores = async (data: formMelhorAvaliadorSchema) => {
-    const { avaliadores } = data;
+    const { avaliadores, eventEditionId } = data;
 
     const body = {
-      eventEditionId: "",
-      panelists: avaliadores?.map((v) => v.value) || [],
+      eventEditionId,
+      panelists: avaliadores?.map((v) => ({ userId: v.value })) || [],
     } as AvaliadorParams;
 
     if (!user) {
@@ -69,50 +70,62 @@ export function FormMelhorAvaliador() {
       return;
     }
 
-    await createAwardedPanelists(body);
+    if (avaliadores?.length > 3) {
+      showAlert({
+        icon: "error",
+        text: "Você deve selecionar até 3 avaliadores.",
+        confirmButtonText: "Entendido",
+      });
+      return;
+    }
+
+    if (eventEditionId) {
+      await createAwardedPanelists(body);
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+      onSubmit();
+    }
   };
 
   useEffect(() => {
-    if (advisors.length > 0) {
-      const users = advisors.map((v) => ({
+    if (listPanelists.length > 0) {
+      const users = listPanelists.map((v) => ({
         value: v.id ?? "",
         label: v.name ?? "",
       }));
       setAvaliadoresOptions(users);
     }
-  }, [advisors]);
+  }, [listPanelists]);
 
   const onInvalid = (errors) => console.error(errors);
 
   return (
     <form
-      className='row g-3 w-75'
+      className='row g-3 w-80'
       onSubmit={handleSubmit(handleFormAvaliadores, onInvalid)}
     >
       <div className='col-12 mb-1'>
         <Controller
           name='avaliadores'
           control={control}
+          rules={{ required: "Você deve selecionar exatamente 3 avaliadores!" }}
           render={({ field }) => (
             <Select
               {...field}
-              id='comissao-select'
+              id='melhoresAvaliadores-select'
               isMulti
               options={avaliadoresOptions}
               placeholder='Escolha o(s) usuário(s)'
               isClearable
+              onChange={(selected) => field.onChange(selected)}
+              value={field.value || []}
             />
           )}
         />
         <p className='text-danger error-message'>
           {errors.avaliadores?.message}
         </p>
-      </div>
-
-      <div className='d-grid gap-2 col-3 mx-auto'>
-        <button type='submit' className='btn text-white fs-5 submit-button'>
-          {confirmButton.label}
-        </button>
       </div>
     </form>
   );
