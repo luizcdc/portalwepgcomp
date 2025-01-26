@@ -12,30 +12,12 @@ import { MailingService } from '../mailing/mailing.service';
 @Injectable()
 export class CertificateService {
   private readonly fontsPaths = {
-    bold: path.resolve(
-      __dirname,
-      '/src/certificate/assets/SourceSerif4-Bold.ttf',
-    ),
-    regular: path.resolve(
-      __dirname,
-      '/src/certificate/assets/SourceSerif4-Regular.ttf',
-    ),
-    semibold: path.resolve(
-      __dirname,
-      '/src/certificate/assets/SourceSerif4-SemiBold.ttf',
-    ),
-    italic: path.resolve(
-      __dirname,
-      '/src/certificate/assets/SourceSerif4-Italic.ttf',
-    ),
-    medium: path.resolve(
-      __dirname,
-      '/src/certificate/assets/SourceSerif4-Medium.ttf',
-    ),
-    bolditalic: path.resolve(
-      __dirname,
-      '/src/certificate/assets/SourceSerif4-BoldItalic.ttf',
-    ),
+    bold: '/public/assets/SourceSerif4-Bold.ttf',
+    regular: '/public/assets/SourceSerif4-Regular.ttf',
+    semibold: '/public/assets/SourceSerif4-SemiBold.ttf',
+    italic: '/public/assets/SourceSerif4-Italic.ttf',
+    medium: '/public/assets/SourceSerif4-Medium.ttf',
+    bolditalic: '/public/assets/SourceSerif4-BoldItalic.ttf',
   };
   constructor(
     private prismaClient: PrismaService,
@@ -244,16 +226,13 @@ export class CertificateService {
     });
 
     const pgcompImageBytes = await fs.readFile(
-      path.join(process.cwd(), 'src/certificate/assets/pgcomp_ufba_logo.png'),
+      path.join(process.cwd(), 'public/assets/pgcomp_ufba_logo.png'),
     );
     const ufbaImageBytes = await fs.readFile(
-      path.join(process.cwd(), 'src/certificate/assets/brasao-ufba.png'),
+      path.join(process.cwd(), 'public/assets/brasao-ufba.png'),
     );
     const ufbaLowResImageBytes = await fs.readFile(
-      path.join(
-        process.cwd(),
-        'src/certificate/assets/brasao-ufba-low-res.png',
-      ),
+      path.join(process.cwd(), 'public/assets/brasao-ufba-low-res.png'),
     );
 
     const pgcompImage = await pdfDoc.embedPng(pgcompImageBytes);
@@ -339,7 +318,7 @@ export class CertificateService {
     // for now we don't have a signature, let's just place this image above each of the lines
     // as a placeholder
     const mockSignatureImageBytes = await fs.readFile(
-      path.join(process.cwd(), 'src/certificate/assets/mock-signature.png'),
+      path.join(process.cwd(), 'public/assets/mock-signature.png'),
     );
 
     const mockSignatureImage = await pdfDoc.embedPng(mockSignatureImageBytes);
