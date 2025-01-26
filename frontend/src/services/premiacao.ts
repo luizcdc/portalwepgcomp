@@ -24,14 +24,4 @@ export const premiacaoApi = {
 
         return data;
     },
-    createAwardedPanelists: async (body: AvaliadorParams ) => {
-        const { data } = await instance.post(`${baseUrlAwardedPanelists}/bulk`, body);
-
-        return data;
-    },
-    getPanelists: async (idEdicao: string) => {
-        const { data } = await instance.get(`${baseUrlAwardedPanelists}/${idEdicao}/panelists`);
-
-        return data;
-    },
 }
