@@ -12,12 +12,12 @@ import { MailingService } from '../mailing/mailing.service';
 @Injectable()
 export class CertificateService {
   private readonly fontsPaths = {
-    bold: 'src/certificate/assets/SourceSerif4-Bold.ttf',
-    regular: 'src/certificate/assets/SourceSerif4-Regular.ttf',
-    semibold: 'src/certificate/assets/SourceSerif4-SemiBold.ttf',
-    italic: 'src/certificate/assets/SourceSerif4-Italic.ttf',
-    medium: 'src/certificate/assets/SourceSerif4-Medium.ttf',
-    bolditalic: 'src/certificate/assets/SourceSerif4-BoldItalic.ttf',
+    bold: '../assets/SourceSerif4-Bold.ttf',
+    regular: '../assets/SourceSerif4-Regular.ttf',
+    semibold: '../assets/SourceSerif4-SemiBold.ttf',
+    italic: '../assets/SourceSerif4-Italic.ttf',
+    medium: '../assets/SourceSerif4-Medium.ttf',
+    bolditalic: '../assets/SourceSerif4-BoldItalic.ttf',
   };
   constructor(
     private prismaClient: PrismaService,
