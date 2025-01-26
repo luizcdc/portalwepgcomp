@@ -4,11 +4,13 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
 import { certificate } from "@/services/certificate";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function PerfilDoutorando() {
-  const { logout, user } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
+  const { Edicao } = useEdicao();
   const certificateDownload = () => {
-    certificate(user?.id || '');
+    certificate(Edicao?.id || '');
   };
   
   return (
@@ -23,9 +25,9 @@ export default function PerfilDoutorando() {
       </button>
       <ul className="dropdown-menu dropdown-menu-end border-3 border-light">
         <li>
-          <Link className="dropdown-item" href="#" onClick={certificateDownload}>
+          <button className="dropdown-item" onClick={certificateDownload}>
             Emitir Certificado
-          </Link>
+          </button>
         </li>
         <li>
           <Link className="dropdown-item" href="/minha-apresentacao">
