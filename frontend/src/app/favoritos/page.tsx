@@ -7,25 +7,32 @@ import { useEffect, useState } from "react";
 import { usePresentation } from "@/hooks/usePresentation";
 
 export default function Favoritos() {
-  const { presentationBookmarks, getPresentationBookmarks, deletePresentationBookmark } = usePresentation();
+  const {
+    presentationBookmarks,
+    getPresentationBookmarks,
+    deletePresentationBookmark,
+  } = usePresentation();
   const { title, userArea } = FavoritosMock;
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
 
   useEffect(() => {
-    getPresentationBookmarks()
-  }, [])
+    getPresentationBookmarks();
+  }, []);
 
   useEffect(() => {
     if (!presentationBookmarks?.bookmarkedPresentations?.length) {
       return;
-    }  
-    const newSessionsList = presentationBookmarks.bookmarkedPresentations
-      .filter((item) =>
-        item.submission?.title?.toLowerCase().includes(searchValue.trim().toLowerCase()));
+    }
+    const newSessionsList =
+      presentationBookmarks.bookmarkedPresentations.filter((item) =>
+        item.submission?.title
+          ?.toLowerCase()
+          .includes(searchValue.trim().toLowerCase())
+      );
 
-    setSessionsListValues(newSessionsList); 
+    setSessionsListValues(newSessionsList);
   }, [presentationBookmarks, searchValue]);
 
   function favoriteItem(item) {
@@ -60,7 +67,7 @@ export default function Favoritos() {
           gap: "50px",
         }}
       >
-        <Listagem        
+        <Listagem
           title={title}
           cardsList={mapCardList(sessionMaped, "title", "abstract")}
           isFavorites

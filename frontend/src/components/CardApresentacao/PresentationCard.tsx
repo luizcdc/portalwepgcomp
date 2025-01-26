@@ -35,6 +35,7 @@ export default function PresentationCard({
   onDelete,
 }: Readonly<PresentationCardProps>) {
   const presentationBookmarkData = { presentationId: id };
+
   const {
     getPresentationBookmark,
     postPresentationBookmark,
@@ -78,6 +79,7 @@ export default function PresentationCard({
 
   const presentationDate = moment(presentationData).format("DD/MM");
   const presentationTime = moment(presentationData).format("HH:mm");
+
   return (
     <div
       className="presentation-card"
@@ -127,7 +129,7 @@ export default function PresentationCard({
             fontSize: "15px",
           }}
         >
-          {presentationDate} - SALA A - {presentationTime}
+          {presentationDate} - {presentationTime}
         </em>
         {!!signed && (
           <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
