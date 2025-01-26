@@ -5,14 +5,25 @@ import Link from "next/link";
 import "./style.scss";
 import { certificate } from "@/services/certificate";
 import { useEdicao } from "@/hooks/useEdicao";
+import { useSweetAlert } from "@/hooks/useAlert";
 
 export default function PerfilDoutorando() {
   const { logout } = useContext(AuthContext);
   const { Edicao } = useEdicao();
+  const { showAlert } = useSweetAlert();
+
   const certificateDownload = () => {
-    certificate(Edicao?.id || '');
+    certificate(Edicao?.id || "").then((response) => {
+      if (response !== "200") {
+        showAlert({
+          icon: "error",
+          text: response,
+          confirmButtonText: "Retornar",
+        });
+      }
+    });
   };
-  
+
   return (
     <li className="dropdown">
       <button
