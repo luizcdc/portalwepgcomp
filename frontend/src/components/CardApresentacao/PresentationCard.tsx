@@ -1,13 +1,13 @@
 "use client";
 
-import "./style.scss";
-import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useContext, useEffect, useState } from "react";
+import "./style.scss";
 
 import Star from "@/components/UI/Star";
+import { usePresentation } from "@/hooks/usePresentation";
 import moment from "moment";
 import { useRouter } from "next/navigation";
-import { usePresentation } from "@/hooks/usePresentation";
 
 interface PresentationCardProps {
   id: string;
@@ -75,11 +75,10 @@ export default function PresentationCard({
   };
   
   const presentationDate = moment(presentationData).format("DD/MM");
-  const presentationTime = moment(presentationData).format("HH:MM");
+  const presentationTime = moment(presentationData).format("HH:mm");
   return (
     <div
-      className="d-flex align-items-start flex-column text-black"
-      style={{ padding: "25px", gap: "10px", border: '3px solid #f17f0c', borderRadius: '10px'}}
+      className="presentation-card"
     >
       <div
         className="d-flex align-items-center w-100"
@@ -96,20 +95,18 @@ export default function PresentationCard({
           {title}
         </h3>
       </div>
-      <div className="d-flex justify-content-between w-100">
+      <div className="info">
         <div
-          className="d-flex flex-column align-items-start fw-normal text-start"
-          style={{ fontSize: "15px", gap: "6px" }}
+          className="info-info"
         >
           <div
-            className="d-flex flex-row align-items-start"
-            style={{ gap: "10px" }}
+            className="info-presentation"
           >
             <strong>{name}</strong>
-            <div> | </div>
+            <div className="info-barra"> | </div>
             <div>{email}</div>
           </div>
-          <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
+          <h4 className="info-orientador">
             Orientador(a): {advisorName}
           </h4>
         </div>
@@ -121,7 +118,7 @@ export default function PresentationCard({
           </div>
         )}
       </div>
-      <div className="d-flex" style={{ gap: "10px" }}>
+      <div className="interact">
         <em
           className="m-0 text-white"
           style={{

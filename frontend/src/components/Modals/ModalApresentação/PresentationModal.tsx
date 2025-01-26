@@ -1,14 +1,15 @@
 "use client";
 
-import "./style.scss";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "@/context/AuthProvider/authProvider";
-
-import Star from "@/components/UI/Star";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+
+import Star from "@/components/UI/Star";
+import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { usePresentation } from "@/hooks/usePresentation";
 import { useEdicao } from "@/hooks/useEdicao";
+
+import "./style.scss";
 
 export default function PresentationModal({ props }: { props: any }) {
   const presentationBookmarkData = { presentationId: props.id };
@@ -52,45 +53,25 @@ export default function PresentationModal({ props }: { props: any }) {
   };
 
   const presentationDate = moment(props.presentationTime).format("DD/MM");
-  const presentationTime = moment(props.presentationTime).format("HH:MM");
+  const presentationTime = moment(props.presentationTime).format("HH:mm");
   return (
-    <div
-      className="d-flex align-items-start flex-column text-black"
-      style={{ padding: "0 25px 25px 25px", gap: "10px" }}
-    >
-      <div
-        className="d-flex align-items-center w-100"
-        style={{
-          gap: "15px",
-          borderBottom: "1px solid #000000",
-          paddingBottom: "15px",
-        }}
-      >
-        <h3
-          className="fw-semibold text-start"
-          style={{ fontSize: "18px", lineHeight: "27px" }}
-        >
+    <div className="d-flex align-items-start flex-column text-black before-title">
+
+      <div className="d-flex align-items-center w-100 title-div">
+        <h3 className="fw-semibold text-start title-text">
           {props?.submission?.title}
         </h3>
       </div>
       <div className="d-flex justify-content-between w-100">
-        <div
-          className="d-flex flex-column align-items-start fw-normal text-start"
-          style={{ fontSize: "15px", gap: "6px" }}
-        >
-          <div
-            className="d-flex flex-row align-items-start"
-            style={{ gap: "10px" }}
-          >
-            <strong>
-              {props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}
-            </strong>
-            <div> | </div>
-            <div>{props?.submission?.mainAuthor?.email}</div>
+        <div className="d-flex flex-column align-items-start fw-normal text-start first-subtitle">
+          <div className="d-flex flex-row align-items-start second-subtitle">
+            <h5>
+              <strong>{props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}</strong> | {props?.submission?.mainAuthor?.email}
+            </h5>
           </div>
-          <h4 className="fw-normal text-start" style={{ fontSize: "15px" }}>
+          <h5 className="fw-normal text-start">
             Orientador(a): {props.submission?.advisor?.name}
-          </h4>
+          </h5>
         </div>
         {!!signed && !!Edicao?.isActive && (
           <div>
@@ -100,18 +81,10 @@ export default function PresentationModal({ props }: { props: any }) {
           </div>
         )}
       </div>
-      <div className="d-flex" style={{ gap: "10px" }}>
-        <em
-          className="m-0 text-white"
-          style={{
-            backgroundColor: "#F17F0C",
-            borderRadius: "5px",
-            padding: "4px 10px",
-            fontSize: "15px",
-          }}
-        >
+      <div className="d-flex calendar-div">
+        <h5 className="m-0 text-white calendar-text">
           {presentationDate} - SALA A - {presentationTime}
-        </em>
+        </h5>
         {!!signed && !!Edicao?.isActive && (
           <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
             {presentationBookmark && (
@@ -123,13 +96,7 @@ export default function PresentationModal({ props }: { props: any }) {
         )}
         <div className="d-flex align-items-center">
           <a
-            className="fw-semibold bg-white"
-            style={{
-              border: "none",
-              borderRadius: "20px",
-              color: "#FFA90F",
-              padding: "3px 20px",
-            }}
+            className="fw-semibold bg-white link-text border border-0"
             href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${props?.submission?.pdfFile}`}
             download
             target="_blank"
@@ -138,10 +105,10 @@ export default function PresentationModal({ props }: { props: any }) {
           </a>
         </div>
       </div>
-      <div style={{ textAlign: "justify" }}>
+      <h5 className="abstract-text">
         <strong>Abstract: </strong>
         {props.submission?.abstract}
-      </div>
+      </h5>
     </div>
   );
 }

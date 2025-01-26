@@ -3,16 +3,12 @@
 import { useEffect, useState } from "react";
 
 import ModalEditarCadastro from "@/components/Modals/ModalEdicaoCadastro/ModalEditarCadastro";
+import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
-import { SubmissionProvider } from "@/context/submission";
-import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubmission } from "@/hooks/useSubmission";
 import { ApresentacoesMock } from "@/mocks/Apresentacoes";
-
 import Listagem, { mapCardList } from "@/templates/Listagem/Listagem";
-
-import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 
 export default function Apresentacoes() {
   const { title, userArea } = ApresentacoesMock;
@@ -23,13 +19,21 @@ export default function Apresentacoes() {
     getSubmissions,
     loadingSubmissionList,
     deleteSubmissionById,
+    setSubmission,
   } = useSubmission();
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
   const [isAddButtonDisabled, setIsAddButtonDisabled] =
     useState<boolean>(false);
-  const [formEdited, setFormEdited] = useState<any>(null);
+
+  const getSubmissionOnList = (card: any) => {
+    const submission = submissionList?.find((v) => v.id === card.id);
+
+    if (submission?.id) {
+      setSubmission(submission);
+    }
+  };
 
   useEffect(() => {
     const params = {
@@ -88,31 +92,29 @@ export default function Apresentacoes() {
 
   const handleEdit = async (submissionId: string) => {
     const submission = sessionsListValues.find((s) => s.id === submissionId);
-    setFormEdited(submission);
+    setSubmission(submission);
   };
 
   return (
     <ProtectedLayout>
-      <SubmissionFileProvider>
-        <SubmissionProvider>
-          <div className="d-flex flex-column before-list">
-            <Listagem
-              idModal="editarApresentacaoModal"
-              title={title}
-              labelAddButton={userArea.add}
-              searchValue={searchValue}
-              onChangeSearchValue={(value) => setSearchValue(value)}
-              searchPlaceholder={userArea.search}
-              cardsList={mapCardList(sessionsListValues, "title", "abstract")}
-              isLoading={loadingSubmissionList}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              isAddButtonDisabled={isAddButtonDisabled}
-            />
-            <ModalEditarCadastro formEdited={formEdited} />
-          </div>
-        </SubmissionProvider>
-      </SubmissionFileProvider>
+      <div className="d-flex flex-column before-list">
+        <Listagem
+          idModal="editarApresentacaoModal"
+          title={title}
+          labelAddButton={userArea.add}
+          searchValue={searchValue}
+          onChangeSearchValue={(value) => setSearchValue(value)}
+          searchPlaceholder={userArea.search}
+          cardsList={mapCardList(sessionsListValues, "title", "abstract")}
+          isLoading={loadingSubmissionList}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onClickItem={getSubmissionOnList}
+          onClear={() => setSubmission(null)}
+          isAddButtonDisabled={isAddButtonDisabled}
+        />
+        <ModalEditarCadastro />
+      </div>
     </ProtectedLayout>
   );
 }

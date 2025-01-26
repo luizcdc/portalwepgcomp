@@ -27,7 +27,7 @@ dayjs.extend(timezone);
 const formEdicaoSchema = z.object({
   titulo: z
     .string({ invalid_type_error: "Campo Inválido" })
-    .min(1, "Nome do evento é obrigatório"),
+    .min(1, "Nome do evento é obrigatório!"),
 
   descricao: z
     .string({ invalid_type_error: "Campo Inválido" })
@@ -50,6 +50,8 @@ const formEdicaoSchema = z.object({
   local: z
     .string({ invalid_type_error: "Campo Inválido" })
     .min(1, "Local do Evento é obrigatório!"),
+
+  sala: z.string({ invalid_type_error: "Campo Inválido" }).optional(),
 
   comissao: z
     .array(
@@ -155,9 +157,10 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
     if (edicaoData && Object.keys(edicaoData).length) {
       setValue("titulo", edicaoData.name);
       setValue("descricao", edicaoData.description);
-      setValue("inicio", edicaoData.startDate); //dayjs(edicaoData.startDate).toDate().toString());
-      setValue("final", edicaoData.endDate); //dayjs(edicaoData.endDate).toDate().toString());
+      setValue("inicio", edicaoData.startDate);
+      setValue("final", edicaoData.endDate);
       setValue("local", edicaoData.location);
+      setValue("sala", edicaoData?.roomName);
       setValue("coordinatorId", user?.id);
       setValue(
         "comissao",
@@ -213,6 +216,7 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       inicio,
       final,
       local,
+      sala,
       comissao,
       apoio,
       apoioAd,
@@ -232,11 +236,13 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
 
       return;
     }
+
     const body = {
       ...edicaoData,
       name: titulo,
       description: descricao,
       location: local,
+      roomName: !edicaoData?.id ? sala : undefined,
       coordinatorId: user?.id,
       organizingCommitteeIds: comissao?.map((v) => v.value) || [],
       itSupportIds: apoio?.map((v) => v.value) || [],
@@ -251,8 +257,6 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       partnersText: "",
     } as EdicaoParams;
 
-    console.log(body);
-
     if (edicaoData?.id) {
       updateEdicao(edicaoData?.id, body);
       setTimeout(() => {
@@ -260,7 +264,7 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       }, 3000);
     } else {
       const status = await createEdicao(body);
-      
+
       if (status) {
         router.push("/home");
       }
@@ -399,6 +403,20 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
         />
         <p className="text-danger error-message">{errors.local?.message}</p>
       </div>
+
+      {!edicaoData?.id && (
+        <div className="col-12 mb-1">
+          <label className="form-label  form-title">Sala do evento</label>
+          <input
+            type="text"
+            className="form-control input-title"
+            id="local"
+            placeholder="Digite a sala do evento"
+            {...register("sala")}
+          />
+          <p className="text-danger error-message">{errors.sala?.message}</p>
+        </div>
+      )}
 
       <div className="d-flex flex-column justify-content-center">
         <div className="fs-4"> Comissão Organizadora </div>

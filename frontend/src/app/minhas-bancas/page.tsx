@@ -7,12 +7,13 @@ import Modal from "../../components/UI/Modal/Modal";
 import Banner from "@/components/UI/Banner";
 import { useContext, useEffect, useRef, useState } from "react";
 import moment from "moment";
-import ScheduleCard from "@/components/ScheduleCard";
+
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useSession } from "@/hooks/useSession";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 import "./style.scss";
+import ScheduleCard from "@/components/ScheduleCard/ScheduleCard";
 
 export default function MinhasBancas() {
   const { listPresentionBlockByPanelist, presentationBlockByPanelistList } =
