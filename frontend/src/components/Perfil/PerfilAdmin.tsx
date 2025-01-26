@@ -1,8 +1,9 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
+import ModalMelhoresAvaliadores from "../Modals/ModalMelhoresAvaliadores/ModalMelhoresAvaliadores";
 
 interface PerfilAdminProps {
   profile: ProfileType;
@@ -14,7 +15,7 @@ export default function PerfilAdmin({
   role,
 }: Readonly<PerfilAdminProps>) {
   const { logout } = useContext(AuthContext);
-
+  const [showModal, setShowModal] = useState(false);
   return (
     <div className='dropdown'>
       <button
@@ -67,6 +68,17 @@ export default function PerfilAdmin({
           </Link>
         </li>
         <li>
+          <button
+            className='dropdown-item'
+            type='button'
+            data-bs-toggle='modal'
+            data-bs-target='#escolherAvaliadorModal'
+            onClick={() => setShowModal(true)}
+          >
+            Melhores Avaliadores
+          </button>
+        </li>
+        <li>
           <Link className='dropdown-item' href='/premiacao'>
             Premiação
           </Link>
@@ -87,6 +99,7 @@ export default function PerfilAdmin({
           </Link>
         </li>
       </ul>
+      <ModalMelhoresAvaliadores handleClose={() => setShowModal(false)} />
     </div>
   );
 }

@@ -17,6 +17,26 @@ interface AuthorOrEvaluator {
     level: Record<string, unknown>;
     isActive?: boolean;
 }
+
+interface AvaliadorParams {   
+  eventEditionId: string,
+  panelists: {
+    userId: string
+  }[]
+}
+
+interface PanelistsParams{
+    id: string,
+    name: string,
+    email: string,
+    registrationNumber: string,
+    profile: Record<string, unknown>,
+    level: Record<string, unknown>,
+    isActive?: boolean,
+    createdAt: string,
+    updatedAt: string,
+    isVerified?: boolean
+}
   
 interface Premiacoes {
     id: string;
@@ -27,4 +47,3 @@ interface Premiacoes {
     evaluatorsAverageScore: number;
     submission: Submission;
 }
-  
