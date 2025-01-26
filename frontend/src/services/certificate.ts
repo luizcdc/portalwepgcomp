@@ -1,10 +1,9 @@
-import { useSweetAlert } from '@/hooks/useAlert';
 import axiosInstance from '@/utils/api';
 
 const baseUrl = "/certificate";
 
-export const certificate = async (eventId: string): Promise<any> => {
-    const { showAlert } = useSweetAlert();
+export const certificate = async (eventId: string): Promise<string> => {
+
     const instance = axiosInstance;
     try {
         const response = await instance.get(`${baseUrl}/event-edition/${eventId}`, {
@@ -21,13 +20,13 @@ export const certificate = async (eventId: string): Promise<any> => {
         link.download = `certificate-${Date.now()}.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
+
+        return "200";
+
+
     } catch (error: any) {
         const errorMessage = error.response?.data?.message || "Erro ao emitir certificado";
 
-        showAlert({
-            icon: "error",
-            text: errorMessage,
-            confirmButtonText: "Retornar",
-        });
+        return errorMessage;
     }
 };
