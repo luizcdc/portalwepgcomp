@@ -69,7 +69,14 @@ export default function ScheduleSection() {
     if (Edicao?.id) listRooms(Edicao?.id);
   }, [Edicao]);
 
-  const colorsSession = ["#F2CB05", "#03A61C", "#FF1A25", "#0066BA"];
+  const colorsSession = [
+    "#F2CB05",
+    "#03A61C",
+    "#FF1A25",
+    "#0066BA",
+    "#FFA90F",
+    "#008CD8",
+  ];
 
   return (
     <div id="Programacao">
