@@ -6,9 +6,11 @@ import { useContext, useEffect, useState } from "react";
 import { useUsers } from "@/hooks/useUsers";
 import LoadingPage from "../LoadingPage";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function Gerenciar() {
   const { user } = useContext(AuthContext);
+  const { Edicao } = useEdicao();
 
   const {
     userList,
@@ -216,6 +218,9 @@ export default function Gerenciar() {
               userValue?.profile === "Professor" && !userValue.isActive
             );
             const userPermission = getPermission(userValue.level);
+            const superAdminsCount =
+              usersListValues?.filter((v) => v.level === "Superadmin").length ??
+              0;
 
             return (
               <div key={userValue.id} className="users">
@@ -226,6 +231,7 @@ export default function Gerenciar() {
                     <div className="dropdown-center">
                       <select
                         className={`${userStatusClassname[userStatus]} dropdown-toggle text-center`}
+                        disabled={!Edicao?.isActive}
                         onChange={(status) => {
                           switchActiveUser(
                             userValue.id,
@@ -257,6 +263,7 @@ export default function Gerenciar() {
                     <div className="dropdown">
                       <select
                         className={`drop-permit dropdown-toggle`}
+                        disabled={!Edicao?.isActive}
                         onChange={(permission) => {
                           handleUserPermission(
                             userValue,
@@ -268,7 +275,11 @@ export default function Gerenciar() {
                         {permissionsOptions?.map((permission) => (
                           <option
                             key={permission}
-                            disabled={userPermission === permission}
+                            disabled={
+                              userPermission === permission ||
+                              (userPermission === "SUP ADMINISTRADOR" &&
+                                superAdminsCount <= 1)
+                            }
                             className="drop-button1"
                           >
                             {permission}
