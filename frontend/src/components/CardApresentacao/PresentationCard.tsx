@@ -1,13 +1,13 @@
 "use client";
 
-import "./style.scss";
-import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useContext, useEffect, useState } from "react";
+import "./style.scss";
 
 import Star from "@/components/UI/Star";
+import { usePresentation } from "@/hooks/usePresentation";
 import moment from "moment";
 import { useRouter } from "next/navigation";
-import { usePresentation } from "@/hooks/usePresentation";
 
 interface PresentationCardProps {
   id: string;
@@ -75,7 +75,7 @@ export default function PresentationCard({
   };
   
   const presentationDate = moment(presentationData).format("DD/MM");
-  const presentationTime = moment(presentationData).format("HH:MM");
+  const presentationTime = moment(presentationData).format("HH:mm");
   return (
     <div
       className="presentation-card"

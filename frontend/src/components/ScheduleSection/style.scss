@@ -1,59 +1,86 @@
 #Programacao {
   margin: 0 15rem;
-  padding: 20px 0 50px 0;
-  border-bottom: 1px solid #000000;
-}
+  padding: 1.25rem 0 3.125rem 0;
+  border-bottom: 0.063rem solid #000000;
 
-.progamacao-title {
-  line-height: 50px;
-  color: #054B75;
-  margin-bottom: 40px;
-}
-
-.programacao-hora{
-  font-size: 18px;
-  width: 44px;
-}
-
-.programacao-dias {
-  gap: 30px;
-}
-
-.programacao-item {
-  gap: 10px;
-}
-
-.programacao-item-aux {
-  width: 44px;
-}
-
-.programacao-sala {
-  background-color: #0065A3;
-  border-radius: 10px;
-  border: 1px solid #0065A3;
-  gap: 40px;
-  margin: 1rem 4.5rem;
-}
-
-
-@media (max-width:480px) {
+  .full-content {
+    gap: 1.5rem;
+  }
+  
   .progamacao-title {
-    margin-bottom: 0 !important;
+    line-height: 3.75rem;
+    color: #054B75;
+    margin-bottom: 2.5rem;
   }
-  .programacao-sala {
-    margin: 1rem 2rem;
+  
+  .programacao-hora{
+    font-size: 18px;
+    width: 44px;
   }
+  
   .programacao-dias {
-    flex-direction: column;
-    margin: 1rem 2rem;
+    gap: 2.5rem;
   }
-  .programacao-item-aux {
-    display: none;
+  
+  .date-button {
+    line-height: 2.5rem;
+    gap: 1rem;
+    border: 0.188rem solid #FFA90F;
+    border-radius: 1.563rem;
+    padding: 1rem 2rem;
   }
+  
   .programacao-item {
-    margin: 1rem 2rem;
+    gap: 1.25rem;
   }
+  
+  .programacao-item-aux {
+    width: 3.75rem;
+  }
+  
+  .programacao-sala {
+    background-color: #0065A3;
+    border-radius: 0.625rem;
+    border: 0.063rem solid #0065A3;
+    gap: 2.5rem;
+    margin: 1.5rem 5rem;
+    padding: 1.25rem;
+  }
+  
+  .list-item {
+    line-height: 3.5rem;
+  }
+  
+  .list-paragraph {
+    width: 3rem;
+  }
+  
+  .default-gap {
+    gap: 3rem;
+  }
+  
+  
+  @media (max-width:480px) {
+    .progamacao-title {
+      margin-bottom: 0 !important;
+    }
+    .programacao-sala {
+      margin: 1rem 2rem;
+    }
+    .programacao-dias {
+      flex-direction: column;
+      margin: 1rem 2rem;
+    }
+    .programacao-item-aux {
+      display: none;
+    }
+    .programacao-item {
+      margin: 1rem 2rem;
+    }
+  }
+  
 }
+
 
 @media (max-width: 980px) {
   #Programacao{

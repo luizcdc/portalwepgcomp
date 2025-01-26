@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import "./style.scss";
+
 export default function ScheduleCard({
   type,
   title,
@@ -20,42 +22,25 @@ export default function ScheduleCard({
   if (type == "outro") {
     return (
       <div
-        style={{ border: "1px solid #F17F0C", width: "100%" }}
-        className="card"
+        className="card w-100 first-div"
         onMouseOver={() => setOver(true)}
         onMouseOut={() => setOver(false)}
       >
         <div className="card-body d-flex flex-column align-items-center">
-          <h6
-            style={{
-              fontSize: "13px",
-              fontWeight: "600",
-              lineHeight: "19.5px",
-              margin: "0",
-            }}
-          >
+          <h6 className="fw-semibold m-0 first-title">
             <strong>{title}</strong>
           </h6>
-          <p
-            style={{
-              fontSize: "13px",
-              fontWeight: "400",
-              lineHeight: "28px",
-              margin: "0",
-            }}
-          >
-            {author}
-          </p>
+          <h6 className="fw-normal m-0 first-author">{author}</h6>
         </div>
       </div>
     );
   }
   return (
     <div
-      className="card"
+      className="card w-100"
       style={{
-        border: type != "PresentationSession" ? "1px solid #F17F0C" : undefined,
-        width: "100%",
+        border:
+          type != "PresentationSession" ? "0.063rem solid #F17F0C" : undefined,
         cursor: type == "GeneralSession" ? "default" : "pointer",
         backgroundColor:
           over && type != "GeneralSession" ? "#F17F0C" : cardColor,
@@ -67,29 +52,13 @@ export default function ScheduleCard({
       <div className="card-body d-flex flex-row align-items-center gap-2">
         <div>
           {author ? (
-            <h6
-              style={{
-                fontSize: "20px",
-                fontWeight: "600",
-                lineHeight: "19.5px",
-                margin: "0",
-              }}
-            >
+            <h6 className="fw-semibold m-0 second-author">
               <strong>{author}</strong>
             </h6>
           ) : (
             ""
           )}
-          <p
-            style={{
-              fontSize: "16px",
-              fontWeight: "400",
-              lineHeight: "28px",
-              margin: "0",
-            }}
-          >
-            {title}
-          </p>
+          <h6 className="fw-normal m-0 second-title">{title}</h6>
         </div>
       </div>
     </div>
