@@ -5,7 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      { "include": "src/certificate/assets/**/*", "outDir": "dist/assets" }
+      { "include": "../public/**/*", "outDir": "dist/public" }
     ],
     "plugins": ["@nestjs/swagger"],
     "builder": "swc",

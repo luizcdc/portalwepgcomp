@@ -52,11 +52,10 @@ export default function PresentationModal({ props }: { props: any }) {
     window.location.href = `/avaliacao/${props.id}`;
   };
 
-  const presentationDate = moment(props.presentationTime).format("DD/MM");
-  const presentationTime = moment(props.presentationTime).format("HH:mm");
+  const presentationDate = moment(props.startTime).format("DD/MM");
+  const presentationTime = moment(props.startTime).format("HH:mm");
   return (
     <div className="d-flex align-items-start flex-column text-black before-title">
-
       <div className="d-flex align-items-center w-100 title-div">
         <h3 className="fw-semibold text-start title-text">
           {props?.submission?.title}
@@ -66,7 +65,10 @@ export default function PresentationModal({ props }: { props: any }) {
         <div className="d-flex flex-column align-items-start fw-normal text-start first-subtitle">
           <div className="d-flex flex-row align-items-start second-subtitle">
             <h5>
-              <strong>{props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}</strong> | {props?.submission?.mainAuthor?.email}
+              <strong>
+                {props?.submission?.mainAuthor?.name ?? props?.mainAuthor?.name}
+              </strong>{" "}
+              | {props?.submission?.mainAuthor?.email}
             </h5>
           </div>
           <h5 className="fw-normal text-start">
@@ -83,7 +85,7 @@ export default function PresentationModal({ props }: { props: any }) {
       </div>
       <div className="d-flex calendar-div">
         <h5 className="m-0 text-white calendar-text">
-          {presentationDate} - SALA A - {presentationTime}
+          {presentationDate} - {presentationTime}
         </h5>
         {!!signed && !!Edicao?.isActive && (
           <div onClick={handleFavorite} style={{ cursor: "pointer" }}>
