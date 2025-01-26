@@ -194,7 +194,12 @@ export function FormCadastro() {
               className="form-check-label fw-bold input-title"
               htmlFor="radio1"
             >
-              Doutorando
+              Doutorando (PGCOMP)
+              <i
+                className="bi bi-info-circle ms-2"
+                data-bs-toggle="tooltip"
+                title="Aluno do PGCOMP que irá apresentar projetos no workshop."
+              ></i>
             </label>
           </div>
           <div className="form-check me-3">
@@ -209,7 +214,12 @@ export function FormCadastro() {
               className="form-check-label fw-bold input-title"
               htmlFor="radio2"
             >
-              Professor
+              Professor (PGCOMP)
+              <i
+                className="bi bi-info-circle ms-2"
+                data-bs-toggle="tooltip"
+                title=" Professor do PGCOMP que poderá assistir e avaliar os projetos apresentados no workshop."
+              ></i>
             </label>
           </div>
           <div className="form-check">
@@ -225,6 +235,11 @@ export function FormCadastro() {
               htmlFor="radio3"
             >
               Ouvinte
+              <i
+                className="bi bi-info-circle ms-2"
+                data-bs-toggle="tooltip"
+                title="Participantes que irão assistir ou expor no workshop."
+              ></i>
             </label>
           </div>
         </div>
@@ -293,9 +308,8 @@ export function FormCadastro() {
           </p>
           <ul className="mb-0">
             <li
-              className={`fw-semibold list-title ${
-                requisitos.minLength ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.minLength ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.minLength ? (
                 <i className="bi bi-shield-fill-check" />
@@ -305,9 +319,8 @@ export function FormCadastro() {
               8 dígitos
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.hasLetter ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.hasLetter ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.hasLetter ? (
                 <i className="bi bi-shield-fill-check" />
@@ -317,9 +330,8 @@ export function FormCadastro() {
               1 letra
             </li>
             <li
-              className={`fw-semibold list-title ${
-                requisitos.number ? "text-success" : "text-danger"
-              }`}
+              className={`fw-semibold list-title ${requisitos.number ? "text-success" : "text-danger"
+                }`}
             >
               {requisitos.number ? (
                 <i className="bi bi-shield-fill-check" />
@@ -354,7 +366,7 @@ export function FormCadastro() {
         </p>
       </div>
 
-      <div className="d-grid gap-2 col-3 mx-auto">
+      <div className="gap-2 col-3 mx-auto">
         <button
           type="submit"
           className="btn fw-bold fs-5 text-white submit-button"

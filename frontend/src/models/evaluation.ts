@@ -13,12 +13,15 @@ interface Evaluation extends EvaluationParams{
     name?: string;
 }
 
-interface EvaluationCriteria{
-    id: string;
+interface EvaluationCriteriaParams{
+    id?: string;
     eventEditionId: string;
     title: string;
     description: string;
     weightRadio: number | null;
+}
+
+interface EvaluationCriteria extends EvaluationCriteriaParams{
     createdAt: Date;
     updatedAt: Date;
 }

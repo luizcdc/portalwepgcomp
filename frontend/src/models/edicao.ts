@@ -8,6 +8,7 @@ interface EdicaoParams {
   location?: string;
   coordinatorId?: string;
   organizingCommitteeIds?: string[];
+  roomName?: string;
   itSupportIds?: string[];
   administrativeSupportIds?: string[];
   communicationIds?: string[];
@@ -25,4 +26,5 @@ interface Edicao extends EdicaoParams {
   createdAt: string;
   deletedAt: string;
   updatedAt: string;
+  isActive: boolean;
 }

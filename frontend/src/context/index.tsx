@@ -8,6 +8,8 @@ import { CommitterProvider } from "./commiteeMember";
 import { EdicaoProvider } from "./edicao";
 import { PresentationProvider } from "./presentation";
 import { SubmissionProvider } from "./submission";
+import { ActiveEditionProvider } from "./activeEdition";
+import { SubmissionFileProvider } from "./submissionFile";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -17,6 +19,7 @@ const Providers = ({ children }: ProvidersProps) => {
   return (
     <ComposeProviders
       with={[
+        ActiveEditionProvider,
         UserProvider,
         SessionProvider,
         EvaluationProvider,
@@ -25,6 +28,7 @@ const Providers = ({ children }: ProvidersProps) => {
         CommitterProvider,
         OrientacaoProvider,
         SubmissionProvider,
+        SubmissionFileProvider,
       ]}
     >
       {children}

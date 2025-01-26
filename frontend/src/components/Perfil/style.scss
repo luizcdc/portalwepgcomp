@@ -10,3 +10,24 @@
     gap:15px;
     font-weight: lighter;
 }
+
+.adm{
+
+    .option-button{
+        width: 100%;
+        background: none;
+        border: none;
+        color: black;
+        padding: 0.25rem  0;
+
+
+
+    }
+
+
+    .option-button:hover{
+        background-color: #019A34;
+        color: white;
+    }
+
+}

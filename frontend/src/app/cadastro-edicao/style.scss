@@ -3,7 +3,7 @@
   align-items: center;
   flex-direction: column;
   justify-items: center;
-  gap: 10px;
+  gap: 80px;
 
   .title {
     display: flex;
@@ -31,5 +31,14 @@
     text-align: center;
     line-height: 15px;
     margin-bottom: 10px;
+  }
+}
+
+@media (max-width:480px) {
+  .cadastro-edicao {
+    gap: 80px;
+  }
+  .sub-title {
+    font-size: 15px;
   }
 }

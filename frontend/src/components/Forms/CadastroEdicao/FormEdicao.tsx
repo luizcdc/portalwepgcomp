@@ -5,8 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { startOfYear, endOfYear } from "date-fns";
-import DatePicker from "react-datepicker";
-import { registerLocale } from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useEdicao } from "@/hooks/useEdicao";
 import { ModalSessaoMock } from "@/mocks/ModalSessoes";
@@ -26,40 +25,34 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const formEdicaoSchema = z.object({
-  titulo: z.string({
-    required_error: "Nome do evento é obrigatório!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  titulo: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "Nome do evento é obrigatório!"),
 
-  descricao: z.string({
-    required_error: "Descrição do evento é obrigatório!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  descricao: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "Descrição do evento é obrigatório!"),
 
   inicio: z
     .string({
-      required_error: "Data e horário de início são obrigatórios!",
-      invalid_type_error: "Campo inválido!",
+      invalid_type_error: "Data e horário de início são obrigatórios!",
     })
     .datetime({
       message: "Data ou horário inválidos!",
-    })
-    .nullable(),
+    }),
 
   final: z
-    .string({
-      required_error: "Data e horário de fim são obrigatórios!",
-      invalid_type_error: "Campo inválido!",
-    })
+    .string({ invalid_type_error: "Data e horário de fim são obrigatórios!" })
     .datetime({
       message: "Data ou horário inválidos!",
-    })
-    .nullable(),
+    }),
 
-  local: z.string({
-    required_error: "Local do Evento é obrigatório!",
-    invalid_type_error: "Campo inválido!",
-  }),
+  local: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "Local do Evento é obrigatório!"),
+
+  sala: z.string({ invalid_type_error: "Campo Inválido" }).optional(),
+
   comissao: z
     .array(
       z.object({
@@ -104,21 +97,24 @@ const formEdicaoSchema = z.object({
     )
     .optional(),
 
-  sessoes: z.number().optional(),
-  duracao: z.number().optional(),
-  submissao: z.string({
-    required_error: "O texto para submissão é obrigatório!",
-    invalid_type_error: "Campo inválido!",
+  sessoes: z.number({
+    invalid_type_error: "O número de sessões é obrigatório!",
   }),
+  duracao: z.number({
+    invalid_type_error: "Informar a duração é obrigatório!",
+  }),
+  submissao: z
+    .string({ invalid_type_error: "Campo Inválido" })
+    .min(1, "O texto para submissão é obrigatório!"),
+
   limite: z
     .string({
-      required_error: "A data limite para submissão é obrigatória!",
-      invalid_type_error: "Campo inválido!",
+      invalid_type_error: "A data limite para submissão é obrigatória!",
     })
     .datetime({
       message: "Data inválida!",
-    })
-    .nullable(),
+    }),
+
   coordinatorId: z.string().optional(),
   partnersText: z.string().optional(),
 });
@@ -130,7 +126,7 @@ interface FormEdicao {
 
 export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
   const { showAlert } = useSweetAlert();
-  const { createEdicao, updateEdicao } = useEdicao();
+  const { createEdicao, updateEdicao, Edicao } = useEdicao();
   const { getCommitterAll, committerList } = useCommittee();
   const { user } = useContext(AuthContext);
   const { getAdvisors, advisors } = useContext(UserContext);
@@ -151,9 +147,9 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
   } = useForm<FormEdicaoSchema>({
     resolver: zodResolver(formEdicaoSchema),
     defaultValues: {
-      inicio: null,
-      final: null,
-      limite: null,
+      inicio: "",
+      final: "",
+      limite: "",
     },
   });
 
@@ -161,9 +157,10 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
     if (edicaoData && Object.keys(edicaoData).length) {
       setValue("titulo", edicaoData.name);
       setValue("descricao", edicaoData.description);
-      setValue("inicio", dayjs(edicaoData.startDate).toDate().toString());
-      setValue("final", dayjs(edicaoData.endDate).toDate().toString());
+      setValue("inicio", edicaoData.startDate);
+      setValue("final", edicaoData.endDate);
       setValue("local", edicaoData.location);
+      setValue("sala", edicaoData?.roomName);
       setValue("coordinatorId", user?.id);
       setValue(
         "comissao",
@@ -203,7 +200,7 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       setValue("limite", edicaoData.submissionDeadline);
       setValue("partnersText", "");
     }
-  }, [edicaoData, setValue]);
+  }, [committerList]);
 
   useEffect(() => {
     if (!advisorsLoaded) {
@@ -219,6 +216,7 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       inicio,
       final,
       local,
+      sala,
       comissao,
       apoio,
       apoioAd,
@@ -238,11 +236,13 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
 
       return;
     }
+
     const body = {
       ...edicaoData,
       name: titulo,
       description: descricao,
       location: local,
+      roomName: !edicaoData?.id ? sala : undefined,
       coordinatorId: user?.id,
       organizingCommitteeIds: comissao?.map((v) => v.value) || [],
       itSupportIds: apoio?.map((v) => v.value) || [],
@@ -257,16 +257,17 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       partnersText: "",
     } as EdicaoParams;
 
-    console.log(body);
-
     if (edicaoData?.id) {
       updateEdicao(edicaoData?.id, body);
       setTimeout(() => {
         window.location.reload();
       }, 3000);
     } else {
-      createEdicao(body);
-      router.push("/home");
+      const status = await createEdicao(body);
+
+      if (status) {
+        router.push("/home");
+      }
     }
   };
 
@@ -284,7 +285,7 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
     if (edicaoData?.id) {
       getCommitterAll(edicaoData?.id);
     }
-  }, []);
+  }, [edicaoData]);
 
   const onInvalid = (errors) => console.error(errors);
 
@@ -293,8 +294,6 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       className="row g-3 w-75"
       onSubmit={handleSubmit(handleFormEdicao, onInvalid)}
     >
-      <h3 className="mb-4 fw-bold">Editar edição do evento</h3>
-
       <div className="col-12 mb-1">
         <label className="form-label form-title">
           Nome do evento
@@ -404,6 +403,20 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
         />
         <p className="text-danger error-message">{errors.local?.message}</p>
       </div>
+
+      {!edicaoData?.id && (
+        <div className="col-12 mb-1">
+          <label className="form-label  form-title">Sala do evento</label>
+          <input
+            type="text"
+            className="form-control input-title"
+            id="local"
+            placeholder="Digite a sala do evento"
+            {...register("sala")}
+          />
+          <p className="text-danger error-message">{errors.sala?.message}</p>
+        </div>
+      )}
 
       <div className="d-flex flex-column justify-content-center">
         <div className="fs-4"> Comissão Organizadora </div>
@@ -593,7 +606,11 @@ export function FormEdicao({ edicaoData }: Readonly<FormEdicao>) {
       </div>
 
       <div className="d-grid gap-2 col-3 mx-auto">
-        <button type="submit" className="btn text-white fs-5 submit-button">
+        <button
+          type="submit"
+          className="btn text-white fs-5 submit-button"
+          disabled={!Edicao?.isActive}
+        >
           {confirmButton.label}
         </button>
       </div>

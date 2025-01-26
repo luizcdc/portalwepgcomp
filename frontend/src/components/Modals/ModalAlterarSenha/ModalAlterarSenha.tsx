@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useUsers } from "@/hooks/useUsers";
-import "./style.scss";
+import { useState } from "react";
+
 import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
+
+import "./style.scss";
 
 export default function ModalAlterarSenha() {
   const [email, setEmail] = useState<string>("");
@@ -40,7 +42,7 @@ export default function ModalAlterarSenha() {
         <hr className='linha-alterar-senha' />
 
         <div className='content-alterar-senha'>
-          <h2>Esqueci minha Senha</h2>
+          <h2>Esqueci minha senha</h2>
           <p>
             Por favor, informe o e-mail cadastrado em sua conta, e enviaremos um
             link com as instruções para recuperação.
@@ -49,7 +51,7 @@ export default function ModalAlterarSenha() {
 
         <div className='col-12 mb-1 field-alterar-senha'>
           <label className='form-label fw-bold form-title form-label-alterar-senha'>
-            E-mail UFBA
+            E-mail
             <span className='text-danger ms-1 form-title'>*</span>
           </label>
           <input

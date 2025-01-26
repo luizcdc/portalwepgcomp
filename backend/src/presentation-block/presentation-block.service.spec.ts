@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PresentationBlockService } from './presentation-block.service';
 import { PresentationBlockType } from '@prisma/client';
 import { AppException } from '../exceptions/app.exception';
+import { ScoringService } from '../scoring/scoring.service';
 
 describe('PresentationBlockService', () => {
   let service: PresentationBlockService;
@@ -49,6 +50,12 @@ describe('PresentationBlockService', () => {
               deleteMany: jest.fn(),
               updateMany: jest.fn(),
             },
+          },
+        },
+        {
+          provide: ScoringService,
+          useValue: {
+            handleEventUpdate: jest.fn(),
           },
         },
       ],

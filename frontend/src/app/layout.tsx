@@ -9,7 +9,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthProvider/authProvider";
 
 export const metadata: Metadata = {
-  title: "WEPGCOMP 2025",
+  title: "WEPGCOMP",
 };
 
 export default function RootLayout({

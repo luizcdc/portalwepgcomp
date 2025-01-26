@@ -10,7 +10,7 @@ import { SubmissionFileProvider } from "@/context/submissionFile";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubmission } from "@/hooks/useSubmission";
 import { MinhasApresentacoesMock } from "@/mocks/MinhasApresentacoes";
-import Listagem from "@/templates/Listagem/Listagem";
+import Listagem, { mapCardList } from "@/templates/Listagem/Listagem";
 
 import "./style.scss";
 
@@ -24,13 +24,22 @@ export default function MinhasApresentacoes() {
     getSubmissions,
     loadingSubmissionList,
     deleteSubmissionById,
+    setSubmission,
   } = useSubmission();
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
-  const [formEdited, setFormEdited] = useState<any[]>([]);
+
   const [isAddButtonDisabled, setIsAddButtonDisabled] =
     useState<boolean>(false);
+
+  const getSubmissionOnList = (card: any) => {
+    const submission = submissionList?.find((v) => v.id === card.id);
+
+    if (submission?.id) {
+      setSubmission(submission);
+    }
+  };
 
   useEffect(() => {
     const params = {
@@ -89,7 +98,7 @@ export default function MinhasApresentacoes() {
 
   const handleEdit = async (submissionId: string) => {
     const submission = sessionsListValues.find((s) => s.id === submissionId);
-    setFormEdited(submission);
+    setSubmission(submission);
   };
 
   return (
@@ -102,20 +111,18 @@ export default function MinhasApresentacoes() {
             searchValue={searchValue}
             onChangeSearchValue={(value) => setSearchValue(value)}
             searchPlaceholder={userArea.search}
-            cardsList={sessionsListValues.map((submission) => ({
-              id: submission.id,
-              title: submission.title,
-              subtitle: submission.abstract,
-            }))}
+            cardsList={mapCardList(sessionsListValues, "title", "abstract")}
             isLoading={loadingSubmissionList}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            onClickItem={getSubmissionOnList}
             isAddButtonDisabled={isAddButtonDisabled}
             idModal={isAddButtonDisabled ? "editarApresentacaoModal" : ""}
             onAddButtonClick={() => router.push("/cadastro-apresentacao")}
+            onClear={() => setSubmission(null)}
             isMyPresentation={true}
           />
-          <ModalEditarCadastro formEdited={formEdited} />
+          <ModalEditarCadastro />
         </div>
       </ProtectedLayout>
     </SubmissionFileProvider>

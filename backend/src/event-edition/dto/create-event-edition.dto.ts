@@ -57,6 +57,10 @@ export class CreateEventEditionDto {
   @IsUUID()
   @IsOptional()
   coordinatorId?: string;
+
+  @IsString()
+  @IsOptional()
+  roomName?: string;
 }
 
 export class CreateFromEventEditionFormDto {
@@ -107,4 +111,8 @@ export class CreateFromEventEditionFormDto {
 
   @IsISO8601()
   submissionDeadline: Date;
+
+  @IsString()
+  @IsOptional()
+  roomName?: string;
 }
