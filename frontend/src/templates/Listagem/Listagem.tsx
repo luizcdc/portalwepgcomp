@@ -158,6 +158,7 @@ export default function Listagem({
                   subtitle={card.subtitle}
                   name={card.name}
                   pdfFile={card.pdfFile}
+                  presentationData={card.startTime}
                   email={card.email}
                   advisorName={card.advisorName}
                   onDelete={() => onDelete && onDelete(card.id ?? "")}
