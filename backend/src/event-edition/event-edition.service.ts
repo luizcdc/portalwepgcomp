@@ -55,6 +55,14 @@ export class EventEditionService {
         },
       });
 
+      if (activeEvent) {
+        // Desativa o evento atualmente ativo
+        await prisma.eventEdition.update({
+          where: { id: activeEvent.id },
+          data: { isActive: false },
+        });
+      }
+
       const { evaluationCriteria, rooms } =
         await this.defineEvaluationCriteriaAndRooms(
           activeEvent,
@@ -615,26 +623,40 @@ export class EventEditionService {
   }
 
   async delete(id: string) {
-    const event = await this.prismaClient.eventEdition.findUnique({
-      where: {
-        id,
-      },
+    return this.prismaClient.$transaction(async (prisma) => {
+      const eventToDelete = await prisma.eventEdition.findUnique({
+        where: { id },
+      });
+  
+      if (!eventToDelete) {
+        throw new BadRequestException(
+          'Não existe nenhum evento com esse identificador',
+        );
+      }
+  
+      const deletedEvent = await prisma.eventEdition.delete({
+        where: { id },
+      });
+  
+      // Caso o evento deletado fosse ativo, reativar o evento anterior
+      if (eventToDelete.isActive) {
+        const previousEvent = await prisma.eventEdition.findFirst({
+          where: {
+            startDate: { lt: eventToDelete.startDate },
+          },
+          orderBy: { startDate: 'desc' },
+        });
+  
+        if (previousEvent) {
+          await prisma.eventEdition.update({
+            where: { id: previousEvent.id },
+            data: { isActive: true },
+          });
+        }
+      }
+  
+      return new EventEditionResponseDto(deletedEvent);
     });
-
-    if (!event) {
-      throw new BadRequestException(
-        'Não existe nenhum evento com esse identificador',
-      );
-    }
-    const deletedEvent = await this.prismaClient.eventEdition.delete({
-      where: {
-        id,
-      },
-    });
-
-    const eventResponseDto = new EventEditionResponseDto(deletedEvent);
-
-    return eventResponseDto;
   }
 
   // Define cron job to run daily at midnight
