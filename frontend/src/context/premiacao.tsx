@@ -13,9 +13,13 @@ interface PremiacaoProviderData {
   premiacaoListBanca: Premiacoes[];
   premiacaoListAudiencia: Premiacoes[];
   premiacaoListAvaliadores: AuthorOrEvaluator[];
+  premiacaoAvaliadores: AvaliadorParams[];
+  listPanelists: PanelistsParams[];
   getPremiacoesBanca: (eventId: string) => void;
   getPremiacoesAudiencia: (eventId: string) => void;
   getPremiacoesAvaliadores: (eventId: string) => void;
+  createAwardedPanelists: (body: AvaliadorParams) => void;
+  getPanelists: (eventId: string) => void;
 }
 
 export const PremiacaoContext = createContext<PremiacaoProviderData>(
@@ -35,6 +39,11 @@ export const PremiacaoProvider = ({ children }: SubmissionProps) => {
   const [premiacaoListAvaliadores, setPremiacaoListAvaliadores] = useState<
     AuthorOrEvaluator[]
   >([]);
+  const [premiacaoAvaliadores, setPremiacaoAvaliadores] = useState<
+    AvaliadorParams[]
+  >([]);
+
+  const [listPanelists, setlistPanelists] = useState<PanelistsParams[]>([]);
 
   const { showAlert } = useSweetAlert();
 
@@ -103,6 +112,59 @@ export const PremiacaoProvider = ({ children }: SubmissionProps) => {
       setLoadingPremiacaoList(false);
     }
   };
+  const createAwardedPanelists = async (body: AvaliadorParams) => {
+    setLoadingPremiacaoList(true);
+
+    premiacaoApi
+      .createAwardedPanelists(body)
+      .then((response) => {
+        setPremiacaoAvaliadores(response);
+        showAlert({
+          icon: "success",
+          title: "Avaliadores salvos com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+
+        const modalElementButton = document.getElementById(
+          "escolherAvaliadorModalClose"
+        ) as HTMLButtonElement;
+
+        if (modalElementButton) {
+          modalElementButton.click();
+        }
+      })
+      .catch((err) => {
+        showAlert({
+          icon: "error",
+          title: "Erro ao salvar os avaliadores",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro durante a escolha dos avaliadores. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
+      })
+      .finally(() => {
+        setLoadingPremiacaoList(false);
+      });
+  };
+
+  const getPanelists = async (eventId: string) => {
+    setLoadingpremiacao(true);
+    premiacaoApi
+      .getPanelists(eventId)
+      .then((response) => {
+        setlistPanelists(response);
+      })
+      .catch((err) => {
+        console.log(err);
+        setlistPanelists([]);
+      })
+      .finally(() => {
+        setLoadingpremiacao(false);
+      });
+  };
 
   return (
     <PremiacaoContext.Provider
@@ -112,9 +174,13 @@ export const PremiacaoProvider = ({ children }: SubmissionProps) => {
         premiacaoListBanca,
         premiacaoListAudiencia,
         premiacaoListAvaliadores,
+        premiacaoAvaliadores,
+        listPanelists,
         getPremiacoesBanca,
         getPremiacoesAudiencia,
         getPremiacoesAvaliadores,
+        getPanelists,
+        createAwardedPanelists,
       }}
     >
       {children}

@@ -10,6 +10,7 @@ import { PresentationProvider } from "./presentation";
 import { SubmissionProvider } from "./submission";
 import { ActiveEditionProvider } from "./activeEdition";
 import { SubmissionFileProvider } from "./submissionFile";
+import { PremiacaoProvider } from "./premiacao";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ const Providers = ({ children }: ProvidersProps) => {
         OrientacaoProvider,
         SubmissionProvider,
         SubmissionFileProvider,
+        PremiacaoProvider,
       ]}
     >
       {children}
