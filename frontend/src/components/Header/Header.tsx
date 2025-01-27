@@ -86,6 +86,11 @@ export default function Header() {
     const currentHash = window.location.hash;
     listEdicao();
 
+    setSelectEdition({
+      year: "",
+      isActive: true,
+    });
+
     if (currentPath === "/home") {
       if (currentHash === "#inicio") setSelectedItem("inicio");
       else if (currentHash === "#Programacao")
@@ -115,7 +120,7 @@ export default function Header() {
         isActive: true,
       });
     }
-  }, [edicoesList.length]);
+  }, [edicoesList]);
 
   return (
     <>
