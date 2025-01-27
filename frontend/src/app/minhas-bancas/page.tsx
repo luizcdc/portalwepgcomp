@@ -19,15 +19,6 @@ export default function MinhasBancas() {
   const { user } = useContext(AuthContext);
   const { deletePresentationBookmark } = usePresentation();
 
-  const colorsSession = [
-    "#F2CB05",
-    "#03A61C",
-    "#FF1A25",
-    "#0066BA",
-    "#FFA90F",
-    "#008CD8",
-  ];
-
   const handleDelete = async (submissionId: any) => {
     await deletePresentationBookmark(submissionId);
   };
@@ -62,7 +53,7 @@ export default function MinhasBancas() {
                   new Date(a.startTime).getTime() -
                   new Date(b.startTime).getTime()
               )
-              ?.map((item, index) => {
+              ?.map((item) => {
                 return item.presentations
                   ?.toSorted(
                     (a, b) => a.positionWithinBlock - b.positionWithinBlock
@@ -79,7 +70,6 @@ export default function MinhasBancas() {
                         email={pres?.submission?.mainAuthor?.email ?? ""}
                         advisorName={pres?.submission?.advisor?.name ?? ""}
                         onDelete={() => handleDelete(pres.submissionId)}
-                        cardColor={colorsSession[index]}
                       />
                     );
                   });
