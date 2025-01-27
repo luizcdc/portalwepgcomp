@@ -122,7 +122,7 @@ export class CertificateService {
       y: 330,
       size: 16,
       font: regularFont,
-      maxWidth: page.getWidth() - 50,
+      maxWidth: page.getWidth() - 90,
       lineHeight: 19,
     });
     // Always use the date of the end of the event
@@ -364,7 +364,6 @@ export class CertificateService {
       y: 80,
       size: fontSize,
       font,
-      maxWidth: 150,
       lineHeight: fontSize * 1.2,
       align: TextAlignment.Center,
     });
