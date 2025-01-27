@@ -34,20 +34,16 @@ export default function HtmlEditorComponent({
 
       {isAdm && (
         <div className="buttonsArea">
-          <button
-            className="buttonPreviewHtmlEditor"
-            onClick={() => setPreview(!preview)}
-            disabled={!Edicao?.isActive}
-          >
-            {preview ? "Editar" : "Ver prévia"}
-          </button>
           {handleEditField && (
             <button
               className="buttonPreviewHtmlEditor"
-              onClick={handleEditField}
+              onClick={() => {
+                if (!preview) handleEditField();
+                setPreview(!preview);
+              }}
               disabled={!Edicao?.isActive}
             >
-              Salvar
+              {preview ? "Editar" : "Salvar"}
             </button>
           )}
         </div>
