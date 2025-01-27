@@ -4,7 +4,7 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
 import { useEdicao } from "@/hooks/useEdicao";
-import { certificate } from "@/services/certificate";
+import { useCertificate } from "@/services/certificate";
 import { useSweetAlert } from "@/hooks/useAlert";
 import ModalMelhoresAvaliadores from "../Modals/ModalMelhoresAvaliadores/ModalMelhoresAvaliadores";
 
@@ -20,18 +20,19 @@ export default function PerfilAdmin({
   const { logout } = useContext(AuthContext);
   const { Edicao } = useEdicao();
   const { showAlert } = useSweetAlert();
+  const { downloadCertificate } = useCertificate();
 
-  const certificateDownload = () => {
-    certificate(Edicao?.id || "").then((response) => {
-      if (response) {
-        showAlert({
-          icon: "success",
-          title: "Download feito com sucesso!",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      }
-    });
+  const certificateDownload = async () => {
+    const success = await downloadCertificate(Edicao?.id || "");
+
+    if (success) {
+      showAlert({
+        icon: "success",
+        title: "Download feito com sucesso!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
   };
 
   return (
