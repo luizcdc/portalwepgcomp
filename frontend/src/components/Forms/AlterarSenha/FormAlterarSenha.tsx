@@ -24,7 +24,8 @@ const formAlterarSenhaSchema = z
 
 export function FormAlterarSenha({ params }) {
   const { resetPassword } = useUsers();
-  const [eye, setEye] = useState(false);
+  const [eye1, setEye1] = useState(false);
+  const [eye2, setEye2] = useState(false);
 
   const {
     register,
@@ -72,15 +73,15 @@ export function FormAlterarSenha({ params }) {
         </label>
         <div className="d-flex flex-direction-row gap-2 align-items-center">
           <input
-            type="password"
+            type={eye1 ? "text" : "password"}
             className="form-control input-title"
             id="senha"
             placeholder="Insira sua senha"
             {...register("senha")}
             onChange={handleChangeSenha}
           />
-          <div className="eye" onClick={() => setEye(!eye)}>
-            <PasswordEye color={eye == false ? "black" : "blue"} />
+          <div className="eye" onClick={() => setEye1(!eye1)}>
+            <PasswordEye color={eye1 == false ? "black" : "blue"} />
           </div>
         </div>
         <p className="text-danger error-message">{errors.senha?.message}</p>
@@ -136,14 +137,14 @@ export function FormAlterarSenha({ params }) {
         </label>
         <div className="d-flex flex-direction-row gap-2 align-items-center">
           <input
-            type="password"
+            type={eye2 ? "text" : "password"}
             className="form-control input-title"
             id="confirmaSenha"
             placeholder="Insira sua senha novamente"
             {...register("confirmaSenha")}
           />
-          <div className="eye" onClick={() => setEye(!eye)}>
-            <PasswordEye color={eye == false ? "black" : "blue"} />
+          <div className="eye" onClick={() => setEye2(!eye2)}>
+            <PasswordEye color={eye2 == false ? "black" : "blue"} />
           </div>
         </div>
         <p className="text-danger error-message">
