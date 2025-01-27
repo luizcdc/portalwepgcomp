@@ -9,6 +9,7 @@
     { "src": "public/**", "use": "@vercel/static"}
   ],
   "routes": [
+    { "handle": "filesystem" },
     {
       "src": "/((?!.*\\.\\w+$).*)",
       "dest": "src/main.ts",
