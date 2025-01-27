@@ -6,11 +6,13 @@ import { useState } from "react";
 import ModalComponent from "@/components/UI/ModalComponent/ModalComponent";
 
 import "./style.scss";
+import { useEdicao } from "@/hooks/useEdicao";
 
 export default function ModalAlterarSenha() {
   const [email, setEmail] = useState<string>("");
 
   const { resetPasswordSendEmail, loadingSendEmail } = useUsers();
+  const { Edicao } = useEdicao();
 
   const handleSendEmail = () => {
     if (!email) {
@@ -34,11 +36,9 @@ export default function ModalAlterarSenha() {
       onConfirm={handleSendEmail}
     >
       <div className='modal-alterar-senha'>
-        <h1 className='d-flex justify-content-center mt-5 fw-normal title-alterar-senha'>
-          WEPGCOMP
-          <span className='ms-2'>2025</span>
+        <h1 className='d-flex justify-content-center mt-5 fw-normal border-yellow ms-2'>
+          {Edicao?.name || "Carregando..."}
         </h1>
-
         <hr className='linha-alterar-senha' />
 
         <div className='content-alterar-senha'>
