@@ -2,6 +2,7 @@
 import axiosInstance from "@/utils/api"
 
 const baseUrl = "/evaluations";
+const baseUrlCriteria = "/evaluation-criteria";
 const instance = axiosInstance;
 
 export const evaluationApi = {
@@ -24,7 +25,19 @@ export const evaluationApi = {
     },
 
     getEvaluationCriteria: async (eventEditionId: string) => {
-        const { data } = await instance.get(`/evaluation-criteria/${eventEditionId}`)
+        const { data } = await instance.get(`${baseUrlCriteria}/${eventEditionId}`)
+
+        return data;
+    },
+
+    createEvaluationCriteria: async (body: EvaluationCriteriaParams[]) => {
+        const { data } = await instance.post(`${baseUrlCriteria}/batch`, body);
+
+        return data;
+    },
+
+    updateEvaluationCriteria: async (body: EvaluationCriteriaParams[]) => {
+        const { data } = await instance.put(`${baseUrlCriteria}/batch`, body);
 
         return data;
     }

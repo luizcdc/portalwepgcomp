@@ -40,8 +40,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
       .then((response) => {
         setOrientacoes(response);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setOrientacoes(null);
       })
       .finally(() => {
@@ -56,8 +55,7 @@ export const OrientacaoProvider = ({ children }: OrientacaoProps) => {
       .then((response) => {
         setOrientacao(response);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setOrientacao(null);
       })
       .finally(() => {

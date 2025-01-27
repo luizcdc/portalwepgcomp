@@ -204,12 +204,12 @@ describe('AuthService', () => {
 
       const result = await authService.resetPassword(
         'validToken',
-        'newPassword',
+        'newPassword1',
       );
 
       expect(result).toEqual({ message: 'Senha redefinida com sucesso.' });
       expect(jwtService.verify).toHaveBeenCalledWith('validToken');
-      expect(bcrypt.hash).toHaveBeenCalledWith('newPassword', 10);
+      expect(bcrypt.hash).toHaveBeenCalledWith('newPassword1', 10);
       expect(prismaService.userAccount.update).toHaveBeenCalledWith({
         where: { id: mockPayload.userId },
         data: { password: hashedPassword },

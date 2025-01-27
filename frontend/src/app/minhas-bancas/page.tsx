@@ -2,44 +2,35 @@
 
 import Image from "next/image";
 
-import PresentationModal from "@/components/Modals/ModalApresentação/PresentationModal";
-import Modal from "../../components/UI/Modal/Modal";
 import Banner from "@/components/UI/Banner";
-import { useContext, useEffect, useRef, useState } from "react";
-import moment from "moment";
-import ScheduleCard from "@/components/ScheduleCard";
+import { useContext, useEffect } from "react";
+
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import { useSession } from "@/hooks/useSession";
 import { getEventEditionIdStorage } from "@/context/AuthProvider/util";
 
 import "./style.scss";
+import PresentationCard from "@/components/CardApresentacao/PresentationCard";
+import { usePresentation } from "@/hooks/usePresentation";
 
 export default function MinhasBancas() {
   const { listPresentionBlockByPanelist, presentationBlockByPanelistList } =
     useSession();
-  const openModal = useRef<HTMLButtonElement | null>(null);
   const { user } = useContext(AuthContext);
+  const { deletePresentationBookmark } = usePresentation();
 
   const colorsSession = [
+    "#F2CB05",
     "#03A61C",
-    "#FFA90F",
-    "#008CD8",
-    "#03A61C",
-    "#FFA90F",
-    "#008CD8",
-    "#03A61C",
+    "#FF1A25",
+    "#0066BA",
     "#FFA90F",
     "#008CD8",
   ];
 
-  const [modalContent, setModalContent] = useState<any>(
-    presentationBlockByPanelistList
-  );
-
-  function openModalPresentation(item) {
-    setModalContent({ ...modalContent, ...item });
-    openModal.current?.click();
-  }
+  const handleDelete = async (submissionId: any) => {
+    await deletePresentationBookmark(submissionId);
+  };
 
   useEffect(() => {
     const eventEditionId = getEventEditionIdStorage() ?? "";
@@ -54,7 +45,7 @@ export default function MinhasBancas() {
       <div className="minhas-bancas">
         <p>
           Esta página exibe as bancas pelas quais você, como professor
-          orientador, é responsável. As apresentações estão organizadas por
+          avaliador, é responsável. As apresentações estão organizadas por
           sessão, e cada sessão é destacada com uma cor distinta para facilitar
           a identificação.
         </p>
@@ -78,25 +69,18 @@ export default function MinhasBancas() {
                   )
                   .map((pres) => {
                     return (
-                      <div
-                        key={index + pres.id}
-                        className="d-flex align-items-center w-100"
-                        style={{
-                          gap: "20px",
-                        }}
-                      >
-                        <p className="m-0" style={{ width: "44px" }}>
-                          {moment(pres.startTime).format("HH:mm")}
-                        </p>
-                        <ScheduleCard
-                          type="PresentationSession"
-                          author={pres?.submission?.mainAuthor?.name ?? ""}
-                          title={pres?.submission?.title ?? ""}
-                          onClickEvent={() => openModalPresentation(pres)}
-                          cardColor={colorsSession[index]}
-                        />
-                        <div className="m-0 programacao-item-aux"></div>
-                      </div>
+                      <PresentationCard
+                        key={pres.id}
+                        id={pres.id}
+                        title={pres?.submission?.title ?? ""}
+                        subtitle={pres?.submission?.abstract ?? ""}
+                        name={pres?.submission?.mainAuthor?.name ?? ""}
+                        pdfFile={pres?.submission?.pdfFile ?? ""}
+                        email={pres?.submission?.mainAuthor?.email ?? ""}
+                        advisorName={pres?.submission?.advisor?.name ?? ""}
+                        onDelete={() => handleDelete(pres.submissionId)}
+                        cardColor={colorsSession[index]}
+                      />
                     );
                   });
               })}
@@ -114,11 +98,6 @@ export default function MinhasBancas() {
             </div>
           )}
         </div>
-
-        <Modal
-          content={<PresentationModal props={modalContent} />}
-          reference={openModal}
-        />
       </div>
     </>
   );

@@ -327,7 +327,7 @@ async function main() {
           'A study on how AI impacts modern research methodologies. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.',
         pdfFile: 'path/to/document1.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -339,7 +339,7 @@ async function main() {
         abstract: 'Exploring the latest advancements in quantum computing.',
         pdfFile: 'path/to/document2.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -352,7 +352,7 @@ async function main() {
           'An analysis of blockchain technology applications in finance.',
         pdfFile: 'path/to/document3.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -364,7 +364,7 @@ async function main() {
         abstract: 'Investigating ML applications in healthcare diagnosis.',
         pdfFile: 'path/to/document4.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -376,7 +376,7 @@ async function main() {
         abstract: 'Analysis of security challenges in cloud computing.',
         pdfFile: 'path/to/document5.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -388,7 +388,7 @@ async function main() {
         abstract: 'Study of IoT network architectures and protocols.',
         pdfFile: 'path/to/document6.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -400,7 +400,7 @@ async function main() {
         abstract: 'Exploring big data analytics and visualization tools.',
         pdfFile: 'path/to/document7.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -412,7 +412,7 @@ async function main() {
         abstract: 'Analysis of current cybersecurity challenges and solutions.',
         pdfFile: 'path/to/document8.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -424,7 +424,7 @@ async function main() {
         abstract: 'Study of ANN architectures and training algorithms.',
         pdfFile: 'path/to/document9.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -436,7 +436,7 @@ async function main() {
         abstract: 'Analysis of software engineering methodologies and tools.',
         pdfFile: 'path/to/document10.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -449,7 +449,7 @@ async function main() {
           'Exploring CV applications in image recognition and analysis.',
         pdfFile: 'path/to/document11.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -461,7 +461,7 @@ async function main() {
         abstract: 'Study of NLP algorithms and applications in text analysis.',
         pdfFile: 'path/to/document12.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -474,7 +474,7 @@ async function main() {
           'Analysis of distributed systems architectures and protocols.',
         pdfFile: 'path/to/document13.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
     await prisma.submission.create({
@@ -486,7 +486,7 @@ async function main() {
         abstract: 'Exploring mobile computing technologies and applications.',
         pdfFile: 'path/to/document14.pdf',
         phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Submitted,
+        status: SubmissionStatus.Confirmed,
       },
     }),
   ];
@@ -705,8 +705,17 @@ async function main() {
   await prisma.certificate.create({
     data: {
       eventEditionId: eventEdition.id,
-      name: 'Participation Certificate',
-      email: 'johndoe@example.com',
+      userId: professors[0].id,
+      filePath: 'path/to/certificate1.pdf',
+      isEmailSent: false,
+    },
+  });
+  await prisma.certificate.create({
+    data: {
+      eventEditionId: eventEdition.id,
+      userId: doctoralStudents[0].id,
+      filePath: 'path/to/certificate2.pdf',
+      isEmailSent: true,
     },
   });
 

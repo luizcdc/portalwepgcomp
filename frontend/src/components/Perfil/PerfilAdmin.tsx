@@ -1,8 +1,11 @@
 "use client";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
+import { useEdicao } from "@/hooks/useEdicao";
+import { certificate } from "@/services/certificate";
+import { useSweetAlert } from "@/hooks/useAlert";
 import ModalMelhoresAvaliadores from "../Modals/ModalMelhoresAvaliadores/ModalMelhoresAvaliadores";
 
 interface PerfilAdminProps {
@@ -15,7 +18,21 @@ export default function PerfilAdmin({
   role,
 }: Readonly<PerfilAdminProps>) {
   const { logout } = useContext(AuthContext);
-  const [showModal, setShowModal] = useState(false);
+  const { Edicao } = useEdicao();
+  const { showAlert } = useSweetAlert();
+
+  const certificateDownload = () => {
+    certificate(Edicao?.id || "").then((response) => {
+      if (response !== "200") {
+        showAlert({
+          icon: "error",
+          text: response,
+          confirmButtonText: "Retornar",
+        });
+      }
+    });
+  };
+
   return (
     <div className='dropdown'>
       <button
@@ -41,11 +58,11 @@ export default function PerfilAdmin({
             </Link>
           </li>
         )}
-        {/* <li>
-          <Link className="dropdown-item" href="#">
+        <li>
+          <button className='dropdown-item' onClick={certificateDownload}>
             Emitir Certificado
-          </Link>
-        </li> */}
+          </button>
+        </li>
         {profile === "DoctoralStudent" && (
           <li>
             <Link className='dropdown-item' href='/minha-apresentacao'>
@@ -73,7 +90,6 @@ export default function PerfilAdmin({
             type='button'
             data-bs-toggle='modal'
             data-bs-target='#escolherAvaliadorModal'
-            onClick={() => setShowModal(true)}
           >
             Melhores Avaliadores
           </button>

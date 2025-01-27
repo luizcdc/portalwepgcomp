@@ -1,14 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
+import PresentationCard from "@/components/CardApresentacao/PresentationCard";
 import CardListagem from "@/components/CardListagem/CardListagem";
 import Banner from "@/components/UI/Banner";
 
 import "./style.scss";
-import { usePathname } from "next/navigation";
 import { useEdicao } from "@/hooks/useEdicao";
-import PresentationCard from "@/components/CardApresentacao/PresentationCard";
 
 export function mapCardList(
   list: any[],
@@ -158,6 +158,7 @@ export default function Listagem({
                   subtitle={card.subtitle}
                   name={card.name}
                   pdfFile={card.pdfFile}
+                  presentationData={card.startTime}
                   email={card.email}
                   advisorName={card.advisorName}
                   onDelete={() => onDelete && onDelete(card.id ?? "")}

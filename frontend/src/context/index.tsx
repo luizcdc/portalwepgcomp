@@ -9,6 +9,7 @@ import { EdicaoProvider } from "./edicao";
 import { PresentationProvider } from "./presentation";
 import { SubmissionProvider } from "./submission";
 import { ActiveEditionProvider } from "./activeEdition";
+import { SubmissionFileProvider } from "./submissionFile";
 import { PremiacaoProvider } from "./premiacao";
 
 interface ProvidersProps {
@@ -28,6 +29,7 @@ const Providers = ({ children }: ProvidersProps) => {
         CommitterProvider,
         OrientacaoProvider,
         SubmissionProvider,
+        SubmissionFileProvider,
         PremiacaoProvider,
       ]}
     >

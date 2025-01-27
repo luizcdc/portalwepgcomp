@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 
 import { useSweetAlert } from "@/hooks/useAlert";
 import { submissionApi } from "@/services/submission";
@@ -12,10 +18,14 @@ interface SubmissionProviderData {
   loadingSubmission: boolean;
   submissionList: Submission[];
   submission: Submission | null;
+  setSubmission: Dispatch<SetStateAction<Submission | null>>;
   getSubmissions: (params: GetSubmissionParams) => void;
   getSubmissionById: (idSubmission: string) => void;
   createSubmission: (body: SubmissionParams) => Promise<boolean>;
-  updateSubmissionById: (idSubmission: string, body: SubmissionParams) => Promise<boolean>;
+  updateSubmissionById: (
+    idSubmission: string,
+    body: SubmissionParams
+  ) => Promise<boolean>;
   deleteSubmissionById: (idSubmission: string) => void;
 }
 
@@ -83,36 +93,48 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
   const createSubmission = async (body: SubmissionParams) => {
     setLoadingSubmission(true);
 
-    try {
-      const response = await submissionApi.createSubmission(body);
-      setSubmission(response);
+    return submissionApi
+      .createSubmission(body)
+      .then((response) => {
+        setSubmission(response);
 
-      showAlert({
-        icon: "success",
-        title: "Apresentação cadastrada com sucesso!",
-        timer: 3000,
-        showConfirmButton: false,
+        getSubmissions({ eventEditionId: body.eventEditionId });
+
+        const modalElementButton = document.getElementById(
+          "editarApresentacaoModalClose"
+        ) as HTMLButtonElement;
+
+        if (modalElementButton) {
+          modalElementButton.click();
+        }
+
+        showAlert({
+          icon: "success",
+          title: "Apresentação cadastrada com sucesso!",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+
+        return true;
+      })
+      .catch((err) => {
+        setSubmission(null);
+
+        showAlert({
+          icon: "error",
+          title: "Erro ao cadastrar apresentação",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
+
+        return false;
+      })
+      .finally(() => {
+        setLoadingSubmission(false);
       });
-
-      return true;
-    } catch (err: any) {
-      console.error(err);
-      setSubmission(null);
-
-      showAlert({
-        icon: "error",
-        title: "Erro ao cadastrar apresentação",
-        text:
-          err.response?.data?.message?.message ||
-          err.response?.data?.message ||
-          "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
-        confirmButtonText: "Retornar",
-      });
-
-      return false;
-    } finally {
-      setLoadingSubmission(false);
-    }
   };
 
   const updateSubmissionById = async (
@@ -121,39 +143,50 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
   ) => {
     setLoadingSubmission(true);
 
-    try {
-      const response = await submissionApi.updateSubmissionById(
-        idSubmission,
-        body
-      );
-      setSubmission(response);
+    return submissionApi
+      .updateSubmissionById(idSubmission, body)
+      .then((response) => {
+        setSubmission(response);
 
-      showAlert({
-        icon: "success",
-        title: "Apresentação editada com sucesso!",
-        timer: 3000,
-        showConfirmButton: false,
+        return getSubmissions({ eventEditionId: body.eventEditionId }).then(
+          () => {
+            const modalElementButton = document.getElementById(
+              "editarApresentacaoModalClose"
+            ) as HTMLButtonElement;
+
+            if (modalElementButton) {
+              modalElementButton.click();
+            }
+
+            showAlert({
+              icon: "success",
+              title: "Apresentação editada com sucesso!",
+              timer: 3000,
+              showConfirmButton: false,
+            });
+
+            return true;
+          }
+        );
+      })
+      .catch((err) => {
+        setSubmission(null);
+
+        showAlert({
+          icon: "error",
+          title: "Erro ao editar apresentação",
+          text:
+            err.response?.data?.message?.message ||
+            err.response?.data?.message ||
+            "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
+          confirmButtonText: "Retornar",
+        });
+
+        return false;
+      })
+      .finally(() => {
+        setLoadingSubmission(false);
       });
-
-      return true;
-    } catch (err: any) {
-      console.error(err);
-      setSubmission(null);
-
-      showAlert({
-        icon: "error",
-        title: "Erro ao editar apresentação",
-        text:
-          err.response?.data?.message?.message ||
-          err.response?.data?.message ||
-          "Ocorreu um erro durante a edição. Tente novamente mais tarde!",
-        confirmButtonText: "Retornar",
-      });
-
-      return false;
-    } finally {
-      setLoadingSubmission(false);
-    }
   };
 
   const deleteSubmissionById = async (idSubmission: string) => {
@@ -193,6 +226,7 @@ export const SubmissionProvider = ({ children }: SubmissionProps) => {
         loadingSubmission,
         loadingSubmissionList,
         submission,
+        setSubmission,
         submissionList,
         getSubmissions,
         getSubmissionById,

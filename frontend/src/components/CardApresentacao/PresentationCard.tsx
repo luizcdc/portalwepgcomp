@@ -1,13 +1,13 @@
 "use client";
 
-import "./style.scss";
-import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
+import { useContext, useEffect, useState } from "react";
+import "./style.scss";
 
 import Star from "@/components/UI/Star";
+import { usePresentation } from "@/hooks/usePresentation";
 import moment from "moment";
 import { useRouter } from "next/navigation";
-import { usePresentation } from "@/hooks/usePresentation";
 
 interface PresentationCardProps {
   id: string;
@@ -18,6 +18,7 @@ interface PresentationCardProps {
   email: string;
   advisorName: string;
   presentationData?: string;
+  cardColor?: string;
   onDelete?: () => void;
 }
 
@@ -30,9 +31,11 @@ export default function PresentationCard({
   email,
   advisorName,
   presentationData,
+  cardColor,
   onDelete,
 }: Readonly<PresentationCardProps>) {
   const presentationBookmarkData = { presentationId: id };
+
   const {
     getPresentationBookmark,
     postPresentationBookmark,
@@ -51,7 +54,7 @@ export default function PresentationCard({
       );
     }
   }, []);
-  
+
   function handleFavorite() {
     if (!signed) {
       router.push("/login");
@@ -59,7 +62,7 @@ export default function PresentationCard({
     }
     if (presentationBookmark && presentationBookmark.bookmarked) {
       deletePresentationBookmark(presentationBookmarkData);
-      if(onDelete) {
+      if (onDelete) {
         onDelete();
       }
     } else {
@@ -69,16 +72,20 @@ export default function PresentationCard({
       bookmarked: !(presentationBookmark && presentationBookmark.bookmarked),
     });
   }
-  
+
   const handleEvaluateClick = () => {
     window.location.href = `/avaliacao/${id}`;
   };
-  
+
   const presentationDate = moment(presentationData).format("DD/MM");
-  const presentationTime = moment(presentationData).format("HH:MM");
+  const presentationTime = moment(presentationData).format("HH:mm");
+
   return (
     <div
       className="presentation-card"
+      style={{
+        backgroundColor: cardColor ? cardColor : undefined,
+      }}
     >
       <div
         className="d-flex align-items-center w-100"
@@ -96,19 +103,13 @@ export default function PresentationCard({
         </h3>
       </div>
       <div className="info">
-        <div
-          className="info-info"
-        >
-          <div
-            className="info-presentation"
-          >
+        <div className="info-info">
+          <div className="info-presentation">
             <strong>{name}</strong>
             <div className="info-barra"> | </div>
             <div>{email}</div>
           </div>
-          <h4 className="info-orientador">
-            Orientador(a): {advisorName}
-          </h4>
+          <h4 className="info-orientador">Orientador(a): {advisorName}</h4>
         </div>
         {!!signed && (
           <div>
@@ -128,7 +129,7 @@ export default function PresentationCard({
             fontSize: "15px",
           }}
         >
-          {presentationDate} - SALA A - {presentationTime}
+          {presentationDate} - {presentationTime}
         </em>
         {!!signed && (
           <div onClick={handleFavorite} style={{ cursor: "pointer" }}>

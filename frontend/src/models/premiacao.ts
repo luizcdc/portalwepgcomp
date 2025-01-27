@@ -37,6 +37,7 @@ interface PanelistsParams{
     updatedAt: string,
     isVerified?: boolean
 }
+
   
 interface Premiacoes {
     id: string;
@@ -47,3 +48,4 @@ interface Premiacoes {
     evaluatorsAverageScore: number;
     submission: Submission;
 }
+  

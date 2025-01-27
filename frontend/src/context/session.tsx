@@ -73,8 +73,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .then((response) => {
         setSessoesList(response);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setSessoesList([]);
       })
       .finally(() => {
@@ -107,8 +106,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .then((response) => {
         setRoomsList(response);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setRoomsList([]);
       })
       .finally(() => {
@@ -123,8 +121,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .then((response) => {
         setSessao(response);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setSessao(null);
       })
       .finally(() => {
@@ -259,10 +256,13 @@ export const SessionProvider = ({ children }: SessionProps) => {
   ) => {
     setLoadingSessao(true);
     const body = { presentations };
-    return sessionApi.swapPresentationsOnSession(idSession, body).then(() => {
+    return sessionApi
+      .swapPresentationsOnSession(idSession, body)
+      .then(() => {
         showToast({
           icon: "success",
-          title: "Troca na ordem das apresentações da sessão realizada com sucesso!",
+          title:
+            "Troca na ordem das apresentações da sessão realizada com sucesso!",
         });
         listSessions(eventEditionId);
 
