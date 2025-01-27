@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./style.scss";
 import { useSweetAlert } from "@/hooks/useAlert";
+import { useEdicao } from "@/hooks/useEdicao";
 
 const formContatoSchema = z.object({
   name: z
@@ -19,10 +20,10 @@ const formContatoSchema = z.object({
       required_error: "E-mail é obrigatório!",
       invalid_type_error: "Campo inválido!",
     })
+    .min(1, { message: "E-mail é obrigatório!" })
     .email({
       message: "E-mail inválido!",
-    })
-    .min(1, { message: "E-mail é obrigatório!" }),
+    }),
 
   text: z
     .string({
@@ -34,6 +35,7 @@ const formContatoSchema = z.object({
 
 export function FormContato() {
   type FormContatoSchema = z.infer<typeof formContatoSchema>;
+  const { Edicao } = useEdicao();
 
   const {
     register,
@@ -129,7 +131,11 @@ export function FormContato() {
       </div>
 
       <div className="d-flex justify-content-center mt-4 mb-4 bg-white border border-white rounded-3">
-        <button type="submit" className="btn fw-bold">
+        <button
+          type="submit"
+          className="btn fw-bold"
+          disabled={!Edicao?.isActive}
+        >
           Enviar
         </button>
       </div>

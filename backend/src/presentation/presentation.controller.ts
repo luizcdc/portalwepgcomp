@@ -207,14 +207,6 @@ export class PresentationController {
     return this.presentationService.remove(id);
   }
 
-  @Post(':id/calculate-scores')
-  @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
-  @ApiBearerAuth()
-  async calculateScores(@Param('id') id: string) {
-    await this.presentationService.calculateAndUpdateScores(id);
-    return { message: 'Scores calculated successfully' };
-  }
-
   @Post('calculate-all-scores/:eventEditionId')
   @UserLevels(UserLevel.Superadmin, UserLevel.Admin)
   @ApiBearerAuth()
@@ -225,7 +217,6 @@ export class PresentationController {
     required: true,
   })
   async calculateAllScores(@Param('eventEditionId') eventEditionId: string) {
-    await this.presentationService.recalculateAllScores(eventEditionId);
-    return { message: 'All scores calculated successfully' };
+    return await this.presentationService.recalculateAllScores(eventEditionId);
   }
 }

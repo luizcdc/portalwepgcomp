@@ -65,40 +65,40 @@ export function FormAlterarSenha({ params }) {
   };
 
   return (
-    <form className='row' onSubmit={handleSubmit(handleFormCadastro)}>
-      <div className='col-12 mb-1'>
-        <label className='form-label fw-bold form-title'>
+    <form className="row" onSubmit={handleSubmit(handleFormCadastro)}>
+      <div className="col-12 mb-1">
+        <label className="form-label fw-bold form-title">
           Senha
-          <span className='text-danger ms-1 form-title'>*</span>
+          <span className="text-danger ms-1 form-title">*</span>
         </label>
-        <div className='password-input'>
+        <div className="d-flex flex-direction-row gap-2 align-items-center">
           <input
             type={eye1 ? "text" : "password"}
-            className='form-control input-title'
-            id='senha'
-            placeholder='Insira sua senha'
+            className="form-control input-title"
+            id="senha"
+            placeholder="Insira sua senha"
             {...register("senha")}
             onChange={handleChangeSenha}
           />
-          <div className='eye' onClick={() => setEye1(!eye1)}>
+          <div className="eye" onClick={() => setEye1(!eye1)}>
             <PasswordEye color={eye1 == false ? "black" : "blue"} />
           </div>
         </div>
-        <p className='text-danger error-message'>{errors.senha?.message}</p>
-        <div className='mt-3'>
-          <p className='mb-1 fw-semibold paragraph-title'>
+        <p className="text-danger error-message">{errors.senha?.message}</p>
+        <div className="mt-3">
+          <p className="mb-1 fw-semibold paragraph-title">
             A senha deve possuir pelo menos:
           </p>
-          <ul className='mb-0'>
+          <ul className="mb-0">
             <li
               className={`fw-semibold list-title ${
                 requisitos.minLength ? "text-success" : "text-danger"
               }`}
             >
               {requisitos.minLength ? (
-                <i className='bi bi-shield-fill-check' />
+                <i className="bi bi-shield-fill-check" />
               ) : (
-                <i className='bi bi-shield-fill-x' />
+                <i className="bi bi-shield-fill-x" />
               )}{" "}
               8 dígitos
             </li>
@@ -108,9 +108,9 @@ export function FormAlterarSenha({ params }) {
               }`}
             >
               {requisitos.hasLetter ? (
-                <i className='bi bi-shield-fill-check' />
+                <i className="bi bi-shield-fill-check" />
               ) : (
-                <i className='bi bi-shield-fill-x' />
+                <i className="bi bi-shield-fill-x" />
               )}{" "}
               1 letra
             </li>
@@ -120,9 +120,9 @@ export function FormAlterarSenha({ params }) {
               }`}
             >
               {requisitos.number ? (
-                <i className='bi bi-shield-fill-check' />
+                <i className="bi bi-shield-fill-check" />
               ) : (
-                <i className='bi bi-shield-fill-x' />
+                <i className="bi bi-shield-fill-x" />
               )}{" "}
               1 número
             </li>
@@ -130,32 +130,32 @@ export function FormAlterarSenha({ params }) {
         </div>
       </div>
 
-      <div className='col-12 mb-4'>
-        <label className='form-label fw-bold form-title'>
+      <div className="col-12 mb-4">
+        <label className="form-label fw-bold form-title">
           Confirmação de senha
-          <span className='text-danger ms-1 form-title'>*</span>
+          <span className="text-danger ms-1 form-title">*</span>
         </label>
-        <div className='password-input'>
+        <div className="d-flex flex-direction-row gap-2 align-items-center">
           <input
             type={eye2 ? "text" : "password"}
-            className='form-control input-title'
-            id='confirmaSenha'
-            placeholder='Insira sua senha novamente'
+            className="form-control input-title"
+            id="confirmaSenha"
+            placeholder="Insira sua senha novamente"
             {...register("confirmaSenha")}
           />
-          <div className='eye' onClick={() => setEye2(!eye2)}>
+          <div className="eye" onClick={() => setEye2(!eye2)}>
             <PasswordEye color={eye2 == false ? "black" : "blue"} />
           </div>
         </div>
-        <p className='text-danger error-message'>
+        <p className="text-danger error-message">
           {errors.confirmaSenha?.message}
         </p>
       </div>
 
-      <div className='d-grid gap-2 col-3 mx-auto'>
+      <div className="d-flex gap-2 col-6 mx-auto justify-content-center align-items-center">
         <button
-          type='submit'
-          className='btn text-white fs-5 fw-bold submit-button'
+          type="submit"
+          className="btn  text-white fs-5 fw-bold submit-button "
         >
           Enviar
         </button>

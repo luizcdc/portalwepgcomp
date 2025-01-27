@@ -17,14 +17,14 @@ export default function ModalSessao() {
   const [tipoSessao, setTipoSessao] = useState<SessaoTipoEnum>(
     sessao?.type === SessaoTipoEnum["Sessão de apresentações"]
       ? SessaoTipoEnum["Sessão de apresentações"]
-      : SessaoTipoEnum["Sessão geral do evento"]
+      : SessaoTipoEnum["Sessão auxiliar do evento"]
   );
 
   useEffect(() => {
     if (sessao?.type) {
       setTipoSessao(
         (sessao?.type ||
-          SessaoTipoEnum["Sessão geral do evento"]) as SessaoTipoEnum
+          SessaoTipoEnum["Sessão auxiliar do evento"]) as SessaoTipoEnum
       );
     }
   }, [sessao?.type]);
@@ -61,7 +61,7 @@ export default function ModalSessao() {
                   name="radioTipoSessao"
                   checked={sessao?.id ? sessao.type === op.value : undefined}
                   defaultChecked={
-                    op.value === SessaoTipoEnum["Sessão geral do evento"]
+                    op.value === SessaoTipoEnum["Sessão auxiliar do evento"]
                   }
                   disabled={!!sessao?.id}
                   onChange={() => setTipoSessao(op.value as SessaoTipoEnum)}
@@ -78,7 +78,7 @@ export default function ModalSessao() {
           <p className="text-danger error-message"></p>
         </div>
 
-        {tipoSessao === SessaoTipoEnum["Sessão geral do evento"] ? (
+        {tipoSessao === SessaoTipoEnum["Sessão auxiliar do evento"] ? (
           <FormSessaoGeral />
         ) : (
           <FormSessaoApresentacoes />

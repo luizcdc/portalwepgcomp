@@ -44,9 +44,15 @@ export const sessionApi = {
     },
 
     swapPresentationsOnSession: async ( idSession: string,
-        body: SwapPresentationsOnSession) => {
+        body: SwapMultiplePresentationsOnSession) => {
         const { data } = await instance.patch(`${baseUrl}/${idSession}/presentations/swap`, body);
 
         return data;
     },
+
+    listPresentionBlockByPanelist: async (idEventEdition: string, userIdOfPanelist: string) => {
+        const { data } = await instance.get(`${baseUrl}?eventEditionId=${idEventEdition}&userIdOfPanelist=${userIdOfPanelist}`)
+       
+        return data;
+    }
 }

@@ -3,6 +3,9 @@ import { useContext } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
+import { useEdicao } from "@/hooks/useEdicao";
+import { certificate } from "@/services/certificate";
+import { useSweetAlert } from "@/hooks/useAlert";
 
 interface PerfilAdminProps {
   profile: ProfileType;
@@ -14,6 +17,20 @@ export default function PerfilAdmin({
   role,
 }: Readonly<PerfilAdminProps>) {
   const { logout } = useContext(AuthContext);
+  const { Edicao } = useEdicao();
+  const { showAlert } = useSweetAlert();
+
+  const certificateDownload = () => {
+    certificate(Edicao?.id || "").then((response) => {
+      if (response !== "200") {
+        showAlert({
+          icon: "error",
+          text: response,
+          confirmButtonText: "Retornar",
+        });
+      }
+    });
+  };
 
   return (
     <div className="dropdown">
@@ -33,11 +50,18 @@ export default function PerfilAdmin({
             </Link>
           </li>
         )}
-        {/* <li>
-          <Link className="dropdown-item" href="#">
+        {role === "Superadmin" && (
+          <li>
+            <Link className="dropdown-item" href="/gerenciamento">
+              Gerenciar Usuários
+            </Link>
+          </li>
+        )}
+        <li>
+          <button className="dropdown-item" onClick={certificateDownload}>
             Emitir Certificado
-          </Link>
-        </li> */}
+          </button>
+        </li>
         {profile === "DoctoralStudent" && (
           <li>
             <Link className="dropdown-item" href="/minha-apresentacao">
@@ -46,13 +70,13 @@ export default function PerfilAdmin({
           </li>
         )}
 
-        {/* {profile === "Professor" && (
+        {profile === "Professor" && (
           <li>
-            <Link className="dropdown-item" href="#">
+            <Link className="dropdown-item" href="/minhas-bancas">
               Minhas bancas
             </Link>
           </li>
-        )} */}
+        )}
 
         <li>
           <Link className="dropdown-item" href="/apresentacoes">

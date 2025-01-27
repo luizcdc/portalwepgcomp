@@ -6,3 +6,7 @@ export class SwapPresentationsDto {
   @IsUUID()
   presentation2Id: string;
 }
+
+export class SwapMultiplePresentationsDto {
+  presentations: SwapPresentationsDto[];
+}

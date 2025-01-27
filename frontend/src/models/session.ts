@@ -44,6 +44,10 @@ interface SwapPresentationsOnSession {
   presentation2Id: string;
 }
 
+interface SwapMultiplePresentationsOnSession {
+  presentations: SwapPresentationsOnSession[];
+}
+
 interface Room {
   id: string;
   eventEditionId: string;

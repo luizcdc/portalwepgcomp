@@ -108,6 +108,7 @@ model UserAccount {
   panelistParticipations  Panelist[]
   bookmarkedPresentations Presentation[]
   EmailVerification       EmailVerification?
+  certificates            Certificate[]
 
   @@map("user_account")
 }
@@ -149,6 +150,7 @@ model EventEdition {
   guidance                          Guidance?
   certificates                      Certificate[]
   presentationBlocks                PresentationBlock[]
+  EvaluationCriteria EvaluationCriteria[]
 
   @@map("event_edition")
 }
@@ -177,7 +179,8 @@ model EvaluationCriteria {
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   evaluations    Evaluation[]
-
+  eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
+  
   @@map("evaluation_criteria")
 }
 
@@ -263,10 +266,12 @@ model Room {
 model Certificate {
   id             String       @id @default(uuid()) @map("id")
   eventEditionId String       @map("event_edition_id")
-  name           String       @map("name") @db.VarChar(255)
-  email          String       @map("email") @db.VarChar(255)
+  userId         String       @map("user_id")
+  filePath       String       @map("file_path")
+  isEmailSent    Boolean      @default(false) @map("is_email_sent")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
+  user           UserAccount  @relation(fields: [userId], references: [id])
   eventEdition   EventEdition @relation(fields: [eventEditionId], references: [id], onDelete: Cascade)
 
   @@map("certificate")

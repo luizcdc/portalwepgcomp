@@ -71,6 +71,7 @@ export class UserService {
         ...createUserDto,
         password: hashedPassword,
         level: shouldBeSuperAdmin ? UserLevel.Superadmin : UserLevel.Default,
+        isActive: createUserDto.profile === Profile.Professor && !shouldBeSuperAdmin ? false : true,
       },
     });
 
@@ -109,6 +110,60 @@ export class UserService {
     });
 
     return professorsCount > 0 ? false : true;
+  }
+
+  async setDefault(setDefaultDto: SetAdminDto): Promise<ResponseUserDto> {
+    const { requestUserId, targetUserId } = setDefaultDto;
+
+    const requestUser = await this.prismaClient.userAccount.findFirst({
+      where: {
+        id: requestUserId,
+      },
+    });
+
+    if (!requestUser) {
+      throw new AppException('Usuário solicitante não encontrado.', 404);
+    }
+
+    if (!this.isAdmin(requestUser)) {
+      throw new AppException(
+        'O usuário não possui privilégios de administrador ou super administrador.',
+        403,
+      );
+    }
+
+    const targetUser = await this.prismaClient.userAccount.findFirst({
+      where: {
+        id: targetUserId,
+      },
+    });
+
+    if (!targetUser) {
+      throw new AppException('Usuário-alvo não encontrado.', 404);
+    }
+
+    if (
+      targetUser.level === UserLevel.Superadmin &&
+      requestUser.level === UserLevel.Admin
+    ) {
+      throw new AppException(
+        'Um usuário administrador não tem permissão para rebaixar um super administrador.',
+        403,
+      );
+    }
+
+    const updatedTargetUser = await this.prismaClient.userAccount.update({
+      where: {
+        id: targetUserId,
+      },
+      data: {
+        level: UserLevel.Default,
+      },
+    });
+
+    const responseUserDto = new ResponseUserDto(updatedTargetUser);
+
+    return responseUserDto;
   }
 
   async setAdmin(setAdminDto: SetAdminDto): Promise<ResponseUserDto> {
@@ -221,7 +276,7 @@ export class UserService {
     return { message: 'Cadastro de Usuário removido com sucesso.' };
   }
 
-  async activateProfessor(userId: string) {
+  async toggleUserActivation(userId: string, activated: boolean) {
     const user = await this.prismaClient.userAccount.findUnique({
       where: { id: userId },
     });
@@ -230,18 +285,20 @@ export class UserService {
       throw new AppException('Usuário não encontrado', 404);
     }
 
-    if (user.profile !== 'Professor') {
-      throw new AppException('Este usuário não é um professor', 403);
-    }
-
-    if (user.isActive) {
+    if (activated && user.isActive) {
       throw new AppException('O usuário já está ativo', 409);
     }
+
+    if (!activated && !user.isActive) {
+      throw new AppException('O usuário já está desativado', 409);
+    }
+
+    const newStatus = activated ? true : false;
 
     const updatedUser = await this.prismaClient.userAccount.update({
       where: { id: userId },
       data: {
-        isActive: true,
+        isActive: newStatus,
       },
     });
 
@@ -255,22 +312,23 @@ export class UserService {
   async findAll(
     roles?: string | string[],
     profiles?: string | string[],
+    status?: string,
   ): Promise<ResponseUserDto[]> {
     const whereClause: any = {};
-    if (roles) {
-      if (Array.isArray(roles) && roles.length > 0) {
-        whereClause.level = { in: roles };
-      } else if (typeof roles === 'string') {
-        whereClause.level = roles;
-      }
+    if (roles && Array.isArray(roles)) {
+      whereClause.level = { in: roles as UserLevel[] };
+    } else if (roles && typeof roles === 'string') {
+      whereClause.level = roles as UserLevel;
+    }
+    
+    if (profiles && Array.isArray(profiles)) {
+      whereClause.profile = { in: profiles as Profile[] };
+    } else if (profiles && typeof profiles === 'string') {
+      whereClause.profile = profiles as Profile;
     }
 
-    if (profiles) {
-      if (Array.isArray(profiles) && profiles.length > 0) {
-        whereClause.profile = { in: profiles };
-      } else if (typeof profiles === 'string') {
-        whereClause.profile = profiles;
-      }
+    if (status) {
+      whereClause.isActive = status === 'Active' ? true : false;
     }
 
     const users = await this.prismaClient.userAccount.findMany({
@@ -343,5 +401,12 @@ export class UserService {
       }
       throw error;
     }
+  }
+
+  async updateRegistrationNumber(userId: string, registrationNumber: string | null): Promise<void> {
+    await this.prismaClient.userAccount.update({
+      where: { id: userId },
+      data: { registrationNumber },
+    });
   }
 }

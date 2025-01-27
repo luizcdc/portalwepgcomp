@@ -10,6 +10,7 @@ import {
 
 import { sessionApi } from "@/services/sessions";
 import { useSweetAlert } from "@/hooks/useAlert";
+import { useSweetToast } from "@/hooks/useToast";
 
 interface SessionProps {
   children: ReactNode;
@@ -22,6 +23,7 @@ interface SessionProviderData {
   sessao: Sessao | null;
   roomsList: Room[];
   loadingRoomsList: boolean;
+  presentationBlockByPanelistList: Sessao[];
   setSessao: Dispatch<SetStateAction<Sessao | null>>;
   listSessions: (eventEditionId: string) => void;
   listRooms: (eventEditionId: string) => void;
@@ -39,8 +41,12 @@ interface SessionProviderData {
   swapPresentationsOnSession: (
     idSession: string,
     eventEditionId: string,
-    body: SwapPresentationsOnSession
+    bodies: SwapPresentationsOnSession[]
   ) => Promise<boolean>;
+  listPresentionBlockByPanelist: (
+    eventEditionId: string,
+    userIdOfPanelist: string
+  ) => void;
 }
 
 export const SessionContext = createContext<SessionProviderData>(
@@ -51,11 +57,14 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const [loadingSessoesList, setLoadingSessoesList] = useState<boolean>(false);
   const [loadingSessao, setLoadingSessao] = useState<boolean>(false);
   const [sessoesList, setSessoesList] = useState<Sessao[]>([]);
+  const [presentationBlockByPanelistList, setPresentationBlockByPanelistList] =
+    useState<Sessao[]>([]);
   const [sessao, setSessao] = useState<Sessao | null>(null);
   const [loadingRoomsList, setLoadingRoomsList] = useState<boolean>(false);
   const [roomsList, setRoomsList] = useState<Room[]>([]);
 
   const { showAlert } = useSweetAlert();
+  const { showToast } = useSweetToast();
 
   const listSessions = async (eventEditionId: string) => {
     setLoadingSessoesList(true);
@@ -64,9 +73,26 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .then((response) => {
         setSessoesList(response);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setSessoesList([]);
+      })
+      .finally(() => {
+        setLoadingSessoesList(false);
+      });
+  };
+
+  const listPresentionBlockByPanelist = async (
+    eventEditionId: string,
+    userIdOfPanelist: string
+  ) => {
+    setLoadingSessoesList(true);
+    sessionApi
+      .listPresentionBlockByPanelist(eventEditionId, userIdOfPanelist)
+      .then((response) => {
+        setPresentationBlockByPanelistList(response);
+      })
+      .catch(() => {
+        setPresentationBlockByPanelistList([]);
       })
       .finally(() => {
         setLoadingSessoesList(false);
@@ -80,8 +106,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .then((response) => {
         setRoomsList(response);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setRoomsList([]);
       })
       .finally(() => {
@@ -96,8 +121,7 @@ export const SessionProvider = ({ children }: SessionProps) => {
       .then((response) => {
         setSessao(response);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setSessao(null);
       })
       .finally(() => {
@@ -228,42 +252,26 @@ export const SessionProvider = ({ children }: SessionProps) => {
   const swapPresentationsOnSession = async (
     idSession: string,
     eventEditionId: string,
-    body: SwapPresentationsOnSession
+    presentations: SwapPresentationsOnSession[]
   ) => {
     setLoadingSessao(true);
+    const body = { presentations };
     return sessionApi
       .swapPresentationsOnSession(idSession, body)
-      .then((response) => {
-        setSessao(response);
-        showAlert({
+      .then(() => {
+        showToast({
           icon: "success",
           title:
             "Troca na ordem das apresentações da sessão realizada com sucesso!",
-          timer: 3000,
-          showConfirmButton: false,
         });
         listSessions(eventEditionId);
 
-        const modalElementButton = document.getElementById(
-          "trocarOrdemApresentacaoClose"
-        ) as HTMLButtonElement;
-
-        if (modalElementButton) {
-          modalElementButton.click();
-        }
-
         return true;
       })
-      .catch((err) => {
-        setSessao(null);
-        showAlert({
+      .catch(() => {
+        showToast({
           icon: "error",
           title: "Erro na troca da ordem das apresentações da sessão",
-          text:
-            err.response?.data?.message?.message ||
-            err.response?.data?.message ||
-            "Ocorreu um erro durante o cadastro. Tente novamente mais tarde!",
-          confirmButtonText: "Retornar",
         });
 
         return false;
@@ -290,6 +298,8 @@ export const SessionProvider = ({ children }: SessionProps) => {
         updateSession,
         deleteSession,
         swapPresentationsOnSession,
+        listPresentionBlockByPanelist,
+        presentationBlockByPanelistList,
       }}
     >
       {children}

@@ -84,8 +84,17 @@ export class RankingResponseDtoDto {
     this.presentationBlockId = presentation.presentationBlockId;
     this.positionWithinBlock = presentation.positionWithinBlock;
     this.status = presentation.status;
-    this.publicAverageScore = presentation.publicAverageScore;
-    this.evaluatorsAverageScore = presentation.evaluatorsAverageScore;
+
+    // Convert to number with two decimal places or set to null if not available
+    this.publicAverageScore =
+      presentation.publicAverageScore !== null
+        ? Number(presentation.publicAverageScore.toFixed(2))
+        : null;
+    this.evaluatorsAverageScore =
+      presentation.evaluatorsAverageScore !== null
+        ? Number(presentation.publicAverageScore.toFixed(2))
+        : null;
+
     this.submission = new SubmissionDto({
       ...presentation.submission,
       mainAuthor: new UserDto(presentation.submission.mainAuthor),

@@ -1,46 +1,43 @@
 "use client";
 
-import PresentationModal from "@/components/Modals/ModalApresentação/PresentationModal";
 import { ProtectedLayout } from "@/components/ProtectedLayout/protectedLayout";
 import { FavoritosMock } from "@/mocks/Favoritos";
-import Listagem from "@/templates/Listagem/Listagem";
-import Modal from "../../components/UI/Modal/Modal";
-import { useEffect, useRef, useState } from "react";
+import Listagem, { mapCardList } from "@/templates/Listagem/Listagem";
+import { useEffect, useState } from "react";
 import { usePresentation } from "@/hooks/usePresentation";
 
 export default function Favoritos() {
-  const { presentationBookmarks, getPresentationBookmarks, deletePresentationBookmark } = usePresentation();
+  const {
+    presentationBookmarks,
+    getPresentationBookmarks,
+    deletePresentationBookmark,
+  } = usePresentation();
   const { title, userArea } = FavoritosMock;
-  const openModal = useRef<HTMLButtonElement | null>(null);
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
 
   useEffect(() => {
-    getPresentationBookmarks()
-  }, [])
+    getPresentationBookmarks();
+  }, []);
 
   useEffect(() => {
     if (!presentationBookmarks?.bookmarkedPresentations?.length) {
       return;
-    }  
-    const newSessionsList = presentationBookmarks.bookmarkedPresentations
-      .filter((item) =>
-        item.submission?.title?.toLowerCase().includes(searchValue.trim().toLowerCase()));
+    }
+    const newSessionsList =
+      presentationBookmarks.bookmarkedPresentations.filter((item) =>
+        item.submission?.title
+          ?.toLowerCase()
+          .includes(searchValue.trim().toLowerCase())
+      );
 
-    setSessionsListValues(newSessionsList); 
+    setSessionsListValues(newSessionsList);
   }, [presentationBookmarks, searchValue]);
 
-
-
-  const [modalContent, setModalContent] =
-    useState<any>(sessionsListValues);
-
-  function openModalPresentation(item) {
-    setModalContent({ ...modalContent, ...item });
-    openModal.current?.click();
+  function favoriteItem(item) {
+    setSessionsListValues({ ...sessionsListValues, ...item });
   }
-
 
   const handleDelete = async (submissionId: any) => {
     await deletePresentationBookmark(submissionId);
@@ -51,6 +48,17 @@ export default function Favoritos() {
     setSessionsListValues(updatedSubmissions);
   };
 
+  const sessionMaped = sessionsListValues.map((presentation) => ({
+    id: presentation?.submission.id,
+    title: presentation?.submission.title,
+    name: presentation?.submission.mainAuthor.name,
+    email: presentation?.submission.mainAuthor.email,
+    subtitle: presentation?.submission.abstract,
+    pdfFile: presentation?.submission.pdfFile,
+    advisorName: presentation?.submission?.advisor?.name,
+    ...presentation,
+  }));
+
   return (
     <ProtectedLayout>
       <div
@@ -59,30 +67,19 @@ export default function Favoritos() {
           gap: "50px",
         }}
       >
-        <Listagem        
+        <Listagem
           title={title}
-          cardsList={sessionsListValues.map((presentation) => ({
-            id: presentation?.submission.id,
-            title: presentation?.submission.title,
-            name: presentation?.submission.title,
-            subtitle: presentation?.submission.abstract,
-            ...presentation,
-
-          }))}
+          cardsList={mapCardList(sessionMaped, "title", "abstract")}
           isFavorites
           idModal={title.trim() + "-modal"}
           searchValue={searchValue}
           onChangeSearchValue={(value) => setSearchValue(value)}
           searchPlaceholder={userArea.search}
-          onClickItem={(item) => openModalPresentation(item)}
           onDelete={handleDelete}
+          onEdit={(item) => favoriteItem(item)}
+          fullInfo={true}
         />
       </div>
-
-      <Modal
-        content={<PresentationModal props={modalContent} />}
-        reference={openModal}
-      />
     </ProtectedLayout>
   );
 }

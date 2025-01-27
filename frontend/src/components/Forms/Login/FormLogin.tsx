@@ -54,61 +54,60 @@ export function FormLogin() {
   }
 
   if (signed) {
-    router.push("/");
+    router.push("/home");
   } else {
     return (
-      <form className="row login" onSubmit={handleSubmit(handleLogin)}>
-        <hr />
-        <div className="col-12 mb-3">
-          <label className="form-label fw-bold form-title">
+      <form className='row login' onSubmit={handleSubmit(handleLogin)}>
+        <div className='col-12 mb-3'>
+          <label className='form-label fw-bold form-title'>
             E-mail
-            <span className="text-danger ms-1">*</span>
+            <span className='text-danger ms-1'>*</span>
           </label>
           <input
-            type="email"
-            className="form-control input-title"
-            id="email"
-            placeholder="exemplo@ufba.br"
+            type='email'
+            className='form-control input-title'
+            id='email'
+            placeholder='exemplo@ufba.br'
             {...register("email")}
           />
-          <p className="text-danger error-message">{errors.email?.message}</p>
+          <p className='text-danger error-message'>{errors.email?.message}</p>
         </div>
-        <div className="col-12 mb-3">
-          <label className="form-label fw-bold form-title">
+        <div className='col-12 mb-3'>
+          <label className='form-label fw-bold form-title'>
             Senha
-            <span className="text-danger ms-1">*</span>
+            <span className='text-danger ms-1'>*</span>
           </label>
-          <div className="password-input">
+          <div className='password-input'>
             <input
               type={eye ? "text" : "password"}
-              className="form-control input-title password"
-              id="password"
-              placeholder="digite sua senha"
+              className='form-control input-title password'
+              id='password'
+              placeholder='digite sua senha'
               {...register("password")}
             />
-            <div className="eye" onClick={() => setEye(!eye)}>
+            <div className='eye' onClick={() => setEye(!eye)}>
               <PasswordEye color={eye == false ? "black" : "blue"} />
             </div>
           </div>
-          <p className="text-danger error-message">
+          <p className='text-danger error-message'>
             {errors.password?.message}
           </p>
 
-          <div className="text-end link">
+          <div className='text-end link'>
             <button
-              data-bs-target="#alterarSenhaModal"
-              type="button"
-              data-bs-toggle="modal"
-              className="text-end link link-underline link-underline-opacity-0 button-password"
+              data-bs-target='#alterarSenhaModal'
+              type='button'
+              data-bs-toggle='modal'
+              className='text-end link link-underline link-underline-opacity-0 button-password'
             >
               Esqueceu sua senha?
             </button>
           </div>
         </div>
-        <div className="d-grid gap-2 col-3 mx-auto mb-4">
+        <div className='d-flex gap-2 mx-auto mb-4'>
           <button
-            type="submit"
-            className="btn text-white fw-semibold fs-6 button-primary"
+            type='submit'
+            className='btn text-white fw-semibold fs-6 button-primary'
           >
             Entrar
           </button>

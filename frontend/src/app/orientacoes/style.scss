@@ -44,3 +44,10 @@
         padding: 0 10px;
     }
 }
+
+@media (max-width: 660px) {
+    .button{
+        display: flex;
+        flex-Direction: column;
+    }
+}

@@ -6,6 +6,7 @@ import {
   ParseFilePipe,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { S3UtilsService } from './s3-utils.service';
@@ -19,6 +20,7 @@ import {
 import { v4 } from 'uuid';
 import { AppException } from '../exceptions/app.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('s3-utils')
 export class S3UtilsController {
@@ -34,6 +36,7 @@ export class S3UtilsController {
   }
 
   @Post()
+  @UseGuards(ThrottlerGuard) // Apply rate limit only on this endpoint
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data') // Specify the content type
   @ApiBody({
