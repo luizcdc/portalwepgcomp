@@ -92,7 +92,7 @@ export class RankingResponseDtoDto {
         : null;
     this.evaluatorsAverageScore =
       presentation.evaluatorsAverageScore !== null
-        ? Number(presentation.publicAverageScore.toFixed(2))
+        ? Number(presentation.evaluatorsAverageScore.toFixed(2))
         : null;
 
     this.submission = new SubmissionDto({
