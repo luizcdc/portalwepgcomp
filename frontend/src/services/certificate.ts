@@ -1,32 +1,31 @@
-import { useSweetAlert } from '@/hooks/useAlert';
 import axiosInstance from '@/utils/api';
+import { useSweetAlert } from '@/hooks/useAlert';
 
 const baseUrl = "/certificate";
 
-export const certificate = async (eventId: string): Promise<boolean> => {
-const { showAlert } = useSweetAlert();
-const instance = axiosInstance;
-    try {
-        const response = await instance.get(`${baseUrl}/event-edition/${eventId}`, {
-            responseType: "blob",
-            headers: {
-                "Content-Type": "application/pdf",
-            },
-        });
+export const useCertificate = () => {
+    const { showAlert } = useSweetAlert();
 
-        const blob = new Blob([response.data], { type: "application/pdf" });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `certificate-${Date.now()}.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
+    const downloadCertificate = async (eventId: string): Promise<boolean> => {
+        try {
+            const response = await axiosInstance.get(`${baseUrl}/event-edition/${eventId}`, {
+                responseType: "blob",
+                headers: {
+                    "Content-Type": "application/pdf",
+                },
+            });
 
-        return true;
+            const blob = new Blob([response.data], { type: "application/pdf" });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `certificate-${Date.now()}.pdf`;
+            link.click();
+            window.URL.revokeObjectURL(url);
 
-
-    } catch (error: any) {
-        if(error.status === 404){
+            return true; 
+        } catch (error: any) {
+            if(error.status === 404){
            await showAlert({
             icon: "error",
             title: "Erro ao baixar certificado",
@@ -42,8 +41,10 @@ const instance = axiosInstance;
             confirmButtonText: "Retornar",
         });
         }
-     
 
-        return false; 
-    }
+            return false; 
+        }
+    };
+
+    return { downloadCertificate };
 };

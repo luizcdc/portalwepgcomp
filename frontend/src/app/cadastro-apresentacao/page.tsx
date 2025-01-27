@@ -8,14 +8,6 @@ import { useUsers } from "@/hooks/useUsers";
 
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 
-import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
-
-import { useSweetAlert } from "@/hooks/useAlert";
-import { useUsers } from "@/hooks/useUsers";
-
-import { AuthContext } from "@/context/AuthProvider/authProvider";
-
 import { FormCadastroApresentacao } from "@/components/Forms/CadastroApresentacao/FormCadastroApresentacao";
 import LoadingPage from "@/components/LoadingPage";
 import ModalCadastroApresentacao from "@/components/Modals/ModalCadastroApresentacao/ModalCadastroApresentacao";
