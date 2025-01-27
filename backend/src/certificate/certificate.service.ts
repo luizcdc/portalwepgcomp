@@ -134,6 +134,8 @@ export class CertificateService {
     fontType: string,
     pdfDoc: PDFDocument,
   ): Promise<PDFFont> {
+    // Debugging: list everything in process.cwd()
+    console.log(await fs.readdir(process.cwd()));
     if (embeddedFonts[fontType] == null) {
       const fontBytes = await fs.readFile(
         path.join(process.cwd(), this.fontsPaths[fontType]),
