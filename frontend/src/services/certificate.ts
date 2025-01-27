@@ -1,10 +1,11 @@
+import { useSweetAlert } from '@/hooks/useAlert';
 import axiosInstance from '@/utils/api';
 
 const baseUrl = "/certificate";
 
-export const certificate = async (eventId: string): Promise<string> => {
-
-    const instance = axiosInstance;
+export const certificate = async (eventId: string): Promise<boolean> => {
+const { showAlert } = useSweetAlert();
+const instance = axiosInstance;
     try {
         const response = await instance.get(`${baseUrl}/event-edition/${eventId}`, {
             responseType: "blob",
@@ -21,12 +22,28 @@ export const certificate = async (eventId: string): Promise<string> => {
         link.click();
         window.URL.revokeObjectURL(url);
 
-        return "200";
+        return true;
 
 
     } catch (error: any) {
-        const errorMessage = error.response?.data?.message || "Erro ao emitir certificado";
+        if(error.status === 404){
+           await showAlert({
+            icon: "error",
+            title: "Erro ao baixar certificado",
+            text: "Doutorando não tem submissões, portanto não pode receber certificado",
+            confirmButtonText: "Retornar",
+        }); 
+        }
+        else{
+        await showAlert({
+            icon: "error",
+            title: "Erro ao baixar certificado",
+            text: error.response?.data?.message,
+            confirmButtonText: "Retornar",
+        });
+        }
+     
 
-        return errorMessage;
+        return false; 
     }
 };

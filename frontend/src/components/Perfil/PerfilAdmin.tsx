@@ -1,6 +1,5 @@
 "use client";
 import { useContext } from "react";
-import { useContext } from "react";
 import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
@@ -24,26 +23,12 @@ export default function PerfilAdmin({
 
   const certificateDownload = () => {
     certificate(Edicao?.id || "").then((response) => {
-      if (response !== "200") {
+      if (response) {
         showAlert({
-          icon: "error",
-          text: response,
-          confirmButtonText: "Retornar",
-        });
-      }
-    });
-  };
-
-  const { Edicao } = useEdicao();
-  const { showAlert } = useSweetAlert();
-
-  const certificateDownload = () => {
-    certificate(Edicao?.id || "").then((response) => {
-      if (response !== "200") {
-        showAlert({
-          icon: "error",
-          text: response,
-          confirmButtonText: "Retornar",
+          icon: "success",
+          title: "Download feito com sucesso!",
+          timer: 2000,
+          showConfirmButton: false,
         });
       }
     });
@@ -79,8 +64,7 @@ export default function PerfilAdmin({
             Emitir Certificado
           </button>
         </li>
-          </button>
-        </li>
+
         {profile === "DoctoralStudent" && (
           <li>
             <Link className='dropdown-item' href='/minha-apresentacao'>
