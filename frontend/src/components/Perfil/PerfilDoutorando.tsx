@@ -14,13 +14,21 @@ export default function PerfilDoutorando() {
   const { downloadCertificate } = useCertificate();
 
   const certificateDownload = async () => {
-    const success = await downloadCertificate(Edicao?.id || "");
+    const response = await downloadCertificate(Edicao?.id || "");
 
-    if (success) {
+    if (response === 200) {
       showAlert({
         icon: "success",
         title: "Download feito com sucesso!",
-        timer: 2000,
+        timer: 3000,
+        showConfirmButton: false,
+      });
+    } else if (response === 404) {
+      showAlert({
+        icon: "error",
+        title:
+          "Doutorando não tem submissões, portanto não pode receber certificado",
+        timer: 3000,
         showConfirmButton: false,
       });
     }
