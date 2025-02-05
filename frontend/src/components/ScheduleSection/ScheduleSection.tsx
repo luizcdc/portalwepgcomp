@@ -15,10 +15,12 @@ import { useEdicao } from "@/hooks/useEdicao";
 import { useSession } from "@/hooks/useSession";
 
 import "./style.scss";
+import { useActiveEdition } from "@/hooks/useActiveEdition";
 
 export default function ScheduleSection() {
   const { listSessions, sessoesList, listRooms, roomsList } = useSession();
   const { Edicao } = useEdicao();
+  const { selectEdition } = useActiveEdition();
 
   const [dates, setDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -55,7 +57,6 @@ export default function ScheduleSection() {
 
   useEffect(() => {
     const eventEditionId = getEventEditionIdStorage();
-
     if (eventEditionId && Edicao?.startDate && Edicao?.endDate) {
       listSessions(eventEditionId);
       const generatedDates = generateDatesBetween(
@@ -67,7 +68,7 @@ export default function ScheduleSection() {
     }
 
     if (Edicao?.id) listRooms(Edicao?.id);
-  }, [Edicao]);
+  }, [Edicao?.id, selectEdition]);
 
   const colorsSession = [
     "#F2CB05",

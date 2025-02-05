@@ -4,8 +4,10 @@ import { AuthContext } from "@/context/AuthProvider/authProvider";
 import Link from "next/link";
 import "./style.scss";
 import { useEdicao } from "@/hooks/useEdicao";
-import { certificate } from "@/services/certificate";
+import { useCertificate } from "@/services/certificate";
 import { useSweetAlert } from "@/hooks/useAlert";
+import ModalMelhoresAvaliadores from "../Modals/ModalMelhoresAvaliadores/ModalMelhoresAvaliadores";
+import ModalCriterios from "../Modals/ModalCriterios/ModalCriterios";
 
 interface PerfilAdminProps {
   profile: ProfileType;
@@ -19,17 +21,26 @@ export default function PerfilAdmin({
   const { logout } = useContext(AuthContext);
   const { Edicao } = useEdicao();
   const { showAlert } = useSweetAlert();
+  const { downloadCertificate } = useCertificate();
 
-  const certificateDownload = () => {
-    certificate(Edicao?.id || "").then((response) => {
-      if (response !== "200") {
-        showAlert({
-          icon: "error",
-          text: response,
-          confirmButtonText: "Retornar",
-        });
-      }
-    });
+  const certificateDownload = async () => {
+    const response = await downloadCertificate(Edicao?.id || "");
+
+    if (response === 200) {
+      showAlert({
+        icon: "success",
+        title: "Download feito com sucesso!",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+    } else if (response === 404) {
+      showAlert({
+        icon: "error",
+        title: "Error ao baixar o certificado!",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+    }
   };
 
   return (
@@ -62,6 +73,7 @@ export default function PerfilAdmin({
             Emitir Certificado
           </button>
         </li>
+
         {profile === "DoctoralStudent" && (
           <li>
             <Link className="dropdown-item" href="/minha-apresentacao">
@@ -84,6 +96,28 @@ export default function PerfilAdmin({
           </Link>
         </li>
         <li>
+          <button
+            className="dropdown-item"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#escolherAvaliadorModal"
+          >
+            Melhores Avaliadores
+          </button>
+        </li>
+        {(role === "Admin" || role === "Superadmin") && (
+          <li>
+            <button
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#criteriosModal"
+              className="dropdown-item"
+            >
+              Gerenciar critérios
+            </button>
+          </li>
+        )}
+        <li>
           <Link className="dropdown-item" href="/premiacao">
             Premiação
           </Link>
@@ -104,6 +138,8 @@ export default function PerfilAdmin({
           </Link>
         </li>
       </ul>
+      <ModalMelhoresAvaliadores />
+      <ModalCriterios />
     </div>
   );
 }
