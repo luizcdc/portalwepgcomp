@@ -6,8 +6,8 @@ Este projeto é desenvolvido como parte da disciplina **IC045/MATE85 - Tópicos 
 
 ## Tecnologias Utilizadas
 
-- **Back-end**: NodeJS com Express
-- **Front-end**: React/Next
+- **Back-end**: NodeJS com Nest
+- **Front-end**: React/Next, Bootstrap
 - **Banco de Dados**: PostgreSQL
 - **Cloud**: Vercel
 
