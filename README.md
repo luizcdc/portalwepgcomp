@@ -34,6 +34,8 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 
 - Link para o Figma: <a href="https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0" target="_blank">Figma Design</a>
 
+## Documento de Instalação
+- Link para o Documento: <a href="https://docs.google.com/document/d/1K5SnhxKYCfnvJq_T8P_5-zqXeQSpqMXPh2FfLYe_G0Y/edit?tab=t.0" target="_blank">Documento de Implantação/Instalação</a>
 ## Configuração do Projeto
 
 1. **Clonar o Repositório**:
