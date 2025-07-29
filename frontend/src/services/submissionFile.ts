@@ -1,6 +1,6 @@
 import axiosInstance from '@/utils/api';
 
-const baseUrl = "/s3-utils";
+const baseUrl = "/uploads";
 const instance = axiosInstance;
 
 export const submissionFileApi = {

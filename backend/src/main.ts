@@ -3,8 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './exceptions/filter';
-import { Transport } from '@nestjs/microservices';
-import { queueConstants } from './queue/constants';
 import metadata from './metadata';
 
 async function bootstrap() {
@@ -47,21 +45,6 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  for (const queue of queueConstants.queues) {
-    app.connectMicroservice({
-      transport: Transport.RMQ,
-      options: {
-        urls: [process.env.QUEUE_URL],
-        queue: queue,
-        noAck: false,
-        queueOptions: {
-          durable: true,
-        },
-      },
-    });
-  }
-
-  await app.startAllMicroservices();
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

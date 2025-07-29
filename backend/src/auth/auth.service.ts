@@ -68,7 +68,7 @@ export class AuthService {
 
     const text = `Link para redefinição de senha: ${process.env.FRONTEND_URL}/alterar-senha/${resetToken}`;
     const forgotPasswordEmail = {
-      from: `"${user.name}" <${user.email}>`,
+      from: process.env.SENDGRID_FROM_EMAIL,
       to: user.email,
       subject: 'Redefinição de senha: WEPGCOMP',
       text,

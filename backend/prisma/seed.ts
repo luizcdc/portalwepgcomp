@@ -1,740 +1,874 @@
 import {
-  PrismaClient,
-  Profile,
-  UserLevel,
   CommitteeLevel,
   CommitteeRole,
-  SubmissionStatus,
-  PanelistStatus,
   PresentationBlockType,
   PresentationStatus,
+  PrismaClient,
+  Profile,
+  SubmissionStatus,
+  UserLevel,
 } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  // TRUNCATE ALL TABLES THAT ARE FULLY INDEPENDENT FROM EACH OTHER
-  // EVEN INDIRECTLY:
-  await prisma.$executeRawUnsafe('TRUNCATE TABLE "event_edition" CASCADE;');
-  await prisma.$executeRawUnsafe('TRUNCATE TABLE "user_account" CASCADE;');
-  await prisma.$executeRawUnsafe(
-    'TRUNCATE TABLE "email_verification" CASCADE;',
-  );
+function createEmailByName(name: string) {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .split(' ')
+    .slice(0, 2)
+    .join('.');
+}
 
-  const users_data = [
+async function main() {
+  console.log('Seeding 2024 Edition...');
+
+  const edition2024 = await prisma.eventEdition.create({
+    data: {
+      name: 'WEPGCOMP 2024',
+      description:
+        'Um evento para estudantes de doutorado apresentarem suas pesquisas.',
+      callForPapersText: 'Envie seus artigos para avaliação e apresentação.',
+      partnersText: '<b>Apoiado por:</b><br>Instituto Qualquercoisa',
+      location: 'UFBA, Salvador, Bahia, Brasil',
+      startDate: new Date('2024-11-12'),
+      endDate: new Date('2024-11-15'), //
+      submissionStartDate: new Date('2024-01-01'),
+      submissionDeadline: new Date('2024-11-08'),
+      isActive: true,
+      isEvaluationRestrictToLoggedUsers: true,
+      presentationDuration: 20,
+      presentationsPerPresentationBlock: 6,
+    },
+  });
+
+  const rooms = await prisma.room.createManyAndReturn({
+    data: [
+      {
+        eventEditionId: edition2024.id,
+        name: 'Sala A',
+        description: 'Sala A',
+      },
+      {
+        eventEditionId: edition2024.id,
+        name: 'Sala B',
+        description: 'Sala B',
+      },
+    ],
+  });
+
+  const comiteeMembers = [
     {
-      name: 'Paulo CoordenadorSuperadmin da Silva',
-      email: 'profsuperadmin@example.com',
+      name: 'Bruno Pereira dos Santos',
+      email: 'bruno.pereira@ufba.br',
       password: '1234$Ad@',
       profile: Profile.Professor,
       level: UserLevel.Superadmin,
       isVerified: true,
     },
     {
-      name: 'João DoutorandoAdmin',
-      email: 'docadmin@example.com',
+      name: 'Rafael Augusto de Melo',
+      email: 'rafael.melo@ufba.br',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Superadmin,
+      isVerified: true,
+    },
+    {
+      name: 'Robespierre Dantas da Rocha Pita',
+      email: 'robespierre.dantas@ufba.br',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Superadmin,
+      isVerified: true,
+    },
+    {
+      name: 'Rodrigo Rocha Gomes e Souza',
+      email: 'rodrigo.rocha@ufba.br',
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Superadmin,
+      isVerified: true,
+    },
+    {
+      name: 'Bianco Oliveira',
+      email: 'bianco.oliveira@ufba.br',
       password: '1234$Ad@',
       profile: Profile.DoctoralStudent,
       level: UserLevel.Admin,
       isVerified: true,
     },
     {
-      name: 'Carlos ProfessorAdmin',
-      email: 'profadmin@example.com',
+      name: 'Bruno Morais',
+      email: 'bruno.morais@ufba.br',
       password: '1234$Ad@',
-      profile: Profile.Professor,
+      profile: Profile.DoctoralStudent,
       level: UserLevel.Admin,
-      isVerified: true,
-    },
-    {
-      name: 'Sílvio OuvinteAdmin',
-      email: 'listadmin@example.com',
-      password: '1234$Ad@',
-      profile: Profile.Listener,
-      level: UserLevel.Admin,
-      isVerified: true,
-    },
-    {
-      name: 'Pedro dos Santos',
-      email: 'profdefault@example.com',
-      password: '1234$Ad@',
-      profile: Profile.Professor,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Joana Silva',
-      email: 'listdefault@example.com',
-      password: '1234$Ad@',
-      profile: Profile.Listener,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Ana Rodrigues',
-      email: 'docdefault@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Walter Marinho',
-      email: 'profdefault2@example.com',
-      password: '1234$Ad@',
-      profile: Profile.Professor,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Karl Marx',
-      email: 'profdefault3@example.com',
-      password: '1234$Ad@',
-      profile: Profile.Professor,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Ludwig Wittgenstein',
-      email: 'docdefault2@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Julia Kristeva',
-      email: 'docdefault3@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Michel Foucault',
-      email: 'docdefault4@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Rubem Alves',
-      email: 'docdefault5@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Machado de Assis',
-      email: 'docdefault6@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Clarice Lispector',
-      email: 'docdefault7@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'José Saramago',
-      email: 'docdefault8@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Paulo Freire',
-      email: 'docdefault9@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Virginia Woolf',
-      email: 'docdefault10@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Simone de Beauvoir',
-      email: 'docdefault11@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Hannah Arendt',
-      email: 'docdefault12@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
-      isVerified: true,
-    },
-    {
-      name: 'Jean-Paul Sartre',
-      email: 'docdefault13@example.com',
-      password: '1234$Ad@',
-      profile: Profile.DoctoralStudent,
-      level: UserLevel.Default,
       isVerified: true,
     },
   ];
 
-  for (const user of users_data) {
-    user.password = await bcrypt.hash(user.password, 10);
-  }
-
-  await prisma.userAccount.createMany({
-    data: users_data,
+  const comiteeUsers = await prisma.userAccount.createManyAndReturn({
+    data: comiteeMembers.map((user) => ({
+      ...user,
+      password: bcrypt.hashSync(user.password, 10),
+    })),
   });
 
-  const users = await prisma.userAccount.findMany();
-
-  const superAdminUser = users.find(
-    (user) => user.level === UserLevel.Superadmin,
-  );
-  const adminProfUser = users.find(
-    (user) =>
-      user.level === UserLevel.Admin && user.profile === Profile.Professor,
-  );
-  const adminDocUser = users.find(
-    (user) =>
-      user.level === UserLevel.Admin &&
-      user.profile === Profile.DoctoralStudent,
-  );
-  const adminListUser = users.find(
-    (user) =>
-      user.level === UserLevel.Admin && user.profile === Profile.Listener,
-  );
-  const professors = users.filter((user) => user.profile === Profile.Professor);
-  const listeners = users.filter((user) => user.profile === Profile.Listener);
-  const doctoralStudents = users.filter(
-    (user) => user.profile === Profile.DoctoralStudent,
-  );
-
-  const eventEdition = await prisma.eventEdition.create({
-    data: {
-      name: 'WEPGCOMP 2024',
-      description:
-        'Um evento para estudantes de doutorado apresentarem suas pesquisas.',
-      callForPapersText: 'Envie seus artigos para avaliação e apresentação.',
-      partnersText:
-        '<b>Apoiado por:</b><br>Instituto qualquercoisa<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="black"/><rect x="6" y="6" width="12" height="12" fill="white"/></svg>',
-      location: 'UFBA, Salvador, Bahia, Brasil',
-      startDate: new Date('2024-05-01'),
-      endDate: new Date('2024-05-03'),
-      submissionStartDate: new Date('2024-01-01'),
-      submissionDeadline: new Date('2024-04-01'),
-      isActive: true,
-      isEvaluationRestrictToLoggedUsers: true,
-      presentationDuration: 15,
-      presentationsPerPresentationBlock: 3,
-    },
-  });
-  const room = await prisma.room.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      name: 'Auditório Principal',
-      description: 'O auditório principal para apresentações.',
-    },
-  });
+  const committeeMembersData = comiteeUsers.map((user, index) => ({
+    eventEditionId: edition2024.id,
+    userId: user.id,
+    level: index < 4 ? CommitteeLevel.Coordinator : CommitteeLevel.Committee,
+    role:
+      index < 4 ? CommitteeRole.OrganizingCommittee : CommitteeRole.ITSupport,
+  }));
 
   await prisma.committeeMember.createMany({
-    data: [
-      {
-        eventEditionId: eventEdition.id,
-        userId: superAdminUser.id,
-        level: CommitteeLevel.Coordinator,
-        role: CommitteeRole.OrganizingCommittee,
-      },
-      {
-        eventEditionId: eventEdition.id,
-        userId: adminProfUser.id,
-        level: CommitteeLevel.Committee,
-        role: CommitteeRole.OrganizingCommittee,
-      },
-      {
-        eventEditionId: eventEdition.id,
-        userId: adminDocUser.id,
-        level: CommitteeLevel.Committee,
-        role: CommitteeRole.StudentVolunteers,
-      },
-      {
-        eventEditionId: eventEdition.id,
-        userId: adminListUser.id,
-        level: CommitteeLevel.Committee,
-        role: CommitteeRole.StudentVolunteers,
-      },
-    ],
+    data: committeeMembersData,
   });
 
-  await prisma.evaluationCriteria.createMany({
-    data: [
-      {
-        eventEditionId: eventEdition.id,
-        title: 'Conteúdo',
-        description:
-          'Quão satisfeito(a) você ficou com o conteúdo da pesquisa apresentada?',
-      },
-      {
-        eventEditionId: eventEdition.id,
-        title: 'Qualidade e Clareza',
-        description:
-          'Quão satisfeito(a) você ficou com a qualidade e clareza da apresentação?',
-      },
-      {
-        eventEditionId: eventEdition.id,
-        title: 'Relevância ao Tema',
-        description:
-          'Quão bem a pesquisa abordou e explicou o problema central?',
-      },
-      {
-        eventEditionId: eventEdition.id,
-        title: 'Solução proposta',
-        description:
-          'Quão clara e prática você considera a solução proposta pela pesquisa?',
-      },
-      {
-        eventEditionId: eventEdition.id,
-        title: 'Resultados',
-        description:
-          'Como você avalia a qualidade e aplicabilidade dos resultados apresentados?',
-      },
-    ],
+  const professors = [
+    'Antonio Lopes Apolinario Junior', //4
+    'Manoel Gomes de Mendonça Neto', //5
+    'Eduardo Santana de Almeida', //6
+    'Marcos Ennes Barreto', //7
+    'Rita Suzana Pitangueira Maciel', //8
+    'Laís do Nascimento Salvador', //9
+    'Ivan do Carmo Machado', //10
+    'Daniela Barreiro Claro', //11
+    'Gustavo Bittencourt Figueiredo', //12
+    'Frederico Araújo Durão', //13
+    'Leobino Nascimento Sampaio', //14
+    'Vaninha Vieira dos Santos', //15
+    'Cássio Vinicius Serafim Prazeres', //16
+    'Maycon Leone Maciel Peixoto', //17
+    'Christina Von Flach Garcia Chavez', //18
+    'Ricardo Araújo Rios', //19
+    'George Marconi de Araújo Lima', //20
+    'Ecivaldo de Souza Matos', //21
+    'Gecynalda Soares da Silva Gomes', //22
+  ].map((name) => {
+    const emailName = createEmailByName(name);
+    return {
+      name,
+      email: `${emailName}@ufba.br`,
+      password: '1234$Ad@',
+      profile: Profile.Professor,
+      level: UserLevel.Default,
+      isVerified: true,
+    };
   });
 
-  const submissions = [
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[0].id,
-        mainAuthorId: doctoralStudents[0].id,
-        eventEditionId: eventEdition.id,
-        title: 'The Impact of AI in Modern Research',
-        abstract:
-          'A study on how AI impacts modern research methodologies. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.',
-        pdfFile: 'path/to/document1.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[1].id,
-        mainAuthorId: doctoralStudents[1].id,
-        eventEditionId: eventEdition.id,
-        title: 'Quantum Computing Advances',
-        abstract: 'Exploring the latest advancements in quantum computing.',
-        pdfFile: 'path/to/document2.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[2].id,
-        mainAuthorId: doctoralStudents[2].id,
-        eventEditionId: eventEdition.id,
-        title: 'Blockchain Technology in Finance',
-        abstract:
-          'An analysis of blockchain technology applications in finance.',
-        pdfFile: 'path/to/document3.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[0].id,
-        mainAuthorId: doctoralStudents[3].id,
-        eventEditionId: eventEdition.id,
-        title: 'Machine Learning in Healthcare',
-        abstract: 'Investigating ML applications in healthcare diagnosis.',
-        pdfFile: 'path/to/document4.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[1].id,
-        mainAuthorId: doctoralStudents[4].id,
-        eventEditionId: eventEdition.id,
-        title: 'Cloud Computing Security',
-        abstract: 'Analysis of security challenges in cloud computing.',
-        pdfFile: 'path/to/document5.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[2].id,
-        mainAuthorId: doctoralStudents[5].id,
-        eventEditionId: eventEdition.id,
-        title: 'Internet of Things Networks',
-        abstract: 'Study of IoT network architectures and protocols.',
-        pdfFile: 'path/to/document6.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[0].id,
-        mainAuthorId: doctoralStudents[6].id,
-        eventEditionId: eventEdition.id,
-        title: 'Big Data Analytics',
-        abstract: 'Exploring big data analytics and visualization tools.',
-        pdfFile: 'path/to/document7.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[1].id,
-        mainAuthorId: doctoralStudents[7].id,
-        eventEditionId: eventEdition.id,
-        title: 'Cybersecurity in Modern Networks',
-        abstract: 'Analysis of current cybersecurity challenges and solutions.',
-        pdfFile: 'path/to/document8.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[2].id,
-        mainAuthorId: doctoralStudents[8].id,
-        eventEditionId: eventEdition.id,
-        title: 'Artificial Neural Networks',
-        abstract: 'Study of ANN architectures and training algorithms.',
-        pdfFile: 'path/to/document9.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[0].id,
-        mainAuthorId: doctoralStudents[9].id,
-        eventEditionId: eventEdition.id,
-        title: 'Software Engineering Practices',
-        abstract: 'Analysis of software engineering methodologies and tools.',
-        pdfFile: 'path/to/document10.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[1].id,
-        mainAuthorId: doctoralStudents[10].id,
-        eventEditionId: eventEdition.id,
-        title: 'Computer Vision Applications',
-        abstract:
-          'Exploring CV applications in image recognition and analysis.',
-        pdfFile: 'path/to/document11.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[2].id,
-        mainAuthorId: doctoralStudents[11].id,
-        eventEditionId: eventEdition.id,
-        title: 'Natural Language Processing',
-        abstract: 'Study of NLP algorithms and applications in text analysis.',
-        pdfFile: 'path/to/document12.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[0].id,
-        mainAuthorId: doctoralStudents[12].id,
-        eventEditionId: eventEdition.id,
-        title: 'Distributed Systems Architectures',
-        abstract:
-          'Analysis of distributed systems architectures and protocols.',
-        pdfFile: 'path/to/document13.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
-    await prisma.submission.create({
-      data: {
-        advisorId: professors[1].id,
-        mainAuthorId: doctoralStudents[13].id,
-        eventEditionId: eventEdition.id,
-        title: 'Mobile Computing Technologies',
-        abstract: 'Exploring mobile computing technologies and applications.',
-        pdfFile: 'path/to/document14.pdf',
-        phoneNumber: '(12) 93456-7896',
-        status: SubmissionStatus.Confirmed,
-      },
-    }),
+  await prisma.userAccount.createMany({
+    data: professors.map((professor) => ({
+      ...professor,
+      password: bcrypt.hashSync(professor.password, 10),
+    })),
+  });
+
+  const professorUsers = await prisma.userAccount.findMany({
+    where: {
+      profile: Profile.Professor,
+    },
+  });
+
+  const panelistsAndPresentations = await [
+    {
+      name: 'Rafaela Souza Alcântara',
+      presentation:
+        'Redução de Artefatos Metálicos em Tomografias Odontológicas Utilizando Processamento Espectral',
+      professor: 'Antonio Lopes Apolinario Junior',
+      advisorId: professorUsers[4].id,
+      topic: 'CA: Computação Visual (CVIS)',
+    },
+    {
+      name: 'Carlos Frederico Jansen Muakad',
+      presentation:
+        'Catalogação de fontes de literatura cinza em engenharia de software',
+      professor: 'Manoel Gomes de Mendonça Neto',
+      advisorId: professorUsers[5].id,
+      topic: 'ESS: Engenharia de Software Experimental',
+    },
+    {
+      name: 'Lucas Amparo Barbosa',
+      presentation: '',
+      professor: 'Antonio Lopes Apolinario Junior',
+      advisorId: professorUsers[4].id,
+      topic: 'CA: Computação Visual (CVIS)',
+    },
+    {
+      name: 'Roselane Silva Farias',
+      presentation:
+        'The Neuroscience of Testing: Enhancing Quality Assurance Through Cognitive Insights',
+      professor: 'Eduardo Santana de Almeida',
+      advisorId: professorUsers[6].id,
+      topic: 'ESS: Engenharia de Software Experimental',
+    },
+    {
+      name: 'Tiago Fernandes Machado',
+      presentation:
+        'Análise de classificação multi-label nos desfechos da doença falciforme',
+      professor: 'Marcos Ennes Barreto',
+      advisorId: professorUsers[7].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Jenifer Vieira Toledo Tavares',
+      presentation:
+        'A Guide to Evaluating and Customizing Software Development Processes Using Hybrid Methods Based on Scrum',
+      professor: 'Rita Suzana Pitangueira Maciel',
+      advisorId: professorUsers[8].id,
+      topic: 'ESS: Evolução de Software',
+    },
+    {
+      name: 'João Alberto Castelo Branco Oliveira',
+      presentation:
+        'Enhancing Explainable Recommender Systems through Automated Ontology Population and Data Provenance Assurance',
+      professor: 'Laís do Nascimento Salvador',
+      advisorId: professorUsers[9].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Joselito Mota Júnior',
+      presentation:
+        'A comprehensive study of issue labeling in GitHub repositories',
+      professor: 'Ivan do Carmo Machado',
+      advisorId: professorUsers[10].id,
+      topic: 'ESS: Medição, Mineração e Visualização de Software',
+    },
+    {
+      name: 'Larrissa Dantas Xavier da Silva',
+      presentation: '',
+      professor: 'Daniela Barreiro Claro',
+      advisorId: professorUsers[11].id,
+      topic: 'CA: Sistemas de Informação, Banco de Dados e Web (SIBW)',
+    },
+    {
+      name: 'Eonassis Oliveira Santos',
+      presentation:
+        'Cascading-Failure Disaster Recovery based on Time Varying Graph in EONs',
+      professor: 'Gustavo Bittencourt Figueiredo',
+      advisorId: professorUsers[12].id,
+      topic: 'SC: Redes de Computadores (RC)',
+    },
+    {
+      name: 'Diego Correa da Silva',
+      presentation:
+        'Exploiting Calibration as a Multi-Objective Recommender System',
+      professor: 'Frederico Araújo Durão',
+      advisorId: professorUsers[13].id,
+      topic: 'CA: Sistemas de Informação, Banco de Dados e Web (SIBW)',
+    },
+    {
+      name: 'Andre Luiz Romano Madureira',
+      presentation: 'Otimizando Comunicações NDN  em redes MANET',
+      professor: 'Leobino Nascimento Sampaio',
+      advisorId: professorUsers[14].id,
+      topic: 'SC: Redes de Computadores (RC)',
+    },
+    {
+      name: 'Maria Clara Pestana Sartori',
+      presentation:
+        'United for humanity: developing a collaborative model based on crowdsourcing to engage volunteers in crisis recovery campaigns',
+      professor: 'Vaninha Vieira dos Santos',
+      advisorId: professorUsers[15].id,
+      topic: 'CA: Sistemas de Informação, Banco de Dados e Web (SIBW)',
+    },
+    {
+      name: 'Adriana Viriato Ribeiro',
+      presentation:
+        'Serviços de Saúde Avançados: Conectividade e Segurança em Sistemas de Vida Assistida',
+      professor: 'Leobino Nascimento Sampaio',
+      advisorId: professorUsers[14].id,
+      topic: 'SC: Redes de Computadores (RC)',
+    },
+    {
+      name: 'George Pacheco Pinto',
+      presentation: 'FoT-PDS: Towards Data Privacy in a Fog of Things',
+      professor: 'Cássio Vinicius Serafim Prazeres',
+      advisorId: professorUsers[16].id,
+      topic: 'CA: Sistemas de Informação, Banco de Dados e Web (SIBW)',
+    },
+    {
+      name: 'Lidiany Cerqueira Santos',
+      presentation:
+        'Exploring Empathy in Software Engineering Based on the Practitioners’ Perspective',
+      professor: 'Manoel Gomes de Mendonça Neto',
+      advisorId: professorUsers[5].id,
+      topic: 'ESS: Engenharia de Software Experimental',
+    },
+    {
+      name: 'Beatriz Silva de Santana',
+      presentation:
+        'Modelo de recomendações para melhoria da segurança psicológica no desenvolvimento de software',
+      professor: 'Manoel Gomes de Mendonça Neto',
+      advisorId: professorUsers[5].id,
+      topic: 'ESS: Engenharia de Software Experimental',
+    },
+    {
+      name: 'Elivelton Oliveira Rangel',
+      presentation:
+        'A Data-Driven Approach to Assess Emergency Response in Urban Areas based on Historical Ambulance Calls',
+      professor: 'Maycon Leone Maciel Peixoto',
+      advisorId: professorUsers[17].id,
+      topic: 'CA: Sistemas de Informação, Banco de Dados e Web (SIBW)',
+    },
+    {
+      name: 'Ricardo Eugênio Porto Vieira',
+      presentation:
+        'Perceived Diversity in Software Engineering:  An Update and Extended Systematic Literature Review',
+      professor: 'Manoel Gomes de Mendonça Neto',
+      advisorId: professorUsers[5].id,
+      topic: 'ESS: Engenharia de Software Experimental',
+    },
+    {
+      name: 'Marcos Vinicius Bião Cerqueira',
+      presentation:
+        'Sistema de recomendação de recursos educacionais baseados em competência',
+      professor: 'Laís do Nascimento Salvador',
+      advisorId: professorUsers[9].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Cleberton Carvalho Soares',
+      presentation:
+        'Maturity level of software systems to comply with the General  Data Protection Law (LGPD)',
+      professor: 'Rita Suzana Pitangueira Maciel',
+      advisorId: professorUsers[8].id,
+      topic: 'ESS: Qualidade de Software',
+    },
+    {
+      name: 'Alexsandre Emanoel Gonçalves',
+      presentation:
+        'Mecanismos para Offloading de Dados em Redes 5G Heterogêneas',
+      professor: 'Gustavo Bittencourt Figueiredo',
+      advisorId: professorUsers[12].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Tássio Guerreiro Antunes Virgínio',
+      presentation:
+        'Dispersion of Test Smells in mobile projects using the Flutter framework',
+      professor: 'Ivan do Carmo Machado',
+      advisorId: professorUsers[10].id,
+      topic: 'ESS: Qualidade de Software',
+    },
+    {
+      name: 'Mirlei Moura da Silva',
+      presentation:
+        'Mixed Data Mining: a study focused on numerical and time series data.',
+      professor: 'Robespierre Dantas da Rocha Pita',
+      advisorId: professorUsers[2].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Beatriz Brito do Rêgo',
+      presentation:
+        'Formação de Profissionais de Computação para Ciência Aberta',
+      professor: 'Christina Von Flach Garcia Chavez',
+      advisorId: professorUsers[18].id,
+      topic: 'ESS: Educação em Engenharia de Software.',
+    },
+    {
+      name: 'Leandro Santos da Cruz',
+      presentation:
+        'Um Framework para Implementação Eficaz do Ensino Baseado em Competências no Ensino Superior de Computação.',
+      professor: 'Laís do Nascimento Salvador',
+      advisorId: professorUsers[9].id,
+      topic: '',
+    },
+    {
+      name: 'Railana Santana Lago',
+      presentation: 'Towards Automated Refactoring of Smelly Test Code',
+      professor: 'Ivan do Carmo Machado',
+      advisorId: professorUsers[10].id,
+      topic: 'ESS: Qualidade de Software',
+    },
+    {
+      name: 'Brenno de Mello Alencar',
+      presentation:
+        'Concept Drift on Delayed Partially Labeled Data Streamslmente rotulados',
+      professor: 'Ricardo Araújo Rios',
+      advisorId: professorUsers[19].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Mateus Carvalho da Silva',
+      presentation:
+        'Abordagens de programação inteira mista para consolidação de frete com frota heterogênea terceirizada, frete morto e custos de múltiplas entrega',
+      professor: 'Rafael Augusto de Melo',
+      advisorId: professorUsers[1].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Mayka de Souza Lima',
+      presentation:
+        'A Conceptual Framework for the Design of Virtual Learning Environments',
+      professor: 'Rita Suzana Pitangueira Maciel',
+      advisorId: professorUsers[8].id,
+      topic: 'ESS: Educação em Engenharia de Software.',
+    },
+    {
+      name: 'Marcos Vinícois dos Santos Ferreira',
+      presentation: 'Fuzzifying Chaos in Dynamical Systems',
+      professor: 'Ricardo Araújo Rios',
+      advisorId: professorUsers[19].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Antonio Carlos Marcelino de Paula',
+      presentation:
+        'Burnout in Software Projects: An Analysis of Stack Exchange Discussions',
+      professor: 'Manoel Gomes de Mendonca Neto',
+      advisorId: professorUsers[5].id,
+      topic: 'ESS: Engenharia de Software Experimental',
+    },
+    {
+      name: 'Allan Sérgio Gonçalves Alves',
+      presentation: '',
+      professor: 'George Marconi de Araújo Lima',
+      advisorId: professorUsers[20].id,
+      topic: 'SC: Sistemas Embarcados e de Tempo Real (SETR)',
+    },
+    {
+      name: 'Edeyson Andrade Gomes',
+      presentation:
+        'Uma abordagem baseada em ontologia para auxiliar a aplicação de princípios curriculares orientados a competências em recursos educacionais abertos.',
+      professor: 'Laís do Nascimento Salvador',
+      advisorId: professorUsers[9].id,
+      topic:
+        'CA: Interação Humano-Computador (IHC) e Informática e Educação (IEDU)',
+    },
+    {
+      name: 'Jamile de Barros Vasconcelos',
+      presentation:
+        'Avaliação segura de amostras em análise temporal baseada em medições para projetos de sistemas de tempo real',
+      professor: 'George Marconi de Araújo Lima',
+      advisorId: professorUsers[20].id,
+      topic: 'SC: Sistemas Embarcados e de Tempo Real (SETR)',
+    },
+    {
+      name: 'Moara Sousa Brito Lessa',
+      presentation:
+        'Aplicação da aprendizagem baseada em projetos no ensino de ES: uma investigação no contexto da educação baseada em competências',
+      professor: 'Laís do Nascimento Salvador',
+      advisorId: professorUsers[9].id,
+      topic:
+        'CA: Interação Humano-Computador (IHC) e Informática e Educação (IEDU)',
+    },
+    {
+      name: 'Tadeu Nogueira Costa de Andrade',
+      presentation:
+        'Métodos estatísticos e de inteligência computacional para análise temporal em sistemas de tempo real',
+      professor: 'George Marconi de Araújo Lima',
+      advisorId: professorUsers[20].id,
+      topic: 'SC: Sistemas Embarcados e de Tempo Real (SETR)',
+    },
+    {
+      name: 'Diego Zabot',
+      presentation:
+        'Stimulating the development of Computational Reasoning by game design strategies',
+      professor: 'Ecivaldo de Souza Matos',
+      advisorId: professorUsers[21].id,
+      topic:
+        'CA: Interação Humano-Computador (IHC) e Informática e Educação (IEDU)',
+    },
+    {
+      name: 'Claudio Junior Nascimento da Silva',
+      presentation:
+        'TinyFED - Integrating Federated Learning into resource-constrained devices',
+      professor: 'Cássio Vinicius Serafim Prazeres',
+      advisorId: professorUsers[16].id,
+      topic: 'SC: Sistemas Distribuídos (SD)',
+    },
+    {
+      name: 'Ailton Santos Ribeiro',
+      presentation:
+        'Rumo a Avatares Inclusivos: Um Estudo sobre a Autorrepresentação em Ambientes Virtuais',
+      professor: 'Vaninha Vieira dos Santos',
+      advisorId: professorUsers[15].id,
+      topic:
+        'CA: Interação Humano-Computador (IHC) e Informática e Educação (IEDU)',
+    },
+    {
+      name: 'Nilson Rodrigues Sousa',
+      presentation:
+        'Integrated Architecture for IoT Device Management in Smart Cities',
+      professor: 'Cássio Vinicius Serafim Prazeres',
+      advisorId: professorUsers[16].id,
+      topic: 'SC: Sistemas Distribuídos (SD)',
+    },
+    {
+      name: 'Edmilson dos Santos de Jesus',
+      presentation:
+        'modelo baseado em agentes para previsão da demanda de água em regiões metropolitanas',
+      professor: 'Gecynalda Soares da Silva Gomes',
+      advisorId: professorUsers[22].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Guilherme Braga Araujo',
+      presentation:
+        'Escalabilidade e Segurança para Serviços e Aplicações em Computação de Borda Veicular Através de Redes de Dados Nomeados',
+      professor: 'Leobino Nascimento Sampaio',
+      advisorId: professorUsers[14].id,
+      topic: 'SC: Redes de Computadores (RC)',
+    },
+    {
+      name: 'Bruno Souza Cabral',
+      presentation:
+        'ANALYSIS OF GENERATIVE AND SEQUENCE LABELING METHODS FOR PORTUGUESE OPEN INFORMATION  EXTRACTION',
+      professor: 'Daniela Barreiro Claro',
+      advisorId: professorUsers[11].id,
+      topic: 'CA: Inteligência Computacional e Otimização (ICOT)',
+    },
+    {
+      name: 'Antonio Mateus de Sousa',
+      presentation:
+        'ToID: Reputação Baseada em Identificadores Descentralizados Para Aplicações Distribuídas',
+      professor: 'Leobino Nascimento Sampaio',
+      advisorId: professorUsers[14].id,
+      topic: 'SC: Redes de Computadores (RC)',
+    },
+    {
+      name: 'Nacles Bernardino Pirajá Gomes',
+      presentation:
+        'Multi-MyIntegration: framework para Integração Segura de Dados Heterogêneos com GCS e Blockchain',
+      professor: 'Laís do Nascimento Salvador',
+      advisorId: professorUsers[9].id,
+      topic: 'CA: Sistemas de Informação, Banco de Dados e Web (SIBW)',
+    },
+    {
+      name: 'Antônio Cleber de Sousa Araújo',
+      presentation: 'Arquitetura Adaptável na Camada de Enlace',
+      professor: 'Leobino Nascimento Sampaio',
+      advisorId: professorUsers[14].id,
+      topic: 'SC: Redes de Computadores (RC)',
+    },
+    {
+      name: 'Elisangela Oliveira Carneiro',
+      presentation:
+        'Sistemas de Reputação baseados em Blockchain para ambientes IoT',
+      professor: 'Cássio Vinicius Serafim Prazeres',
+      advisorId: professorUsers[16].id,
+      topic: 'SC: Sistemas Distribuídos (SD)',
+    },
+    {
+      name: 'Talita Rocha Pinheiro',
+      presentation: '',
+      professor: 'Leobino Nascimento Sampaio',
+      advisorId: professorUsers[14].id,
+      topic: 'SC: Redes de Computadores (RC)',
+    },
+    {
+      name: 'Rita de Cássia Novaes Barretto',
+      presentation:
+        'Além da IDE: expandindo a infraestrutura de dados espaciais por meio de blockchain',
+      professor: 'George Marconi de Araújo Lima',
+      advisorId: professorUsers[20].id,
+      topic: 'SC: Sistemas Distribuídos (SD)',
+    },
+    {
+      name: 'Nilton Flávio Sousa Seixas',
+      presentation:
+        'Data-driven Decision Making Frameworks for Resource Utilization in 6G O-RAN',
+      professor: 'Gustavo Bittencourt Figueiredo',
+      advisorId: professorUsers[12].id,
+      topic: 'SC: Redes de Computadores (RC)',
+    },
+    {
+      name: 'Eduardo Ferreira da Silva',
+      presentation: 'Review-based Recommender System',
+      professor: 'Frederico Araújo Durão',
+      advisorId: professorUsers[13].id,
+      topic: 'CA: Sistemas de Informação, Banco de Dados e Web (SIBW)',
+    },
   ];
 
-  const evaluationCriteria = await prisma.evaluationCriteria.findMany({
-    where: { eventEditionId: eventEdition.id },
-  });
-
-  // evaluations of listeners for all submissions
-  for (const submission of submissions) {
-    for (const criteria of evaluationCriteria) {
-      for (const user of listeners) {
-        const randomScore = Math.floor(Math.random() * 5) + 1;
-        await prisma.evaluation.create({
-          data: {
-            userId: user.id,
-            evaluationCriteriaId: criteria.id,
-            submissionId: submission.id,
-            score: randomScore,
-          },
-        });
-      }
-    }
+  const panelists = [];
+  for (const item of panelistsAndPresentations) {
+    const emailName = createEmailByName(item.name);
+    panelists.push({
+      name: item.name,
+      email: `${emailName}@ufba.br`,
+      password: '1234$Ad@',
+      profile: Profile.DoctoralStudent,
+      level: UserLevel.Default,
+      isVerified: true,
+    });
+  }
+  for (const user of panelists) {
+    user.password = bcrypt.hashSync(user.password, 10);
   }
 
-  const presentationBlock = await prisma.presentationBlock.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      roomId: room.id,
-      type: PresentationBlockType.Presentation,
-      title: 'Apresentações de Pesquisa em IA',
-      startTime: new Date('2024-05-01T09:00:00'),
-      duration:
-        eventEdition.presentationDuration *
-        eventEdition.presentationsPerPresentationBlock,
-    },
+  const panelist_users = await prisma.userAccount.createManyAndReturn({
+    data: panelists,
   });
 
-  const presentationBlock2 = await prisma.presentationBlock.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      roomId: room.id,
-      type: PresentationBlockType.Presentation,
-      title: 'Apresentações de Pesquisa em Computação Quântica',
-      startTime: new Date('2024-05-01T10:00:00'),
-      duration:
-        eventEdition.presentationDuration *
-        eventEdition.presentationsPerPresentationBlock,
-    },
+  const submissionsData = panelistsAndPresentations.map((panelist, index) => ({
+    title: panelist.presentation || 'Untitled Presentation',
+    // topic: panelist.topic || 'Unspecified Topic',
+    advisorId: panelist.advisorId,
+    eventEditionId: edition2024.id,
+    mainAuthorId: panelist_users[index].id,
+    abstract: 'Abstract not provided.',
+    pdfFile: 'path/to/default.pdf',
+    phoneNumber: '(71) 99999-9999',
+    status: SubmissionStatus.Confirmed,
+  }));
+
+  const submission = await prisma.submission.createManyAndReturn({
+    data: submissionsData,
   });
 
-  const presentationBlock3 = await prisma.presentationBlock.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      roomId: room.id,
-      type: PresentationBlockType.Presentation,
-      title: 'Apresentações de Pesquisa em Cybersecurity',
-      startTime: new Date('2024-05-01T11:00:00'),
-      duration:
-        eventEdition.presentationDuration *
-        eventEdition.presentationsPerPresentationBlock,
-    },
-  });
-
-  await prisma.presentationBlock.create({
-    data: {
-      eventEditionId: eventEdition.id,
+  const sessions = [
+    {
+      eventEditionId: edition2024.id,
       type: PresentationBlockType.General,
-      title: 'Pausa para Almoço',
-      startTime: new Date('2024-05-01T12:00:00'),
+      title: 'Abertura',
+      startTime: new Date('2024-11-12T08:30:00'),
+      duration: 30,
+    },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[0].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 1',
+      startTime: new Date('2024-11-12T09:00:00'),
+      duration: 100,
+    },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[1].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 2',
+      startTime: new Date('2024-11-12T09:00:00'),
+      duration: 100,
+    },
+    {
+      eventEditionId: edition2024.id,
+      type: PresentationBlockType.General,
+      title: 'Coffee Break',
+      startTime: new Date('2024-11-12T10:40:00'),
+      duration: 20,
+    },
+    {
+      eventEditionId: edition2024.id,
+      type: PresentationBlockType.General,
+      title:
+        'Palestra \"Unico Academy nas Universidades: Ecossistema Unico Academy de Formação de Recursos Humanos, Pesquisa, Desenvolvimento e Inovação\"',
+      startTime: new Date('2024-11-12T11:00:00'),
+      duration: 80,
+    },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[0].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 3',
+      startTime: new Date('2024-11-12T12:20:00'),
+      duration: 40,
+    },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[1].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 4',
+      startTime: new Date('2024-11-12T12:20:00'),
+      duration: 40,
+    },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[0].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 5',
+      startTime: new Date('2024-11-13T08:40:00'),
       duration: 120,
     },
-  });
-
-  const presentationBlock4 = await prisma.presentationBlock.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      roomId: room.id,
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[1].id,
       type: PresentationBlockType.Presentation,
-      title: 'Apresentações de Pesquisa em Otimização',
-      startTime: new Date('2024-05-02T11:00:00'),
-      duration:
-        eventEdition.presentationDuration *
-        eventEdition.presentationsPerPresentationBlock,
-    },
-  });
-
-  await prisma.presentationBlock.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      type: PresentationBlockType.General,
-      title: 'Pausa para Almoço',
-      startTime: new Date('2024-05-02T12:00:00'),
+      title: 'Sessão 6',
+      startTime: new Date('2024-11-13T08:40:00'),
       duration: 120,
     },
-  });
-
-  const presentationBlock5 = await prisma.presentationBlock.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      roomId: room.id,
-      type: PresentationBlockType.Presentation,
-      title: 'Apresentações de Pesquisa em Redes de Computadores',
-      startTime: new Date('2024-05-02T13:00:00'),
-      duration:
-        eventEdition.presentationDuration *
-        eventEdition.presentationsPerPresentationBlock,
-    },
-  });
-
-  await prisma.presentationBlock.create({
-    data: {
-      eventEditionId: eventEdition.id,
+    {
+      eventEditionId: edition2024.id,
       type: PresentationBlockType.General,
-      title: 'Encerramento',
-      startTime: new Date('2024-05-02T14:00:00'),
+      title: 'Coffee Break',
+      startTime: new Date('2024-11-13T10:40:00'),
+      duration: 20,
+    },
+    {
+      eventEditionId: edition2024.id,
+      type: PresentationBlockType.General,
+      title: 'Diálogo com a coordenação do PGCOMP',
+      startTime: new Date('2024-11-13T11:00:00'),
+      duration: 40,
+    },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[0].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 7',
+      startTime: new Date('2024-11-13T11:40:00'),
+      duration: 80,
+    },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[0].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 8',
+      startTime: new Date('2024-11-13T11:40:00'),
+      duration: 80,
+    },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[0].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 9',
+      startTime: new Date('2024-11-14T08:40:00'),
       duration: 120,
     },
-  });
-
-  // First three submissions to presentationBlock 1
-  for (let i = 0; i < 3; i++) {
-    await prisma.presentation.create({
-      data: {
-        submissionId: submissions[i].id,
-        presentationBlockId: presentationBlock.id,
-        positionWithinBlock: i,
-        status: PresentationStatus.ToPresent,
-      },
-    });
-  }
-
-  // Next three submissions to presentationBlock 2
-  for (let i = 3; i < 6; i++) {
-    await prisma.presentation.create({
-      data: {
-        submissionId: submissions[i].id,
-        presentationBlockId: presentationBlock2.id,
-        positionWithinBlock: i - 3,
-        status: PresentationStatus.ToPresent,
-      },
-    });
-  }
-
-  await prisma.presentation.create({
-    data: {
-      submissionId: submissions[6].id,
-      presentationBlockId: presentationBlock3.id,
-      positionWithinBlock: 0,
-      status: PresentationStatus.ToPresent,
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[1].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 10',
+      startTime: new Date('2024-11-14T08:40:00'),
+      duration: 120,
     },
-  });
-
-  // next 3 submissions to presentationBlock 4
-  for (let i = 7; i < 10; i++) {
-    await prisma.presentation.create({
-      data: {
-        submissionId: submissions[i].id,
-        presentationBlockId: presentationBlock4.id,
-        positionWithinBlock: i - 7,
-        status: PresentationStatus.ToPresent,
-      },
-    });
-  }
-
-  // next 3 submissions to presentationBlock 5
-  for (let i = 10; i < 13; i++) {
-    await prisma.presentation.create({
-      data: {
-        submissionId: submissions[i].id,
-        presentationBlockId: presentationBlock5.id,
-        positionWithinBlock: i - 10,
-        status: PresentationStatus.ToPresent,
-      },
-    });
-  }
-
-  const panelistUsers = professors.slice(0, 4);
-  for (const professor of panelistUsers) {
-    await prisma.panelist.create({
-      data: {
-        presentationBlockId: presentationBlock.id,
-        userId: professor.id,
-        status: PanelistStatus.Confirmed,
-      },
-    });
-  }
-
-  // for all panelists, create evaluations for all submissions
-  for (const submission of submissions) {
-    for (const criteria of evaluationCriteria) {
-      for (const professor of panelistUsers) {
-        const randomScore = Math.floor(Math.random() * 5) + 1;
-        await prisma.evaluation.create({
-          data: {
-            userId: professor.id,
-            evaluationCriteriaId: criteria.id,
-            submissionId: submission.id,
-            score: randomScore,
-          },
-        });
-      }
-    }
-  }
-
-  for (const professor of professors.slice(0, 3)) {
-    await prisma.awardedPanelist.create({
-      data: {
-        eventEditionId: eventEdition.id,
-        userId: professor.id,
-      },
-    });
-  }
-
-  // Seed for Certificate
-  await prisma.certificate.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      userId: professors[0].id,
-      filePath: 'path/to/certificate1.pdf',
-      isEmailSent: false,
+    {
+      eventEditionId: edition2024.id,
+      type: PresentationBlockType.General,
+      title: 'Coffee Break',
+      startTime: new Date('2024-11-14T10:20:00'),
+      duration: 20,
     },
-  });
-  await prisma.certificate.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      userId: doctoralStudents[0].id,
-      filePath: 'path/to/certificate2.pdf',
-      isEmailSent: true,
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[0].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 11',
+      startTime: new Date('2024-11-14T10:40:00'),
+      duration: 120,
     },
+    {
+      eventEditionId: edition2024.id,
+      roomId: rooms[1].id,
+      type: PresentationBlockType.Presentation,
+      title: 'Sessão 12',
+      startTime: new Date('2024-11-14T10:40:00'),
+      duration: 120,
+    },
+    {
+      eventEditionId: edition2024.id,
+      type: PresentationBlockType.General,
+      title: 'Fechamento / Premiações',
+      startTime: new Date('2024-11-14T12:20:00'),
+      duration: 20,
+    },
+  ];
+
+  const presentationBlocks = await prisma.presentationBlock.createManyAndReturn(
+    {
+      data: sessions,
+    },
+  );
+
+  // Apresentações para o Dia 1
+  // Como as apresentações foram criadas de forma alternadas, utilizo o índice para incluir em seu respectivo bloco
+  await prisma.presentation.createMany({
+    data: submission.slice(0, 10).map((sub, index) => ({
+      submissionId: sub.id,
+      presentationBlockId:
+        index % 2 === 0 ? presentationBlocks[1].id : presentationBlocks[2].id,
+      positionWithinBlock: Math.floor(index / 2),
+      status: PresentationStatus.Presented,
+    })),
   });
 
-  // Seed for Guidance
-  await prisma.guidance.create({
-    data: {
-      eventEditionId: eventEdition.id,
-      summary:
-        '<p style="text-align: center;">Obtenha todas as orientações que precisa para participar do WEPGCOMP.</p><p style="text-align: center;">O objetivo do evento é apresentar as pesquisas em andamento realizadas pelos alunos de doutorado (a partir do segundo ano), </p><p style="text-align: center;">bem como propiciar um ambiente de troca de conhecimento e congregação para toda a comunidade.</p>',
-      audienceGuidance:
-        '<p><strong style="font-size: 24px;">Informações</strong> </p><ul><li>A Programação Preliminar do WEPGCOMP 2024 pode ser encontrada na&nbsp;página do evento.</li><li>O evento está organizado em&nbsp;sessões temáticas&nbsp;para apresentação de trabalhos das/os doutorandas/os matriculadas/os no componente curricular MATA33.</li><li>A apresentação no WEPGCOMP é&nbsp;opcional&nbsp;para as/os doutorandas/os que realizaram ou realizarão o exame de qualificação (MATA34) em 2024. Nesse caso, a nota do componente MATA33 será a mesma atribuída ao componente MATA34 em 2024.</li><li>Cada trabalho apresentado em uma sessão contará com um grupo de, no mínimo, três docentes responsáveis pela avaliação do trabalho, além de seu orientador.</li><li>O evento será realizado na modalidade&nbsp;presencial.</li></ul><p><span style="font-size: 24px;"><strong>Recomendações para a Audiência</strong></span> </p><ul><li>Recomenda-se chegar à sala antes do início de cada sessão.</li><li>Após as perguntas dos avaliadores, se houver tempo, o coordenador da sessão fará a moderação das perguntas da audiência.</li></ul>',
-      authorGuidance:
-        '<p><strong style="font-size: 24px;">Apresentação de </strong><strong style="font-size: 24px;">trabalhos</strong> </p><ul><li>O WEPGCOMP 2024 será presencial e, em casos excepcionais, apresentações poderão ser remotas.</li><li>Não haverá mudança de computador entre as apresentações.</li><li>Cada apresentação não deve ultrapassar os 10 minutos de duração. Na sequência da apresentação, os avaliadores terão 5 minutos para perguntas e sugestões.</li><li>O controle de tempo da apresentação será rigoroso:&nbsp;<strong>10 minutos para apresentação oral&nbsp;e&nbsp;5 minutos</strong> para perguntas.</li><li>Em caso de problemas técnicos, a apresentação será reagendada para o final da sessão ou para a sessão seguinte.</li></ul><p><strong style="font-size: 24px;">Boas Práticas para o(a) Apresentador(a):</strong> </p><ul><li>Estar presente e entrar em contato com o/a coordenadora da sua sessão&nbsp;<strong>antes do início da sessão em que fará a sua apresentação</strong>.</li><li>No caso de apresentação remota, testar a câmera e o microfone de seu computador ou smartphone, e sua conexão com a Internet, ao menos&nbsp;<strong>30 minutos antes</strong> do início da sua sessão. Em caso de problemas, entrar em contato com a coordenação da sessão (a ser divulgada na página do evento). Recomenda-se o uso de&nbsp;headset&nbsp;para diminuir a interferência de sons externos durante a apresentação.</li></ul>',
-      reviewerGuidance:
-        '<h2 id="recomendações-para-os-avaliadores">Recomendações para os Avaliadores</h2><p>O objetivo principal do WEPGCOMP é tornar públicas as pesquisas de doutorado e o andamento de suas atividades. Não é necessário ser pesquisador nos temas das apresentações para avaliar o andamento do trabalho de doutorado.</p><p>Para as apresentações realizadas na(s) sessão(ões) em que participa como avaliador:</p><ul>  <li>Observar a data de ingresso do/a discente no PGCOMP e se é bolsista.</li>  <li>Fazer perguntas objetivas e comentários construtivos, considerando o estágio do trabalho: pré-qualificação, qualificação recente (no ano do evento) e pós-qualificação.    <ul>      <li>Espera-se que o doutorando em estágio de pré-qualificação tenha concluído as disciplinas e mostre que o tema da pesquisa está definido, com revisão da literatura em andamento (no mínimo).</li>    </ul>  </li>  <li>    <p>Se possível, olhar a apresentação do WEPGCOMP do ano anterior para avaliar o progresso do trabalho de pesquisa do discente.</p>  </li>  <li>Avaliar o trabalho pelo sistema (disponível em link na página do trabalho).</li></ul>',
-    },
+  await prisma.presentation.createMany({
+    data: submission.slice(10, 14).map((sub, index) => ({
+      submissionId: sub.id,
+      presentationBlockId:
+        index % 2 === 0 ? presentationBlocks[5].id : presentationBlocks[6].id,
+      positionWithinBlock: Math.floor(index / 2),
+      status: PresentationStatus.Presented,
+    })),
   });
 
-  console.log('Seeding completed.');
+  // Apresentações para o Dia 2
+  // Como existem buracos na programação, criei as apresentações diretamente com o indíce que já sabia
+  await prisma.presentation.createMany({
+    data: [14, 17, 19, 21, 23]
+      .map((index) => submission[index])
+      .map((sub, index) => ({
+        submissionId: sub.id,
+        presentationBlockId: presentationBlocks[7].id,
+        positionWithinBlock: index,
+        status: PresentationStatus.Presented,
+      })),
+  });
+
+  await prisma.presentation.createMany({
+    data: [15, 16, 18, 20, 22, 24]
+      .map((index) => submission[index])
+      .map((sub, index) => ({
+        submissionId: sub.id,
+        presentationBlockId: presentationBlocks[8].id,
+        positionWithinBlock: index,
+        status: PresentationStatus.Presented,
+      })),
+  });
+
+  await prisma.presentation.createMany({
+    data: [25, 27, 28, 30]
+      .map((index) => submission[index])
+      .map((sub, index) => ({
+        submissionId: sub.id,
+        presentationBlockId: presentationBlocks[11].id,
+        positionWithinBlock: index,
+        status: PresentationStatus.Presented,
+      })),
+  });
+
+  await prisma.presentation.createMany({
+    data: [26, 29, 31]
+      .map((index) => submission[index])
+      .map((sub, index) => ({
+        submissionId: sub.id,
+        presentationBlockId: presentationBlocks[12].id,
+        positionWithinBlock: index,
+        status: PresentationStatus.Presented,
+      })),
+  });
+
+  // Apresentações para o Dia 3
+  // Mesma lógica do Dia 1, porém utilizando os índices finais
+  await prisma.presentation.createMany({
+    data: submission.slice(-20, -10).map((sub, index) => ({
+      submissionId: sub.id,
+      presentationBlockId:
+        index % 2 === 0 ? presentationBlocks[13].id : presentationBlocks[14].id,
+      positionWithinBlock: Math.floor(index / 2),
+      status: PresentationStatus.Presented,
+    })),
+  });
+
+  await prisma.presentation.createMany({
+    data: submission.slice(-10).map((sub, index) => ({
+      submissionId: sub.id,
+      presentationBlockId:
+        index % 2 === 0 ? presentationBlocks[16].id : presentationBlocks[17].id,
+      positionWithinBlock: Math.floor(index / 2),
+      status: PresentationStatus.Presented,
+    })),
+  });
+
+  console.log('2024 Edition Seeding completed.');
 }
 
 main()

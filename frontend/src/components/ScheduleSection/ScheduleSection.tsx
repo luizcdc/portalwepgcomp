@@ -103,56 +103,53 @@ export default function ScheduleSection() {
           ))}
         </div>
 
-        {roomsList.map((item, index) => (
-          <div className="programacao-sala" key={index}>
-            <h3 className="fw-bold text-white m-0 text-center w-100 list-item">
-              {item.name}
-            </h3>
-            <h5 className="m-0 list-paragraph"></h5>
-          </div>
-        ))}
-
-        <div className="d-flex flex-column programacao-item">
-          {!!sessoesList?.length &&
-            sessoesList
-              ?.filter(
-                (item) =>
-                  moment(item.startTime).format("YYYY-MM-DD") ===
-                  moment(selectedDate).format("YYYY-MM-DD")
-              )
-              ?.toSorted(
-                (a, b) =>
-                  new Date(a.startTime).getTime() -
-                  new Date(b.startTime).getTime()
-              )
-              ?.map((item, index) => {
-                if (item.type === "General") {
-                  return (
-                    <div
-                      key={index + item.id}
-                      className="d-flex align-items-center w-100 default-gap"
-                    >
-                      <h5 className="m-0 list-paragraph">
-                        {moment(item.startTime).format("HH:mm")}
-                      </h5>
-                      <ScheduleCard
-                        type="GeneralSession"
-                        author={item?.speakerName ?? ""}
-                        title={item?.title ?? ""}
-                        onClickEvent={() => {}}
-                        cardColor="white"
-                      />
-                      <div className="m-0 programacao-item-aux"></div>
-                    </div>
-                  );
-                }
-
-                return item.presentations
-                  ?.toSorted(
-                    (a, b) => a.positionWithinBlock - b.positionWithinBlock
-                  )
-                  .map((pres) => {
+        {roomsList.map((room, roomIndex) => (
+          <>
+            <div className="programacao-sala" key={room.id || roomIndex}>
+              <h3 className="fw-bold text-white m-0 text-center w-100 list-item">
+                {room.name}
+              </h3>
+              <h5 className="m-0 list-paragraph"></h5>
+            </div>
+            <div className="d-flex flex-column programacao-item">
+              {sessoesList
+                ?.filter(
+                  (sessao) =>
+                    moment(sessao.startTime).format("YYYY-MM-DD") ===
+                    moment(selectedDate).format("YYYY-MM-DD")
+                )
+                ?.toSorted(
+                  (a, b) =>
+                    new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+                )
+                ?.map((item, index) => {
+                  if (item.type === "General") {
                     return (
+                      <div
+                        key={index + item.id}
+                        className="d-flex align-items-center w-100 default-gap"
+                      >
+                        <h5 className="m-0 list-paragraph">
+                          {moment(item.startTime).format("HH:mm")}
+                        </h5>
+                        <ScheduleCard
+                          type="GeneralSession"
+                          author={item?.speakerName ?? ""}
+                          title={item?.title ?? ""}
+                          onClickEvent={() => { }}
+                          cardColor="white"
+                        />
+                        <div className="m-0 programacao-item-aux"></div>
+                      </div>
+                    );
+                  }
+
+                  if(room.id !== item.roomId) return null;
+                  return item.presentations
+                    ?.toSorted(
+                      (a, b) => a.positionWithinBlock - b.positionWithinBlock
+                    )
+                    .map((pres) => (
                       <div
                         key={index + pres.id}
                         className="d-flex align-items-center w-100 default-gap"
@@ -169,34 +166,38 @@ export default function ScheduleSection() {
                         />
                         <div className="m-0 programacao-item-aux"></div>
                       </div>
-                    );
-                  });
-              })}
+                    ));
+                })}
 
-          {!sessoesList?.filter(
-            (item) =>
-              moment(item.startTime).format("YYYY-MM-DD") ===
-              moment(selectedDate).format("YYYY-MM-DD")
-          )?.length && (
-            <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
-              <h4 className="empty-list mb-0">
-                <Image
-                  src="/assets/images/empty_box.svg"
-                  alt="Lista vazia"
-                  width={90}
-                  height={90}
-                />
-                Essa lista ainda está vazia
-              </h4>
+              
+              {!sessoesList?.some(
+                (sessao) =>
+                  moment(sessao.startTime).format("YYYY-MM-DD") ===
+                  moment(selectedDate).format("YYYY-MM-DD") &&
+                  sessao.roomId === room.id
+              ) && (
+                  <div className="d-flex align-items-center justify-content-center p-3 mt-4 me-5">
+                    <h4 className="empty-list mb-0">
+                      <Image
+                        src="/assets/images/empty_box.svg"
+                        alt="Lista vazia"
+                        width={90}
+                        height={90}
+                      />
+                      Essa lista ainda está vazia
+                    </h4>
+                  </div>
+                )}
             </div>
-          )}
-        </div>
-      </div>
+            </>
+          
+        ))}
 
-      <Modal
-        content={<PresentationModal props={modalContent} />}
-        reference={openModal}
-      />
+        <Modal
+          content={<PresentationModal props={modalContent} />}
+          reference={openModal}
+        />
+      </div>
     </div>
   );
 }

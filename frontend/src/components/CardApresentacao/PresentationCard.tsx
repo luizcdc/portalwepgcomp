@@ -141,7 +141,7 @@ export default function PresentationCard({
           </div>
         )}
         <div className="d-flex align-items-center">
-          <a
+            <a
             className="fw-semibold bg-white"
             style={{
               border: "none",
@@ -149,12 +149,12 @@ export default function PresentationCard({
               color: "#FFA90F",
               padding: "3px 20px",
             }}
-            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${pdfFile}`}
+            href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${pdfFile}`}
             download
             target="_blank"
-          >
+            >
             Baixar apresentação
-          </a>
+            </a>
         </div>
       </div>
       <div style={{ textAlign: "justify" }}>

@@ -6,6 +6,7 @@ export class DefaultEmailDto {
   to: string;
   subject: string;
   text: string;
+  html?: string;
 }
 
 export class DefaultEmailResponseDto {

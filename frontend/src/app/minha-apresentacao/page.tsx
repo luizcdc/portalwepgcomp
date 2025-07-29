@@ -29,7 +29,7 @@ export default function MinhasApresentacoes() {
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [sessionsListValues, setSessionsListValues] = useState<any[]>([]);
-
+  const [showEditModal, setShowEditModal] = useState<boolean>(false)
   const [isAddButtonDisabled, setIsAddButtonDisabled] =
     useState<boolean>(false);
 
@@ -55,7 +55,10 @@ export default function MinhasApresentacoes() {
         .toLowerCase()
         .includes(searchValue.trim().toLowerCase());
 
-      if (user?.level === "Superadmin") return searchMatch;
+      if(user?.level === "Superadmin"){
+        setShowEditModal(searchMatch)
+        return searchMatch; 
+      };
 
       return submission.mainAuthorId === user?.id && searchMatch;
     });
@@ -64,8 +67,8 @@ export default function MinhasApresentacoes() {
 
     if (user?.level !== "Superadmin") {
       const hasOwnSubmission = filteredSessions.length > 0;
-
       setIsAddButtonDisabled(hasOwnSubmission);
+      setShowEditModal(hasOwnSubmission)
     }
   }, [searchValue, submissionList, user]);
 
@@ -117,7 +120,7 @@ export default function MinhasApresentacoes() {
             onEdit={handleEdit}
             onClickItem={getSubmissionOnList}
             isAddButtonDisabled={isAddButtonDisabled}
-            idModal={isAddButtonDisabled ? "editarApresentacaoModal" : ""}
+            idModal={showEditModal ? "editarApresentacaoModal" : ""}
             onAddButtonClick={() => router.push("/cadastro-apresentacao")}
             onClear={() => setSubmission(null)}
             isMyPresentation={true}

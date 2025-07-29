@@ -7,14 +7,13 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEditionModule } from './event-edition/event-edition.module';
 import { MailingModule } from './mailing/mailing.module';
-import { QueueModule } from './queue/queue.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PresentationModule } from './presentation/presentation.module';
 import { SubmissionModule } from './submission/submission.module';
 import { PresentationBlockModule } from './presentation-block/presentation-block.module';
 import { CommitteeMemberModule } from './committee-member/committee-member.module';
 import { EvaluationModule } from './evaluation/evaluation.module';
-import { S3UtilsModule } from './s3-utils/s3-utils.module';
+// import { S3UtilsModule } from './s3-utils/s3-utils.module';
 import { RoomModule } from './room/room.module';
 import { GuidanceModule } from './guidance/guidance.module';
 import { AwardedPanelistsModule } from './awarded-panelists/awarded-panelists.module';
@@ -22,6 +21,7 @@ import { AwardedDoctoralStudentsModule } from './awarded-doctoral-students/award
 import { EvaluationCriteriaModule } from './evaluation-criteria/evaluation-criteria.module';
 import { CertificateModule } from './certificate/certificate.module';
 import { ScoringModule } from './scoring/scoring.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -31,14 +31,13 @@ import { ScoringModule } from './scoring/scoring.module';
     ConfigModule.forRoot(),
     EventEditionModule,
     MailingModule,
-    QueueModule,
     ScheduleModule.forRoot(),
     PresentationModule,
     SubmissionModule,
     PresentationBlockModule,
     CommitteeMemberModule,
     EvaluationModule,
-    S3UtilsModule,
+    // S3UtilsModule,
     RoomModule,
     GuidanceModule,
     AwardedPanelistsModule,
@@ -46,6 +45,7 @@ import { ScoringModule } from './scoring/scoring.module';
     EvaluationCriteriaModule,
     CertificateModule,
     ScoringModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

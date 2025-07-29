@@ -35,17 +35,19 @@ export default function Realizacao() {
 
         <div className="realizacao-parceiros">
           <Image
-            src={"/assets/images/logo_computacao.svg"}
+            src={"/assets/images/ic_logo_padrao.png"}
             alt="Computação Logo"
-            width={300}
-            height={100}
+            width={150}
+            height={150}
+            style={{objectFit: "contain"}}
             priority
           />
           <Image
-            src={"/assets/images/logo_ufba.svg"}
+            src={"/assets/images/brasao_ufba.jpg"}
             alt="UFBA Logo"
-            width={160}
-            height={100}
+            width={150}
+            height={150}
+            style={{objectFit: "contain"}}
             priority
           />
         </div>

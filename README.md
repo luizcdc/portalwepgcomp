@@ -6,8 +6,8 @@ Este projeto é desenvolvido como parte da disciplina **IC045/MATE85 - Tópicos 
 
 ## Tecnologias Utilizadas
 
-- **Back-end**: NodeJS com Express
-- **Front-end**: React/Next
+- **Back-end**: NodeJS com Nest
+- **Front-end**: React/Next, Bootstrap
 - **Banco de Dados**: PostgreSQL
 - **Cloud**: Vercel
 
@@ -34,6 +34,8 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 
 - Link para o Figma: <a href="https://www.figma.com/design/02Aslfd2qo4q6pjYxSkoYS/Portal-Web-PGCOMP-team-library?node-id=2365-175&node-type=canvas&t=NHVtl7ASVgSDVt2j-0" target="_blank">Figma Design</a>
 
+## Documento de Instalação
+- Link para o Documento: <a href="https://docs.google.com/document/d/1K5SnhxKYCfnvJq_T8P_5-zqXeQSpqMXPh2FfLYe_G0Y/edit?tab=t.0" target="_blank">Documento de Implantação/Instalação</a>
 ## Configuração do Projeto
 
 1. **Clonar o Repositório**:
@@ -45,7 +47,7 @@ O protótipo do sistema está sendo desenvolvido no **Figma**, onde todas as tel
 
    ### Back-end
 
-   Para rodar o projeto localmente, é necessário possuir instâncias de banco de dados (PostgreSQL) e fila RabbitMQ. De modo a facilitar o desenvolvimento local, o projeto acompanha um arquivo docker-compose.yml, mas que tem o Docker como dependência. Após instalar a ferramenta (ou caso já a possua), construa os _containers_ executando o seguinte comando na pasta do back-end:
+   Para rodar o projeto localmente, é necessário possuir uma instância de banco de dados (PostgreSQL). De modo a facilitar o desenvolvimento local, o projeto acompanha um arquivo docker-compose.yml, mas que tem o Docker como dependência. Após instalar a ferramenta (ou caso já a possua), construa os _containers_ executando o seguinte comando na pasta do back-end:
 
    ```bash
    docker-compose up -d

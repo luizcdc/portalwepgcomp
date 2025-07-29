@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDragListView from "react-drag-listview";
 import "./style.scss";
 
@@ -26,9 +26,10 @@ export default function DraggableList({
   const [draggedMove, setDraggedMove] = useState<DraggedMovement[]>([]);
   const [touchMove, setTouchMove] = useState<number>(0);
 
-  setTimeout(() => {
-    if (listedData && !listedData.length) setListedData(list);
-  }, 100);
+  useEffect(() => {
+    setListedData(list);
+  }, [list]);
+
 
   const historyMovement = (fromIndex: number, toIndex: number) => {
     const toId = listedData[toIndex].id;
@@ -52,6 +53,7 @@ export default function DraggableList({
   };
 
   const onTouchEnd = () => {
+
     if (draggedMove.length) {
       onDragEnd(0,0);
     }

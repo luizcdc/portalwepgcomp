@@ -41,7 +41,7 @@ export default function ModalSessao() {
       idCloseModal="sessaoModalClose"
       loading={false}
     >
-      <div className="modal-sessao px-5">
+      <div className="modal-sessao">
         <h3 className="mb-4 fw-bold">
           {sessao?.id ? titulo.edicao : titulo.cadastro}
         </h3>

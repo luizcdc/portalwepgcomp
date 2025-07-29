@@ -2,18 +2,9 @@
 
 import Axios from "axios";
 
-const hostname = typeof window !== "undefined" ? window.location.hostname : "";
-const domain = hostname?.split(".")[0];
-
-const apis = {
-  localhost: "https://portal-wepgcomp-api-development.vercel.app/",
-  "portal-wepgcomp-client-development":
-    "https://portal-wepgcomp-api-development.vercel.app/",
-  "portal-wepgcomp-client": "https://portal-wepgcomp-api.vercel.app/",
-};
 
 const axiosInstance = Axios.create({
-  baseURL: apis[domain],
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },

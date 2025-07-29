@@ -1,143 +1,139 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
+import sgMail from '@sendgrid/mail';
 import {
   ContactRequestDto,
   ContactResponseDto,
   DefaultEmailDto,
   DefaultEmailResponseDto,
 } from './mailing.dto';
-import { QueueService } from '../queue/queue.service';
-import { createTransport, Transporter } from 'nodemailer';
 import { EventEditionService } from '../event-edition/event-edition.service';
 import { CommitteeMemberService } from '../committee-member/committee-member.service';
 import { AppException } from '../exceptions/app.exception';
 
 @Injectable()
 export class MailingService {
-  private mailerTransport: Transporter;
-  private queueService: QueueService;
-
   constructor(
-    @Inject('EMAIL_ERROR_SERVICE') private errorClient: ClientProxy,
-    @Inject('EMAIL_SERVER_LIMIT_SERVICE')
-    private serverLimitClient: ClientProxy,
-    @Inject('DEAD_QUEUE_SERVICE') private deadQueueClient: ClientProxy,
     private eventEditionService: EventEditionService,
     private committeeMemberService: CommitteeMemberService,
   ) {
-    this.mailerTransport = createTransport({
-      host: process.env.MAIL_HOST,
-      port: parseInt(process.env.MAIL_PORT),
-      secure: false,
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
-    });
-    this.queueService = new QueueService(
-      errorClient,
-      serverLimitClient,
-      deadQueueClient,
-    );
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   }
 
   async sendEmail(
     defaultEmailDto: DefaultEmailDto,
   ): Promise<DefaultEmailResponseDto> {
     try {
-      await this.mailerTransport.sendMail(defaultEmailDto);
-    } catch (e) {
-      const { message, status } = await this.handleEmailError(
-        e,
-        defaultEmailDto,
-      );
+      const msg = {
+        to: defaultEmailDto.to,
+        from: defaultEmailDto.from || process.env.SENDGRID_FROM_EMAIL,
+        subject: defaultEmailDto.subject,
+        text: defaultEmailDto.text,
+        html: defaultEmailDto.html,
+      };
 
-      throw new AppException(message, status);
+      await sgMail.send(msg);
+      return { message: 'Email sent successfully' };
+    } catch (error) {
+      console.error('SendGrid error:', error);
+
+      if (error.response) {
+        const { statusCode } = error.response.body;
+
+        switch (statusCode) {
+          case 401:
+            throw new AppException(
+              'Erro de autenticação: API key inválida',
+              403,
+            );
+          case 429:
+            throw new AppException('Limite diário de emails excedido', 429);
+          default:
+            throw new AppException(
+              `Erro no envio de email: ${error.message}`,
+              500,
+            );
+        }
+      }
+
+      throw new AppException(`Erro inesperado: ${error.message}`, 500);
     }
-
-    return { message: 'Email sent successfully' };
   }
 
-  private async handleEmailError(
-    error: any,
-    email: DefaultEmailDto,
-    retries: number = 0,
-  ): Promise<{ message: string; status: number }> {
-    if (retries >= 3) {
-      this.queueService.sendMessageToDeadQueue({ ...email, error });
-    }
-
-    switch (error.responseCode) {
-      case 535:
-        this.queueService.sendEmailErrorMessage({
-          ...email,
-          error,
-          retries,
-        });
-        return {
-          message: 'Erro de autenticação: Nome de usuário e senha não aceitos',
-          status: 403,
-        };
-      case 550:
-        this.queueService.sendEmailServerLimitMessage({
-          ...email,
-          retries,
-        });
-        return { message: 'Limite diário de emails excedido', status: 429 };
-    }
-
-    this.queueService.sendEmailErrorMessage({
-      ...email,
-      error,
-      retries,
-    });
-    return { message: `Erro inesperado: ${error}`, status: 500 };
-  }
-
-  async contact(
-    contactDto: ContactRequestDto,
-    retries: number = 0,
-  ): Promise<ContactResponseDto> {
+  async contact(contactDto: ContactRequestDto): Promise<ContactResponseDto> {
     const { name, email, text } = contactDto;
 
     const eventEdition = await this.eventEditionService.findActive();
-
     const coordinator =
       await this.committeeMemberService.findCurrentCoordinator(eventEdition.id);
 
-    const emailContent = {
-      from: `"${name}" <${email}>`,
-      cc: email,
+    const msg = {
       to: coordinator.userEmail,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      replyTo: email,
       subject: 'Contato: WEPGCOMP',
-      text,
+      text: `Nome: ${name}\nEmail: ${email}\n\nMensagem:\n${text}`,
+      html: `
+        <h3>Novo contato via WEPGCOMP</h3>
+        <p><strong>Nome:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Mensagem:</strong></p>
+        <p>${text.replace(/\n/g, '<br>')}</p>
+      `,
     };
 
     try {
-      await this.mailerTransport.sendMail(emailContent);
-    } catch (e) {
-      const { message, status } = await this.handleEmailError(
-        e,
-        emailContent,
-        retries,
-      );
+      await sgMail.send(msg);
+      return { message: 'Email sent successfully' };
+    } catch (error) {
+      console.error('SendGrid contact error:', error);
 
-      throw new AppException(message, status);
+      if (error.response) {
+        const { statusCode } = error.response.body;
+
+        switch (statusCode) {
+          case 401:
+            throw new AppException(
+              'Erro de autenticação: API key inválida',
+              403,
+            );
+          case 429:
+            throw new AppException('Limite diário de emails excedido', 429);
+          default:
+            throw new AppException(
+              `Erro no envio de email: ${error.message}`,
+              500,
+            );
+        }
+      }
+
+      throw new AppException(`Erro inesperado: ${error.message}`, 500);
     }
-
-    return { message: 'Email sent successfully' };
   }
 
   async sendEmailConfirmation(email: string, token: string): Promise<void> {
     const confirmationUrl = `${process.env.FRONTEND_URL}/users/confirm-email?token=${token}`;
-    const subject = 'Confirmação de Cadastro';
-    const html = `<p>Clique no link para confirmar seu cadastro: <a href="${confirmationUrl}">${confirmationUrl}</a></p>`;
 
-    await this.mailerTransport.sendMail({
-      from: process.env.MAIL_USER,
+    const msg = {
       to: email,
-      subject,
-      html,
-    });
+      from: process.env.SENDGRID_FROM_EMAIL,
+      subject: 'Confirmação de Cadastro',
+      html: `
+        <h2>Confirmação de Cadastro</h2>
+        <p>Clique no link abaixo para confirmar seu cadastro:</p>
+        <p><a href="${confirmationUrl}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirmar Cadastro</a></p>
+        <p>Ou copie e cole este link no seu navegador:</p>
+        <p>${confirmationUrl}</p>
+      `,
+    };
+
+    try {
+      await sgMail.send(msg);
+    } catch (error) {
+      console.error('SendGrid confirmation error:', error);
+      throw new AppException(
+        `Erro ao enviar email de confirmação: ${error.message}`,
+        500,
+      );
+    }
   }
 }

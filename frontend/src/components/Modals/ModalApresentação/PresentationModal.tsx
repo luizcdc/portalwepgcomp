@@ -99,7 +99,7 @@ export default function PresentationModal({ props }: { props: any }) {
         <div className="d-flex align-items-center">
           <a
             className="fw-semibold bg-white link-text border border-0"
-            href={`https://wepgcomp.s3.us-east-1.amazonaws.com/${props?.submission?.pdfFile}`}
+            href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${props?.submission?.pdfFile}`}
             download
             target="_blank"
           >

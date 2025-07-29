@@ -12,9 +12,10 @@ export default function ModalSessaoOrdenarApresentacoes() {
   const [listaOrdenada, setListaOrdenada] = useState<any[]>([]);
 
   useEffect(() => {
-    const listaOrdenadaSessao: any = sessao?.presentations
-      ?.toSorted((a, b) => a.positionWithinBlock - b.positionWithinBlock)
-      .map(p => p.submission);
+    const listaOrdenadaSessao =
+      sessao?.presentations
+        ?.toSorted((a, b) => a.positionWithinBlock - b.positionWithinBlock)
+        .map(p => p.submission) || [];
     setListaOrdenada(listaOrdenadaSessao);
   }, [sessao]);
 
@@ -22,7 +23,7 @@ export default function ModalSessaoOrdenarApresentacoes() {
 
   const handleOnChangeOrder = async (data: any[], draggedMovement: DraggedMovement[]) => {
     const eventEditionId = getEventEditionIdStorage();
-    
+ 
     const swapPresentationBodies = draggedMovement
       .map(movement => ({
         presentation1Id: getPresentationId(movement.fromId),

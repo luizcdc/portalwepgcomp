@@ -19,10 +19,12 @@ export class S3UtilsService {
   constructor(private readonly prismaClient: PrismaService) {
     this.s3Client = new S3Client({
       region: process.env.S3_AWS_REGION,
+      endpoint: process.env.S3_AWS_ENDPOINT,
       credentials: {
         accessKeyId: process.env.S3_AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.S3_AWS_SECRET_ACCESS_KEY,
       },
+      forcePathStyle: true,
     });
   }
 
